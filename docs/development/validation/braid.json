@@ -1,0 +1,1272 @@
+[
+  {
+    "id": "direct-F0",
+    "modulus": 0,
+    "generators": [
+      "a",
+      "b"
+    ],
+    "augmentation": "graded",
+    "weights": null,
+    "reversed": false,
+    "directDegreewise": true,
+    "nativeEquality": true,
+    "ambiguities": 11,
+    "algebraDimension": 6,
+    "augmentationModuleProjective": true,
+    "identities": 24,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "Q",
+      "betti": [
+        1,
+        0,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        2,
+        3,
+        5,
+        8,
+        6,
+        2
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        2,
+        1,
+        4,
+        4,
+        2
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 2,
+      "finiteTailZero": false,
+      "truncatedBetti": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "nativeMs": 59.217118,
+    "wasmMs": 249.559802
+  },
+  {
+    "id": "prefix-F0",
+    "modulus": 0,
+    "generators": [
+      "a",
+      "aa"
+    ],
+    "augmentation": "graded",
+    "weights": null,
+    "reversed": false,
+    "directDegreewise": false,
+    "nativeEquality": true,
+    "ambiguities": 11,
+    "algebraDimension": 6,
+    "augmentationModuleProjective": true,
+    "identities": 60,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "Q",
+      "betti": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        2,
+        3,
+        5,
+        9,
+        16,
+        17,
+        8,
+        2
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        2,
+        1,
+        4,
+        5,
+        11,
+        6,
+        2
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 3,
+      "finiteTailZero": false,
+      "truncatedBetti": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "shifted": false
+    },
+    "nativeMs": 74.38099499999998,
+    "wasmMs": 662.1760410000002
+  },
+  {
+    "id": "monoid-F0",
+    "modulus": 0,
+    "generators": [
+      "a",
+      "b"
+    ],
+    "augmentation": "monoid",
+    "weights": null,
+    "reversed": false,
+    "directDegreewise": false,
+    "nativeEquality": true,
+    "ambiguities": 11,
+    "algebraDimension": 6,
+    "augmentationModuleProjective": true,
+    "identities": 60,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "Q",
+      "betti": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        2,
+        3,
+        5,
+        9,
+        16,
+        17,
+        8,
+        2
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        2,
+        1,
+        4,
+        5,
+        11,
+        6,
+        2
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 3,
+      "finiteTailZero": false,
+      "truncatedBetti": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "shifted": true
+    },
+    "nativeMs": 74.61571400000003,
+    "wasmMs": 648.1864899999996
+  },
+  {
+    "id": "weighted-reversed-F0",
+    "modulus": 0,
+    "generators": [
+      "x_1",
+      "x_11"
+    ],
+    "augmentation": "monoid",
+    "weights": "2 3",
+    "reversed": true,
+    "directDegreewise": false,
+    "nativeEquality": true,
+    "ambiguities": 11,
+    "algebraDimension": 6,
+    "augmentationModuleProjective": true,
+    "identities": 28,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "Q",
+      "betti": [
+        1,
+        0,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        2,
+        3,
+        5,
+        9,
+        6,
+        2,
+        1,
+        1,
+        1
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        2,
+        1,
+        4,
+        4,
+        2,
+        0,
+        1,
+        0
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 2,
+      "finiteTailZero": false,
+      "truncatedBetti": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "shifted": true
+    },
+    "nativeMs": 91.51895400000012,
+    "wasmMs": 455.8444499999996
+  },
+  {
+    "id": "direct-F2",
+    "modulus": 2,
+    "generators": [
+      "a",
+      "b"
+    ],
+    "augmentation": "graded",
+    "weights": null,
+    "reversed": false,
+    "directDegreewise": true,
+    "nativeEquality": true,
+    "ambiguities": 11,
+    "algebraDimension": 6,
+    "augmentationModuleProjective": true,
+    "identities": 24,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "F_2",
+      "betti": [
+        1,
+        0,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        2,
+        3,
+        5,
+        8,
+        6,
+        2
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        2,
+        1,
+        4,
+        4,
+        2
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 2,
+      "finiteTailZero": false,
+      "truncatedBetti": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "nativeMs": 61.92637500000001,
+    "wasmMs": 260.3693859999994
+  },
+  {
+    "id": "prefix-F2",
+    "modulus": 2,
+    "generators": [
+      "a",
+      "aa"
+    ],
+    "augmentation": "graded",
+    "weights": null,
+    "reversed": false,
+    "directDegreewise": false,
+    "nativeEquality": true,
+    "ambiguities": 11,
+    "algebraDimension": 6,
+    "augmentationModuleProjective": true,
+    "identities": 60,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "F_2",
+      "betti": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        2,
+        3,
+        5,
+        9,
+        16,
+        17,
+        8,
+        2
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        2,
+        1,
+        4,
+        5,
+        11,
+        6,
+        2
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 3,
+      "finiteTailZero": false,
+      "truncatedBetti": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "shifted": false
+    },
+    "nativeMs": 79.0274559999998,
+    "wasmMs": 590.5756020000008
+  },
+  {
+    "id": "monoid-F2",
+    "modulus": 2,
+    "generators": [
+      "a",
+      "b"
+    ],
+    "augmentation": "monoid",
+    "weights": null,
+    "reversed": false,
+    "directDegreewise": false,
+    "nativeEquality": true,
+    "ambiguities": 11,
+    "algebraDimension": 6,
+    "augmentationModuleProjective": true,
+    "identities": 60,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "F_2",
+      "betti": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        2,
+        3,
+        5,
+        9,
+        16,
+        17,
+        8,
+        2
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        2,
+        1,
+        4,
+        5,
+        11,
+        6,
+        2
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 3,
+      "finiteTailZero": false,
+      "truncatedBetti": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "shifted": true
+    },
+    "nativeMs": 75.4839090000005,
+    "wasmMs": 586.8141609999984
+  },
+  {
+    "id": "weighted-reversed-F2",
+    "modulus": 2,
+    "generators": [
+      "x_1",
+      "x_11"
+    ],
+    "augmentation": "monoid",
+    "weights": "2 3",
+    "reversed": true,
+    "directDegreewise": false,
+    "nativeEquality": true,
+    "ambiguities": 11,
+    "algebraDimension": 6,
+    "augmentationModuleProjective": true,
+    "identities": 28,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "F_2",
+      "betti": [
+        1,
+        0,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        2,
+        3,
+        5,
+        9,
+        6,
+        2,
+        1,
+        1,
+        1
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        2,
+        1,
+        4,
+        4,
+        2,
+        0,
+        1,
+        0
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 2,
+      "finiteTailZero": false,
+      "truncatedBetti": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "shifted": true
+    },
+    "nativeMs": 96.11802800000078,
+    "wasmMs": 469.68896099999984
+  },
+  {
+    "id": "direct-F3",
+    "modulus": 3,
+    "generators": [
+      "a",
+      "b"
+    ],
+    "augmentation": "graded",
+    "weights": null,
+    "reversed": false,
+    "directDegreewise": true,
+    "nativeEquality": true,
+    "ambiguities": 11,
+    "algebraDimension": 6,
+    "augmentationModuleProjective": true,
+    "identities": 24,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "F_3",
+      "betti": [
+        1,
+        0,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        2,
+        3,
+        5,
+        8,
+        6,
+        2
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        2,
+        1,
+        4,
+        4,
+        2
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 2,
+      "finiteTailZero": false,
+      "truncatedBetti": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "nativeMs": 138.06403200000022,
+    "wasmMs": 269.44434700000056
+  },
+  {
+    "id": "prefix-F3",
+    "modulus": 3,
+    "generators": [
+      "a",
+      "aa"
+    ],
+    "augmentation": "graded",
+    "weights": null,
+    "reversed": false,
+    "directDegreewise": false,
+    "nativeEquality": true,
+    "ambiguities": 11,
+    "algebraDimension": 6,
+    "augmentationModuleProjective": true,
+    "identities": 60,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "F_3",
+      "betti": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        2,
+        3,
+        5,
+        9,
+        16,
+        17,
+        8,
+        2
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        2,
+        1,
+        4,
+        5,
+        11,
+        6,
+        2
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 3,
+      "finiteTailZero": false,
+      "truncatedBetti": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "shifted": false
+    },
+    "nativeMs": 246.55466700000034,
+    "wasmMs": 674.6225549999999
+  },
+  {
+    "id": "monoid-F3",
+    "modulus": 3,
+    "generators": [
+      "a",
+      "b"
+    ],
+    "augmentation": "monoid",
+    "weights": null,
+    "reversed": false,
+    "directDegreewise": false,
+    "nativeEquality": true,
+    "ambiguities": 11,
+    "algebraDimension": 6,
+    "augmentationModuleProjective": true,
+    "identities": 60,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "F_3",
+      "betti": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        2,
+        3,
+        5,
+        9,
+        16,
+        17,
+        8,
+        2
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        2,
+        1,
+        4,
+        5,
+        11,
+        6,
+        2
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 3,
+      "finiteTailZero": false,
+      "truncatedBetti": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "shifted": true
+    },
+    "nativeMs": 230.04282200000125,
+    "wasmMs": 631.6407830000026
+  },
+  {
+    "id": "weighted-reversed-F3",
+    "modulus": 3,
+    "generators": [
+      "x_1",
+      "x_11"
+    ],
+    "augmentation": "monoid",
+    "weights": "2 3",
+    "reversed": true,
+    "directDegreewise": false,
+    "nativeEquality": true,
+    "ambiguities": 11,
+    "algebraDimension": 6,
+    "augmentationModuleProjective": true,
+    "identities": 28,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "F_3",
+      "betti": [
+        1,
+        0,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        2,
+        3,
+        5,
+        9,
+        6,
+        2,
+        1,
+        1,
+        1
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        2,
+        1,
+        4,
+        4,
+        2,
+        0,
+        1,
+        0
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 2,
+      "finiteTailZero": false,
+      "truncatedBetti": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "shifted": true
+    },
+    "nativeMs": 247.54592400000183,
+    "wasmMs": 479.78445099999954
+  },
+  {
+    "id": "direct-F5",
+    "modulus": 5,
+    "generators": [
+      "a",
+      "b"
+    ],
+    "augmentation": "graded",
+    "weights": null,
+    "reversed": false,
+    "directDegreewise": true,
+    "nativeEquality": true,
+    "ambiguities": 11,
+    "algebraDimension": 6,
+    "augmentationModuleProjective": true,
+    "identities": 24,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "F_5",
+      "betti": [
+        1,
+        0,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        2,
+        3,
+        5,
+        8,
+        6,
+        2
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        2,
+        1,
+        4,
+        4,
+        2
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 2,
+      "finiteTailZero": false,
+      "truncatedBetti": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "nativeMs": 149.22981400000208,
+    "wasmMs": 279.59614099999817
+  },
+  {
+    "id": "prefix-F5",
+    "modulus": 5,
+    "generators": [
+      "a",
+      "aa"
+    ],
+    "augmentation": "graded",
+    "weights": null,
+    "reversed": false,
+    "directDegreewise": false,
+    "nativeEquality": true,
+    "ambiguities": 11,
+    "algebraDimension": 6,
+    "augmentationModuleProjective": true,
+    "identities": 60,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "F_5",
+      "betti": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        2,
+        3,
+        5,
+        9,
+        16,
+        17,
+        8,
+        2
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        2,
+        1,
+        4,
+        5,
+        11,
+        6,
+        2
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 3,
+      "finiteTailZero": false,
+      "truncatedBetti": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "shifted": false
+    },
+    "nativeMs": 227.615729000001,
+    "wasmMs": 640.0036059999984
+  },
+  {
+    "id": "monoid-F5",
+    "modulus": 5,
+    "generators": [
+      "a",
+      "b"
+    ],
+    "augmentation": "monoid",
+    "weights": null,
+    "reversed": false,
+    "directDegreewise": false,
+    "nativeEquality": true,
+    "ambiguities": 11,
+    "algebraDimension": 6,
+    "augmentationModuleProjective": true,
+    "identities": 60,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "F_5",
+      "betti": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        2,
+        3,
+        5,
+        9,
+        16,
+        17,
+        8,
+        2
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        2,
+        1,
+        4,
+        5,
+        11,
+        6,
+        2
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 3,
+      "finiteTailZero": false,
+      "truncatedBetti": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "shifted": true
+    },
+    "nativeMs": 228.0020599999989,
+    "wasmMs": 635.9493760000005
+  },
+  {
+    "id": "weighted-reversed-F5",
+    "modulus": 5,
+    "generators": [
+      "x_1",
+      "x_11"
+    ],
+    "augmentation": "monoid",
+    "weights": "2 3",
+    "reversed": true,
+    "directDegreewise": false,
+    "nativeEquality": true,
+    "ambiguities": 11,
+    "algebraDimension": 6,
+    "augmentationModuleProjective": true,
+    "identities": 28,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "F_5",
+      "betti": [
+        1,
+        0,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        2,
+        3,
+        5,
+        9,
+        6,
+        2,
+        1,
+        1,
+        1
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        2,
+        1,
+        4,
+        4,
+        2,
+        0,
+        1,
+        0
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 2,
+      "finiteTailZero": false,
+      "truncatedBetti": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "shifted": true
+    },
+    "nativeMs": 245.83654899999965,
+    "wasmMs": 485.2546000000002
+  },
+  {
+    "id": "direct-F101",
+    "modulus": 101,
+    "generators": [
+      "a",
+      "b"
+    ],
+    "augmentation": "graded",
+    "weights": null,
+    "reversed": false,
+    "directDegreewise": true,
+    "nativeEquality": true,
+    "ambiguities": 11,
+    "algebraDimension": 6,
+    "augmentationModuleProjective": true,
+    "identities": 24,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "F_101",
+      "betti": [
+        1,
+        0,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        2,
+        3,
+        5,
+        8,
+        6,
+        2
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        2,
+        1,
+        4,
+        4,
+        2
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 2,
+      "finiteTailZero": false,
+      "truncatedBetti": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "nativeMs": 137.16725399999996,
+    "wasmMs": 271.15319100000124
+  },
+  {
+    "id": "prefix-F101",
+    "modulus": 101,
+    "generators": [
+      "a",
+      "aa"
+    ],
+    "augmentation": "graded",
+    "weights": null,
+    "reversed": false,
+    "directDegreewise": false,
+    "nativeEquality": true,
+    "ambiguities": 11,
+    "algebraDimension": 6,
+    "augmentationModuleProjective": true,
+    "identities": 60,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "F_101",
+      "betti": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        2,
+        3,
+        5,
+        9,
+        16,
+        17,
+        8,
+        2
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        2,
+        1,
+        4,
+        5,
+        11,
+        6,
+        2
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 3,
+      "finiteTailZero": false,
+      "truncatedBetti": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "shifted": false
+    },
+    "nativeMs": 225.0172280000006,
+    "wasmMs": 639.5319879999988
+  },
+  {
+    "id": "monoid-F101",
+    "modulus": 101,
+    "generators": [
+      "a",
+      "b"
+    ],
+    "augmentation": "monoid",
+    "weights": null,
+    "reversed": false,
+    "directDegreewise": false,
+    "nativeEquality": true,
+    "ambiguities": 11,
+    "algebraDimension": 6,
+    "augmentationModuleProjective": true,
+    "identities": 60,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "F_101",
+      "betti": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        2,
+        3,
+        5,
+        9,
+        16,
+        17,
+        8,
+        2
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        2,
+        1,
+        4,
+        5,
+        11,
+        6,
+        2
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 3,
+      "finiteTailZero": false,
+      "truncatedBetti": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "shifted": true
+    },
+    "nativeMs": 224.88752999999997,
+    "wasmMs": 648.8544199999997
+  },
+  {
+    "id": "weighted-reversed-F101",
+    "modulus": 101,
+    "generators": [
+      "x_1",
+      "x_11"
+    ],
+    "augmentation": "monoid",
+    "weights": "2 3",
+    "reversed": true,
+    "directDegreewise": false,
+    "nativeEquality": true,
+    "ambiguities": 11,
+    "algebraDimension": 6,
+    "augmentationModuleProjective": true,
+    "identities": 28,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "F_101",
+      "betti": [
+        1,
+        0,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        2,
+        3,
+        5,
+        9,
+        6,
+        2,
+        1,
+        1,
+        1
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        2,
+        1,
+        4,
+        4,
+        2,
+        0,
+        1,
+        0
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 2,
+      "finiteTailZero": false,
+      "truncatedBetti": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "shifted": true
+    },
+    "nativeMs": 245.96605900000213,
+    "wasmMs": 488.06596600000194
+  }
+]

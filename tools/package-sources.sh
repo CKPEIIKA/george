@@ -25,8 +25,11 @@ Build/relink instructions: README.md and ports/ecl/build.sh in George source.
 No OCaml or Singular implementation is included in the browser engine.
 EOF
 git -C "$toolchain/ecl-src" archive --format=tar --prefix=ecl/ 59f60e09102961bf5872c672fdd9d200b2e83d6b | gzip -n >"$root/web/sources/ecl-source.tar.gz"
-tar -C "$root" --exclude='web/sources' --exclude='web/engine/ecl.*' \
-  -czf "$root/web/sources/george-source.tar.gz" \
+# Only tracked or staged files belong to the release. Concurrent untracked
+# work stays in the workspace and cannot enter the downloadable archive.
+git -C "$root" ls-files -z -- \
   README.md LICENSE.md package.json package-lock.json .gitignore \
-  licenses ports tools test docs vendor web
+  licenses ports tools test docs vendor web | \
+  tar -C "$root" --exclude='web/sources/*' --exclude='web/engine/ecl.*' \
+    --null -czf "$root/web/sources/george-source.tar.gz" --files-from=-
 sha256sum "$root/web/sources/"*.tar.gz >"$root/build/source-archives.sha256"

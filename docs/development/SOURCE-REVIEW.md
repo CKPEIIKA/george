@@ -50,6 +50,17 @@ Relevant details found in the sources:
    degree-output file can be empty. An itemwise computation must export the
    final basis explicitly. A resolution must then be constructed from the
    completed basis using the degreewise resolution machinery.
+6. In safe degreewise noncommutative mode, `MONLESSP` still uses the
+   equal-degree lexicographic shortcut. Mixed-degree braid S-polynomials
+   can retain a false `aba-aba` reductor and make normal-form reduction
+   loop. Default mode uses the configured full order; a runtime legacy
+   switch restores the original shortcut.
+7. Anick's degree-left-lex tensor shortcut ignores the right coefficient
+   word. In nonhomogeneous calculations its chosen term can be unprolongable.
+   Default safe mode compares complete tensor words, merges by chain
+   identity, and restores their order after multiplication and addition.
+   See [the braid investigation](BRAID-FIX.md) for both reproducers and the
+   independent projectivity certificate.
    Fresh factor-algebra and Hochschild jobs also need their resolution group
    loaded before setting additional-relation callbacks. The old sequential
    suite already loaded it in earlier cases; isolated form-preset checks

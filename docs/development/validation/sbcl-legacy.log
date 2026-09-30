@@ -1,8 +1,4 @@
-
-> george@0.1.0 sbcl:test:legacy
-> ports/sbcl/runtests.sh $(ls -td build/sbcl-* | head -1) legacy-$(date +%Y%m%d-%H%M%S) legacy
-
-run time: 2.269s
+run time: 5.395s
 anick_tm.out       CLISP-ref: DIFF  CLISP-2007-run: same  PSL-ref: same
 anick_tm.res       CLISP-ref: same  CLISP-2007-run: same  PSL-ref: same
 char2.gb           CLISP-ref: same  CLISP-2007-run: same  PSL-ref: same

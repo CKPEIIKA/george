@@ -2,47 +2,47 @@
   {
     "id": "anick_5",
     "outputs": 2,
-    "elapsedMs": 228.1280310000002
+    "elapsedMs": 185.99271999999996
   },
   {
     "id": "anick_w",
     "outputs": 2,
-    "elapsedMs": 193.36600999999973
+    "elapsedMs": 147.81847499999958
   },
   {
     "id": "simp_w_max",
     "outputs": 1,
-    "elapsedMs": 104.19404500000019
+    "elapsedMs": 67.6148489999996
   },
   {
     "id": "homog_c",
     "outputs": 1,
-    "elapsedMs": 256.0218299999997
+    "elapsedMs": 231.65840099999969
   },
   {
     "id": "tst",
     "outputs": 1,
-    "elapsedMs": 54.748420000000806
+    "elapsedMs": 42.36839400000008
   },
   {
     "id": "homog-mode-smoke",
     "outputs": 0,
-    "elapsedMs": 28.732092000000193
+    "elapsedMs": 17.152289999999994
   },
   {
     "id": "anick5~",
     "outputs": 2,
-    "elapsedMs": 246.83543800000007
+    "elapsedMs": 154.3046629999999
   },
   {
     "id": "anick_tm~",
     "outputs": 2,
-    "elapsedMs": 181.8335390000011
+    "elapsedMs": 171.7953120000011
   },
   {
     "id": "anick_w~",
     "outputs": 2,
-    "elapsedMs": 158.94222499999887
+    "elapsedMs": 155.54050500000085
   },
   {
     "id": "lin_nc~",
@@ -51,51 +51,51 @@
   {
     "id": "lin~",
     "outputs": 1,
-    "elapsedMs": 31.083511000000726
+    "elapsedMs": 32.22528799999964
   },
   {
     "id": "nhom~",
     "outputs": 1,
-    "elapsedMs": 32.552300999999716
+    "elapsedMs": 30.809603000001516
   },
   {
     "id": "simp_w_max~",
     "outputs": 1,
-    "elapsedMs": 43.294912999999724
+    "elapsedMs": 41.40566399999989
   },
   {
     "id": "skipcdeg-1",
     "outputs": 1,
-    "elapsedMs": 284.8570810000019
+    "elapsedMs": 233.71014099999957
   },
   {
     "id": "skipcdeg-2",
     "outputs": 1,
-    "elapsedMs": 190.12313100000028
+    "elapsedMs": 141.96309600000131
   },
   {
     "id": "skipcdeg-3",
     "outputs": 1,
-    "elapsedMs": 266.8026370000007
+    "elapsedMs": 237.08097599999928
   },
   {
     "id": "skipcdeg-4",
     "outputs": 1,
-    "elapsedMs": 139.56372399999964
+    "elapsedMs": 116.0897389999991
   },
   {
     "id": "skipcdegall-1",
     "outputs": 1,
-    "elapsedMs": 146.25669500000004
+    "elapsedMs": 143.765113999998
   },
   {
     "id": "skipcdegall-2",
     "outputs": 1,
-    "elapsedMs": 248.9044419999991
+    "elapsedMs": 237.22185000000172
   },
   {
     "id": "skipcdegall-3",
     "outputs": 1,
-    "elapsedMs": 127.66781800000172
+    "elapsedMs": 117.17751000000135
   }
 ]

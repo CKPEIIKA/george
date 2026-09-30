@@ -17,6 +17,13 @@
 %%  2026-09-30  Companion behavior-patches.py fixes itemwise degree limits,
 %%      malformed MaybeReduceRedor calls, exhausted term traversal, and
 %%      left * 1 * right multiplication in safe noncommutative mode.
+%%  2026-09-30  Companion behavior-patches.py uses the full monomial order
+%%      for safe degreewise noncommutative reductions. The original
+%%      lexicographic shortcut can create a false zero reductor for the
+%%      idempotent braid and make its Anick resolution stall in degree 4.
+%%      The safe-mode Anick tensor routines also compare complete words and
+%%      restore their order after multiplication and addition, preventing
+%%      a later selection of an unprolongable constant coefficient term.
 %%  2026-09-30  NCPBHGROEBNER and NCPBH write the Poincare-Betti
 %%      series to their PB file.  Since 2004-04-24 bergman only
 %%      writes it when IMMEDIATEASSOCRINGPBDISPLAY is on, which is

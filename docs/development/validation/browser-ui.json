@@ -2,17 +2,17 @@
   "report": [
     {
       "legacy": true,
-      "totalMs": 3396,
-      "computationMs": 787.2000000029802,
+      "totalMs": 1114.3999999910593,
+      "computationMs": 264,
       "memoryBytes": 67108864,
-      "ticks": 170
+      "ticks": 55
     },
     {
       "legacy": false,
-      "totalMs": 3813.2999999970198,
-      "computationMs": 869.7000000029802,
+      "totalMs": 1119.199999988079,
+      "computationMs": 263,
       "memoryBytes": 67108864,
-      "ticks": 190
+      "ticks": 56
     }
   ],
   "cancellation": "AbortError",

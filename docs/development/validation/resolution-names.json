@@ -53,7 +53,7 @@
     },
     "identities": 7,
     "ambiguities": 3,
-    "elapsedMs": 185.15225699999996
+    "elapsedMs": 618.5536799999995
   },
   {
     "id": "collision-F0",
@@ -94,7 +94,7 @@
     },
     "identities": 2,
     "ambiguities": 4,
-    "elapsedMs": 149.7578179999996
+    "elapsedMs": 478.8519500000002
   },
   {
     "id": "monoid-F0",
@@ -150,7 +150,7 @@
     },
     "identities": 7,
     "ambiguities": 3,
-    "elapsedMs": 196.81417599999986
+    "elapsedMs": 535.7920740000009
   },
   {
     "id": "cubic-F0",
@@ -196,7 +196,7 @@
     },
     "identities": 4,
     "ambiguities": 4,
-    "elapsedMs": 149.13906899999984
+    "elapsedMs": 438.5911820000001
   },
   {
     "id": "idempotent-F2",
@@ -252,7 +252,7 @@
     },
     "identities": 7,
     "ambiguities": 3,
-    "elapsedMs": 207.14318600000115
+    "elapsedMs": 292.15548500000295
   },
   {
     "id": "collision-F2",
@@ -293,7 +293,7 @@
     },
     "identities": 2,
     "ambiguities": 4,
-    "elapsedMs": 157.33392300000014
+    "elapsedMs": 149.80452000000514
   },
   {
     "id": "monoid-F2",
@@ -349,7 +349,7 @@
     },
     "identities": 7,
     "ambiguities": 3,
-    "elapsedMs": 191.4918600000001
+    "elapsedMs": 178.20428700000048
   },
   {
     "id": "cubic-F2",
@@ -395,7 +395,7 @@
     },
     "identities": 4,
     "ambiguities": 4,
-    "elapsedMs": 163.1611499999999
+    "elapsedMs": 155.3967760000014
   },
   {
     "id": "idempotent-F5",
@@ -451,7 +451,7 @@
     },
     "identities": 7,
     "ambiguities": 3,
-    "elapsedMs": 230.68085299999802
+    "elapsedMs": 215.06234199999744
   },
   {
     "id": "collision-F5",
@@ -492,7 +492,7 @@
     },
     "identities": 2,
     "ambiguities": 4,
-    "elapsedMs": 183.47833100000207
+    "elapsedMs": 191.11878699999943
   },
   {
     "id": "monoid-F5",
@@ -548,7 +548,7 @@
     },
     "identities": 7,
     "ambiguities": 3,
-    "elapsedMs": 217.81081099999938
+    "elapsedMs": 216.48887499999546
   },
   {
     "id": "cubic-F5",
@@ -594,7 +594,7 @@
     },
     "identities": 4,
     "ambiguities": 4,
-    "elapsedMs": 169.7973439999987
+    "elapsedMs": 168.5544679999948
   },
   {
     "id": "rational",
@@ -650,7 +650,7 @@
     },
     "identities": 7,
     "ambiguities": 3,
-    "elapsedMs": 178.69463200000246
+    "elapsedMs": 173.75342299999465
   },
   {
     "id": "large-rational",
@@ -706,7 +706,7 @@
     },
     "identities": 7,
     "ambiguities": 3,
-    "elapsedMs": 181.94741699999577
+    "elapsedMs": 170.1539150000026
   },
   {
     "id": "weighted-reversed",
@@ -726,7 +726,6 @@
       "betti": [
         1,
         1,
-        0,
         0,
         0,
         0
@@ -750,13 +749,21 @@
         1
       ],
       "checkedSquareZero": true,
-      "highestCertifiedDegree": 5,
+      "highestCertifiedDegree": 4,
       "finiteTailZero": false,
+      "truncatedBetti": [
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
       "shifted": false
     },
     "identities": 5,
     "ambiguities": 3,
-    "elapsedMs": 201.63832700000057
+    "elapsedMs": 193.799798
   },
   {
     "id": "weighted-collision",
@@ -797,7 +804,7 @@
     },
     "identities": 2,
     "ambiguities": 4,
-    "elapsedMs": 236.4784010000003
+    "elapsedMs": 143.13220100000035
   },
   {
     "id": "case-and-underscore",
@@ -853,7 +860,7 @@
     },
     "identities": 7,
     "ambiguities": 3,
-    "elapsedMs": 178.80439100000513
+    "elapsedMs": 170.26175599999988
   },
   {
     "id": "exterior-prefixes",
@@ -909,7 +916,7 @@
     },
     "identities": 161,
     "ambiguities": 22,
-    "elapsedMs": 611.1973739999958
+    "elapsedMs": 637.0701220000046
   },
   {
     "id": "monoid-weighted-reversed",
@@ -929,7 +936,6 @@
       "betti": [
         1,
         1,
-        0,
         0,
         0,
         0
@@ -953,13 +959,21 @@
         1
       ],
       "checkedSquareZero": true,
-      "highestCertifiedDegree": 5,
+      "highestCertifiedDegree": 4,
       "finiteTailZero": false,
+      "truncatedBetti": [
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
       "shifted": true
     },
     "identities": 5,
     "ambiguities": 3,
-    "elapsedMs": 235.1948029999985
+    "elapsedMs": 229.55879399999685
   },
   {
     "id": "ocaml-mirai-renamed",
@@ -1003,6 +1017,6 @@
     },
     "identities": 4,
     "ambiguities": 8,
-    "elapsedMs": 211.29380800000217
+    "elapsedMs": 184.38443299999926
   }
 ]

@@ -49,6 +49,16 @@ For monoid augmentation, the exported indices refer to the shifted generators
 u in x = u + 1; the names label those shifted generators, as in the original
 resolution file. `homology.json` records `shifted: true`.
 
+For bounded nonhomogeneous computations, `homology.json` reports `betti`
+only through `highestCertifiedDegree`, where the incoming chain space is
+certified complete. A complete basis gives a conservative bound
+`degree(C_(n+1)) <= W+n*t`, with largest generator weight W and
+`t = max(0, largest relation degree - smallest generator weight)`.
+If the bound excludes some available dimensions, `truncatedBetti` retains
+them for diagnostics; those entries are not certified Betti numbers of the
+algebra. `finiteTailZero` certifies that the chain complex ends completely.
+See [BRAID-FIX.md](development/BRAID-FIX.md) for the weighted reproducer.
+
 The format currently covers ordinary algebra Anick form jobs. Module,
 factor-algebra and Hochschild procedures retain their original output.
 The historical text reader is retained for single-letter regression fixtures;

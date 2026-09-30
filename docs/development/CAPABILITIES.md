@@ -14,9 +14,9 @@ installed Singular `freegb.lib`, `homolog.lib`, `nchomolog.lib` / Plural interfa
 | Prime fields | Characteristic 2 and odd-prime domains | Not exposed by the reviewed browser | F₂, F₅ | Original field cases; independent bases and resolutions |
 | Weights and matrix/elimination orders | Yes | Degree orders in reviewed browser | Matched degree order in this audit | Historical weighted/matrix/elimination cases; no claim that every order was independently certified |
 | Hilbert / Poincaré–Betti series | Yes | Not the original PB interface | Commutative `hilb` and `vdim`; no original PB-interface comparison | Historical files, known exterior/symmetric dimensions and corrected PB output |
-| Anick resolution | Yes | Yes | Commutative free resolutions via `res`; not used as an Anick oracle | Five shared OCaml cases, plus exact d² and field tests |
+| Anick resolution | Yes | Yes | Commutative free resolutions via `res`; not used as an Anick oracle | Five shared OCaml cases, exact d² and field tests, braid projectivity certificates |
 | Augmentation generators → 1 | No direct setting | Yes | Not used | Default-mode variable shift; OCaml x²−1 and Mirai comparisons |
-| Nonhomogeneous ungraded Betti numbers | Internal-degree routine is insufficient | Yes | Not used | Exact augmented matrix ranks; finite-tail/bound metadata |
+| Nonhomogeneous ungraded Betti numbers | Internal-degree routine is insufficient | Yes | Not used | Exact augmented matrix ranks; complete incoming-chain bounds and finite-tail certificates |
 | Modules / homological algebra | Right/left and two-module procedures | Not exposed in the reviewed browser | `syz`, `res`, `homolog.lib`; `nchomolog.lib` provides Hom/Ext over GR-algebras | Historical equality and isolated module presets; these Singular methods are not compared |
 | Factor-algebra / Hochschild homology | Original procedures | Not exposed in the reviewed browser | No matched Hochschild task used | Historical equality and isolated factor/Hochschild presets |
 | Generator names | Longer names supported | Browser parser accepts single characters | Longer identifiers supported | Longer and overlapping names in input, Anick chains, nonhomogeneous/monoid homology and display; structural export |

@@ -3,7 +3,7 @@
     "id": "comm-0",
     "basisSize": 3,
     "ambiguities": 9,
-    "elapsedMs": 56.1657909999999,
+    "elapsedMs": 201.79203400000006,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": false
@@ -12,7 +12,7 @@
     "id": "nc-0",
     "basisSize": 4,
     "ambiguities": 18,
-    "elapsedMs": 56.53298799999993,
+    "elapsedMs": 153.94927000000007,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": false
@@ -21,7 +21,7 @@
     "id": "exterior-0",
     "basisSize": 6,
     "ambiguities": 22,
-    "elapsedMs": 66.48926900000015,
+    "elapsedMs": 185.1434870000012,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": false
@@ -30,7 +30,7 @@
     "id": "symmetric-0",
     "basisSize": 3,
     "ambiguities": 7,
-    "elapsedMs": 55.10950099999991,
+    "elapsedMs": 201.02242599999954,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": false
@@ -39,7 +39,7 @@
     "id": "comm-2",
     "basisSize": 3,
     "ambiguities": 9,
-    "elapsedMs": 93.36349599999994,
+    "elapsedMs": 229.69582199999786,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": false
@@ -48,7 +48,7 @@
     "id": "nc-2",
     "basisSize": 4,
     "ambiguities": 18,
-    "elapsedMs": 67.74360699999943,
+    "elapsedMs": 178.6575120000016,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": false
@@ -57,7 +57,7 @@
     "id": "exterior-2",
     "basisSize": 6,
     "ambiguities": 22,
-    "elapsedMs": 72.26656699999876,
+    "elapsedMs": 193.07169400000203,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": false
@@ -66,7 +66,7 @@
     "id": "symmetric-2",
     "basisSize": 3,
     "ambiguities": 7,
-    "elapsedMs": 61.52529200000026,
+    "elapsedMs": 175.3287420000015,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": false
@@ -75,7 +75,7 @@
     "id": "comm-5",
     "basisSize": 3,
     "ambiguities": 9,
-    "elapsedMs": 72.953125,
+    "elapsedMs": 191.034595000001,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": false
@@ -84,7 +84,7 @@
     "id": "nc-5",
     "basisSize": 4,
     "ambiguities": 18,
-    "elapsedMs": 78.37483500000053,
+    "elapsedMs": 204.81746700000076,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": false
@@ -93,7 +93,7 @@
     "id": "exterior-5",
     "basisSize": 6,
     "ambiguities": 22,
-    "elapsedMs": 89.0877789999995,
+    "elapsedMs": 83.41972099999839,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": false
@@ -102,7 +102,7 @@
     "id": "symmetric-5",
     "basisSize": 3,
     "ambiguities": 7,
-    "elapsedMs": 75.80297799999971,
+    "elapsedMs": 72.61516899999697,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": false
@@ -111,7 +111,7 @@
     "id": "huge-integer",
     "basisSize": 3,
     "ambiguities": 10,
-    "elapsedMs": 43.787641000000804,
+    "elapsedMs": 40.55206900000485,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": false
@@ -120,7 +120,7 @@
     "id": "truncated-cubic",
     "basisSize": 1,
     "ambiguities": 4,
-    "elapsedMs": 46.97020199999861,
+    "elapsedMs": 37.191482000002,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": false
@@ -129,7 +129,7 @@
     "id": "quantum-plane",
     "basisSize": 3,
     "ambiguities": 11,
-    "elapsedMs": 64.11480300000039,
+    "elapsedMs": 50.09937099999661,
     "oracle": "Singular Letterplace + Plural",
     "degreeBound": 6,
     "allAmbiguities": false
@@ -138,7 +138,7 @@
     "id": "plactic",
     "basisSize": 11,
     "ambiguities": 48,
-    "elapsedMs": 117.92260899999746,
+    "elapsedMs": 119.71747599999799,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": false
@@ -147,7 +147,7 @@
     "id": "pow",
     "basisSize": 3,
     "ambiguities": 14,
-    "elapsedMs": 74.63718000000154,
+    "elapsedMs": 72.44107699999586,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": false
@@ -156,7 +156,7 @@
     "id": "sklyanin",
     "basisSize": 2,
     "ambiguities": 7,
-    "elapsedMs": 56.14665199999945,
+    "elapsedMs": 54.07976300000155,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": false
@@ -165,7 +165,7 @@
     "id": "symgroup",
     "basisSize": 3,
     "ambiguities": 11,
-    "elapsedMs": 33.033252999997785,
+    "elapsedMs": 32.3959859999959,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": true
@@ -174,7 +174,7 @@
     "id": "singular-freegb-example",
     "basisSize": 6,
     "ambiguities": 31,
-    "elapsedMs": 115.826259999998,
+    "elapsedMs": 114.9383039999957,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": false
@@ -183,7 +183,7 @@
     "id": "original-nhom",
     "basisSize": 10,
     "ambiguities": 58,
-    "elapsedMs": 59.89073500000086,
+    "elapsedMs": 57.95637600000191,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": true
@@ -192,7 +192,7 @@
     "id": "ocaml-mirai",
     "basisSize": 8,
     "ambiguities": 20,
-    "elapsedMs": 39.2146410000023,
+    "elapsedMs": 37.183091999999306,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": true
@@ -201,7 +201,7 @@
     "id": "ocaml-ab-e",
     "basisSize": 3,
     "ambiguities": 7,
-    "elapsedMs": 18.59158099999695,
+    "elapsedMs": 29.04608300000109,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": true
@@ -210,7 +210,7 @@
     "id": "ocaml-idempotent",
     "basisSize": 1,
     "ambiguities": 3,
-    "elapsedMs": 16.085745000000315,
+    "elapsedMs": 16.181290000000445,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": true
@@ -219,7 +219,7 @@
     "id": "ocaml-idempotent-braid",
     "basisSize": 3,
     "ambiguities": 11,
-    "elapsedMs": 34.0709629999983,
+    "elapsedMs": 34.2919550000006,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": true
@@ -228,7 +228,7 @@
     "id": "ocaml-ab-ee",
     "basisSize": 4,
     "ambiguities": 12,
-    "elapsedMs": 52.82142099999692,
+    "elapsedMs": 52.45927999999549,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": false
@@ -237,7 +237,7 @@
     "id": "ocaml-square-sum",
     "basisSize": 1,
     "ambiguities": 3,
-    "elapsedMs": 38.68591599999854,
+    "elapsedMs": 37.59359200000472,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": false
@@ -246,7 +246,7 @@
     "id": "ocaml-square-minus",
     "basisSize": 2,
     "ambiguities": 6,
-    "elapsedMs": 52.62940399999934,
+    "elapsedMs": 51.87913400000252,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": false
@@ -255,7 +255,7 @@
     "id": "ocaml-square-difference",
     "basisSize": 2,
     "ambiguities": 6,
-    "elapsedMs": 49.27410500000042,
+    "elapsedMs": 49.66605700000218,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": false
@@ -264,7 +264,7 @@
     "id": "ocaml-symmetric6",
     "basisSize": 15,
     "ambiguities": 50,
-    "elapsedMs": 93.31065700000181,
+    "elapsedMs": 103.18456100000185,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": false
@@ -273,7 +273,7 @@
     "id": "seeded-0",
     "basisSize": 3,
     "ambiguities": 9,
-    "elapsedMs": 66.04839899999934,
+    "elapsedMs": 61.202391999999236,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": false
@@ -282,7 +282,7 @@
     "id": "seeded-1",
     "basisSize": 2,
     "ambiguities": 6,
-    "elapsedMs": 65.6261730000042,
+    "elapsedMs": 57.04820699999982,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": false
@@ -291,7 +291,7 @@
     "id": "seeded-2",
     "basisSize": 3,
     "ambiguities": 12,
-    "elapsedMs": 84.843667000001,
+    "elapsedMs": 83.41503899999952,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": false
@@ -300,7 +300,7 @@
     "id": "seeded-3",
     "basisSize": 4,
     "ambiguities": 18,
-    "elapsedMs": 67.72180099999969,
+    "elapsedMs": 67.64996499999688,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": false
@@ -309,7 +309,7 @@
     "id": "seeded-4",
     "basisSize": 1,
     "ambiguities": 1,
-    "elapsedMs": 47.3627290000004,
+    "elapsedMs": 44.908627000004344,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": false
@@ -318,7 +318,7 @@
     "id": "seeded-5",
     "basisSize": 4,
     "ambiguities": 18,
-    "elapsedMs": 105.3059379999977,
+    "elapsedMs": 101.1087950000001,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": false
@@ -327,7 +327,7 @@
     "id": "seeded-6",
     "basisSize": 4,
     "ambiguities": 18,
-    "elapsedMs": 68.12107899999683,
+    "elapsedMs": 66.53421800000069,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": false
@@ -336,7 +336,7 @@
     "id": "seeded-7",
     "basisSize": 1,
     "ambiguities": 2,
-    "elapsedMs": 48.96579200000269,
+    "elapsedMs": 45.30018800000107,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": false
@@ -345,7 +345,7 @@
     "id": "seeded-8",
     "basisSize": 3,
     "ambiguities": 9,
-    "elapsedMs": 86.89711199999874,
+    "elapsedMs": 82.71304399999644,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": false
@@ -354,7 +354,7 @@
     "id": "seeded-9",
     "basisSize": 3,
     "ambiguities": 12,
-    "elapsedMs": 79.93451500000083,
+    "elapsedMs": 63.536924,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": false
@@ -363,7 +363,7 @@
     "id": "seeded-10",
     "basisSize": 2,
     "ambiguities": 6,
-    "elapsedMs": 71.40910300000542,
+    "elapsedMs": 72.0802690000055,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": false
@@ -372,7 +372,7 @@
     "id": "seeded-11",
     "basisSize": 2,
     "ambiguities": 6,
-    "elapsedMs": 73.73025799999596,
+    "elapsedMs": 69.94020699999965,
     "oracle": "Singular",
     "degreeBound": 6,
     "allAmbiguities": false
@@ -426,7 +426,7 @@
     },
     "identities": 282,
     "comparedBetti": 10,
-    "elapsedMs": 1180.782217
+    "elapsedMs": 1263.4185930000021
   },
   {
     "id": "anick1",
@@ -471,7 +471,7 @@
     },
     "identities": 7,
     "comparedBetti": 0,
-    "elapsedMs": 194.53106300000218
+    "elapsedMs": 182.61355799999728
   },
   {
     "id": "anick2",
@@ -516,7 +516,7 @@
     },
     "identities": 13,
     "comparedBetti": 6,
-    "elapsedMs": 231.3664670000071
+    "elapsedMs": 212.10925300000235
   },
   {
     "id": "anick3",
@@ -571,7 +571,7 @@
     },
     "identities": 10,
     "comparedBetti": 11,
-    "elapsedMs": 220.16584599999624
+    "elapsedMs": 198.81599699999788
   },
   {
     "id": "mirai",
@@ -600,7 +600,7 @@
     },
     "identities": 4,
     "comparedBetti": 4,
-    "elapsedMs": 191.44087199999922
+    "elapsedMs": 187.52169599999615
   },
   {
     "id": "exterior-resolution-F2",
@@ -641,7 +641,7 @@
       "finiteTailZero": false
     },
     "identities": 116,
-    "elapsedMs": 437.2112229999984
+    "elapsedMs": 442.8779910000012
   },
   {
     "id": "monoid-resolution-F2",
@@ -683,7 +683,7 @@
       "shifted": true
     },
     "identities": 6,
-    "elapsedMs": 193.61658899999748
+    "elapsedMs": 182.46900800000003
   },
   {
     "id": "exterior-resolution-F5",
@@ -724,7 +724,7 @@
       "finiteTailZero": false
     },
     "identities": 116,
-    "elapsedMs": 453.1896259999994
+    "elapsedMs": 469.54492099999334
   },
   {
     "id": "monoid-resolution-F5",
@@ -766,6 +766,6 @@
       "shifted": true
     },
     "identities": 6,
-    "elapsedMs": 226.36987099999533
+    "elapsedMs": 223.00589499999478
   }
 ]

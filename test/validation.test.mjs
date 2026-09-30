@@ -25,3 +25,13 @@ test('a finite resolution tail is certified only when every possible extension f
  assert.equal(augmentedHomology(d,['x'],0,{...complete,degreeBound:2}).finiteTailZero,false);
 });
 test('prime-field differentials accept the printed coefficient separator',()=>assert.deepEqual(augmentedHomology('D(0, x)=1.x\nD(1, xx)=x.x+4*x.1\nD(2, xxx)=xx.x\n',['x'],5).betti,[1,0,0]));
+
+test('a weighted cutoff certifies homology using complete incoming chain degrees',()=>{
+ const d='D(0, x)=1.x\nD(1, xx)=x.x-x.1\nD(2, xxx)=xx.x\nD(3, xxxx)=xxx.x-xxx.1\n';
+ const completion={completeBasis:true,basis:'% 4\nx^2-x,\nDone\n',degreeBound:6,weights:'2'};
+ const h=augmentedHomology(d,['x'],0,completion);
+ assert.deepEqual(h.betti,[1,0,0]);
+ assert.equal(h.highestCertifiedDegree,2);
+ assert.equal(h.finiteTailZero,false);
+ assert.deepEqual(h.truncatedBetti,[1,0,0,0]);
+});

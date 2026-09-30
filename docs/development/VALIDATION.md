@@ -7,7 +7,7 @@ application. The reports below describe executed checks, with their scope.
 
 | Layer | Executed result |
 |---|---|
-| JavaScript unit tests | 40 passed: parsing, validation, exact arithmetic, structural export, completion metadata, worker lifecycle, preferences, guide and locale coverage |
+| JavaScript unit tests | 41 passed: parsing, validation, exact arithmetic, structural export, complete incoming-chain bounds, worker lifecycle, preferences, guide and locale coverage |
 | Original 2007 CLISP regression | All 37 files match byte for byte in legacy mode, in native SBCL, Node/Wasm and Chromium/Wasm |
 | Default-mode regression | All 37 expected files pass on the same engines; the PB file uses the corrected pre-2004 reference |
 | Additional original sources | 20 sessions: 18 calculations, one mode-only smoke test, one expected rejection of a malformed backup; 23 output files match native Bergman |
@@ -17,8 +17,9 @@ application. The reports below describe executed checks, with their scope.
 | Independent basis checks | 42 cases pass: input reduction, 597 critical ambiguities, Singular mutual ideal membership, and known Hilbert dimensions where specified |
 | Independent resolution checks | Nine cases pass 560 identities d²=0 over the quotient algebra, before augmentation; exact augmented ranks and d²=0 also pass |
 | Longer generator names | 20 cases: native SBCL equality, all-term renaming equality, 258 full d² identities, 91 critical ambiguities, exact homology, overlapping names, Q/F₂/F₅/F₁₀₁, weights, reversed order and large rational coefficients |
+| Idempotent braid | 20 native/Wasm cases: 860 full d² identities, 220 critical ambiguities, dimension 6 and independent projectivity certificates over Q/F₂/F₃/F₅/F₁₀₁; direct degreewise and two-stage runs, monoid augmentation, overlapping names, weights and reversed order |
 | Browser behavior | Both historical suites, responsive main thread, stop/restart, exact 3⁴⁰, memory growth, form execution and monoid augmentation pass; no page errors |
-| Guide and project-site UI | Root and `/george/` pass: all eight guided examples, EN/RU, state/file preservation, theme/system preference, persistence, blocked storage, 38 MathJax SVG expressions, mobile and downloads; no external requests or asset errors |
+| Guide and project-site UI | Root and `/george/` pass: all eight guided examples, braid and weighted homology cutoff, EN/RU, state/file preservation, theme/system preference, persistence, blocked storage, 38 MathJax SVG expressions, mobile and downloads; no external requests or asset errors |
 
 Small machine-readable evidence is retained in [validation/](validation/).
 [summary.json](validation/summary.json) links the full local logs and records
@@ -106,8 +107,8 @@ and nonzero remainders fail the runner.
 ## Browser and performance
 
 Verified using Chromium 153.0.8010.52 on this Linux x86_64 workspace. The
-complete historical suites took **5.1–6.3 seconds of computation** each
-in the current run (6.2–7.9 seconds including startup). Measurements are in
+complete historical suites took **5.03–5.06 seconds of computation** each
+in the current run (6.03–6.13 seconds including startup). Measurements are in
 [browser-regression.json](validation/browser-regression.json); timing varies
 with machine load. These are entire-suite timings, not per-polynomial claims.
 
@@ -152,6 +153,9 @@ reload; a pre-existing restoration defect was fixed. Desktop/Russian/dark and
 mobile/English/light screenshots were inspected under the report's local
 artifact directory. MathJax's required v4 worker assets are bundled locally;
 failed development runs with missing worker assets are not release evidence.
+Both mount paths also compute the idempotent braid with overlapping names
+and a weighted monoid case. The latter verifies that only H₀…H₂ are reported
+and that the interface explains the cutoff.
 
 ## Scope of confidence
 
@@ -162,8 +166,11 @@ experimental command, every admissible order or every input correct.
 A bounded basis can be partial even when historical Bergman prints Done.
 The UI states the bound; nonhomogeneous resolutions require a conservatively
 completed basis. Homogeneous critical-pair certificates apply only through
-the stated bound. A resolution reports homology only where an incoming
-differential is available, unless its finite zero tail is certified.
+the stated bound. Nonhomogeneous homology requires a complete incoming chain
+space, unless its finite zero tail is certified. With maximum generator
+weight W and maximum proper relation-tail degree bounded by t, C_(n+1)
+fits within W+n*t. Reported Betti numbers use this conservative bound;
+unreported partial ranks remain under `truncatedBetti` in `homology.json`.
 
 The former single-letter restriction has been removed. Default algebra Anick
 jobs read chain objects through a [structural export](../RESOLUTION-EXPORT.md).
@@ -172,15 +179,15 @@ whose compact original spelling is `abc`; its Betti numbers are 1, 2, 0.
 Both static-site paths also exercise this case and underscore names through
 the real form, file downloads and whole-token resolution display.
 
-An exploratory idempotent-braid resolution, `a^2-a, b^2-b,
-b*a*b-a*b*a`, stalled at internal degree 4 with single-letter names in native
-SBCL as well as Wasm. It is recorded separately as a backend limitation,
-not counted among successful resolution cases. The independent basis test
-for that presentation passes. See the diagnostic record and handoff for
-the [timeout evidence and reproduction paths](validation/resolution-limits.json).
-The safe-mode default native run times out after 15 seconds and Wasm after
-25 seconds. A direct legacy safe-mode session errors earlier; this diagnostic
-does not establish identical behavior in all modes.
+The idempotent-braid resolution, `a^2-a, b^2-b, b*a*b-a*b*a`, now terminates
+in native and Wasm default safe mode. Two original shortcuts mishandled
+mixed-degree monomials and complete tensor words; both are corrected in
+build copies. The new twenty-case matrix checks full differentials and uses
+an independent augmentation projector to prove higher Tor vanishes.
+See [BRAID-FIX.md](BRAID-FIX.md), [braid.json](validation/braid.json) and
+the [retained diagnostic history](validation/resolution-limits.json).
+Legacy preserves the original routines and its earlier safe-mode error.
+
 The console evaluates supplied Lisp forms and file-based jobs; it does not
 implement an interactive stdin dialogue across separate submissions. Use the
 presentation form for algebraic input. Console jobs also have a Stop button.

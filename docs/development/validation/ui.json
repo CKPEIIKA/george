@@ -3,14 +3,14 @@
   "mounts": [
     {
       "mount": "/",
-      "requests": 60,
+      "requests": 76,
       "mathjaxSVGs": 38,
       "badResponses": [],
       "diagnostics": []
     },
     {
       "mount": "/george/",
-      "requests": 158,
+      "requests": 174,
       "mathjaxSVGs": 38,
       "badResponses": [],
       "diagnostics": []
@@ -131,10 +131,10 @@
   "checks": [
     "/: explicit light/dark override OS; automatic follows OS",
     "/: EN/RU controls, status, guide; state/files preserved; preferences persist; MathJax retypesets",
-    "/: overlapping/underscore names; two colliding compact chains retained; exact homology and whole-token rendering",
+    "/: overlapping/underscore names; two colliding compact chains retained; braid resolution; weighted cutoff certification; exact homology and whole-token rendering",
     "/george/: explicit light/dark override OS; automatic follows OS",
     "/george/: EN/RU controls, status, guide; state/files preserved; preferences persist; MathJax retypesets",
-    "/george/: overlapping/underscore names; two colliding compact chains retained; exact homology and whole-token rendering",
+    "/george/: overlapping/underscore names; two colliding compact chains retained; braid resolution; weighted cutoff certification; exact homology and whole-token rendering",
     "project path: all eight guide buttons compute; reference equality and ungraded ranks; MIME/downloads; mobile; edited preset persists",
     "blocked storage: browser language detected; preferences and computation work"
   ],

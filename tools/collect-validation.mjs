@@ -16,6 +16,7 @@ const sources={
  'ocaml-references.json':`${root}/ocaml/references.json`,
  'ui.json':`${root}/${latest('ui-')}/report.json`,
  'resolution-names.json':`${root}/${latest('resolution-names-')}/report.json`,
+ 'braid.json':`${root}/${latest('braid-')}/report.json`,
  'resolution-limits.json':`${root}/anick-braid-diagnostic/record.json`,
 };
 // The native-browser report has the same prefix as the UI report.
@@ -30,6 +31,9 @@ assert.equal(data['algebra.json'].length,51);
 assert.equal(data['form-examples.json'].length,14);
 assert.equal(data['original-extra.json'].length,20);
 assert.equal(data['resolution-names.json'].length,20);
+assert.equal(data['braid.json'].length,20);
+assert.ok(data['braid.json'].every(c=>c.nativeEquality && c.augmentationModuleProjective));
+assert.equal(data['resolution-limits.json'].status,'resolved');
 assert.ok(data['resolution-names.json'].every(c=>c.nativeEquality && c.renamingEquality));
 assert.equal(data['ui.json'].examples.length,8);
 assert.deepEqual(data['ui.json'].mounts.map(m=>m.mount),['/','/george/']);
@@ -41,14 +45,16 @@ const browserFiles=['web/src/app.js','web/src/engine.js','web/src/bergman-syntax
 const algebra=data['algebra.json'];
 const unitLog=fs.readFileSync(`${root}/unit-tests.log`,'utf8');
 const unitTests=Number(/tests (\d+)/.exec(unitLog)[1]);
-assert.ok(unitTests>=40,'The actual unit assertions must run, not just test-file processes.');
+assert.ok(unitTests>=41,'The actual unit assertions, including weighted homology certification, must run, not just test-file processes.');
 assert.match(unitLog,/fail 0\b/);
 const summary={date:new Date().toISOString(),sources,unitTests:Number(/tests (\d+)/.exec(fs.readFileSync(`${root}/unit-tests.log`,'utf8'))[1]),
  historicalOutputsPerMode:37,extraSessions:20,expectedInvalidBackup:1,formPresets:14,ocamlUpstreamAliases:24,
  basisCases:algebra.filter(c=>c.basisSize!==undefined).length,criticalAmbiguities:algebra.reduce((s,c)=>s+(c.ambiguities||0),0),
  resolutionCases:algebra.filter(c=>c.homology).length,differentialIdentities:algebra.reduce((s,c)=>s+(c.identities||0),0),
  longerNameCases:data['resolution-names.json'].length,longerNameDifferentialIdentities:data['resolution-names.json'].reduce((s,c)=>s+c.identities,0),
- longerNameAmbiguities:data['resolution-names.json'].reduce((s,c)=>s+c.ambiguities,0),unresolvedResolutionCases:1,
+ longerNameAmbiguities:data['resolution-names.json'].reduce((s,c)=>s+c.ambiguities,0),
+ braidCases:data['braid.json'].length,braidDifferentialIdentities:data['braid.json'].reduce((s,c)=>s+c.identities,0),
+ braidAmbiguities:data['braid.json'].reduce((s,c)=>s+c.ambiguities,0),unresolvedResolutionCases:0,
  guidedExamples:data['ui.json'].examples.length,staticMounts:data['ui.json'].mounts.map(m=>m.mount),localMathJax:'4.1.3',
  browserSourceHashes:Object.fromEntries(browserFiles.map(p=>[p,sha(p)])),
  vendorTreeHash:crypto.createHash('sha256').update(walk('vendor/bergman-1.001').map(p=>`${p} ${sha(p)}\n`).join('')).digest('hex')};

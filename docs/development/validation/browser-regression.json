@@ -4,18 +4,18 @@
     {
       "legacy": true,
       "outputs": 37,
-      "computationMs": 6283.899999991059,
-      "totalMs": 7877.70000000298,
+      "computationMs": 5059.4000000059605,
+      "totalMs": 6130.79999999702,
       "memoryBytes": 67108864,
-      "ticks": 393
+      "ticks": 306
     },
     {
       "legacy": false,
       "outputs": 37,
-      "computationMs": 5121.70000000298,
-      "totalMs": 6244.100000008941,
+      "computationMs": 5031.70000000298,
+      "totalMs": 6031.5,
       "memoryBytes": 67108864,
-      "ticks": 312
+      "ticks": 302
     }
   ]
 }

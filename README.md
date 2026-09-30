@@ -76,7 +76,8 @@ and results are compared with a native SBCL build, Bergman 2 and Singular
 **Legacy mode**
 : `(SETLEGACYMODE T)` or the checkbox reproduces bergman 1.001 exactly. The
   default mode applies documented fixes: the Poincaré–Betti file,
-  nonhomogeneous reduction and the item-wise degree limit.
+  nonhomogeneous reduction, the item-wise degree limit and safe-mode Anick
+  tensor ordering.
 
 **Anick**
 : Augmentation *graded* (x ↦ 0) or *monoid* (x ↦ 1). Ungraded Betti numbers
@@ -99,6 +100,7 @@ and results are compared with a native SBCL build, Bergman 2 and Singular
 | `npm run test:ocaml` | Bergman 2 aliases and references |
 | `npm run test:algebra` | Singular, critical pairs, Hilbert dimensions |
 | `npm run test:resolution:names` | long generator names, differentials |
+| `npm run test:braid` | native/Wasm braid resolutions, full differentials, projectivity and weighted bounds |
 | `npm run test:browser`, `test:browser:regression` | Chromium suites |
 | `npm run test:ui` | guide, EN/RU, themes, MathJax, `/george/` path |
 

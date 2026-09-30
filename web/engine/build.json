@@ -4,12 +4,12 @@
   "emscripten": "4.0.12",
   "files": {
     "ecl.data": {
-      "bytes": 2994821,
-      "sha256": "579f2d1601cd2cdb6afa85a57cec6737d1f291f2aab3937efaad93ceb4a0ed44"
+      "bytes": 3003445,
+      "sha256": "f65ec9a54f2468d8f65db0f12437b4c62eda99de0402909828aa9919dc98aef8"
     },
     "ecl.js": {
-      "bytes": 108367,
-      "sha256": "6faf178a983920892177f014380bfc124c964d537577fd595941129750ac9f55"
+      "bytes": 108258,
+      "sha256": "a31eef81dfaa453e633b44121cc09a3a3dd47246c07803c8ab6e218e00c8169e"
     },
     "ecl.wasm": {
       "bytes": 4617578,

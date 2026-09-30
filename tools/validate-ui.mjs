@@ -93,25 +93,34 @@ try {
     assert.equal(await page.locator('#view-guide').isVisible(), true);
     assert.equal(new URL(page.url()).hash, '#guide-options');
     for (const item of [
-      { vars: 'a, ab, bc, c', rels: 'a*bc-a, ab*c-ab', augmentation: 'graded', betti: [1, 2, 0], names: ['ab', 'bc'] },
-      { vars: 'x_1, x_11', rels: 'x_1^2-1', augmentation: 'monoid', betti: [1, 1, 0], names: ['x_1', 'x_11'] }
+      { vars: 'a, ab, bc, c', rels: 'a*bc-a, ab*c-ab', augmentation: 'graded', betti: [1, 2, 0], names: ['ab', 'bc'], collision: true },
+      { vars: 'x_1, x_11', rels: 'x_1^2-1', augmentation: 'monoid', betti: [1, 1, 0], names: ['x_1', 'x_11'] },
+      { vars: 'a, aa', rels: 'a^2-a,aa^2-aa,aa*a*aa-a*aa*a', augmentation: 'graded', betti: [1, 0, 0], names: ['a', 'aa'] },
+      { vars: 'x_1, x_11', rels: 'x_1^2-x_1,x_11^2-x_11,x_11*x_1*x_11-x_1*x_11*x_1', augmentation: 'monoid', betti: [1, 0, 0], names: ['x_1', 'x_11'], weights: '2 3', maxdeg: 18 }
     ]) {
       await page.goto(url + '#compute');
       await page.locator('#preset').selectOption('tutorial:nonhomogeneous');
       await page.locator('#vars').fill(item.vars);
       await page.locator('#rels').fill(item.rels);
-      await page.locator('#maxdeg').fill('8');
+      await page.locator('#maxdeg').fill(String(item.maxdeg || 8));
       await page.locator('details.advanced').evaluate(el => el.open = true);
+      await page.locator('#weights').fill(item.weights || '');
       await page.locator('#augmentation').selectOption(item.augmentation);
       await compute(page);
       const files = await rawFiles(page);
       assert.ok(files['resolution.jsonl']);
-      assert.deepEqual(JSON.parse(files['homology.json']).betti.slice(0, 3), item.betti);
+      const homology = JSON.parse(files['homology.json']);
+      assert.deepEqual(homology.betti.slice(0, 3), item.betti);
+      if (item.weights) {
+        assert.equal(homology.highestCertifiedDegree, 2);
+        assert.ok(homology.truncatedBetti);
+        assert.match(await page.locator('#bettiOut').innerText(), /only through degree 2|только до степени 2/);
+      }
       const renderedNames = await page.locator('#resolutionOut var').allTextContents();
       for (const name of item.names) assert.ok(renderedNames.includes(name), `whole generator token ${name}`);
-      if (item.augmentation === 'graded') assert.equal(await page.locator('#resolutionOut section').nth(1).locator('.tensor-line').count(), 2);
+      if (item.collision) assert.equal(await page.locator('#resolutionOut section').nth(1).locator('.tensor-line').count(), 2);
     }
-    report.checks.push(`${mount}: overlapping/underscore names; two colliding compact chains retained; exact homology and whole-token rendering`);
+    report.checks.push(`${mount}: overlapping/underscore names; two colliding compact chains retained; braid resolution; weighted cutoff certification; exact homology and whole-token rendering`);
     if (mount === '/george/') {
       for (const item of TUTORIALS) {
         await page.goto(url + '#guide-examples'); await ready(page); await mathReady(page);
