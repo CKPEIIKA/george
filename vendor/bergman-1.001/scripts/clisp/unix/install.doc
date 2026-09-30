@@ -1,0 +1,58 @@
+I. Check your CLISP
+
+You should have CLISP installed. The necessary version is
+2.39 of 2006-07-16 or a newer one.
+
+At the terminal window, try to issue the command
+  clisp
+  
+If CLISP starts, issue the command:
+  (lisp-implementation-version)
+The result should be like this:    
+  [1]> (lisp-implementation-version)
+  "2.39 (2006-07-16) (built on stnt067 [192.168.0.1])"
+  [2]>_
+
+Then enter
+  (quit)
+to terminate the CLISP session.  
+
+If CLISP does not start, ask you system administrator to get 
+the newest CLISP from 
+  http://clisp.sourceforge.net/ 
+and to install it globally for all users.
+
+II. Automatic installation
+
+If CLISP is installed and the version is new enough, change to 
+the directory <bergman-root-dir>/scripts/clisp/unix and issue a command:
+  ./mkbergman -auto
+for an automatic installation.
+
+If you issue a command
+  ./mkbergman -auto -i
+you will be informed on each automatically found installation
+parameter and can change its value at necessity. (-i is for
+interaction.)
+
+III. Manual installation
+
+The manual installation is used mainly by developers in non-standard
+situations.
+
+The syntax of the installation command is:
+  ./mkbergman <clisp-dir> <bergman-root-dir> <lisp-executable-file-name>
+and you can omit the 3rd parameter, or the 2nd and the 3rd parameters. 
+Omitted parameters will be found automatically.
+
+To find <clisp-dir> and <lisp-executable-file-name>, issue the command:
+  which clisp
+You will see something like:
+  /usr/local/bin/clisp
+Then 
+  <clisp-dir> = /usr/local/bin
+  <lisp-executable-file-name> = clisp
+
+IV. Log file
+
+  Log of installation is <bergman-root-dir>/logs/clunix.log.  

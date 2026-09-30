@@ -1,0 +1,22 @@
+D(0, x)=1.x
+D(0, y)=1.y
+D(1, xy)=x.y
+D(1, yy)=y.y+y.x+x.x
+D(1, xx^2)=x.x^2
+D(2, xyy)=xy.y+xy.x+xx^2.1
+D(2, yyy)=yy.y+yy.x-xx^2.1
+D(2, xx^2x)=xx^2.x
+D(2, xx^2y)=xx^2.y
+D(3, xyyy)=xyy.y+xyy.x-xx^2y.1-xx^2x.1
+D(3, yyyy)=yyy.y+yyy.x+xx^2y.1+xx^2x.1
+B(1,1)=2
+B(2,2)=2
+B(3,3)=1
+B(3,4)=1
+B(4,4)=1
+    0   1   2   3   4
+  +------------------
+0 | 1   2   2   1   1
+1 | -   -   -   1
+2 | -   -   -
+3 | -   -

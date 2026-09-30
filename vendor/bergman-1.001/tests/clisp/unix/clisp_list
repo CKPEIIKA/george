@@ -1,0 +1,264 @@
+%(setq default_settings  (getsetup))
+%test1 Simple commutative
+(terpri)
+(prin2 "NEW TEST 1:simple commutative ")
+(terpri)
+(prin2 "simple commutative ")
+(simple "../../test_bergman/simple_c" "../../test_bergman/clisp/simple_c.gb")
+(clearring)
+
+
+
+%test2 Simple noncommutative
+(terpri)
+(prin2 "NEW TEST 2:simple noncommutative")
+(simple "../../test_bergman/simple_nc" "../../test_bergman/clisp/simple_nc.gb")
+(clearring)
+
+%test3
+(terpri)
+(prin2 "NEW TEST 3:ncpbhgroebner")
+(ncpbhgroebner "../../test_bergman/ncpbhg" "../../test_bergman/clisp/ncpbhg.gb" "../../test_bergman/clisp/ncpbhg.pb" "../../test_bergman/clisp/ncpbhg.hs" )
+(clearring)
+%(setsetup default_settings)
+
+%test4 Commutative HS
+(terpri)
+(prin2 "NEW TEST 4:Commutative Hilbert series")
+(load hseries)
+(hilbert "../../test_bergman/hilb" "../../test_bergman/clisp/hilb.gb"  "../../test_bergman/clisp/hilb.hs" )
+(clearring)
+%(setsetup default_settings)
+
+%test5 Hs interrupt strategy: commutative
+(terpri)
+(prin2 "NEW TEST 5: Hilbert series interrupt strategy: commutative")
+(setinterruptstrategy minhilblimits)
+(sethseriesminima 1 3 3 1 )
+(simple "../../test_bergman/interrupt_c" "../../test_bergman/clisp/interrupt_c.gb")
+(clearring)
+(setinterruptstrategy ordinary)
+%(setsetup default_settings)
+
+%test6  Weights handling: commutative
+(terpri)
+(prin2 "NEW TEST 6: Weights handling: commutative")
+(simple "../../test_bergman/simp_weight_c" "../../test_bergman/clisp/simp_weight_c.gb")
+(clearweights)
+(clearring)
+%(setsetup default_settings)
+
+
+%test7  Weights handling: non-commutative
+(terpri)
+(prin2 "NEW TEST 7: Weights handling: non-commutative")
+(simple "../../test_bergman/simp_weight_nc" "../../test_bergman/clisp/simp_weight_nc.gb")
+(clearweights)
+(clearring)
+%(setsetup default_settings)
+
+
+%test8 Eliminating ordering: Groebner basis.
+(terpri)
+(prin2 "NEW TEST 8: Eliminating ordering: Groebner basis")
+(simple "../../test_bergman/simple_el" "../../test_bergman/clisp/simple_el.gb")
+(noelim)
+(clearring)
+%(setsetup default_settings)
+
+%test9
+(terpri)
+(prin2 "NEW TEST 9: modulehseries")
+(modulehseries "../../test_bergman/modhs.1"  "../../test_bergman/modhs.2" "../../test_bergman/clisp/modhs.gb" "../../test_bergman/clisp/modhs.hs")
+(clearring)
+%(setsetup default_settings)
+
+
+%test10 Anick for trivial module
+(terpri)
+(prin2 "NEW TEST 10: Anick trivial")
+(setq anickresolutionoutputfile "../../test_bergman/clisp/anick_tm.out")
+(anick "../../test_bergman/anick_tm" "../../test_bergman/clisp/anick_tm.res")
+(calculateanickresolutiontolimit (getmaxdeg))
+(anickdisplay)
+(clearring)
+%(setsetup default_settings)
+
+%test11 Modulebettinumbers
+(terpri)
+(prin2 "NEW TEST 11: Modulebettinumbers")
+(setq anickresolutionoutputfile "../../test_bergman/clisp/modbtn.out")
+(modulebettinumbers "../../test_bergman/modbtn" "../../test_bergman/clisp/modbtn.res")
+(calculateanickresolutiontolimit (getmaxdeg))
+(anickdisplay)
+(clearring)
+%(setsetup default_settings)
+
+%test12 Factor-algebra Betti numbers
+(terpri)
+(prin2 "NEW TEST 12: Factor-algebra ")
+(setq anickresolutionoutputfile "../../test_bergman/clisp/fact.out")
+(factalgbettinumbers "../../test_bergman/fact" "../../test_bergman/clisp/fact.res")
+(calculateanickresolutiontolimit (getmaxdeg))
+(anickdisplay)
+(clearring)
+%(setsetup default_settings)
+
+
+%test13 Two modules Betti numbers
+(terpri)
+(prin2 "NEW TEST 13: Betti numbers for two modules")
+(setq anickresolutionoutputfile "../../test_bergman/clisp/two.out")
+(twomodbettinumbers "../../test_bergman/two" "../../test_bergman/clisp/two.res")
+(calculateanickresolutiontolimit (getmaxdeg))
+(anickdisplay)
+(clearring)
+%(setsetup default_settings)
+
+%test14 Two modules Betti numbers: hochschild
+(terpri)
+(prin2 "NEW TEST 14: Betti numbers for two modules: hochschild")
+(setq anickresolutionoutputfile "../../test_bergman/clisp/hoch.out")
+(twomodbettinumbers "../../test_bergman/hochschild" "../../test_bergman/clisp/hoch.res")
+(calculateanickresolutiontolimit (getmaxdeg))
+(anickdisplay)
+(clearring)
+%(setsetup default_settings)
+
+
+
+%test15 Hochschild
+(terpri)
+(prin2 "NEW TEST 15: Hochschild homology")
+(setq anickresolutionoutputfile "../../test_bergman/clisp/hoch1.out")
+(hochschild "../../test_bergman/hochschild1" "../../test_bergman/clisp/hoch1.res")
+(calculateanickresolutiontolimit (getmaxdeg))
+(anickdisplay)
+(clearring)
+%(setsetup default_settings)
+
+%test16 Simple noncommutative char2
+(terpri)
+(prin2 "NEW TEST 16: simple noncommutative char2 ")
+(simple "../../test_bergman/char2" "../../test_bergman/clisp/char2.gb")
+(clearring)
+%(setsetup default_settings)
+
+%test17 Simple noncommutative char5
+(terpri)
+(prin2 "NEW TEST 17: simple noncommutative char5 ")
+(simple "../../test_bergman/char5" "../../test_bergman/clisp/char5.gb")
+(clearring)
+%(setsetup default_settings)
+
+
+%test18 Simple with modlogarithms
+(terpri)
+(prin2 "NEW TEST 18: simple with modlogarithms")
+(simple "../../test_bergman/modlog" "../../test_bergman/clisp/modlog.gb")
+(clearring)
+(setoddprimesmoduli ordinary)
+(setmodulus 0)
+%(setsetup default_settings)
+
+%test19 Leftmodulebettinumbers
+(terpri)
+(prin2 "NEW TEST 19: Leftmodulebettinumbers")
+(load hseries)
+(setresolutiontype anick)
+(setq anickresolutionoutputfile "../../test_bergman/clisp/leftmodbtn.out")
+(leftmodulebettinumbers "../../test_bergman/leftmodbtn" "../../test_bergman/clisp/leftmodbtn.res")
+(calculateanickresolutiontolimit (getmaxdeg))
+(anickdisplay)
+(setnoresolution)
+(clearring)
+%(setsetup default_settings)
+
+
+%test20 Rabbit with setrabbit
+(terpri)
+(prin2 "NEW TEST 20: Rabbit with setrabbit")
+(rabbit "../../test_bergman/rabb_set" "../../test_bergman/clisp/rabbit_set.res")
+(clearring)
+(deglexify)
+%(setsetup default_settings)
+
+%test21 Skipcdeg
+(terpri)
+(prin2 "NEW TEST 21: Skipcdeg - test N1")
+(setinterruptstrategy minhilblimits)
+(sethseriesminima skipcdeg skipcdeg skipcdeg skipcdeg skipcdeg skipcdeg )
+(simple "../../test_bergman/skipcdeg1" "../../test_bergman/clisp/skipcdeg1.gb")
+(clearring)
+%(setsetup default_settings)
+
+
+%test22 Ignorecdeg
+(terpri)
+(prin2 "NEW TEST 22:Ignorecdeg")
+(setinterruptstrategy minhilblimits)
+(sethseriesminima ignorecdeg ignorecdeg ignorecdeg)
+(simple "../../test_bergman/skipcdeg2" "../../test_bergman/clisp/skipcdeg2.gb")
+(setinterruptstrategy ordinary)
+(clearring)
+%(setsetup default_settings)
+
+
+
+
+
+%test23 Matrix ordering
+(terpri)
+(prin2 "NEW TEST 23: Matrix ordering")
+(setweights 1 2 1)
+(setordermatrix  ((1 2 1) (0 -1 1) (3 -2 2)))
+(simple "../../test_bergman/matrix" "../../test_bergman/clisp/matrix.gb")
+(clearring)
+(clearweights)
+%(setsetup default_settings)
+
+
+%test24 Testindata
+(terpri)
+(prin2 "NEW TEST 24: Test input data")
+(dskin "../../test_bergman/testindata")
+(clearring)
+
+%test25 Linear relations (commutative)
+(terpri)
+(prin2 "NEW TEST 25:Linear relations")
+(commify)
+(SETSAFELOWTERMSHANDLING)
+(simple "../../test_bergman/lin"  "../../test_bergman/clisp/lin.res")
+(clearring)
+%(setsetup default_settings)
+
+
+%test26 Linear relations (non-commutative)
+(terpri)
+(prin2 "NEW TEST 26:Linear relations - non-commutative")
+(noncommify)
+(SETSAFELOWTERMSHANDLING)
+(simple "../../test_bergman/lin_nc"  "../../test_bergman/clisp/lin_nc.res")
+(clearring)
+%(setsetup default_settings)
+
+
+%test27 Minimal resolution
+(terpri)
+(prin2 "NEW TEST 27: Minimal resolution")
+(setweights 1 1 1 1 )
+(minr "../../test_bergman/minr_in1" "../../test_bergman/minr_in2" "../../test_bergman/clisp/minr.res")
+(clearring)
+(clearweights)
+
+(terpri)
+(prin2 "Last test finished")
+
+(quit)
+
+
+%Last test finished
+
+%Starting  logfiles comparison (in runtest)
+

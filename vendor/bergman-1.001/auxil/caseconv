@@ -1,0 +1,218 @@
+#!/bin/csh
+################################################################
+## Copyright (C) 1998,1999 Joergen Backelin
+##
+## Bergman is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY.  No author or distributor
+## accepts responsibility to anyone for the consequences of using it
+## or for whether it serves any particular purpose or works at all,
+## unless (s)he says so in writing.  Refer to the Bergman General
+## Public License for full details.
+
+## Everyone is granted permission to copy, modify and redistribute
+## bergman, but only under the conditions described in the
+## Bergman General Public License.   A copy of this license is
+## supposed to have been given to you along with bergman so you
+## can know your rights and responsibilities.  It should be in a
+## file named copyright.  Among other things, the copyright notice
+## and this notice must be preserved on all copies.
+################################################################
+
+#  This might be called from a shell where the bergman
+# environment variables are set. Alternatively:
+#source ../bin/$MACHINE/shellenv #or something
+
+#  However, the machine type is relevant only for the conv
+# variant to employ. Thus in this variant all relevant stuff simply
+# should be given as five arguments, in the following order:
+# src, auxil, xsrc, xauxil, conv.
+
+#	CHANGES:
+
+# 2001-08-17: Added *version files./JoeB
+
+# 2000-08-11: Added fv* and version files./JoeB
+
+# 1999-11-26: Corrected -nt file compare test to -ot.
+
+if ($#argv != 5) then
+  echo wrong number of arguments to caseconv\; should be 5, is $#argv
+  exit
+endif
+
+if ( ! ( -d $1)) then
+  echo \ The argument $1 to caseconv should have been a directory,
+  echo the original bergman source directory.
+  exit
+endif
+
+if ( ! ( -d $2)) then
+  echo \ The argument $2 to caseconv should have been a directory,
+  echo the original bergman auxiliary files directory.
+  exit
+endif
+
+if ( ! ( -d $3 || { mkdir $3 } )) then
+  echo \ The argument $3 to caseconv should have been a directory,
+  echo or have been possible to create as a new directory,
+  echo the switched cases bergman source directory.
+  exit
+endif
+
+if ( ! ( -d $4 || { mkdir $4 } )) then
+  echo \ The argument $4 to caseconv should have been a directory,
+  echo or have been possible to create as a new directory,
+  echo the switched cases bergman auxiliary files directory.
+  exit
+endif
+
+# We also should have the rights to make subdirectories and write
+# on the catalogues 3 and 4. For the purpose, I create temporary
+# directories Tstwrpr.tmp. If this doesn't work, then we exit with
+# an error message.
+
+# In theory, one reason for failure could be the user having created
+# a file or a directory with this name. However, the use of permanent
+# "tmp" files is not recommended ... .
+
+if ( ! { mkdir $3/Tstwrpr.tmp } ) then
+  echo \ I could not write Tstwrpr.tmp on $3, whence I exit
+  echo Check your write access and try again
+  exit
+endif
+rmdir $3/Tstwrpr.tmp
+
+if ( ! { mkdir $4/Tstwrpr.tmp } ) then
+  echo \ I could not write Tstwrpr.tmp on $4, whence I exit
+  echo Check your write access and try again
+  exit
+endif
+rmdir $4/Tstwrpr.tmp
+
+# Here or earlier a compilation of "conv", the converter
+# command to be used below in order to create the case
+# converted source files, should be performed (if necessary?)
+# Or, compiled converter could be provided as standards,
+# together with the source file for emergencies and extensions.
+#  Right now, I just assume the converter to exist.
+
+if ( ! ( -x $5)) then
+  echo \ The argument $5 to caseconv should have been an
+  echo executable file, the compiled case converter.
+  exit
+endif
+
+#  We also should check whether or not execution of $5
+# seems to work. The following is crude, but at least
+# detects a few errors:
+
+cat <<EOCAT >$3/Tstwrpr.tmp
+% A minor test file
+(COND ((COULD this Work?) T))
+EOCAT
+$5 $3/Tstwrpr.tmp $4/Tstwrpr.tmp
+if ( ! ( -f $4/Tstwrpr.tmp )) then
+  echo \ Although $5 is an executable file, it does not
+  echo seem to work in this context. Check if it is of
+  echo the right architecture.
+  exit
+endif
+rm -f $3/Tstwrpr.tmp $4/Tstwrpr.tmp
+
+#  The first four arguments now are intelligible as directory
+# names, as viewed from the present directory. However, we
+# need to move around, and still find our way. Thus, let's
+# define temporary variables, containing the full pathnames of
+# the directories! This we do without use of pushd/popd, in
+# order to suppress excess diagnostics printing.
+
+setenv tmphere $cwd
+cd $1; setenv tmpsrc $cwd; cd $tmphere
+cd $2; setenv tmpauxil $cwd; cd $tmphere
+cd $3; setenv tmpxsrc $cwd; cd $tmphere
+cd $4; setenv tmpxauxil $cwd; cd $tmphere
+
+#### However, we still may have the problem with $5. The file
+#### might not be discernible from the other directories; and
+#### I do not see how to perform an expansion of its full
+#### pathname.
+
+#  Therefore, in this version I make a horrible amount of cd's,
+# just in order never to execute the converter file from a
+# place where it might not be found.
+
+setenv tmpconv $5
+
+# Here a make kind of update hopefully is performed:
+# If some of the relevant source files are newer than their
+# case converted counterparts, or such counterparts do not
+# exist, then new conversion counterparts should be created.
+
+#  src files conversions --> xsrc:
+cd $tmpsrc
+foreach srcfl (*.sl redif.red)
+if ( ! ( -e $tmpxsrc/$srcfl && { test $srcfl -ot $tmpxsrc/$srcfl } )) then
+  rm -f $tmpxsrc/$srcfl
+  cd $tmphere
+  $tmpconv $tmpsrc/$srcfl $tmpxsrc/$srcfl
+  cd $tmpsrc
+endif
+end
+
+# if ( -f redif.red ) then
+#   rm -f $tmpxsrc/redif.red
+#   cd $tmphere
+#   $tmpconv $tmpsrc/redif.red $tmpxsrc/redif.red
+#   cd $tmpsrc
+# endif
+
+
+if ( -d stg ) then
+cd stg
+if ( ! ( -d $tmpxsrc/stg)) mkdir $tmpxsrc/stg
+foreach srcfl (*.sl)
+if ( ! ( -e $tmpxsrc/stg/$srcfl && { test $srcfl -ot $tmpxsrc/stg/$srcfl } )) then
+  rm -f $tmpxsrc/stg/$srcfl
+  cd $tmphere
+  $tmpconv $tmpsrc/stg/$srcfl $tmpxsrc/stg/$srcfl
+  cd $tmpsrc/stg
+endif
+end
+cd $tmpsrc
+endif
+
+if ( -d anick ) then
+cd anick
+if ( ! ( -d $tmpxsrc/anick)) mkdir $tmpxsrc/anick
+foreach srcfl (*.sl)
+if ( ! ( -e $tmpxsrc/anick/$srcfl && { test $srcfl -ot $tmpxsrc/anick/$srcfl } )) then
+  rm -f $tmpxsrc/anick/$srcfl
+  cd $tmphere
+  $tmpconv $tmpsrc/anick/$srcfl $tmpxsrc/anick/$srcfl
+  cd $tmpsrc
+endif
+end
+cd $tmpsrc/anick
+endif
+
+#  auxil files conversions --> xauxil:
+cd $tmpauxil
+foreach srcfl (*.sl)
+if ( ! ( -e $tmpxauxil/$srcfl && { test $srcfl -ot $tmpxauxil/$srcfl } )) then
+  rm -f $tmpxauxil/$srcfl
+  cd $tmphere
+  $tmpconv $tmpauxil/$srcfl $tmpxauxil/$srcfl
+  cd $tmpauxil
+endif
+end
+
+cd $tmpxauxil
+rm -f envtail* head* hook* fv* *version
+cd $tmpauxil
+cp -p envtail* head* hook* fv* *version $tmpxauxil
+
+if ( -f caseconv ) cp -p caseconv $tmpxauxil
+
+cd $tmphere
+
+$tmpconv $tmpauxil/mkprimefile $tmpxauxil/mkprimefile

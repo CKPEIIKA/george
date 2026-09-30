@@ -1,0 +1,5 @@
+(ELIMORDER)
+(SETMAXDEG 10)
+(ALGFORMINPUT)
+vars x,y,t;
+x^3-y*t*y;

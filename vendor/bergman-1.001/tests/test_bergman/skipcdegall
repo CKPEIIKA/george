@@ -1,0 +1,35 @@
+(noncommify)
+(setmaxdeg 10)
+(algforminput)
+vars x,y; 
+x*x, 
+x*y-y*y,
+-y^2+x*y,
+-y*x*y+x^2*y,
+-y*x^2*y+x^3*y,
+-y*x^3*y+x^4*y;
+   
+(setinterruptstrategy minhilblimits)
+(sethseriesminima skipcdeg skipcdeg skipcdeg skipcdeg skipcdeg skipcdeg )
+----------------------------------------------------------------------------
+(noncommify)
+(setmaxdeg 10)
+(algforminput)
+vars x,y; 
+x*y-y*y,
+-y^2+x*y,
+-y*x*y+x^2*y,
+-y*x^2*y+x^3*y,
+-y*x^3*y+x^4*y;
+
+
+
+
+(sethseriesminima ignorecdeg ignorecdeg ignorecdeg)
+--------------------------------------------------------------------------
+(setinterruptstrategy minhilblimits)
+(sethseriesminima skipcdeg skipcdeg skipcdeg skipcdeg)
+(noncommify)
+(setmaxdeg 10)
+(algforminput)
+vars x,y; x^2-y^2,x*y;

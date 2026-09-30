@@ -1,0 +1,34 @@
+1,2c1,2
+< Loading image file :/home/guests/sveta/b983/bin/Linux_elf/bergman.img 
+< Bergman 0.982,  8-Oct-20
+---
+> Loading image file :/pkgcommon/bergman/0.97/bin/Linux_elf/bergman0.97.img 
+> Bergman 0.97, 26-Sep-20
+4,16c4,16
+< 2 lisp> ***** `!S!A!F!E' load module not found
+< Break loop
+< 3 lisp break (1) > ***** `vars' is an unbound ID
+< ***** Continuable error: retry form is `vars'
+< Break loop
+< !S!A!F!E
+< ***** `(unquote z;)' is not within backquote.
+< ***** Continuable error: retry form is `(unquote z;)'
+< Break loop
+< ***** `x*x-z*z;' is an unbound ID
+< ***** Continuable error: retry form is `x*x-z*z;'
+< Break loop
+< 7 lisp break (4) > 
+---
+> 2 lisp> algebraic form input> SetupGlobals
+>  ... done
+> RABBIT: Added step, Maxdegree=4
+>  Jump number 1
+> 
+> Calculation was stopped by maxdeg limitations
+> GB may be different
+> Rabbit has finishied jumping GB is 
+> -z^2+x^2,
+>    -z*x^2+x^2*z,
+>    
+> nil
+> 3 lisp> 

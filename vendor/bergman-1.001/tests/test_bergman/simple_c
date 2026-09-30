@@ -1,0 +1,4 @@
+(COMMIFY)
+(ALGFORMINPUT)
+vars x,y;
+5*x*y, x*x-y*y;

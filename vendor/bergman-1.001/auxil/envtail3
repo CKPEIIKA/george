@@ -1,0 +1,10 @@
+setenv bmexe $bmroot/bin/$MACHINE
+setenv bmload $bmroot/lap/$MACHINE
+setenv bmsrc $bmroot/xsrc
+setenv bmauxil $bmroot/xauxil
+setenv bmshells $bmroot/shells/$MACHINE
+setenv bmmkdir $bmroot/scripts/$MACHINE
+setenv bmdomains $bmroot/domains
+setenv bmvers bergman`cat $bmauxil/version`
+setenv bmlog $bmroot/logs
+

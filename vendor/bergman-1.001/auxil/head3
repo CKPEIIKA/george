@@ -1,0 +1,5 @@
+#!/usr/bin/sh
+echo '* Am creating a new file '$4
+exec $psys/psl $* <<%EOP
+(OFF ECHO)
+

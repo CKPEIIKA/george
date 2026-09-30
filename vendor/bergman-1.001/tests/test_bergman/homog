@@ -1,0 +1,13 @@
+(commify)
+(purelexify)
+(setalgoutmode alg)
+%(algforminput)
+% vars x,y,z,t;
+% x^2-2, y^2-3, z^2-5, t-x-y-z;
+%(homogeniseinput)
+ %(groebnerinit)
+ %(groebnerkernel)
+ %(algforminput)
+ %vars x,y,z,t,f;
+ %;
+ %(bigoutput)

@@ -1,0 +1,12 @@
+1998-07: Replace the prompter bergman (with stag) ?
+-----------------------
+
+1998-07: Presently, s.a.w.s. mode involves irreversible
+re-definitions of the following procedures: (None???)
+
+-----------------------
+
+2000-08: MonOne now is replaced by (the general) MONONE.
+However, MkMonOne remains (defined in monomstg.sl).
+Either it should be moved to the general monomial
+interface, or it should be eliminated.

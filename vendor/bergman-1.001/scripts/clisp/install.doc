@@ -1,0 +1,45 @@
+If you read this file you probably had downloaded the Bergman package
+ and unpacked it in a directory which we will denote <bBergman-root-dir>.
+ This file is <bergman-root-dir>/scripts/clisp/install.doc.
+
+1. Common Lisp resources and installation -----------------------------
+
+First of all, you need Common Lisp installed at your machine.
+We are using free Common Lisp implementation called CLISP that can be
+found at 
+  http://www.clisp.org/
+or
+  http://clisp.sourceforge.net/
+The version should be 2.39 of 2006-07-16 or newer.
+
+If you want to know CLISP version, run CLISP (the command will be
+most probably
+  clisp
+) and then enter in the CLISP console
+  (lisp-implementation-version)
+You will see something like:     
+  [1]> (lisp-implementation-version)
+  "2.39 (2006-07-16) (built on stnt067 [192.168.0.1])"
+  [2]>_
+Then enter 
+  (quit)
+to terminate CLISP.
+
+In many cases, especially under UNIX, you are to contact your system
+administrator to install CLISP.
+
+If you do not find binaries for your platform, you should download sources
+and compile them.
+
+2. If you have Common Lisp already ---------------------------------------
+
+Change directory to <bergman-root-dir>/scripts/clisp/win9598nt if you have 
+MS Windows, or <bergman-root-dir>/scripts/clisp/unix if you work under one of 
+UNIXes (Linux, Solaris, etc.). You will find there a file named install.doc 
+with further instructions.
+
+We do not support installation under MS DOS. We had not tried installation 
+under MAC OS. 
+
+If you have any troubles or questions feel free to contact directly the
+developers of the CLISP bergman port at kae@math.md.

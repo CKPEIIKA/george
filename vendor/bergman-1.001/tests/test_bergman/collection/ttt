@@ -1,0 +1,42 @@
+1,2c1,2
+< Loading image file :/pkgcommon/bergman/0.97/bin/Linux_elf/bergman0.97.img 
+< Bergman 0.97, 26-Sep-20
+---
+> Loading image file :/home/guests/sveta/b983/bin/Linux_elf/bergman.img 
+> Bergman 0.982,  8-Oct-20
+4,30c4,10
+< 2 lisp> algebraic form input> SetupGlobals
+<  ... done
+< RABBIT: Added step, Maxdegree=4
+<  Jump number 1
+< 
+< RABBIT: Jump number 2
+< 
+< RABBIT: Jump number 3
+< 
+< RABBIT: Added step, Maxdegree=6
+<  Jump number 4
+< 
+< GB is completely calculated
+< Rabbit has finishied jumping GB is 
+< a*b-c,
+<    b^2-a^2,
+<    b*c-a,
+<    c*a-b,
+<    -c^2+a^2,
+<    a^3-c*b,
+<    -a^2*c+b*a,
+<    b*a^2-a*c,
+<    b*a*c-a*c*b,
+<    -c*b*a+a*c*b,
+<    
+< nil
+< 3 lisp> 
+---
+> 2 lisp> ***** `!S!A!F!E' load module not found
+> Break loop
+> 3 lisp break (1) > ***** `vars' is an unbound ID
+> ***** Continuable error: retry form is `vars'
+> Break loop
+> Bergman 0.982,  8-Oct-20
+> 1 lisp> 

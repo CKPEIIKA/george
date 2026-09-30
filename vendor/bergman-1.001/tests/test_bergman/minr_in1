@@ -1,0 +1,4 @@
+(setmaxdeg 8)
+(setq nmodgen 1)
+(algforminput)
+vars x,y,z,a;x*y, y*x+z*z,x*x*z;

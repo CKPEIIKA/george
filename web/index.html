@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>George</title>
+<meta name="description" content="George computes Gröbner bases, Hilbert series, Anick resolutions and Betti numbers for noncommutative and commutative algebras, by running the original bergman in your browser.">
+<meta name="theme-color" content="#eef2f3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#111a27" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Cpath d=%22M16 3 29 16 16 29 3 16Z%22 fill=%22%23ffe45c%22 stroke=%22%231b2a4a%22 stroke-width=%222.5%22/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+<script type="module" src="src/app.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top">
+  <a class="brand" href="#compute" aria-label="George, based on bergman">
+    <span class="brand-name">George</span>
+    <span class="brand-sub">based on bergman</span>
+  </a>
+  <nav class="views" aria-label="Views">
+    <a href="#compute" data-view="compute">Compute</a>
+    <a href="#console" data-view="console">Console</a>
+    <a href="#about" data-view="about">About</a>
+  </nav>
+</header>
+
+<p class="engine-note" id="engineNote" role="status">
+  Loading bergman… Computations run locally in your browser.
+</p>
+
+<main id="main">
+
+<!-- ============================================================ compute -->
+<section class="view view-compute" id="view-compute" aria-labelledby="computeTitle">
+  <h1 class="visually-hidden" id="computeTitle">Compute</h1>
+
+  <div class="pane-switch" role="tablist" aria-label="Show">
+    <button role="tab" id="switchInput" aria-controls="presentation" aria-selected="true">Presentation</button>
+    <button role="tab" id="switchOutput" aria-controls="results" aria-selected="false">Results <span class="dot" id="resultsDot" hidden></span></button>
+  </div>
+
+  <form class="sheet presentation" id="presentation" novalidate autocomplete="off" spellcheck="false">
+
+    <div class="field-row start-row">
+      <label class="field grow">
+        <span class="label">Start from</span>
+        <select id="preset"></select>
+      </label>
+      <label class="field n-field" id="presetNField" hidden>
+        <span class="label"><var>n</var></span>
+        <input type="number" id="presetN" min="2" max="7" value="3" inputmode="numeric">
+      </label>
+    </div>
+
+    <fieldset class="block">
+      <legend>Algebra</legend>
+      <div class="seg" role="radiogroup" aria-label="Algebra">
+        <label><input type="radio" name="ring" value="noncomm" checked><span>Noncommutative</span></label>
+        <label><input type="radio" name="ring" value="comm"><span>Commutative</span></label>
+      </div>
+    </fieldset>
+
+    <fieldset class="block">
+      <legend>Generators</legend>
+      <input type="text" id="vars" class="code" value="x, y" aria-describedby="varsHint varsErr">
+      <p class="hint" id="varsHint">Separate names with commas. Names are case sensitive; their order sets the variable order.</p>
+      <p class="error" id="varsErr" hidden></p>
+      <div class="module-fields" id="moduleFields" hidden>
+        <label class="field" id="nmodgenField">
+          <span class="label">Module generators (the last ones listed)</span>
+          <input type="number" id="nmodgen" min="1" value="1" inputmode="numeric">
+        </label>
+        <div class="field-row" id="twoModFields" hidden>
+          <label class="field"><span class="label">Left module generators</span><input type="number" id="nlmodgen" min="1" value="1" inputmode="numeric"></label>
+          <label class="field"><span class="label">Right module generators</span><input type="number" id="nrmodgen" min="1" value="1" inputmode="numeric"></label>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset class="block">
+      <legend>Relations</legend>
+      <textarea id="rels" class="code" rows="4" aria-describedby="relsHint"></textarea>
+      <p class="hint" id="relsHint">One per line or separated by commas, with integer coefficients: <code>4*x*x-3*y*x</code>. Single-letter generators can be written together: <code>xyx-yxy</code>.</p>
+      <ol class="preview" id="relPreview" aria-label="Relations as read"></ol>
+    </fieldset>
+
+    <fieldset class="block">
+      <legend>Coefficients</legend>
+      <div class="field-row">
+        <div class="seg" role="radiogroup" aria-label="Coefficient field">
+          <label><input type="radio" name="field" value="0" checked><span>ℚ</span></label>
+          <label><input type="radio" name="field" value="2"><span>𝔽<sub>2</sub></span></label>
+          <label><input type="radio" name="field" value="p"><span>𝔽<sub><var>p</var></sub></span></label>
+        </div>
+        <label class="field p-field" id="pField" hidden>
+          <span class="label"><var>p</var> =</span>
+          <input type="number" id="modulus" min="3" value="5" inputmode="numeric">
+        </label>
+      </div>
+      <p class="error" id="pErr" hidden></p>
+    </fieldset>
+
+    <fieldset class="block">
+      <legend>Monomial order</legend>
+      <select id="order" aria-label="Monomial order"></select>
+      <label class="check"><input type="checkbox" id="reverseVars"><span>Reverse the variable order</span></label>
+      <label class="field" id="matrixField" hidden>
+        <span class="label">Order matrix, one row per line</span>
+        <textarea id="matrix" class="code" rows="3">1 2 1
+0 -1 1
+3 -2 2</textarea>
+      </label>
+    </fieldset>
+
+    <fieldset class="block">
+      <legend>Degrees</legend>
+      <div class="field-row">
+        <label class="field">
+          <span class="label">Maximal degree</span>
+          <input type="number" id="maxdeg" min="1" placeholder="none" inputmode="numeric">
+        </label>
+        <label class="field grow">
+          <span class="label">Weights (one per generator)</span>
+          <input type="text" id="weights" class="code" placeholder="all 1">
+        </label>
+      </div>
+      <p class="warn" id="homogWarn" hidden></p>
+    </fieldset>
+
+    <details class="block advanced">
+      <summary>More settings</summary>
+      <label class="field">
+        <span class="label">Augmentation for the Anick resolution</span>
+        <select id="augmentation">
+          <option value="graded">Generators map to 0</option>
+          <option value="monoid">Generators map to 1 (monoids and groups)</option>
+        </select>
+      </label>
+      <label class="field">
+        <span class="label">Nonhomogeneous relations</span>
+        <select id="nonhomog">
+          <option value="auto">Process item by item when needed</option>
+          <option value="itemwise">Always process item by item</option>
+          <option value="degreewise">Always process degree by degree</option>
+        </select>
+      </label>
+      <label class="field">
+        <span class="label">Strategy</span>
+        <select id="strategy">
+          <option value="default">Default (Buchberger, degree by degree)</option>
+          <option value="rabbit">Rabbit: jump ahead in degree</option>
+        </select>
+      </label>
+      <label class="field" id="rabbitField" hidden>
+        <span class="label">Rabbit parameters</span>
+        <input type="text" id="rabbit" class="code" value="2 2 8">
+      </label>
+      <label class="field">
+        <span class="label">Low terms handling</span>
+        <select id="lowterms">
+          <option value="quick">Quick</option>
+          <option value="safe">Safe (needed for linear relations)</option>
+        </select>
+      </label>
+      <label class="field">
+        <span class="label">Output format</span>
+        <select id="outmode">
+          <option value="ALG">Algebraic, like the input</option>
+          <option value="MACAULAY">Macaulay</option>
+        </select>
+      </label>
+      <label class="check">
+        <input type="checkbox" id="legacy" aria-describedby="legacyHint">
+        <span>Legacy mode: behave exactly like bergman 1.001</span>
+      </label>
+      <p class="hint" id="legacyHint">Legacy mode preserves the original PB-file behavior and nonhomogeneous reduction defects. Default mode applies the documented fixes.</p>
+      <label class="field" id="maxserdegField" hidden>
+        <span class="label">Hilbert series up to degree</span>
+        <input type="number" id="maxserdeg" min="1" value="7" inputmode="numeric">
+      </label>
+    </details>
+
+    <fieldset class="block tasks">
+      <legend>Compute</legend>
+      <div id="taskList" class="task-list"></div>
+    </fieldset>
+
+    <div class="actions">
+      <button type="submit" class="primary" id="go">Compute Gröbner basis</button>
+      <button type="button" class="quiet" id="stop" hidden>Stop</button>
+    </div>
+  </form>
+
+  <section class="sheet results" id="results" aria-labelledby="resultsTitle">
+    <div class="results-head">
+      <h2 id="resultsTitle">Results</h2>
+      <p class="run-status" id="runStatus" aria-live="polite">Nothing computed yet.</p>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Result views" id="tabs">
+      <button role="tab" data-tab="basis" aria-selected="true">Gröbner basis</button>
+      <button role="tab" data-tab="series" hidden>Series</button>
+      <button role="tab" data-tab="betti" hidden>Betti numbers</button>
+      <button role="tab" data-tab="resolution" hidden>Resolution</button>
+      <button role="tab" data-tab="files">Files</button>
+      <button role="tab" data-tab="log">Session</button>
+    </div>
+
+    <div class="tabpanel" data-panel="basis" role="tabpanel">
+      <div class="empty" id="basisEmpty">
+        <p>Enter generators and relations, or pick one of bergman’s test examples under “Start from”, then compute.</p>
+      </div>
+      <div id="basisOut"></div>
+    </div>
+    <div class="tabpanel" data-panel="series" role="tabpanel" hidden><div id="seriesOut"></div></div>
+    <div class="tabpanel" data-panel="betti" role="tabpanel" hidden><div id="bettiOut"></div></div>
+    <div class="tabpanel" data-panel="resolution" role="tabpanel" hidden><div id="resolutionOut"></div></div>
+    <div class="tabpanel" data-panel="files" role="tabpanel" hidden><div id="filesOut"></div></div>
+    <div class="tabpanel" data-panel="log" role="tabpanel" hidden>
+      <p class="hint">The bergman session for this computation: the input file, the commands, and the terminal output.</p>
+      <div id="logOut"></div>
+    </div>
+  </section>
+</section>
+
+<!-- ============================================================ console -->
+<section class="view view-console" id="view-console" aria-labelledby="consoleTitle" hidden>
+  <div class="sheet console-sheet">
+    <div class="console-head">
+      <h1 id="consoleTitle">Console</h1>
+      <p class="hint">Evaluate Lisp forms such as <code>(noncommify)</code> or <code>(setmaxdeg 5)</code>. Use the presentation form for algebraic input, or run a command with explicit input and output files.</p>
+    </div>
+    <div class="terminal" id="terminal" role="log" aria-live="polite" tabindex="0"></div>
+    <form class="prompt" id="promptForm">
+      <label for="promptInput" class="prompt-label">1 lisp&gt;</label>
+      <input id="promptInput" class="code" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="send">
+      <button type="submit" class="primary small">Run</button>
+    </form>
+    <div class="console-actions">
+      <button type="button" class="quiet" id="pasteJob">Run the current computation</button>
+      <button type="button" class="quiet" id="stopConsole" hidden>Stop</button>
+      <button type="button" class="quiet" id="clearTerm">Clear</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ about -->
+<section class="view view-about" id="view-about" aria-labelledby="aboutTitle" hidden>
+  <article class="sheet prose">
+    <h1 id="aboutTitle">About George</h1>
+    <p>George computes Gröbner bases of ideals in free associative and in commutative polynomial algebras, degree by degree, and from them Hilbert and Poincaré–Betti series, Anick resolutions and Betti numbers of algebras and modules, and Hochschild homology.</p>
+    <p>George is based on bergman, written by Jörgen Backelin with Svetlana Cojocaru, Alexander Podoplelov, Victor Ufnarovski and others, and named after George Bergman, whose diamond lemma underlies the method. George does not reimplement it: it runs the original bergman 1.001 sources on ECL, a Common Lisp compiled to WebAssembly, inside your browser. Nothing is sent to a server.</p>
+    <h2>Input</h2>
+    <p>Relations are sums of monomials with integer coefficients, as in bergman’s own <code>algforminput</code>: <code>5*x*y, x^2-y^2</code>. In the noncommutative case the order of the factors matters, so <code>x*y-y*x</code> is the commutator. The order of the generators decides the variable order.</p>
+    <h2>What can be computed</h2>
+    <dl class="features">
+      <dt>Gröbner bases</dt><dd>Noncommutative and commutative, over ℚ and 𝔽<sub><var>p</var></sub>, with degree-lexicographic, reverse lexicographic, elimination and matrix orders, and weighted generators.</dd>
+      <dt>Series</dt><dd>Hilbert series of commutative and noncommutative quotients, and the double Poincaré–Betti series.</dd>
+      <dt>Resolutions</dt><dd>Anick resolutions, Betti numbers of the trivial module, of right and left modules, of pairs of modules and of factor-algebras, and Hochschild homology.</dd>
+      <dt>Console</dt><dd>Lisp forms and file-based bergman commands in a persistent session.</dd>
+    </dl>
+    <h2>Related</h2>
+    <p><a href="https://smimram.github.io/ocaml-alg/bergman/">Bergman 2</a> by Samuel Mimram is an independent OCaml implementation of noncommutative Gröbner bases and Anick resolutions in the browser. Its example families are available in George under “Start from”.</p>
+    <h2>License and source</h2>
+    <p>George is free software. Its own code may be used under the Bergman General Public License or under the GNU General Public License, version 2 or later. bergman is © 1992–2006 Jörgen Backelin, under the Bergman General Public License; George runs it with small, dated portability patches and a list of behaviour fixes that legacy mode switches off. The complete source of this site, including bergman, is at <a href="https://github.com/CKPEIIKA/george">github.com/CKPEIIKA/george</a>; the details are in its LICENSE.md.</p>
+    <p class="small">George contains no code from Bergman 2; its example families are standard presentations written from their definitions.</p>
+    <p class="small"><a href="licenses/NOTICE.txt">Component notices</a> · <a href="sources/george-source.tar.gz">George source</a> · <a href="sources/ecl-source.tar.gz">ECL, GMP and GC source</a></p>
+  </article>
+</section>
+
+</main>
+
+<template id="copyTpl"><button type="button" class="quiet small copy">Copy</button></template>
+</body>
+</html>

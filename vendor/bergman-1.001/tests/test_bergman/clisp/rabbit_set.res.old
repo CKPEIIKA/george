@@ -1,0 +1,11 @@
+a*b-c,
+   b^2-a^2,
+   b*c-a,
+   c*a-b,
+   -c^2+a^2,
+   a^3-c*b,
+   -a^2*c+b*a,
+   b*a^2-a*c,
+   b*a*c-a*c*b,
+   -c*b*a+a*c*b,
+   

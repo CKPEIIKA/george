@@ -1,0 +1,219 @@
+1c1,3
+< %% bmtop.sl %%
+---
+> ;;
+> (SETQ TOPLOOPNAME!* "")
+> 
+3,4c5
+< %% Copyright (C) 1992,1994,1996,1998,2001,2002,2003,2005
+< %% Joergen Backelin
+---
+> %% Copyright (C) 1992,1994,1996,1998,2001,2002 Joergen Backelin
+23a25
+> %  Corrected the MODULO2FILE!* value. /JoeB, KAE 2005-06-20
+25,27c27
+< % Moved the first and last parts of the file to the new files bmhead_psl.sl
+< % and bmtail_psl.sl, respectively, for better compatibility with clisp.
+< % /JoeB 2005-07-31
+---
+> %  Added hscomm.fas after JoeB. /KAE 2002-10-15 09:15:52 
+29,37d28
+< %  Added SETREDUCTIVITY./JoeB 2005-06-25
+< 
+< %  Changed ALGOUTMODE default setting to ALG./JoeB 2005-06-20
+< 
+< %  Added SETQUICKLOWTERMSHANDLING./JoeB 2005-01-22
+< 
+< %  Declared !*OBSOLETENAMESINFORM GLOBAL (instead of FLUID).
+< % /JoeB 2003-08-28
+< 
+42c33
+< %  PBSERIESFILE!* removed; !*PBSisLoaded --> !*HSisLoaded.
+---
+> %  PBSERIESFILE!* removed; !*PBSisLoaded --> !*HSisLoaded
+66a58,60
+> % To begin with, only the most raw Standard Lisp procedures are
+> % expexted. Here follows three LAPINs (reading and evaling
+> % but suppressing printing from entire files).
+68,70c62,66
+< % To begin with, only the most raw Standard Lisp procedures were
+< % expexted; whence it is imperative that the file be preceeded by
+< % some kind of 'header file'.
+---
+>   (LOAD "versmacr.sl")
+>   (LOAD "specmode.sl")
+>   (LOAD "specmacr.sl")
+>   (COND ((PROBE-FILE "specbrg1.sl") (LOAD "specbrg1.sl"))
+>         (T NIL))
+71a68,69
+> (LOAD (MKBMPATHEXPAND "$bmload/slext.fas"))
+> (LOAD (MKBMPATHEXPAND "$bmload/speclisp.fas"))
+73d70
+< (FLUID '(!*USERMODE !*REDEFMSG))
+75,79c72
+< (PSL!-SPECIFIC (PROGN
+<   (OFF USERMODE)
+<   (OFF REDEFMSG)
+< %  (OFF GC)
+< ))
+---
+> (C-OFF RAISE)
+87,88c80
+< 	  !*IMMEDIATEFULLREDUCTION !*NOBIGNUM BMVERSIONSTRING
+< 	  !*OBSOLETENAMESINFORM)
+---
+>           !*IMMEDIATEFULLREDUCTION !*NOBIGNUM BMVERSIONSTRING)
+91c83
+< (FLUID '(HISTORYLIST!* oldoutfi PBoutfi Houtfi oldded))
+---
+> (FLUID '(HISTORYLIST!* oldoutfi PBoutfi Houtfi oldded !*OBSOLETENAMESINFORM))
+92a85
+> 
+100,101c93
+< (LOAD "full" "full1" "auxil")		% Main procedures, and extras.
+< % (DSKIN "$bmroot/src/debug.sl") % For development use only.
+---
+> ;(LOAD "full" "full1" "auxil")                % Main procedures, and extras.
+103,104c95,131
+< (COND ((FILEP (MKBMPATHEXPAND "$bmload/alg2lsp.b"))
+<        (LOAD "alg2lsp"))
+---
+> ;full
+> (LOAD (MKBMPATHEXPAND "$bmload/modes.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/main.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/inout.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/monom.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/ncmonom.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/normwd.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/reclaim.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/polynom.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/reduct.fas"))
+> 
+> ;full1
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/coeff.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/char0.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/strategy.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/dialogue.fas"))
+> 
+> ;auxil
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/auxil.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/homog.fas"))
+> 
+> (COND ((SETQ temp
+>          (PROBE-FILE (MKBMPATHEXPAND "$bmload/alg2lsp.fas"))) (LOAD temp))
+108a136,137
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmaux/topproc.sl"))
+110d138
+< (LAPIN (MKBMPATHEXPAND "$bmauxil/topproc.sl"))
+111a140,156
+> ;stg
+> (LOAD (MKBMPATHEXPAND "$bmload/checkstg.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/accproc.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/subsproc.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/stg.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/monomstg.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/bind.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/write.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/ideal.fas"))
+> (RECLAIM)
+112a158,173
+> ;hseries
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/hseries.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/hscomm.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/modinout.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/sermul.fas"))
+> 
+> (ON |HSysLoaded|)
+> 
+> ;anick
+> (OFF |AnickIsLoaded|)
+> 
+> 
+115c176
+< (COND ((FILEP "specbrg2.sl") (LAPIN "specbrg2.sl")))
+---
+> (COND ((PROBE-FILE "specbrg2.sl") (LOAD "specbrg2.sl")))
+117c178
+< (OFF RAISE)
+---
+> (C-OFF RAISE)
+127,139c188
+< %	This "should" be the 'locally' most efficient bignum module:
+< (PSL!-SPECIFIC
+<   (SETQ BigNumbFile 'ZBIG)
+< )
+< 
+< %	In reduces, bignums should already be loaded:
+< (REDUCE!-SPECIFIC
+<   (PROGN (SETQ BigNumbFile NIL)
+< 	 (ON NOBIGNUM)
+< 	 (ON Bignums!&Are!&Loaded))
+< )
+< 
+< %(SETQ HSERIESFILE!* "hseries")
+---
+> ;(SETQ PBSERIESFILE!* (MKBMPATHEXPAND "$bmload/pbseries.fas"))
+145,146c194
+< %(SETQ MODULO2FILE!* "char2")
+< (SETQ MODULO2FILE!* (MKBMPATHEXPAND "$bmload/char2"))
+---
+> (SETQ MODULO2FILE!* (MKBMPATHEXPAND "$bmload/char2.fas"))
+148,150d195
+< (PSL!-SPECIFIC
+<  (SETQ MAKEPRIMEFILE!* (MKBMPATHEXPAND "$bmshells/mkprimefile"))
+< )
+154c199
+< (SETQ !&!*PRIMAUXFILE (MKBMPATHEXPAND "$bmload/primaux"))
+---
+> (SETQ !&!*PRIMAUXFILE (MKBMPATHEXPAND "$bmload/primaux.fas"))
+176c221
+< (SETQUICKLOWTERMSHANDLING)
+---
+> % KAE 2002-09-01 13:52:09 added SETNORESOLUTION and DEGREVLEXIFY after JoeB
+182,183d226
+< (SETALGOUTMODE ALG)
+< (SETREDUCTIVITY T)
+195c238
+< (COND ((FILEP "specbrg3.sl") (LAPIN "specbrg3.sl")))
+---
+> (COND ((PROBE-FILE "specbrg3.sl") (LOAD "specbrg3.sl")))
+200,201c243,244
+< (COND ((FILEP (MKBMPATHEXPAND "$bmroot/patches.sl"))
+<        (LAPIN (MKBMPATHEXPAND "$bmroot/patches.sl"))))
+---
+> (COND ((PROBE-FILE (MKBMPATHEXPAND "$bmroot/patches.sl"))
+>        (M-LAPIN (MKBMPATHEXPAND "$bmroot/patches.sl"))))
+206c249
+< (COND ((FILEP "local.sl") (LAPIN "local.sl")))
+---
+> (COND ((PROBE-FILE "local.sl") (LOAD "local.sl")))
+211c254
+< (ON RAISE)
+---
+> (C-ON RAISE)

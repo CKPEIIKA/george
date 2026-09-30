@@ -1,0 +1,27 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {buildJob,parseRelation,validateSettings,shiftRelations,resolutionJob,parseBasis} from '../web/src/bergman-syntax.js';
+import {augmentedHomology} from '../web/src/homology.js';
+import {algebra} from './support/algebra.mjs';
+const form={task:'gb',ring:'noncomm',order:'degleftlex',vars:['x','y'],rels:['xy − 2yx'],field:'0'};
+test('the executed input matches the accepted preview',()=>assert.match(buildJob(form).files['input.bg'],/x\*y-2\*y\*x/));
+test('reject malformed multiplication and unreasonable exponents',()=>{for(const s of ['*x','x*','x**y','x*+y','x^9007199254740993','x^10001'])assert.throws(()=>parseRelation(s,form.vars));});
+test('reject the undeclared uppercase generator from the historical lin_nc backup',()=>assert.throws(()=>parseRelation('X*y',['x','y','z'])));
+test('reject injection and invalid numeric settings',()=>{for(const change of [{maxdeg:'1)(QUIT)('},{weights:'1 nope'},{weights:'1 -2'},{maxdeg:0},{field:'p',modulus:9},{field:'p',modulus:Infinity},{strategy:'rabbit',rabbit:'1) (QUIT'},{order:'matrix',ring:'comm',matrix:'1 2\n2 4'}])assert.ok(validateSettings({...form,...change}).length);});
+test('weights follow their generators when their order is reversed',()=>assert.match(buildJob({...form,weights:'1 2',reverseVars:true}).script,/SETWEIGHTS 2 1/));
+test('an unlimited job explicitly clears the degree limit',()=>assert.match(buildJob(form).script,/SETMAXDEG NIL/));
+test('valid prime fields and integer matrices are accepted',()=>assert.deepEqual(validateSettings({...form,ring:'comm',order:'matrix',matrix:'1 2\n0 -1',field:'p',modulus:2147483647}),[]));
+test('integer augmentation shift expands and cancels exactly',()=>{assert.equal(shiftRelations(['x^2-1'],['x'])[0],'+2*x+1*x*x');assert.equal(shiftRelations(['xy-yx'],form.vars)[0],'+1*x*y-1*y*x');});
+test('reject relations incompatible with their augmentation',()=>assert.throws(()=>buildJob({...form,task:'anick',rels:['x^2-1']}),/augmentation/));
+test('monoid resolution preserves original basis and uses a completed shifted basis',()=>{const j=buildJob({...form,task:'anick',rels:['x^2-1'],augmentation:'monoid',maxdeg:4});assert.ok(j.resolution);const next=resolutionJob(j,'% 2\nx^2-1,\nDone\n');assert.match(next.files['resolution-input.bg'],/2\*x\+x\*x/);assert.match(next.script,/SETDEGREEWISE/);assert.throws(()=>resolutionJob(j,'% 2\nx^2-1,'),/completed/);});
+test('exact ungraded homology sees degree-lowering constants',()=>{const d='D(0, x)=1.x\nD(0, y)=1.y\nD(1, xx)=x.x+2x.1\nD(2, xxx)=xx.x\n';assert.deepEqual(augmentedHomology(d,['x','y']).betti,[1,1,0]);assert.deepEqual(augmentedHomology(d,['x','y'],2).betti,[1,2,1]);});
+test('a broken differential is rejected',()=>assert.throws(()=>augmentedHomology('D(0, x)=1.1\nD(1, xx)=x.1\n',['x']),/compose to zero/));
+test('the independent checker detects a missing critical-pair consequence',()=>{const a=algebra(['x','y'],true);const bad=[a.parse('x*y'),a.parse('x^2-y^2')].map(a.monic);assert.throws(()=>a.certify(bad,bad),/ambiguity/);});
+test('basis completion marker is explicit',()=>{assert.equal(parseBasis('% 2\nx^2,\n').done,false);assert.equal(parseBasis('% 2\nx^2,\nDone\n').done,true);});
+test('a finite resolution tail is certified only when every possible extension fits',()=>{
+ const d='D(0, x)=1.x\nD(1, xx)=x.x-x.1\n';
+ const complete={completeBasis:true,basis:'% 2\nx^2-x,\nDone\n',degreeBound:4};
+ const h=augmentedHomology(d,['x'],0,complete);assert.equal(h.finiteTailZero,true);assert.deepEqual(h.betti,[1,0,0]);
+ assert.equal(augmentedHomology(d,['x'],0,{...complete,degreeBound:2}).finiteTailZero,false);
+});
+test('prime-field differentials accept the printed coefficient separator',()=>assert.deepEqual(augmentedHomology('D(0, x)=1.x\nD(1, xx)=x.x+4*x.1\nD(2, xxx)=xx.x\n',['x'],5).betti,[1,0,0]));

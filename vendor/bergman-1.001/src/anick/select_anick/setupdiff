@@ -1,0 +1,7 @@
+3c3,6
+<    (resolutiontype none) 
+---
+>    (resolutiontype anick) 
+>    (anick (tenspol-printmode semidistributed) 
+>           (tensterm-printmode (nil nil nil)) (edge-string " ") 
+>           (edge-string-printing nil) (betti nil) (betti-foreachdegree nil))

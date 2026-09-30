@@ -1,0 +1,3 @@
+Hilbert series numerator:   +1*t^0+1*t^1+1*t^2-1*t^3-1*t^4
+Hilbert series denominator:  1-t
+Hilbert power series:        1+2t^1+3t^2+2t^3+t^4+t^5+t^6+t^7...

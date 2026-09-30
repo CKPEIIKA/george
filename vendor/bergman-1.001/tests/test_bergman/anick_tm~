@@ -1,0 +1,6 @@
+(setq maxdeg 4)
+(setmodulus 5)
+(algforminput)
+vars x,y; x*x+y*y+x*y+y*x,x*y;
+
+

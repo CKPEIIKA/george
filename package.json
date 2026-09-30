@@ -1,0 +1,30 @@
+{
+  "name": "george",
+  "version": "0.1.0",
+  "description": "Gröbner bases, Hilbert series and Anick resolutions in the browser, based on bergman",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "serve": "node tools/serve.mjs web 8000",
+    "examples": "node tools/make-examples.mjs",
+    "test": "node --test test/*.test.mjs",
+    "wasm:build": "ports/ecl/build.sh",
+    "wasm:test": "node tools/validate-wasm.mjs",
+    "test:ocaml": "tools/validate-ocaml.sh && node tools/export-ocaml.mjs",
+    "test:algebra": "node tools/validate-algebra.mjs",
+    "test:extra": "node tools/validate-extra.mjs",
+    "test:examples": "node tools/validate-examples.mjs",
+    "test:browser": "node tools/validate-browser.mjs",
+    "test:browser:regression": "node tools/validate-browser-uninstrumented.mjs",
+    "sources": "bash tools/package-sources.sh",
+    "sbcl:build": "ports/sbcl/build.sh vendor/bergman-1.001 build/sbcl-$(date +%Y%m%d-%H%M%S)",
+    "sbcl:test": "ports/sbcl/runtests.sh $(ls -td build/sbcl-* | head -1) run-$(date +%Y%m%d-%H%M%S)",
+    "sbcl:test:legacy": "ports/sbcl/runtests.sh $(ls -td build/sbcl-* | head -1) legacy-$(date +%Y%m%d-%H%M%S) legacy"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "playwright-core": "1.63.0"
+  }
+}

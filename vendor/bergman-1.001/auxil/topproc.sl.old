@@ -1,0 +1,964 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Copyright (C) 1994,1997,1999,2001,2002,2003 Joergen Backelin
+%%
+%% Bergman is distributed in the hope that it will be useful,
+%% but WITHOUT ANY WARRANTY.  No author or distributor
+%% accepts responsibility to anyone for the consequences of using it
+%% or for whether it serves any particular purpose or works at all,
+%% unless (s)he says so in writing.  Refer to the Bergman General
+%% Public License for full details.
+
+%% Everyone is granted permission to copy, modify and redistribute
+%% bergman, but only under the conditions described in the
+%% Bergman General Public License.   A copy of this license is
+%% supposed to have been given to you along with bergman so you
+%% can know your rights and responsibilities.  It should be in a
+%% file named copyright.  Among other things, the copyright notice
+%% and this notice must be preserved on all copies.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%							      %%
+%%	WARNING!	WARNING!	WARNING!	      %%
+%%							      %%
+%%	Do not compile the content of this file! It	      %%
+%%	mainly contains top-of-the-top procedures,	      %%
+%%	which should be visible to the user.		      %%
+%%	Moreover, trying to compile the self-loading	      %%
+%%	macros should (rightfully) cause errors!	      %%
+%%							      %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%   CHANGES:
+
+%  Added more self loading macros./JoeB 2005-06-26
+
+%  Made changes in RABBIT, added 4 new global variables /ufn 2005-06-21
+% added 3 procedures SETRABBIT, (should be moved to modes)
+
+%  Added procedure BETTI and a global flag PRINTBETTI /ufn, sveta 2005-06-21
+
+%  PREPARETOANICK: Changed by SC&VU 16.06.2005 because
+% if e.g. we (in this order) call ANICK,
+% SETNORESOLUTION, and ANICK again, the second call
+% to ANICK does not work. The reason is that only
+% when the anick module is loaded the setup changes
+% are made.
+
+
+%  Corrected LEFTMODULEBETTINUMBERS./SK & VU 2005-06-16
+
+%  Made RABBIT change LOWTERMSHANDLING instead of loading "safe".
+% /JoeB 2004-10-12
+
+%  Made CLEARRING call CLEARIDEAL./JoeB 2004-10-11
+
+%  Changed SeriesPrinting to SERIESPRINTING./JoeB 2004-05-08
+
+%  Added PBSERIES setting to PREPARETOANICK (since this
+% nowadays is not made automatically by NONCOMMIFY).
+% /JoeB 2004-04-30
+
+%  WarningIfFiniteGB --> WARNINGIFFINITEGB./JoeB 2004-04-28
+
+%  Added setting of default values of NRMODGEN and NLMODGEN in
+% HOCHSCHILD, and settings of PBSERIES and calls to LOADIFMACROS
+% in FACTALGBETTINUMBERS and HOCHSCHILD.% /JoeB 2003-11-05 - 11-09
+
+%  Removed removal of set variable number from CLEARIDEAL.
+% Added CLEARRING./JoeB 2003-10-30 - 31
+
+%  Declared !*OBSOLETENAMESINFORM GLOBAL./JoeB 2003-08-28
+
+%  Replaced *NONCOMMUTATIVE by GETRINGTYPE calls./JoeB 2003-08-25
+
+%  Modified PREPARETOANICK. Made DF calls involving the local
+% variables TMP, TMP1, TMP2 work by means of EVAL. Collected
+% all GLOBAL definitions to the front. Added SETANICKRESOLUTIONS,
+% !*AnickIsLoaded, MAYBEAUTOADDRELATIONS./JoeB 2002-10-12
+
+%  Lots of changes ... (some of which involve Hochschild homology
+% calculations). PREPARETOANICK, WarningIfFiniteGB,
+% LEFTMODULEBETTINUMBERS, FactAlgScreenInput, HOCHSCHILD, RABBIT
+% added. (July, 2002.)
+
+%  Added HILBERT SC & VU 2002-06-28
+
+%  Added MODULEBETTINUMBERS, FACTALGBETTINUMBERS, TWOMODBETTINUMBERS
+%                                                 SK & VU 2001-08-03
+
+%  PBSisLoaded!* --> HSisLoaded!*./JoeB 1999-11-04
+
+%  Added PRINTNEXT (for debugging input)./JoeB 1999-10-20
+
+%  CHANNELFLUSH --> FLUSHCHANNEL./JoeB 1999-07-04
+
+%  Made the hseries.sl user available procedures self-loading.
+% Replaced direct ALGOUTMODE access./JoeB 1999-06-29
+
+%  Made MODULEHSERIES a self-loading macro./JoeB 1999-06-26
+
+%  CLEARALL --> CHEARIDEAL (but old name kept as alias).
+% Brought MODULEHSERIES from bmtop.sl. Changed oldded use.
+% /JoeB 1998-10-22 -- 10-24
+
+%  Introduced APPLYIFDEF0, GETCURRENTDEGREE, SETCURRENTDEGREE.
+% /JoeB 1998-08-07, 1998-08-24
+
+%  CLEARALL now sets cDeg to NIL./JoeB 1997-10-12
+
+
+
+(GLOBAL '(MODULESHSERIESFILE!* HSERIESFILE!* !*HSisLoaded
+	  !*AnickIsLoaded anresScInput !&!*PRESENTCHAN!# 
+          !*STANDARDANICKMODES MinCancelingDegree HlbScInput
+	  HlbGbFile NRMODGEN NLMODGEN NMODGEN bnmScInput
+	  !*OBSOLETENAMESINFORM !*PRINTBETTI startdeg
+           stepdeg finishdeg Rabbitfile))
+
+% Top-of-the-top level functions.
+
+(DE CLEARIDEAL ()
+ (PROGN (SETQ SPairs ())
+	(SETQ cSPairs ())
+	(COND ((PAIRP GBasis) (RPLACD GBasis ()))
+	      (T (SETQ GBasis (CONS () ()))))
+	(COND ((PAIRP cGBasis) (RPLACD cGBasis ()))
+	      (T (SETQ cGBasis (CONS () ()))))
+	(SETQ InPols ())
+	(SETQ cInPols ())
+	(SETCURRENTDEGREE ())
+	(COND ((PAIRP MONLIST) (RPLACD MONLIST ()))
+	      (T (SETQ MONLIST (CONS () ()))))
+	(COND ((PAIRP MAOaux) (RPLACD MAOaux ()))
+	      (T (SETQ MAOaux (CONS () ()))))
+	(COND (!*HSisLoaded (CLEARPBSERIES)))
+%	(SETQ EMBDIM ())
+%	(SETQ !&!*InnerEmbDim!&!* ())
+	(SETQ ReclaimList ())
+	(COND ((PAIRP HISTORYLIST!*) (RPLACD HISTORYLIST!* NIL)))
+	(APPLYIFDEF0 '(CLEARHOMOGENISATION CLEARRESOLUTION))
+	(RECLAIM) ))
+
+(DE CLEARRING ()
+ (PROGN (CLEARIDEAL)
+	(CLEARWEIGHTS)
+	(CLEARVARS)
+	(COND ((PAIRP MONLIST) (RPLACD MONLIST ()))
+	      (T (SETQ MONLIST (CONS () ()))))
+	(COND ((PAIRP MAOaux) (RPLACD MAOaux ()))
+	      (T (SETQ MAOaux (CONS () ()))))
+	(SETQ ReclaimList ()) ))
+
+(DE CLEARALL () (PROGN
+  (COND (!*OBSOLETENAMESINFORM (TERPRI)
+	 (PRIN2 "*** CLEARALL is obsolete - use CLEARIDEAL instead! ")
+	 (TERPRI)))
+  (CLEARIDEAL)))
+
+(DE GI () (GROEBNERINIT)) (DE GK () (GROEBNERKERNEL)) (DE BO () (BIGOUTPUT))
+(DE GF () (GROEBNERFINISH)) (DE CL () (CLEARIDEAL))
+(DE DOP (fil) (EVAL (LIST 'DEGREEOUTPREPARE fil)))
+(DE ES () (PROGN (DEGREEOUTPUT) (ENDDEGREEOUTPUT)))
+(DE STF (fil) (SETQ TESTFOO fil))
+(DF SMI (lrg) (PRINTX (SET (CAR lrg) (MONINTERN (CDR lrg)))))
+
+(DF SIMPLE (files)
+    (PROG (outfi)
+	  (COND ((AND (PAIRP files) (FILEP (CAR files)))
+		 (DSKIN (CAR files))
+		 (COND ((AND (PAIRP (CDR files)) (STRINGP (CADR files)))
+			(SETQ outfi (CADR files))))
+		 (GO skip)))
+	  (PRIN2 "Now input in-variables and ideal generators in algebraic form, thus:")
+	  (TERPRI) (PRIN2 "	vars v1, ..., vn;") (TERPRI)
+	  (PRIN2 "	r1, ..., rm;") (TERPRI)
+	  (PRIN2 "where v1, ..., vn are the variables, and r1, ..., rm the generators.")
+	  (TERPRI) (ALGFORMINPUT)
+     skip (SETALGOUTMODE ALG)
+	  (COND (outfi (DOP outfi)) (T (DEGREEOUTPREPARE)))
+	  (GROEBNERINIT)
+	  (GROEBNERKERNEL)
+	  (GROEBNERFINISH)
+	  (PRIN2 " - All is OK (I hope). Now you may (e. g.):") (TERPRI)
+	  (PRIN2 "   - kill bergman with (QUIT); or") (TERPRI)
+	  (PRIN2 "   - interrupt bergman with ^Z; or") (TERPRI)
+	  (PRIN2 "   - clear the memory with (CLEARIDEAL), and run a new (SIMPLE).")
+	  (TERPRI) ))
+
+(DE DEGREEENDDISPLAY () (PROGN (DEGREEOUTPUT) (TERPRI)
+ (PRIN2 "% No. of Spolynomials calculated until degree ")
+ (PRIN2 (GETCURRENTDEGREE)) (PRIN2 ": ")  (PRINT NOOFSPOLCALCS)
+ (PRIN2 "% Time: ") (PRINT (TIME))
+))
+
+(FLAG '(DEGREEENDDISPLAY) 'USER)
+
+(DE NCPBHGROEBNER (infile gbfile PBfile Hfile)
+   (PROG (oldoutfi PBoutfi Houtfi !*CUSTSHOW !*PBSERIES oldded)
+	 (COND ((EQ (GETRINGTYPE) 'COMMUTATIVE)
+		(PRIN2 "*** We turn on noncommutativity")
+		(TERPRI)
+		(NONCOMMIFY)))
+	 (ON PBSERIES)
+
+	 % DON'T change the next line without asking SC and VU:
+	 (COND ((EQ (GETALGOUTMODE) 'LISP)
+		(SETALGOUTMODE ALG)))
+	 (DSKIN infile)
+	 (DOP gbfile)
+	 (SETQ PBoutfi (OPEN PBfile 'OUTPUT))
+	 (SETQ Houtfi (OPEN Hfile 'OUTPUT))
+	 (ON CUSTSHOW)
+	 (COPYD 'oldded 'DEGREEENDDISPLAY)
+	 (COPYD 'DEGREEENDDISPLAY 'NCPBHDED)
+	 (GROEBNERINIT)
+	 (GROEBNERKERNEL)
+	 (GROEBNERFINISH)
+	 (CLOSE PBoutfi)
+	 (CLOSE Houtfi)
+	 (COPYD 'DEGREEENDDISPLAY 'oldded) ))
+
+(COPYD 'oldded 'DEGREEENDDISPLAY)
+
+(DE NCPBHDED ()
+  (PROGN (DEGREEOUTPUT)
+	 (SETQ oldoutfi (WRS PBoutfi))
+	 (TDEGREECALCULATEPBSERIES (GETCURRENTDEGREE))
+	 (FLUSHCHANNEL PBoutfi)
+	 (WRS Houtfi)
+	 (TDEGREEHSERIESOUT (GETCURRENTDEGREE))
+	 (FLUSHCHANNEL Houtfi)
+	 (WRS oldoutfi)
+	 (TERPRI)
+	 (PRIN2 "% No. of Spolynomials calculated until degree ")
+	 (PRIN2 (GETCURRENTDEGREE)) (PRIN2 ": ")  (PRINT NOOFSPOLCALCS)
+	 (PRIN2 "% No. of ReducePol(0) demanded until degree ")
+	 (PRIN2 (GETCURRENTDEGREE)) (PRIN2 ": ")  (PRINT NOOFNILREDUCTIONS)
+	 (PRIN2 "% Time: ") (PRINT (TIME))
+))
+
+(FLAG '(oldded NCPBHDED) 'USER)
+
+
+
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ %%%  A variant of NCPBHGROEBNER skipping Groebner basis   %%%
+ %%%  printing SK & VU, 01-08-09                           %%%
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+(DE NCPBHDD ()
+  (PROGN % (DEGREEOUTPUT)
+	 (SETQ oldoutfi (WRS PBoutfi))
+	 (TDEGREECALCULATEPBSERIES (GETCURRENTDEGREE))
+	 (FLUSHCHANNEL PBoutfi)
+	 (WRS Houtfi)
+	 (TDEGREEHSERIESOUT (GETCURRENTDEGREE))
+	 (FLUSHCHANNEL Houtfi)
+	 (WRS oldoutfi)
+	 (TERPRI)
+       % (PRIN2 "% No. of Spolynomials calculated until degree ")
+       % (PRIN2 (GETCURRENTDEGREE)) (PRIN2 ": ")  (PRINT NOOFSPOLCALCS)
+       % (PRIN2 "% No. of ReducePol(0) demanded until degree ")
+       % (PRIN2 (GETCURRENTDEGREE)) (PRIN2 ": ")  (PRINT NOOFNILREDUCTIONS)
+       % (PRIN2 "% Time: ") (PRINT (TIME))
+))
+
+(DE NCPBH (infile  PBfile Hfile)
+   (PROG (oldoutfi PBoutfi Houtfi !*CUSTSHOW !*PBSERIES oldded)
+	 (COND ((EQ (GETRINGTYPE) 'COMMUTATIVE)
+		(PRIN2 "*** We turn on noncommutativity")
+		(TERPRI)
+		(NONCOMMIFY)))
+	 (ON PBSERIES)
+
+	 % DON'T change the next line without asking SC and VU:
+	 (COND ((EQ (GETALGOUTMODE) 'LISP)
+		(SETALGOUTMODE ALG)))
+	 (DSKIN infile)
+	% (DOP gbfile)
+	 (SETQ PBoutfi (OPEN PBfile 'OUTPUT))
+	 (SETQ Houtfi (OPEN Hfile 'OUTPUT))
+	 (ON CUSTSHOW)
+	 (COPYD 'oldded 'DEGREEENDDISPLAY)
+	 (COPYD 'DEGREEENDDISPLAY 'NCPBHDD)
+	 (GROEBNERINIT)
+	 (GROEBNERKERNEL)
+	 (GROEBNERFINISH)
+	 (CLOSE PBoutfi)
+	 (CLOSE Houtfi)
+	 (COPYD 'DEGREEENDDISPLAY 'oldded) ))
+
+
+
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ %%%  The following procedures are self-loading, and must  %%%
+ %%%  not be compiled!					   %%%
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Stagger with substance key routines:
+
+% Flagged the procedures USER 94-08-25 /JoeB
+(PROG (axx)
+ (DM STAGSIMPLE (u)
+  (PROGN (LAPIN (MKBMPATHEXPAND "$bmauxil/stagsubs.sl")) u))
+ (MAPC (SETQ axx '(STAGGERINIT STAGGERKERNEL STAGGERFINISH AUTOREDUCEINPUT
+	 AUTOREDDEGENDDISPLAY AutoReduceFromTo STAGTYPECHECKER))
+       (FUNCTION (LAMBDA (fcn) (COPYD fcn 'STAGSIMPLE))))
+ (FLAG (CONS 'STAGSIMPLE axx) 'USER)
+
+ (DM ALGOUTLIST (u)
+  (PROGN (EVAL (LIST 'LOAD HSERIESFILE!*))
+	 (ON HSisLoaded)
+	 u))
+ (MAPC (SETQ axx '(CALCPOLRINGHSERIES CALCRATHILBERTSERIES
+	 CALCRATHILBERTSERIES CALCPOLRINGHSERIES CALCTOLIMIT
+	 CLEARHSERIESMINIMA CLEARPBSERIES DEGREEPBSERIESDISPLAY
+	 GBASIS2HSERIESMONID GETHSERIESMINIMA GETHSERIESMINIMUM
+	 INVERT-FPSERIES-STEP RECEVAL RECEVLIS REMLASTSERIESCALC
+	 REVERTSERIESCALC SETHSERIESMINIMA SETHSERIESMINIMUMDEFAULT
+	 TDEGREEHSERIESOUT TDEGREECALCULATEPBSERIES VECTPLUS
+	 FACTALGADDITIONALRELATIONS HOCHADDITIONALRELATIONS
+	 CALCMODHSERIES RENEWSERIES))
+       (FUNCTION (LAMBDA (fcn) (COPYD fcn 'ALGOUTLIST))))
+ (FLAG (CONS 'ALGOUTLIST axx) 'USER)
+
+ (DM SETANICKRESOLUTION (u)
+  (PROGN (EVAL (LIST 'LOAD 'ANICK))
+	 (COND (!*STANDARDANICKMODES
+		(ONFLYBETTI T)))
+	 (ON AnickIsLoaded)
+	 u))
+ (MAPC (SETQ axx '(CALCBETTI CLEARRESOLUTION GETHOMMAXDEGREE
+	ONFLYBETTI SETHOMMAXDEGREE))
+       (FUNCTION (LAMBDA (fcn) (COPYD fcn 'SETANICKRESOLUTION))))
+ (FLAG (CONS 'SETANICKRESOLUTION axx) 'USER)
+)
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  Non-comm module top-of-the-top stuff:                    %
+%  Added by SK & VU 96-08-18                                %
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+(DM MODULEHSERIES (u) (PROGN (LAPIN MODULESHSERIESFILE!*) u))
+
+(FLAG '(MODULEHSERIES) 'USER)
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% The top-of-the-top function for Anick resolution and Betti%
+% numbers computation.                                      %
+% OBJECTTYPE is RING. Added by SK & VU 15-08-2001           %                      
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+(DF ANICK (files)
+%      (bnmInputFile  bnmOutFile)
+ (PROG (  !*USERMODE)
+    (COND 
+     ((NOT (EQ (GETOBJECTTYPE) 'RING))
+           (SETRINGOBJECT)
+           (TERPRI)
+           (PRIN2 "*** We turn on the RING mode")
+           (TERPRI)
+      )
+    )
+    
+    (PREPARETOANICK)
+
+    (SETQ LENG (LENGTH files))
+    (COND ( (EQ LENG 0)  (anresScreenInput ))
+         
+           ( (EQ LENG 1) (bnmCheckInput files)  )
+           ( (EQ LENG 2) (bnmCheckOutput files) (bnmCheckInput files) )
+           
+    )
+     
+
+    (COND (bnmOutFile (DOP bnmOutFile)  )
+          (T  (DEGREEOUTPREPARE))
+    )
+    (SETALGOUTMODE ALG)
+
+    (GROEBNERINIT)
+    (GROEBNERKERNEL)
+    (WARNINGIFFINITEGB)
+ ))
+
+% global switch, used temporary for Jan-EriK , ufn 2005-06-19
+(OFF PRINTBETTI)
+%temporary procedure for Jan-Erik to skip output of GB
+% to save and flush Betti numbers into file, ufn 2005-06-19
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  Betti numbers without GB printing top-of-the-top stuff:  %
+%  Added by SK & VU 05-06-14                                %
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+(DF BETTI (files)
+      
+ (PROG (  !*USERMODE)
+    (COND 
+     ((NOT (EQ (GETOBJECTTYPE) 'RING))
+           (SETRINGOBJECT)
+           (TERPRI)
+           (PRIN2 "*** We turn on the RING mode")
+           (TERPRI)
+      )
+    )
+    
+    (PREPARETOANICK)
+   
+
+    (SETQ LENG (LENGTH files))
+    (COND ( (EQ LENG 0)  (anresScreenInput ))
+         
+           ( (EQ LENG 1) (bnmCheckInput files)  )
+           ( (EQ LENG 2) (bnmCheckInput files) 
+%skip checking output files in this version.
+                         (SETQ ANICKRESOLUTIONOUTPUTFILE (CADR files)) 
+                         (ON PRINTBETTI) )
+           
+    )
+     
+
+    %(COND (bnmOutFile (DOP bnmOutFile) )
+    %      (T  (DEGREEOUTPREPARE))
+    %)
+    (SETALGOUTMODE ALG)
+
+    (GROEBNERINIT)
+    (GROEBNERKERNEL)
+    %(WARNINGIFFINITEGB)
+    (COND
+     ((GETMAXDEG)
+       (COND 
+         ( (LESSP (GETCURRENTDEGREE) (GETMAXDEG))
+           (CALCULATEANICKRESOLUTIONTOLIMIT (GETMAXDEG)))
+        )
+     )
+    )
+    (OFF PRINTBETTI)
+   % (BETTIDISPLAY)
+ ))
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  Betti numbers for right  modules top-of-the-top stuff:   %
+%  Added by SK & VU 01-08-02                                %
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+(DF MODULEBETTINUMBERS (files)
+%      (bnmInputFile  bnmOutFile)
+ (PROG (  !*USERMODE)
+    (COND 
+     ((NOT (EQ (GETOBJECTTYPE) 'MODULE))
+           (SETMODULEOBJECT)
+           (TERPRI)
+           (PRIN2 "*** We turn on the MODULE mode")
+           (TERPRI)
+      )
+    )
+    
+    (PREPARETOANICK)
+
+    (SETQ LENG (LENGTH files))
+    (COND ( (EQ LENG 0)  (bnmScreenInput ))
+         
+           ( (EQ LENG 1) (bnmCheckInput files)  )
+           ( (EQ LENG 2) (bnmCheckOutput files) (bnmCheckInput files) )
+           
+    )
+     
+
+    (COND (bnmOutFile (DOP bnmOutFile)  )
+          (T  (DEGREEOUTPREPARE))
+    )
+    (SETALGOUTMODE ALG)
+    (SETCHAINSTARTS ( BMI!- (ADD1(GETINVARNO)) NMODGEN) (GETINVARNO)) %VU
+   
+    (GROEBNERINIT)
+    (GROEBNERKERNEL)
+    (WARNINGIFFINITEGB)
+ 
+ ))
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  Betti numbers for left  modules top-of-the-top stuff:    %
+%  Added by SK & VU 02-06-09; corrected by SK & VU 05-06-14 %
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+(DF LEFTMODULEBETTINUMBERS (files)
+%      (bnmInputFile  bnmOutFile)
+ (PROG (  LENG !*USERMODE)
+    (COND 
+     ((NOT (EQ (GETOBJECTTYPE) 'MODULE))
+           (SETMODULEOBJECT)
+           (TERPRI)
+           (PRIN2 "*** We turn on the MODULE mode")
+           (TERPRI)
+      )
+    )
+
+    (PREPARETOANICK)
+
+    %Here is the one-line  difference with right module! 
+    %It should be after PREPARETOANICK
+
+    (COPYD 'PolAlgRead 'revnoncommPolAlgRead)
+
+    (SETQ LENG (LENGTH files))
+    (COND ( (EQ LENG 0)  (bnmScreenInput ))
+         
+           ( (EQ LENG 1) (bnmCheckInput files)  )
+           ( (EQ LENG 2) (bnmCheckOutput files) (bnmCheckInput files) )
+           
+    )
+     
+
+    (COND (bnmOutFile (DOP bnmOutFile)  )
+          (T  (DEGREEOUTPREPARE))
+    )
+    (SETALGOUTMODE ALG)
+    (SETCHAINSTARTS ( BMI!- (ADD1(GETINVARNO)) NMODGEN) (GETINVARNO)) %VU
+   
+    (GROEBNERINIT)
+    (GROEBNERKERNEL)   
+    (WARNINGIFFINITEGB)
+   
+ ))
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  Betti numbers for factor algebra top-of-the-top stuff:   %
+%  Added by SK & VU 01-08-07                                %
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+(DF FACTALGBETTINUMBERS (files)
+%      (bnmInputFile  bnmOutFile)
+ (PROG (TMP LENG !*REDEFMSG !*USERMODE)
+    (COND 
+%     ((NOT (EQ (GETOBJECTTYPE) 'FACTORALGEBRA))
+%           (SETFACTALGOBJECT)
+%           (TERPRI)
+%           (PRIN2 "*** We turn on the FACTORALGEBRA mode")
+%           (TERPRI)
+%      )
+     ((NOT (EQ (GETOBJECTTYPE) 'MODULE))
+           (SETMODULEOBJECT)
+           (TERPRI)
+           (PRIN2 "*** We turn on the MODULE mode")
+           (TERPRI)
+      )
+    )
+ 	(COND
+	 ((NOT !*PBSERIES)
+	  (ON PBSERIES)
+	  (TERPRI)
+	  (PRIN2 "*** We turn on PBSERIES")
+	  (TERPRI)))
+
+    % Added 2003-11-05/JoeB. If FACTALGADDITIONALRELATIONS is a
+    % self-loading macro, we cannot directly replace compiled
+    % calls to the EXPR ADDADDITIONALRELATIONS with calls to this
+    % macro, but should first perform that self-loading!
+
+    (LOADIFMACROS FACTALGADDITIONALRELATIONS) 
+ 
+%Here we want to add additional relations  Added by SK & VU 02-06-10 
+    (COPYD ' ADDADDITIONALRELATIONS 'FACTALGADDITIONALRELATIONS)
+    (MAYBEAUTOADDRELATIONS)
+
+    (PREPARETOANICK)
+
+    (SETQ LENG (LENGTH files))
+    (COND ( (EQ LENG 0)	  ( FactAlgScreenInput) )
+          ( (EQ LENG 1) (bnmCheckInput files)  )
+          ( (EQ LENG 2) (bnmCheckOutput files) (bnmCheckInput files) )
+
+    )
+     
+
+    (COND (bnmOutFile (DOP bnmOutFile)  )
+          (T  (DEGREEOUTPREPARE))
+    )
+    (SETALGOUTMODE ALG)
+     %added by VU
+    (SETQ TMP (ADD1 (BMI!/ (GETINVARNO)2)))
+    (EVAL (LIST 'SETCHAINSTARTS  TMP TMP))
+      %end added VU
+   
+    (GROEBNERINIT)
+
+  % Here we do not want to add more additional relations
+  % Added by SK & VU 02-06-10
+    (COPYD 'ADDADDITIONALRELATIONS 'IBIDNOOPFCN) 
+    (GROEBNERKERNEL)
+    (WARNINGIFFINITEGB)   
+ ))
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Betii numbers for two modules.     SK&VU 01-08-10       %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+(DF TWOMODBETTINUMBERS (files)
+%      (bnmInputFile  bnmOutFile)
+ (PROG	(!*USERMODE TMP1 TMP2)
+	(COND
+	 ((NOT (EQ (GETOBJECTTYPE) 'TWOMODULES))
+	  (SETTWOMODULESOBJECT)
+	  (TERPRI)
+	  (PRIN2 "*** We turn on the TWOMODULES mode")
+	  (TERPRI)))
+
+	(PREPARETOANICK) 
+   
+  
+	(SETQ LENG (LENGTH files))
+	(COND ( (EQ LENG 0)  (bnmScreenInput ))
+
+	      ( (EQ LENG 1) (bnmCheckInput files)  )
+	      ( (EQ LENG 2) (bnmCheckOutput files) (bnmCheckInput files) ) )
+
+	(COND (bnmOutFile (DOP bnmOutFile))
+	      (T (DEGREEOUTPREPARE)))
+
+	(SETALGOUTMODE ALG)
+
+	%added by VU%
+	(SETQ TMP2  (BMI!- (GETINVARNO) NLMODGEN))
+	(SETQ TMP1  (BMI!- TMP2 NRMODGEN))	   % NALGEN
+
+	(EVAL (LIST 'SETCHAINSTARTS (ADD1 TMP1) TMP2))
+	(EVAL (LIST 'SETCHAINENDS 1 TMP1))
+	(EVAL (LIST 'SETLMODNORMALMONSTARTS 1 TMP1))
+	(EVAL (LIST 'SETLMODNORMALMONENDS (ADD1 TMP2) (GETINVARNO)))
+        %end adding
+
+
+	(GROEBNERINIT)
+	(GROEBNERKERNEL)
+	(WARNINGIFFINITEGB)  
+ ))
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Hochschild homology calculations.    SK&VU 02-06-10     %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+(DF HOCHSCHILD  (files)
+ (PROG	( !*REDEFMSG !*USERMODE TMP1 TMP2)
+	(COND
+	 ((NOT (EQ (GETOBJECTTYPE) 'TWOMODULES))
+	  (SETTWOMODULESOBJECT)
+	  (TERPRI)
+	  (PRIN2 "*** We turn on the TWOMODULES mode")
+	  (TERPRI)))
+	(COND
+	 ((NOT !*PBSERIES)
+	  (ON PBSERIES)
+	  (TERPRI)
+	  (PRIN2 "*** We turn on PBSERIES")
+	  (TERPRI)))
+
+    % Added 2003-11-09/JoeB. If FACTALGADDITIONALRELATIONS is a
+    % self-loading macro, we cannot directly replace compiled
+    % calls to the EXPR ADDADDITIONALRELATIONS with calls to this
+    % macro, but should first perform that self-loading!
+
+    (LOADIFMACROS HOCHADDITIONALRELATIONS) 
+ 
+% Here we want to add additional relations
+	(COPYD ' ADDADDITIONALRELATIONS ' HOCHADDITIONALRELATIONS)
+	(MAYBEAUTOADDRELATIONS)
+	(PREPARETOANICK)
+	(SETQ LENG (LENGTH files))
+	(COND ( (EQ LENG 0)  (HochScreenInput ))
+	      ( (EQ LENG 1) (bnmCheckInput files)  )
+	      ( (EQ LENG 2) (bnmCheckOutput files) (bnmCheckInput files) ))
+
+	% Added 2003-11-05./JoeB
+	(COND ((NOT NRMODGEN) (SETQ NRMODGEN 1)))
+	(COND ((NOT NLMODGEN) (SETQ NLMODGEN 1)))
+
+
+	(COND (bnmOutFile (DOP bnmOutFile))
+	      (T  (DEGREEOUTPREPARE)))
+
+	(SETALGOUTMODE ALG)
+
+        %added by VU%
+	(SETQ TMP2  (BMI!- (GETINVARNO) NLMODGEN))
+	(SETQ TMP1  (BMI!- TMP2 NRMODGEN))  %NALGEN
+
+	(EVAL (LIST 'SETCHAINSTARTS (ADD1 TMP1) TMP2))
+	(EVAL (LIST 'SETCHAINENDS 1 TMP1))
+	(EVAL (LIST 'SETLMODNORMALMONSTARTS 1 TMP1))
+	(EVAL (LIST 'SETLMODNORMALMONENDS (ADD1 TMP2) (GETINVARNO)))
+        %end adding
+    
+     (GROEBNERINIT)
+
+  % Here we do not want to add more additional relations
+  % Added by SK & VU 02-06-10 
+    (COPYD 'ADDADDITIONALRELATIONS 'IBIDNOOPFCN) 
+     (GROEBNERKERNEL)   
+     (WARNINGIFFINITEGB)
+))
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%  Some debugging facilities (for the user).		  %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+(DF PRINTNEXT (u)
+ (PROG	(!&!*CHWITHERR!# !&!*OLDCH!#)
+	(SETQ !&!*CHWITHERR!# (COND ((ATOM u) u)
+				    ((ATOM (CDR u)) (CDR u))
+				    (T (CADR u))))
+	(COND ((NOT (FIXP !&!*CHWITHERR!#))
+	       (SETQ !&!*CHWITHERR!# !&!*PRESENTCHAN!#)))
+
+	% Not so good: no error check!
+	(SETQ !&!*OLDCH!# (RDS !&!*CHWITHERR!#))
+	(PRINT (READ))
+	(RDS !&!*OLDCH!#) ))
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%  Some abbreviations  VU	  020626	          %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+(DE PREPARETOANICK ()
+ (PROGN (COND ((NOT !*AnickIsLoaded)
+	       (LOAD ANICK)
+	       (ON AnickIsLoaded)))
+
+%Changed by SC&VU 16.06.2005 because
+%if e.g. we (in this order) call ANICK,
+%   SETNORESOLUTION, and ANICK again, the second call
+%   to ANICK does not work. The reason is that only
+%   when the anick module is loaded the setup changes
+%   are made.
+	(SETRESOLUTIONTYPE ANICK)
+	(COND (!*STANDARDANICKMODES
+	       (ONFLYBETTI T)))
+	(SETQ bnmScInput NIL)
+	(COND ((EQ (GETRINGTYPE) 'COMMUTATIVE)
+               (PRIN2 "*** We turn on noncommutativity")
+	       (TERPRI)
+	       (NONCOMMIFY)))
+	(COND
+	 ((NOT !*PBSERIES)
+	  (ON PBSERIES)
+	  (TERPRI)
+	  (PRIN2 "*** We turn on PBSERIES")
+	  (TERPRI)))
+
+	(OFF SAVERECVALUES)
+))
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Commutative Hilbert series computations. SC&VU 28.06.2002 %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+(DF HILBERT (files)
+   (PROG ( !*PBSERIES LENG)
+	 (COMMIFY)
+	 (SETQ HlbScInput NIL)
+         (SETQ LENG (LENGTH files))
+         (COND ( (EQ LENG 0) (HlbScreenInput ))
+               ( (EQ LENG 1) (HlbCheckInput files)  )
+               ( (EQ LENG 3) (HlbCheckOutput files) (HlbCheckInput files) )
+         )
+         (SETALGOUTMODE ALG)
+         (COND (HlbGbFile (DOP HlbGbFile)  )
+               (T  (DEGREEOUTPREPARE))
+          )
+         (GROEBNERINIT)
+	 (GROEBNERKERNEL)
+         (CALCRATHILBERTSERIES)
+         (SERIESPRINTING)
+         (GROEBNERFINISH)
+
+
+  )
+) 
+
+
+%Empty procedure to do nothing
+(DE NODISPLAY ()
+)
+%2 Procedures for checking files. Probably should be
+% replaced or moved to another place. /ufn 2005-06-21 
+(DE RabbitCheckInput (file)
+  (COND ( (NOT  (FILEP file) )
+          (PRIN2 "***Input files must exist")  (TERPRI)
+          (PRIN2 "Input data from the keyboard")  (TERPRI)
+          (SETRABBIT 0 1 100)
+          (ALGFORMINPUT)
+        )
+        (T
+           
+           (DSKIN file)
+        )
+  )
+)
+(DE RabbitCheckOutput ( outputfile)
+    (COND ( (NOT (STRINGP outputfile))
+            (PRIN2 "***Incorrect output file.") (TERPRI)
+            (PRIN2 "Do you agree to use the file outf____.rab as output ?" )
+            (TERPRI)
+            (COND ((YESP "Type Yes or No")
+                   (SETQ RabbitFile "outf____.rab")
+                  )
+                  (T
+                   (PRIN2 "No output file. Program is canceled") (TERPRI)
+                   (QUIT) %It should be changed after the implementation
+                          %of new input-output files handling procedure
+
+                  )
+             )
+          )
+          (T (SETQ  Rabbitfile outputfile))
+    )
+)  
+
+%Procedure to set parameters for RABBIT /ufn 2005-06-21
+(DE SETRABBIT (start step finish)
+  (COND ((AND (FIXP start)(FIXP step) (FIXP  finish)) 
+                        (SETQ startdeg start) 
+                        (SETQ stepdeg step)
+                        (SETQ finishdeg finish) )
+             (T      (PRIN2 "Wrong parameters for RABBIT" )(TERPRI)(QUIT))
+     )
+   
+)
+(DE PRINTRABBITSTEPS () 
+   (PROGN
+   (PRIN2 " steps: ")
+   (PRIN2 startdeg)(PRIN2 ",") 
+   (PRIN2 stepdeg)(PRIN2 ",")
+   (PRIN2  finishdeg)(TERPRI))
+)
+ 
+% Procedure to calculate GB for nongraded algebras. VU & SC 02-07-11
+% It works at follows: homogenize the input, calculate until maxdeg (which
+% is startdeg in the beginning), cancels homogenizing variable if possible
+% and jumps to the start again. When it is impossible to cancel it increase
+% maxdeg by stepdeg and repeat the procedure until finishdeg will be
+% achieved or finite GB will be obtained.
+%  Restrictions : no element of obtained GB should have degree 1 or 0.
+% For debugging ON should be put in the text
+% /ufn 2005-06-21
+% New values for parameters: if 1 or 2 - they are files, if 3 - they are
+% numbers used for SETRABBIT, if 0 parameters  are 0,1, 20)
+(DF RABBIT (parameters)
+ 
+ (PROG	(LENG res GBOut tmp maxdeg jumps RabbCh
+	 oldch  oldded oldcdd  !*debugging  !*REDEFMSG)
+	(OFF GC)
+	(OFF debugging)
+	(COND ((NOT !*debugging)
+	       (COPYD 'oldded 'DEGREEENDDISPLAY)
+	       (COPYD 'DEGREEENDDISPLAY 'NODISPLAY)
+	       (COND ((GETD 'CUSTCLEARCDEGDISPLAY)
+		      (COPYD 'oldcdd 'CUSTCLEARCDEGDISPLAY)))
+	       (COPYD 'CUSTCLEARCDEGDISPLAY 'NODISPLAY)
+	       (ON CUSTSHOW)))
+	(SETSAFELOWTERMSHANDLING)
+	(SETQ jumps 0)
+	(SETRABBIT 0 1 20)
+	(SETALGOUTMODE ALG)
+	(NONCOMMIFY)
+	(OFF PBSERIES)
+	% (without parameters, it calculates to degree 20 maximum)
+	(SETQ LENG (LENGTH parameters))
+	(COND ( (EQ LENG 0) (PRIN2 "Degree limit is 20" )
+		(TERPRI)(ALGFORMINPUT))
+	      ( (EQ LENG 1) (RabbitCheckInput (CAR parameters) ) )
+	      ( (EQ LENG 2) (RabbitCheckOutput (CADR parameters)) 
+		(RabbitCheckInput (CAR parameters)) )
+	      ( (EQ LENG 3) (SETRABBIT (CAR parameters)
+				       (CADR parameters) 
+				       (CADDR parameters))
+		(ALGFORMINPUT)    )
+	      ( T (PRIN2 "Wrong number of parameters in RABBIT")
+		  (TERPRI) (QUIT))
+	)
+	(SETQ deg startdeg)
+	(PRINTRABBITSTEPS)
+	
+	(HOMOGENISEINPUT)
+	(COND ( !*debugging
+		(PRIN2 "Now write only variables with homogenising one and twice ;;")
+		(TERPRI)
+		(ALGFORMINPUT) ))
+ M	(SETMAXDEG deg)
+ L	(SETQ MinCancelingDegree (ADD1 deg))
+	(GI) (GK)
+	(COND  (!*debugging (BO)))
+	(SETQ GBOut (OUTPUT2LISPPOLS))
+	%(PRIN2 "GBOut before cancelling=")(PRINT GBOut)(TERPRI)
+	(CancelInListPol GBOut)
+	%(PRIN2 "GBOut after cancelling=")(PRINT GBOut)(TERPRI)
+	(COND ((LESSP MinCancelingDegree (ADD1 deg))
+	       (CLEARIDEAL)
+	       (SETQ tmp (MAPCAR GBOut (FUNCTION LISPPOL2REDAND)))
+	       (SETQ InPols (SortlPol tmp))
+	       (SETQ jumps (ADD1 jumps))
+	       (PRIN2 "RABBIT: Jump number ")(PRINT jumps)(TERPRI)
+	       (GO L)))
+	% use that the last element has max degree
+	(SETQ maxdeg (DegreeLispPol (LASTCAR  GBOut)))
+
+	(COND ((LESSP (PLUS2 maxdeg maxdeg) (PLUS2 deg 2))
+	       (PRIN2 "GB is completely calculated")(TERPRI)
+	       (GO Out)))
+	(SETQ deg (PLUS2 deg stepdeg ))
+	(COND ((LESSP deg (ADD1 finishdeg))
+	       (CLEARIDEAL)
+	       (SETQ InPols (SortlPol (MAPCAR GBOut (FUNCTION LISPPOL2REDAND))))
+	       (SETQ jumps (ADD1 jumps))
+	       (PRIN2 "RABBIT: Added step, Maxdegree=") (PRINT deg)
+	       (PRIN2  " Jump number ")(PRINT jumps)(TERPRI)
+	       (GO M)))
+
+	(PRIN2 "Calculation was stopped by maxdeg limitations")(TERPRI)
+	(PRIN2 "GB may be different")(TERPRI)
+    Out
+	(COND ((NOT !*debugging)
+	       (COND ((GETD 'olcded)
+		      (COPYD  'CUSTCLEARCDEGDISPLAY 'oldcdd)))
+	       (COPYD 'DEGREEENDDISPLAY 'oldded))
+	      (T  (BO)))
+	(GF)    
+
+	(SETQ res (DeHomogListofPol GBOut))
+       % (PRINT res)
+	(SETQ tmp(MAPCAR res (FUNCTION LISPPOL2REDAND)))
+        
+	(PRIN2  "Rabbit has finishied jumping.")
+        (COND (  (EQ LENG 2) 
+		 (SETQ RabbCh (OPEN Rabbitfile 'OUTPUT))
+		 (SETQ oldch (WRS RabbCh)))
+	      (T (PRIN2  " GB is ") (TERPRI))
+         )
+	(MAPC tmp  (FUNCTION REDANDALGOUT))
+        (COND (  (EQ LENG 2)
+		 (FLUSHCHANNEL RabbCh)
+		 (WRS oldch)
+		 (CLOSE RabbCh)))
+))

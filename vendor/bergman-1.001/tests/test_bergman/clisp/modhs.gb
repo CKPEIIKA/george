@@ -1,0 +1,39 @@
+% setinvars z,y,x,b,a;
+% setmodulevars b,a;
+% (SETMAXDEG 6 )
+% 2
+x*y+z*x,
+   x^2,
+   
+% 3
+x*z*x,
+   
+% 4
+x*z^2*x,
+   
+% 5
+x*z^3*x,
+   
+% 6
+x*z^4*x,
+   
+% 3
+-a*z*x-b*y^2+14*b*z^2,
+   
+% 4
+-b*y^2*x+14*b*z^2*x,
+   a*z^3-b*x*z*y,
+   a*z^2*x-b*y^3+14*b*z^2*y,
+   
+% 5
+b*y^2*z*x-14*b*z^3*x,
+   -b*y^3*x+14*b*z^2*y*x,
+   -b*x*z*y*x-b*y^4+14*b*z^2*y^2,
+   
+% 6
+-b*y^2*z^2*x+14*b*z^4*x,
+   b*y^3*z*x-14*b*z^2*y*z*x,
+   -b*y^4*x+14*b*z^2*y^2*x,
+   b*x*z*y*z*x-b*y^5+14*b*z^2*y^3,
+   
+Done

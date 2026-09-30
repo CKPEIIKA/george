@@ -1,0 +1,175 @@
+8,9c8
+< 	  !*IMMEDIATEFULLREDUCTION !*NOBIGNUM BMVERSIONSTRING
+< 	  !*OBSOLETENAMESINFORM)
+---
+>           !*IMMEDIATEFULLREDUCTION !*NOBIGNUM BMVERSIONSTRING)
+12c11
+< (FLUID '(HISTORYLIST!* oldoutfi PBoutfi Houtfi oldded))
+---
+> (FLUID '(HISTORYLIST!* oldoutfi PBoutfi Houtfi oldded !*OBSOLETENAMESINFORM))
+13a13
+> 
+21,22c21
+< (LOAD "full" "full1" "auxil")		% Main procedures, and extras.
+< % (DSKIN "$bmroot/src/debug.sl") % For development use only.
+---
+> ;(LOAD "full" "full1" "auxil")                % Main procedures, and extras.
+24c23,59
+< (COND ((FILEP "$bmload/alg2lsp.b") (LOAD "alg2lsp"))
+---
+> ;full
+> (LOAD (MKBMPATHEXPAND "$bmload/modes.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/main.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/inout.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/monom.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/ncmonom.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/normwd.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/reclaim.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/polynom.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/reduct.fas"))
+> 
+> ;full1
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/coeff.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/char0.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/strategy.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/dialogue.fas"))
+> 
+> ;auxil
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/auxil.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/homog.fas"))
+> 
+> (COND ((SETQ temp
+>          (PROBE-FILE (MKBMPATHEXPAND "$bmload/alg2lsp.fas"))) (LOAD temp))
+28a64,65
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmaux/topproc.sl"))
+30d66
+< (LAPIN (MKBMPATHEXPAND "$bmauxil/topproc.sl"))
+31a68,84
+> ;stg
+> (LOAD (MKBMPATHEXPAND "$bmload/checkstg.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/accproc.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/subsproc.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/stg.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/monomstg.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/bind.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/write.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/ideal.fas"))
+> (RECLAIM)
+32a86,101
+> ;hseries
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/hseries.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/hscomm.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/modinout.fas"))
+> (C-OFF RAISE)
+> (LOAD (MKBMPATHEXPAND "$bmload/sermul.fas"))
+> 
+> (ON |HSysLoaded|)
+> 
+> ;anick
+> (OFF |AnickIsLoaded|)
+> 
+> 
+35c104
+< (COND ((FILEP "specbrg2.sl") (LAPIN "specbrg2.sl")))
+---
+> (COND ((PROBE-FILE "specbrg2.sl") (LOAD "specbrg2.sl")))
+37c106
+< (OFF RAISE)
+---
+> (C-OFF RAISE)
+47,59c116,117
+< %	This "should" be the 'locally' most efficient bignum module:
+< (PSL!-SPECIFIC
+<   (SETQ BigNumbFile 'ZBIG)
+< )
+< 
+< %	In reduces, bignums should already be loaded:
+< (REDUCE!-SPECIFIC
+<   (PROGN (SETQ BigNumbFile NIL)
+< 	 (ON NOBIGNUM)
+< 	 (ON Bignums!&Are!&Loaded))
+< )
+< 
+< (SETQ HSERIESFILE!* "hseries")
+---
+> ;(SETQ PBSERIESFILE!* (MKBMPATHEXPAND "$bmload/pbseries.fas"))
+> (SETQ HSERIESFILE!* (MKBMPATHEXPAND "$bmexe/hseries"))
+64c122
+< (SETQ MODULO2FILE!* "char2")
+---
+> (SETQ MODULO2FILE!* (MKBMPATHEXPAND "$bmload/char2.fas"))
+66,68d123
+< (PSL!-SPECIFIC
+<  (SETQ MAKEPRIMEFILE!* (MKBMPATHEXPAND "$bmshells/mkprimefile"))
+< )
+72c127
+< (SETQ !&!*PRIMAUXFILE (MKBMPATHEXPAND "$bmload/primaux"))
+---
+> (SETQ !&!*PRIMAUXFILE (MKBMPATHEXPAND "$bmload/primaux.fas"))
+94c149
+< (SETQUICKLOWTERMSHANDLING)
+---
+> % KAE 2002-09-01 13:52:09 added SETNORESOLUTION and DEGREVLEXIFY after JoeB
+100,101d154
+< (SETALGOUTMODE ALG)
+< (SETREDUCTIVITY T)
+113c166
+< (COND ((FILEP "specbrg3.sl") (LAPIN "specbrg3.sl")))
+---
+> (COND ((PROBE-FILE "specbrg3.sl") (LOAD "specbrg3.sl")))
+118,119c171,172
+< (COND ((FILEP (MKBMPATHEXPAND "$bmroot/patches.sl"))
+<        (LAPIN (MKBMPATHEXPAND "$bmroot/patches.sl"))))
+---
+> (COND ((PROBE-FILE (MKBMPATHEXPAND "$bmroot/patches.sl"))
+>        (M-LAPIN (MKBMPATHEXPAND "$bmroot/patches.sl"))))
+124c177
+< (COND ((FILEP "local.sl") (LAPIN "local.sl")))
+---
+> (COND ((PROBE-FILE "local.sl") (LOAD "local.sl")))
+129c182
+< (ON RAISE)
+---
+> (C-ON RAISE)
+131,146d183
+< 
+< % Not good. This is a PSL procedure. A more general syntax 'generic'
+< % would be preferrable.
+< 
+< (SAVESYSTEM  BMVERSIONSTRING
+< 	     (GETENV "bmvers")
+< 	    '((SETQ TOPLOOPNAME!* "bergman")
+< %	      (ADD1 4) % "Do anything", to counter confounded bug.
+< %	      (READ-INIT-FILE "bergman")
+< 	     ))
+< 
+< % For debugging purposes only.
+< 
+< (COND ((DEFP 'INTERPBACKTRACE) (INTERPBACKTRACE)))
+< 
+< (QUIT)

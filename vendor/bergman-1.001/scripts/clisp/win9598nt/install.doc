@@ -1,0 +1,69 @@
+I. Check your CLISP
+
+You should have Common LISP installed. The necessary version is
+2.39 of 2006-07-16 or a newer one.
+
+On your Windows desktop, select Srart | Run (the Start button is
+usually located in the lower left corner of the screen).
+Enter the command 
+  cmd
+if you are under Windows NT/2000/2003/XP, and
+  command 
+under Windows 95/98/ME.
+    
+At the terminal window, try to issue the command
+  clisp
+  
+If the CLISP installation directory is not in PATH, issue:
+  <CLISP-dir>\clisp
+  
+The directory <CLISP-dir> contains the executable clisp.exe, 
+documents like README and NEWS, and a lot of subdirectories:
+base, bindings, ..., full, ..., src, ... 
+  
+If CLISP starts, issue the command:
+  (lisp-implementation-version)
+The result should be like this:    
+  [1]> (lisp-implementation-version)
+  "2.39 (2006-07-16) (built on stnt067 [192.168.0.1])"
+  [2]>_
+
+Then enter
+  (quit)
+to terminate the CLISP session.
+
+Issue the command
+  exit
+to terminate the terminal session and to close the terminal
+window.  
+
+If CLISP does not start, ask you system administrator to get 
+the newest CLISP from 
+  http://clisp.sourceforge.net/ 
+and to install it globally for all users. Add <CLISP-dir>
+to the PATH environment variable to start CLISP by a simple command
+  clisp
+
+II. Installation
+
+Start the terminal (cmd or command), change to directory
+<bergman-root-dir>\scripts\clisp\win9598nt, and issue the
+installation command
+
+The syntax of the installation command is:
+  makebr.bat <CLISP-dir>
+
+For example, if you have Common Lisp installed in the directory 
+c:\clisp-2.39 and unpacked Bergman in the directory 
+d:\bergman0.99 then you may install Bergman from the directory
+d:\bergman0.99\scripts\clisp\win9598nt using the following command:
+  makebr.bat c:\clisp-2.39
+
+After installation issue the command
+  exit
+to terminate the terminal session and to close the terminal
+window.  
+
+III. Log file
+
+  Log of installation is <bergman-root-dir>/logs/clwin9598nt.log.  

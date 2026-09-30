@@ -1,0 +1,5 @@
+(setmaxdeg 5)
+(setq anickresolutionoutputfile "test_bergman/hoch1.out")
+(algforminput)
+vars  x,y, X,Y,r,l;
+x*y;

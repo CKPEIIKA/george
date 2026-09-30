@@ -1,0 +1,8 @@
+(setmaxdeg 8)
+%(setq anickresolutionoutputfile "test_bergman/fact.out")
+(algforminput)
+vars  x,y,a,b,c, X,Y,A,B;
+x*x-x*y, a*a-b*a,
+x*a-a*x, x*b-b*x,
+y*a-a*y, y*b-b*y,
+c*x-c*a, c*y-c*b;

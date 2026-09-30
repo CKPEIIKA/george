@@ -1,0 +1,311 @@
+#!/bin/sh
+
+#    CHANGES:
+
+# KAE 2005-08-03 Changed to use top compile sources from psl
+
+# Removed the temporary compilation of safe./JoeB 2005-03-14
+
+# KAE 2004-06-05
+# Added the mkenvv.lsp staff to set env. variables from inside bergman
+# Deleted env. vars setiings from the bergman starting script
+
+# Added the compilation of safe, as a temporary measure./JoeB 2004-06-02
+# Assuming that the name of the executable file is clisp
+
+PrintUsage()
+{
+ echo "Usage:"
+ echo "1. For automatic [interactive] configuration:"
+ echo "   $0 -auto [-i]"
+ echo "2. For nointeractive manual configuration"
+ echo "   $0 <clisp-dir> [<bergman-root-dir> [<lisp-executable-file-name]]"
+}
+
+dblecho()
+{
+ echo "$1"
+ echo "$1" >>bergman.log
+}
+
+DoAutoConf()
+{
+ if [ $# -ne 1 ]
+ then
+  echo "Usage: DoAutoConf [1|0]"
+  exit 1
+ fi
+
+ DACwhclisp=`which clisp`
+ if [ -n "`echo $DACwhclisp | grep 'not found'`" -o -n "`echo $DACwhclisp | grep 'no clisp in'`" ]
+ then
+  echo "I can't find clisp. Try manual installation."
+  exit 1
+ fi
+ DACcd=`pwd`
+ cd ../../..
+ DACbmroot=`pwd`
+ cd $DACcd
+ if [ "$1" = 0 ]
+ then
+  bmroot=$DACbmroot
+  clispfile=$DACwhclisp
+  clispb=$DACwhclisp
+  return
+ fi
+
+# interactive
+ echo "Found Common Lisp as $DACwhclisp"
+ echo -n "Change? [n] "
+ read DACans
+ if [ "$DACans" = "y" ]
+ then
+  echo -n "Enter new value: "
+  read DACwhclisp
+  if [ ! -x "$DACwhclisp" ]
+  then
+   echo "Something wrong with $DACwhclisp"
+   exit 1
+  fi
+ fi
+ echo "Bergman root is $DACbmroot"
+ echo -n "Change? [n] "
+ read DACans
+ if [ "$DACans" = "y" ]
+ then
+  echo -n "Enter new value: "
+  read DACbmroot
+  if [ ! -d "$DACbmroot" ]
+  then
+   "Something wrong with $DACbmroot"
+   exit 1
+  fi
+ fi
+ bmroot=$DACbmroot
+ clispfile=$DACwhclisp
+ clispb=$DACwhclisp
+ return
+}
+
+checkcode ()
+{
+if [ $? -ne 0 ]
+then
+ echo "Something wrong in executing CLISP"
+ deletetempfilesandexit
+fi
+}
+
+noextfilesweareusing ()
+{
+ DwrK=""
+ if [ $# -ne 0 ]
+ then
+  DwrK="$1/"
+ fi
+ echo "${DwrK}anick ${DwrK}hseries ${DwrK}full ${DwrK}full1 ${DwrK}auxil ${DwrK}stg"
+}
+
+deletetempfilesandexit ()
+{
+ rm -f *.sl *.lsp *.fas *.lib *.mem
+ rm -f `noextfilesweareusing`
+ mv bergman.log $bmroot/logs/clunix.log
+ cd $currentdir
+ exit 1
+}
+
+case "$#" in
+  0)
+    PrintUsage
+    exit 1
+   ;;
+
+  1)
+    if [ "$1" = "-auto" ]
+    then
+     DoAutoConf 0
+    elif [ -d "$1" -a "$1/clisp" ]
+     then
+      savecd=`pwd`
+      cd ../../..
+      bmroot=`pwd`
+      cd $savecd
+      clispfile="$1/clisp"
+      clispb="$1/clisp"
+     else
+      echo "Directories do not exist: $1, or $1/clisp"
+      exit 1
+    fi
+   ;;
+
+  2)
+    if [ "$1" = "-auto" ]
+    then
+     if [ "$2" = "-i" ]
+     then
+      DoAutoConf 1
+     else
+      PrintUsage
+      exit 1
+     fi
+    elif [ -d "$1" -a -d "$2" -a "$1/clisp" ]
+     then
+      bmroot=$2
+      clispfile="$1/clisp"
+      clispb="$1/clisp"
+     else
+      echo "Directories do not exist: $1, or $2, or $1/clisp"
+      exit 1
+    fi
+   ;;
+
+   3)
+     if [ -d "$1" -a -d "$2" -x "$1/$3" ]
+      then
+       bmroot=$2
+       clispfile="$1/$3"
+       clispb="$1/$3"
+      else
+       echo "Something do not exists: $1, or $2, or $1/$3"
+       exit 1
+     fi
+    ;;
+
+   *)
+     PrintUsage
+     exit 1
+esac
+
+echo "Installing bergman package..."
+echo "Using root: [$bmroot]"
+echo "Using Common Lisp command line: [$clispb]"
+
+echo "Step 1 of 12: Setting the environment"
+bmsrc=$bmroot/src
+bmdomains=$bmroot/domains
+bmaux=$bmroot/auxil
+bmauxil=$bmroot/auxil
+bmload=$bmroot/lap/clisp/unix
+bmexe=$bmroot/bin/clisp/unix
+bmvers=`cat $bmauxil/version`
+
+clsrc=$bmroot/scripts/clisp/unix
+clbin=$bmroot/bin/clisp/unix
+clasrc=$bmaux/clisp
+export bmroot bmsrc bmdomains bmaux bmauxil bmload bmexe bmvers
+
+currentdir=`pwd`
+
+#echo "Current dir is: $currentdir"
+
+#rem checking CLISP version
+echo "Step 2 of 12: Checking CLISP version"
+$clispb $clasrc/prelisp.lsp
+if [ $? -ne 0 ]
+then
+  echo "Please upgrade your CLISP version at least to 2.39 (2006-07-16)"
+  exit 1
+fi
+
+cd $bmexe
+echo "Installing bergman package..." >bergman.log
+echo "Using root: [$bmroot]" >>bergman.log
+echo "Using Common Lisp command line: [$clispb]" >>bergman.log
+echo "Step 1 of 12: Setting the environment" >>bergman.log
+echo "Step 2 of 12: Checking CLISP version" >>bergman.log
+
+#rem Copying necessary files
+dblecho "Step 3 of 12: Copying necessary files"
+cp $clsrc/setcmp1.sl speccmp1.sl
+cp $clsrc/setcmp2.sl speccmp2.sl
+cp $clsrc/setlisp.sl speclisp.sl
+cp $clsrc/setmacr.sl specmacr.sl
+cp $clsrc/setmode.sl specmode.sl
+cp $clasrc/versmacr.sl .
+cp $clasrc/switches.lsp .
+cp $clasrc/environ.lsp .
+cp $clasrc/environ0.lsp .
+cat $clasrc/envhead-cl.lsp $clasrc/compext-cl.lsp > ./compext-cl.lsp
+cat $clasrc/envhead-cl.lsp $clasrc/comphead-cl.lsp $bmaux/compile.sl $clasrc/comptail-cl.lsp > ./compile-cl.lsp
+cat $clasrc/envhead-cl.lsp $clasrc/comphead-cl.lsp $bmaux/compan.sl $clasrc/comptail-cl.lsp > ./compan.lsp
+cat $clasrc/envhead-cl.lsp $clasrc/bmhead-cl.lsp $bmaux/bmtop.sl $clasrc/bmtail-cl.lsp > ./bmtop-cl.lsp
+cp $bmsrc/alg2lsp.sl .
+#cp -f $clasrc/anick .
+#cp -f $clasrc/hseries .
+cp $clasrc/checkerr.lsp .
+# KAE 2004-06-05 (mkenvv)
+cp $clasrc/mkenvv.lsp .
+
+#rem Deleting previous binaries
+dblecho "Step 4 of 12: Deleting previous binaries"
+rm -f $bmload/*
+rm -f lispbergman.mem `noextfilesweareusing`
+rm -f bergman.exe
+
+#rem Creating fullversion
+dblecho "Step 5 of 12: Creating fullversion"
+rm -f $bmauxil/fullversion
+cat $bmauxil/fvstart $bmauxil/version $bmauxil/fvend > $bmauxil/fullversion
+
+#rem Compiling environ
+dblecho "Step 6 of 12: Compiling environ"
+# KAE 2004-06-05 (mkenvv)
+$clispb <mkenvv.lsp >>bergman.log
+checkcode
+
+#rem Compiling SL extensions
+dblecho "Step 7 of 12: Compiling slext"
+$clispb <compext-cl.lsp >>bergman.log
+checkcode
+
+# Compiling Bergman and hseries
+dblecho "Step 8 of 12: Compiling Bergman and hseries"
+$clispb <compile-cl.lsp >>bergman.log
+checkcode
+
+# Compiling anick
+dblecho "Step 9 of 12: Compiling anick"
+$clispb <compan.lsp >>bergman.log
+checkcode
+
+# Copying generated files
+dblecho "Step 10 of 12: Copying generated files"
+cp `noextfilesweareusing "$bmload"` .
+cp $bmload/alg2lsp.* .
+cp $bmload/alg2lsp.fas $bmload/alg2lsp.b
+
+# Generating image
+dblecho "Step 11 of 12: Generating image"
+$clispb <bmtop-cl.lsp >>bergman.log
+checkcode
+
+# Checking the log
+dblecho "Step 12 of 12: Checking the log"
+$clispb checkerr.lsp
+if [ $? -ne 0 ]
+then
+  dblecho "There are errors. Please check the log file"
+  deletetempfilesandexit
+fi
+
+# mv lispinit.mem lispbergman.mem
+cat >bergman <<EObergman
+exec $bmexe/bergman.exe \$1 \$2 \$3 \$4 \$5 \$6 \$7 \$8 \$9
+EObergman
+
+chmod a+x bergman
+
+rm -f `noextfilesweareusing` *.sl *.lsp *.fas *.lib
+cp $bmload/anick .
+cp $bmload/hseries .
+if [ -f $bmroot/logs/clunix.log ]
+ then
+  mv $bmroot/logs/clunix.log $bmroot/logs/clunix.old
+fi
+dblecho "Installation successful"
+dblecho "Now you can use Bergman system by calling $bmexe/bergman"
+mv bergman.log $bmroot/logs/clunix.log
+
+cd $currentdir
+

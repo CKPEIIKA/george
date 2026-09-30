@@ -1,0 +1,5 @@
+(NONCOMMIFY)
+(SETMAXDEG 6)
+(ALGFORMINPUT)
+vars x,y;
+x*y;

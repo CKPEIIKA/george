@@ -1,0 +1,10 @@
+setenv bmexe $bmroot/bin/Red/$MACHINE
+setenv bmload $bmroot/lap/Red/$MACHINE
+setenv bmsrc $bmroot/src
+setenv bmauxil $bmroot/auxil
+setenv bmshells $bmroot/shells/Red/$MACHINE
+setenv bmmkdir $bmroot/scripts/Red/$MACHINE
+setenv bmdomains $bmroot/domains
+setenv bmvers bergman`cat $bmauxil/version`
+setenv bmlog $bmroot/logs
+

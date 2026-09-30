@@ -1,0 +1,3 @@
+symbolic;
+!*lisp_hook := t;
+end;

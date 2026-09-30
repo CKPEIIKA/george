@@ -1,0 +1,98 @@
+[
+  {
+    "Package": "singular-ui",
+    "Version": "1:4.4.1+ds-2",
+    "Filename": "pool/main/s/singular/singular-ui_4.4.1+ds-2_amd64.deb",
+    "SHA256": "4e28bb5d607d2d4f2174dbb19ec8e82a33687139a63faccd2dcdcc3776808dff"
+  },
+  {
+    "Package": "singular-data",
+    "Version": "1:4.4.1+ds-2",
+    "Filename": "pool/main/s/singular/singular-data_4.4.1+ds-2_all.deb",
+    "SHA256": "01b7480b34d2e19a4e68304e1f1ca53cd35ee9a6974baa68db00f99d7e9fdf24"
+  },
+  {
+    "Package": "singular-modules",
+    "Version": "1:4.4.1+ds-2",
+    "Filename": "pool/main/s/singular/singular-modules_4.4.1+ds-2_amd64.deb",
+    "SHA256": "c156abdfc3370f84232c57b51ba6d78dff68347d8cf52fc25a3106a094b2426c"
+  },
+  {
+    "Package": "libsingular4m4n1",
+    "Version": "1:4.4.1+ds-2",
+    "Filename": "pool/main/s/singular/libsingular4m4n1_4.4.1+ds-2_amd64.deb",
+    "SHA256": "c1be1248ccc79461b2036053dfbe86d05759c152481781c4cf37a8461117fcbc"
+  },
+  {
+    "Package": "libflint19",
+    "Version": "3.1.3-2",
+    "Filename": "pool/main/f/flint/libflint19_3.1.3-2_amd64.deb",
+    "SHA256": "81ac3b20d8a1f125100c84b10b3825a9344080575f88769b553dfe5b008b9e4a"
+  },
+  {
+    "Package": "libntl44",
+    "Version": "11.5.1-1+b3",
+    "Filename": "pool/main/n/ntl/libntl44_11.5.1-1+b3_amd64.deb",
+    "SHA256": "e6de65109fdc0e95dbcad8bd7b78f60f781bed6dc610d71f450279680fd4d193"
+  },
+  {
+    "Package": "libgf2x3",
+    "Version": "1.3.0-3",
+    "Filename": "pool/main/g/gf2x/libgf2x3_1.3.0-3_amd64.deb",
+    "SHA256": "b1199705ce6aa20d37c96704adfdff5aeff618f66902bfc890623c6f9ed2e67d"
+  },
+  {
+    "Package": "libcdd0t64",
+    "Version": "094m-1.1+b1",
+    "Filename": "pool/main/c/cddlib/libcdd0t64_094m-1.1+b1_amd64.deb",
+    "SHA256": "04b559d6fa0a49ae33d1b1d74088b3178ce36fa3cb7df62e6a8e9d8b80f3772b"
+  },
+  {
+    "Package": "ocaml",
+    "Version": "5.3.0-3",
+    "Filename": "pool/main/o/ocaml/ocaml_5.3.0-3_amd64.deb",
+    "SHA256": "226e71a9cbb59148280298a74a3930a6d01b052cf4c17cd09675f80fe323cdd1"
+  },
+  {
+    "Package": "ocaml-base",
+    "Version": "5.3.0-3",
+    "Filename": "pool/main/o/ocaml/ocaml-base_5.3.0-3_amd64.deb",
+    "SHA256": "039652a52bce7fd48abc2d905225d1811bd65e139ee6b8a28650c957a235a013"
+  },
+  {
+    "Package": "ocaml-interp",
+    "Version": "5.3.0-3",
+    "Filename": "pool/main/o/ocaml/ocaml-interp_5.3.0-3_amd64.deb",
+    "SHA256": "fe4595e7bf353c6b81a4e46ffc552f1c82cc5a33cd0c724251cbad010dddf1b0"
+  },
+  {
+    "Package": "libstdlib-ocaml",
+    "Version": "5.3.0-3",
+    "Filename": "pool/main/o/ocaml/libstdlib-ocaml_5.3.0-3_amd64.deb",
+    "SHA256": "5334efd10830ee37210e87a7ade0f74009192e6e77446f062dc3ca15f95c1043"
+  },
+  {
+    "Package": "libstdlib-ocaml-dev",
+    "Version": "5.3.0-3",
+    "Filename": "pool/main/o/ocaml/libstdlib-ocaml-dev_5.3.0-3_amd64.deb",
+    "SHA256": "dc30c05739633cf8313fd685b635db6eb50d41b2d42f1e83208c269964c8d322"
+  },
+  {
+    "Package": "libcompiler-libs-ocaml-dev",
+    "Version": "5.3.0-3",
+    "Filename": "pool/main/o/ocaml/libcompiler-libs-ocaml-dev_5.3.0-3_amd64.deb",
+    "SHA256": "9b7906c3035dbb3b3e6d6e881413b8d8ccf239409c5677a0382864f0a84f4fe3"
+  },
+  {
+    "Package": "ocaml-dune",
+    "Version": "3.17.2-1+b1",
+    "Filename": "pool/main/o/ocaml-dune/ocaml-dune_3.17.2-1+b1_amd64.deb",
+    "SHA256": "92c9dc9d98431053624fe2639886aeac28b6222a1601510f42a0211a99d56b98"
+  },
+  {
+    "Package": "libgmp10",
+    "Version": "2:6.3.0+dfsg-3",
+    "Filename": "pool/main/g/gmp/libgmp10_6.3.0+dfsg-3_amd64.deb",
+    "SHA256": "d0d0265eb01770f17afd0f7c8c0622f80479dcfbbe13653a0debeec61464e622"
+  }
+]

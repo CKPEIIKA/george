@@ -1,0 +1,45 @@
+1999-01-14: Some remarks (JoeB):
+ - Mostly the changes "Anick's resolution" --> "the Anick resolution"
+is good. However, line 3 should be
+"%     Implementation of the initial Anick resolution routines."
+(rather than "... initial the ...").
+
+ - Function names given to the MAP family pf procedures as second
+arguments should preferably be quoted by means of FUNCTION instead
+of QUOTE, since the compiler then might make more efficient code.
+Thus, line 220 of aninterf.sl should be
+"    (MAPC (CDR anNEWCHAINS) (FUNCTION andiff))" rather than
+"... 'anDIFF)".
+
+ - LINELENGTH resets the line length globally. Thus, when you call it
+in particular printings to files, you should be careful to restore
+the previous line length afterwards, in order not to give the user
+any nasty surprises. (This is fairly easy to do, since the return
+value of a call to LINELENGTH is the previous line length.) Cf. lines
+247, 264, 360 in aninterf.sl.
+
+ - From the double prefix anch- I see that !*anchPrintEdgeString and
+anchEdgeString!* were not supposed to be employed outside chrecord.sl.
+In fact, we provide procedures GETEDGESTRING, GETEDGESTRINGPRINTING,
+SETEDGESTRING, SETEDGESTRINGPRINTING for general access to these
+variables. I think you either should use these procedures in
+aninterf.sl (in the mode handlers), or we should agree on making
+the variables general for anick, removing the -cr- prefix, and
+document them. (I would prefer the first solution, to work only
+through the enumerated procedures.)
+
+---------------------------------------
+JoeB 1999-01-20: Comparing older and newer versions of the source files,
+I noted the following procedure on gauss.sl from 
+Apr 14  1997:
+
+> (DE antpPRINTSDP (sdp)
+>  (MAPC (CDR sdp)
+>        (FUNCTION
+>       (LAMBDA (tm)
+>               (PROGN (anPRINTCHAIN (anSDPTm2ChR tm))
+>                      (PRIN2 ".")
+>                      (antpPRINTQPOLORCONSTANT (anSDPTm2QPol tm)))))))
+
+It seems to be fairly modularised. I think I'd like to compare it to
+other printing procedures; for which purpose I note it here.

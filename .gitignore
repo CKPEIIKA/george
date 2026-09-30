@@ -1,0 +1,28 @@
+# local builds (SBCL reference build, ECL/WebAssembly builds)
+/build/
+node_modules/
+*.fas
+*.fasl
+.DS_Store
+
+# Local agent/configuration files and editor/compiler leftovers.
+/.agents/
+/.aws/
+/.codex/
+.env
+.env.*
+.nfs*
+__pycache__/
+*.pyc
+*.swp
+*.swo
+*~
+
+# These original backup inputs are intentional regression fixtures.
+!vendor/bergman-1.001/tests/test_bergman/anick5~
+!vendor/bergman-1.001/tests/test_bergman/anick_tm~
+!vendor/bergman-1.001/tests/test_bergman/anick_w~
+!vendor/bergman-1.001/tests/test_bergman/lin_nc~
+!vendor/bergman-1.001/tests/test_bergman/lin~
+!vendor/bergman-1.001/tests/test_bergman/nhom~
+!vendor/bergman-1.001/tests/test_bergman/simp_w_max~

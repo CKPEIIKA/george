@@ -1,0 +1,8 @@
+(setnoresolution)
+(setobjecttype ring)
+(setoddprimesmoduli modlogarithmic)
+(setmodulus 7)
+(noncommify)
+(setmaxdeg 15)
+(algforminput)
+vars x,y; 4*x*x-19*y*x+3333*x*y-y*y;

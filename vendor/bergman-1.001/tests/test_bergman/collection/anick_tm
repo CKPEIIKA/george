@@ -1,0 +1,6 @@
+(setq maxdeg 4)
+(setq anickresolutionoutputfile "test_bergman/anick_tm.out")
+(algforminput)
+vars x,y; x*x+y*y+x*y+y*x,x*y;
+
+

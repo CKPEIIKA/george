@@ -1,0 +1,5 @@
+(setmaxdeg 5)
+(setq nmodgen 1)
+%(setq anickresolutionoutputfile "test_bergman/modbtn.out")
+(algforminput)
+vars x,a; x*x, a*x;

@@ -1,0 +1,11 @@
+Replace the prompter bergman (with stag) ?
+-----------------------
+
+Presently, s.a.w.s. mode involves irreversible
+re-definitions of the following procedures: (None???)
+
+-----------------------
+
+The following procedures might be moved elsewhere:
+
+PUREMONPRINT (write.sl -->  )

@@ -1,0 +1,7 @@
+(setmaxdeg 6)
+(setq nlmodgen 1)
+(setq nrmodgen 1)
+%(setq anickresolutionoutputfile "test_bergman/two.out")
+(algforminput)
+vars  x,y, A,B;
+A*x, y*B-x*B;

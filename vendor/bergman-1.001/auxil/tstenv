@@ -1,0 +1,13 @@
+#!/bin/csh
+setenv bmroot ~joeb/bm
+setenv bmexe $bmroot/bin/Red/MACHINE
+setenv bmload $bmroot/lap/Red/MACHINE
+setenv bmsrc $bmroot/xsrc
+setenv bmauxil $bmroot/auxil
+setenv bmshells $bmroot/shells/Red/MACHINE
+setenv bmmkdir $bmroot/scripts/Red/MACHINE
+setenv bmdomains $bmroot/domains
+#setenv t `cat bmversion`
+#setenv bmvers "bergman$t"
+setenv bmvers bergman`cat $bmroot/auxil/bmversion`
+setenv bmlog $bmroot/logs

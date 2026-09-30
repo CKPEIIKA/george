@@ -1,0 +1,49 @@
+rm ../../test_bergman/clisp/log.diff
+rm ../../test_bergman/clisp/logfile 
+
+rm ../../test_bergman/clisp/simple_c.gb
+rm ../../test_bergman/clisp/simple_nc.gb
+rm ../../test_bergman/clisp/ncpbhg.gb 
+rm ../../test_bergman/clisp/ncpbhg.hs 
+rm ../../test_bergman/clisp/ncpbhg.pb 
+rm ../../test_bergman/clisp/hilb.gb 
+rm ../../test_bergman/clisp/hilb.hs 
+rm ../../test_bergman/clisp/interrupt_c.gb 
+rm ../../test_bergman/clisp/simp_weight_c.gb 
+rm ../../test_bergman/clisp/simp_weight_nc.gb 
+rm ../../test_bergman/clisp/simple_el.gb 
+rm ../../test_bergman/clisp/modhs.gb 
+rm ../../test_bergman/clisp/modhs.hs 
+rm ../../test_bergman/clisp/anick_tm.res 
+rm ../../test_bergman/clisp/anick_tm.out 
+rm ../../test_bergman/clisp/modbtn.res 
+rm ../../test_bergman/clisp/modbtn.out 
+rm ../../test_bergman/clisp/fact.res 
+rm ../../test_bergman/clisp/fact.out 
+rm ../../test_bergman/clisp/two.res 
+rm ../../test_bergman/clisp/two.out 
+rm ../../test_bergman/clisp/hoch.res 
+rm ../../test_bergman/clisp/hoch.out
+rm ../../test_bergman/clisp/hoch1.res 
+rm ../../test_bergman/clisp/hoch1.out 
+rm ../../test_bergman/clisp/char2.gb
+rm ../../test_bergman/clisp/char5.gb
+rm ../../test_bergman/clisp/modlog.gb
+rm ../../test_bergman/clisp/leftmodbtn.res 
+rm ../../test_bergman/clisp/leftmodbtn.out 
+rm ../../test_bergman/clisp/rabbit_set.res 
+rm ../../test_bergman/clisp/skipcdeg1.gb
+rm ../../test_bergman/clisp/skipcdeg2.gb
+rm ../../test_bergman/clisp/matrix.gb
+rm ../../test_bergman/clisp/lin.res
+rm ../../test_bergman/clisp/lin_nc.res
+rm ../../test_bergman/clisp/minr.res 
+
+../../../bin/clisp/unix/./bergman <<%EOI >../../test_bergman/clisp/logfile 
+(OFF GC) 
+(DSKIN "clisp_list")
+(QUIT)
+%EOI
+
+diff  ../../test_bergman/clisp/logfile ../../test_bergman/clisp/logfile.old >../../test_bergman/clisp/log.diff
+more ../../test_bergman/clisp/log.diff

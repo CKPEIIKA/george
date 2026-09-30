@@ -1,0 +1,59 @@
+D(0, r)=1.r
+D(1, rX)=r.X-r.x
+D(1, rY)=r.Y-r.y
+D(1, rx*X)=r.x*X-r.x^2
+D(1, ry*x)=r.y*x-r.x*Y
+D(1, ry*X)=r.y*X
+D(1, ry*Y)=r.y*Y-r.y^2
+D(2, rXx)=rX.x-rx*X.1
+D(2, rXy)=rX.y-ry*X.1
+D(2, rYx)=rY.x+ry*x.1
+D(2, rYy)=rY.y-ry*Y.1
+D(2, rYX)=rY.X+ry*X.1
+D(1, rx^2*X)=r.x^2*X-r.x^3
+D(2, rx*Xx)=rx*X.x-rx^2*X.1
+D(2, rx*Xy)=rx*X.y
+D(2, ry*xy)=ry*x.y
+D(1, ry^2*x)=r.y^2*x-r.x*Y^2
+D(1, ry^2*X)=r.y^2*X
+D(1, ry^2*Y)=r.y^2*Y-r.y^3
+D(2, ry*Xx)=ry*X.x-ry*x.X
+D(2, ry*Xy)=ry*X.y-ry^2*X.1
+D(2, ry*Yx)=ry*Y.x+ry^2*x.1-ry*x.Y
+D(2, ry*Yy)=ry*Y.y-ry^2*Y.1
+D(2, ry*YX)=ry*Y.X+ry^2*X.1
+D(3, rXxy)=rXx.y+rx*Xy.1
+D(3, rYxy)=rYx.y-ry*xy.1
+D(3, rYXx)=rYX.x-rYx.X-ry*Xx.1
+D(3, rYXy)=rYX.y-rYy.X-ry*YX.1-ry*Xy.1
+D(1, rx^3*X)=r.x^3*X-r.x^4
+D(2, rx^2*Xx)=rx^2*X.x-rx^3*X.1
+D(2, rx^2*Xy)=rx^2*X.y
+D(3, rx*Xxy)=rx*Xx.y+rx^2*Xy.1
+D(2, ry^2*xy)=ry^2*x.y
+D(1, ry^3*x)=r.y^3*x-r.x*Y^3
+D(1, ry^3*X)=r.y^3*X
+D(1, ry^3*Y)=r.y^3*Y-r.y^4
+D(2, ry^2*Xx)=ry^2*X.x-ry^2*x.X
+D(2, ry^2*Xy)=ry^2*X.y-ry^3*X.1
+D(2, ry^2*Yx)=ry^2*Y.x+ry^3*x.1-ry^2*x.Y
+D(2, ry^2*Yy)=ry^2*Y.y-ry^3*Y.1
+D(2, ry^2*YX)=ry^2*Y.X+ry^3*X.1
+D(3, ry*Xxy)=ry*Xx.y+ry*xy.X
+D(3, ry*Yxy)=ry*Yx.y-ry^2*xy.1+ry*xy.Y
+D(3, ry*YXx)=ry*YX.x-ry*Yx.X-ry^2*Xx.1
+D(3, ry*YXy)=ry*YX.y-ry*Yy.X-ry^2*YX.1-ry^2*Xy.1
+D(4, rYXxy)=rYXx.y+rYxy.X+ry*Xxy.1
+B(0,0)=1
+B(0,1)=2
+B(1,1)=2
+B(0,2)=2
+B(1,2)=2
+B(0,3)=2
+B(1,3)=2
+    0   1   2   3   4   5
+  +----------------------
+0 | 1   2   -   -
+1 | 2   2   -
+2 | 2   2
+3 | 2

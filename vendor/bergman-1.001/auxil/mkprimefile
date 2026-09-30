@@ -1,0 +1,62 @@
+
+% For debugging:
+% (LOAD addr2id)
+(OFF RAISE)
+(ON EOLINSTRINGOK)
+(GLOBAL '(Prime PrPrime HalfPrime Composit!* MPFError Arguments
+	  &*ASKSTRONG &*NEWNUMBER PRIMLIST
+	   FIRSTPRIMROOT EXPVECT LOGVECT OutFile))
+%%(SETQ Arguments (GETUNIXARGS))
+%(SETQ Prime (GETV UNIXARGS* 1))
+(PROGN
+(SETQ Prime $1)
+(SETQ PrPrime (SUB1 Prime))
+(SETQ HalfPrime (QUOTIENT Prime 2))
+%(SETQ Composit!* (GETV UNIXARGS* 2))
+(SETQ Composit!* $2)
+%(SETQ MPFError!* (GETV UNIXARGS* 3))
+(SETQ MPFError!* $3)
+% (SETQ PrimeFilePreAmble "/usr/local/matte/bergman/domains/P")
+% (SETQ PrimeFilePreAmble $4)
+(LOAD "$5")
+(DSKIN "$bmdomains/PRL")
+(SETQ PL (PENULTIMA PRIMLIST))
+(COND ((EQ (DECIDE1 Prime) 'COMPOSITE)
+       (EXIT-WITH-STATUS Composite!*)))
+% (SETQ OutFile (APPENDNUMBERTOSTRING Prime PrimeFilePreAmble))
+(SETQ OutFile "$4")
+
+% Doing the job
+
+(SETQ FIRSTPRIMROOT (FirstPrimitiveRoot))
+(SETQ EXPVECT (MKVECT (TIMES2 2 Prime)))
+(SETQ LOGVECT (MKVECT (TIMES2 2 Prime)))
+(MakeEXP!&LOGVECTs (TIMES2 2 Prime))
+
+% For debugging:
+% EXPVECT LOGVECT INTERPBACKTRACE
+
+% Saving the result on OutFile
+
+(WRS (OPEN OutFile 'OUTPUT))
+(PRIN2 "% Preparation file for modulus calculation,
+% with the prime modulus ")
+(PRINT Prime)
+(PRIN2 "% The exponents and logarithms are calculated
+% with the base ") (PRINT FIRSTPRIMROOT)
+(TERPRI)
+
+
+(WRITEVECTPROG 'EXPVECT (TIMES2 PrPrime 2))
+(TERPRI)
+(TERPRI)
+
+(WRITEVECTPROG 'LOGVECT (TIMES2 PrPrime 2))
+(TERPRI)
+
+(CLOSE (WRS NIL))
+
+(PRIN2 "* Now the file $4 should exist") (TERPRI)
+)
+(EXIT-WITH-STATUS 0)
+%EOP

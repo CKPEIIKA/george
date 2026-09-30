@@ -1,0 +1,621 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Copyright (C) 1996, 1998
+%% Joergen Backelin and Alexander Podoplelov
+%%
+%% Bergman and Anick are distributed in the hope that they will be
+%% useful, but WITHOUT ANY WARRANTY.  No author or distributor
+%% accepts responsibility to anyone for the consequences of using them
+%% or for whether they serve any particular purpose or work at all,
+%% unless (s)he says so in writing.  Refer to the Bergman General Public
+%% License for full details.
+
+%% Everyone is granted permission to copy, modify and redistribute
+%% bergman, but only under the conditions described in the
+%% Bergman General Public License.   A copy of this license is
+%% supposed to have been given to you along with bergman so you
+%% can know your rights and responsibilities.  It should be in a
+%% file named copyright.  Among other things, the copyright notice
+%% and this notice must be preserved on all copies.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+          The protocol file for Anick-in-bergman module.
+          Designed under Standard Lisp environment.
+
+
+                            SPECIFICATION
+
+ This document is a part of the bergman documentation (complementing
+ its document protocol.txt) and should be read after the main
+ conventions are known, like types and structures. The most relevant
+ pre-requisit is types.txt of the bergman documentation.
+ For instance, the type template "degree list" is only briefly
+ described here, but in order to use it properly one should penetrate
+ its structure more thoroughly.
+
+ The purpose of the document is to describe all the functions
+ and their arguments used in the Anick module. This description is
+ divided into sections corresponding to bergman modules. Within a
+ bergman  module section a list of functions is placed. Every
+ description of a function has the following structure:
+   FUNCTION (ARG1:TYPE1 ARG2:TYPE2 ... ARGn:TYPEn) : RESULT ; COMMENT
+ where ARGi are identifiers and TYPEi are their types (see TYPE
+ CONVENTION). Then the description of each argument and of the
+ result follows. The COMMENT part is explained in "types.txt" in the
+ bergman doc directory.
+
+
+ The prefix of the (non user interface) procedures and macros
+ concerning "Anick's resolution" is "an".
+
+	                  TYPE CONVENTION
+
+ We use the following abbreviations for internal types:
+
+  * denotes that the type is inherited from bergman. For more
+    information about such types, see "types.txt" in the bergman
+    doc directory.
+
+     Abbreviation          Description
+  -------------------------------------------------------------------
+  *  id                    (Standard lisp) identifier.
+  *  string                (Standard lisp) string of ASCII characters.
+  *  coeff  (non-zero)     Coefficient (not necessary an integer).
+     chn                   Chain.
+  *  qpol                  Quotient Polynomial.
+     inputmatrix           Matrix of coefficients (in proper input form).
+     matrix		   Matrix of coefficients in internal bergman
+			   form. (Actually a sub-type of llgenredandcoeff).
+  *  int                   (Standard lisp) integer.
+     tp                    Tensor Polynomial.
+     btnum                 Betti number.
+  *  augmon                Augmented Monomial.
+     -                     Void (No or arbitrary return, not to be used).
+  *  bool                  Boolean: NIL or non-NIL (with NIL standing for
+			   False).
+  *  any                   Any Structure.
+     zero                  Internal Representation of Zero.
+  *  modestate             Type for mode settings.
+     ---
+  *  l@@@                  Prefix "l" stands for: "list of @@@".
+  *  (a@@ . b@@)           Dotted pairs of objects of types a@@ and b@@.
+  *  dl@@@		   Degree list (a special form of l(int . l@@@),
+			   as explained in the bergman document types.txt).
+  *  dp@@@                 Prefix "dp" stands for: "dotted pair (@@@ . @@@)".
+  -------------------------------------------------------------------
+
+
+                        TYPE EXPLANATION
+
+     In order to let the reader understand internal types more clearly,
+     we describe most of the complicated ones below. For the sake of
+     formality we stick to C style for declaring data.
+
+       o chn - the chain type:
+	     struct {
+	        augmon vx;    /* last vertex of the chain seen as a  */
+		              /* path in the graph;                  */
+                int    n;     /* length of the chain;                */
+		chn    pchn;  /* the chain representing the unique   */
+		              /* chain of length n-1 which is a left */
+                              /* factor of the chain;                */
+		tp     df;    /* the calculated differential of the  */
+		              /* chain;                              */
+		chn   *hchn;  /* list of prolongatings for the chain;*/
+             }
+       o tp -  tensor polynomial type: a list whose first element is
+               NULL and the rest are of the following structure:
+	      struct {
+	        chn    chain; /* left factor in the tensor           */
+		              /* multiplication;                     */
+		augrattp   p; /* right factor in the tensor          */
+		              /* multiplication;                     */
+	      }             
+
+
+			    MODES DESCRIPTION
+     The following modes are used in anick module to configure printings
+     and calculations:
+
+     Keyword                 Description
+  -------------------------------------------------------------------
+     TENSPOL!-PRINTMODE        Either DISTRIBUTED or SEMIDISTRIBUTED
+			       keyword, meaning the mode for printing
+			       tensor polynomials.
+
+     TENSTERM!-PRINTMODE       A list of three strings which are beginning,
+			       middle, and ending in printing of tensor
+			       term.
+     EDGE!-STRING              Equals a string which is printed between
+			       edges while chain is printed. 
+
+
+     EDGE!-STRING!-PRINTING    Bolean, meaning whether to use EDGE!-STRING
+			       in chain printings
+
+     BETTI		       True, when Betti numbers are to be calculated
+     BETTI-FOREACHDEGREE       True, when Betti numbers are allowed to
+			       be calculated and they are updated every
+			       time the Groebner basis element is found.
+  -------------------------------------------------------------------
+
+
+			   MODULES DESCRIPTION
+
+
+		BETTI NUMBERS
+		(Source file: anbetti.sl)
+
+		Procedures:
+
+    anBETTIINIT () : - ;
+          This procedure initializes variables which are used to collect
+	  information about Betti Numbers. It should be called before
+          Anick calculation.
+
+    anbtNUMBEROFCHAINS (degree:int, chains:dlchn) : int ;
+          This function accepts a homological degree of a chain,
+	  a list of all chains, and returns the number of chains
+	  of that degree in that list.
+
+    ((anbtMEMBER (element:any, list:lany) : genint ;
+          Returns the index of the element in the list.
+	  The return value NIL corresponds to the absence of
+	  the element in the list.))
+
+    MEMBER2NIL (element:any, list:lany) : genint ; DESTRUCTIVE (2)
+          Searches list for its first occurrence of element.
+	  If found, the occurrence is (destructively) replaced by
+	  NIL, and the number of the position of element in list is
+	  returned. If element is not found in list, NIL is returned.
+
+    anbtZEROPROLONG (c:lratcoeff, n:int) : lratcoeff ;
+          Returns a list whose first n elements are NIL (representing
+	  the coefficient zero), and which than continues with the list
+	  ``tail''.
+
+    anbtALIGN (m:llgenredandcoeff) : matrix ; DESTRUCTIVE
+          This procedure destructively modifies the matrix "m" so
+	  that all its lines are prolonged by zero coefficients and
+	  have equal length, the length of its first input line.
+	  (Consequently, no other input line may be longer than the
+	  first one.) Besides aligning, to each line of the
+	  matrix the INTEGERISE function is applied. The modified
+	  matrix is returned.
+
+    anbtMAKEMATRIXLINE (id:lchn, pol:tp) : lcoeff ;
+          Returns a list of coefficients which are extracted from the pol.
+	  Only coefficients of semi-distributed monomials where
+	  corresponding qpol is equal to one are looked for.
+	  The corresponding chains to those qpols are placed into
+	  "id" list.  Extracted coefficients are arranged according to the
+	  list "id" which is updated every time.
+
+    anbtMAKEMATRIX (order:int, chains:lchn) : llcoeff ;
+          This procedure accepts homological degree "order" and a list
+	  of chains "lchn", and returns a "matrix" of coefficients of
+	  all the semi-distributed tensor polynomials corresponding
+	  to chains of that degree. The lines of its output "matrix"
+	  may have different lengths, however.
+
+    anBETTI (chains:lchn) : - ;
+          The procedure accepts as its argument a list which is an
+	  element of the anCHAINS degree list. More precisely,
+	  its tail is a list of chains, but the first element equals
+	  their homological degree. The procedure updates Betti
+	  numbers which are storied in anCURRENTBETTINUMS for this
+	  particular homological degree. anCURRENTBETTINUMS is some
+	  tail of the anBETTINUMS list.
+
+    anALLBETTI () : - ;
+          This procedure applies the procedure anBETTI to all elements
+	  of the anCHAINS list. It should be called if the calculation
+	  of Betti numbers was not invoked during calculation of the Groebner
+	  basis.
+
+    PRINTBETTINUMBER (btnumber:btnum) : - ;
+          Prints Betti number btnumber as follows:
+	                 B(homological degree, total degree) = value
+
+    PRINTBETTI () : - ;
+          Prints all the calculated  Betti numbers.
+          ((Applies the procedure PRINTBETTINUMBER to all elements of the
+	  anBETTINUMS list.))
+
+    PRINTCURRENTBETTI () : - ;
+          Prints Betti numbers for the last calculated Groebner basis
+	  degree.
+          ((Applies the procedure PRINTBETTINUMBER to all elements of the
+	  anCURRENTBETTINUMS list.))
+          
+    anbtMacCorrect (deg:int) : bool ;
+          This procedure takes a degree for updating Betti numbers in
+	  a nice Macaulay form so that later it is possible to print them.
+	  It affects only internal btMacMx structure and return either
+	  T or NIL depending on whether the update actually changed
+	  btMacMx.
+
+    anbtMacSet (order:int, degree:int, value:int) : bool ;
+          Sets the value of Betti number in Macaulay form of corresponding
+	  "order" and "degree" to "value". Returns boolean value T.
+          
+    MACBETTIPRINT () : bool ;
+          Prints Betti numbers in Macaulay form. Returns boolean value T.
+
+    anExtractBettiModes () : lmodestate ;
+        Returns the list of anick settings keywords and their values
+	related to the module of Betti numbers.
+
+
+
+                USER INTERFACE
+                Source file: aninterf.sl)
+
+		Variables:
+
+    anOutChan
+           This variable contains the output channel handler for
+	   printing Anick related information into the result file.
+
+    anDIFFTIME
+           After the Anick resolution is calculated it contain the time
+	   consumed by calculations for differentials in milliseconds.
+
+    anBETTITIME
+           After Anick resolution is calculated it contain the time
+	   consumed by calculations for Betti numbers.
+
+    anBETTINUMS
+           This variable is a list of Betti numbers. Each Betti number
+	   is of the structure ((order:int . degree:int) . value:int)
+
+    ANICKRESOLUTIONOUTPUTFILE
+           Is equal to the name of output file. In case it equals to NIL,
+	   the output channel will be associated with the file name
+	   "andifres.txt".
+
+    anLASTCALCULATEDDEGREE
+           Equals the last degree for which the anifResolutionFixDegree
+	   procedure was called.
+
+
+	        Procedures:
+
+    SETTENSPOLPRTSTRINGS (strings:lstr) : lstr ;
+          The list strings should consist of 3 strings which are
+	  used to print tensor product. First string is printed
+	  at the beginning, second - as a tensor multiplication sign
+	  and the third - as the ending of thensor monomial.
+	  The list of 3 strings of old settings is returned.
+
+    GETTENSPOLPRTSTRINGS () : lstr ;
+	  Returns a list of 3 strings which are used when tensor
+	  monomials are printed as beginning, middle and ending
+	  strings.
+
+    SETEDGESTRING (strng:string) : genstring ;
+          The string strng is taken for printing as edges when chain
+	  vertexes are printed. The old value of it is returned.
+
+    GETEDGESTRING () : - ;
+          Returns the value of string which is printed between chain
+	  vertexes.
+
+    ResolutionInit () : - ;
+          This procedure initializes all the variables concerned with
+	  the Anick resolution. It needs information about Groebner
+	  basis generators, therefore, it should be called after the
+	  system has them.
+
+    PRINTNEWCHAINSDIFF (chan:genint) : - ;
+          Prints differentials for the new generated chains
+	  to the channel chan
+
+    PRINTCHAINSDIFF (chan:genint) : - ;
+          Prints differentials for the all generated chains
+	  to the channel chan
+
+    PRTCHNDIFF (inchain:chn) : - ;
+          Prints differential for the chain inchain in form
+	     D (chain length, chain) = differential
+
+    CALCBETTI (flag:bool) : - ;
+          Depending on whether flag is non-NIL or not, switches on/off
+	  the calculation of Betti numbers. It sets corresponding flags.
+	  
+    ONFLYBETTI (flag:bool) : - ;
+          Depending on whether flag is non-NIL or not, switches on/off
+	  the calculation of Betti numbers. Also, the feature of
+	  calculating and printing them while Groebner basis is being
+	  calculated degree by degree. It sets corresponding flags.
+
+    GETBETTINUMS () : lbtnum;
+          Returns the list of Betti numbers.
+
+    GETBTORDER (btnumber:btnum) : int ;
+          Returns the order of Betti number btnumber.
+
+    GETBTDEGREE (btnumber:btnum) : int ;
+          Returns the degree of Betti number btnumber.
+
+    GETBTVALUE (btnumber:btnum) : int ;
+          Returns the value of Betti number btnumber.
+
+
+    anifResolutionFixDegree (dgr:int) : - ;
+          For a given degree it calculates chains and the Anick
+	  resolution differentials, and prints them into the result
+	  file. It also updates related variables.
+
+
+    ResolutionFixcDegEnd () : - ;
+          Applies the procedure anifResolutionFixDegree for 
+	  all the degrees which has to be fixed in anifResolutionFixDegree
+	  sense.
+
+    ResolutionDone () : - ;
+          Closes the output stream used in Anick related procedures.
+
+    ResolutionClear () : - ;
+          Cleans up all the Anick related variables including Betti
+	  numbers.
+
+    CLEARRESOLUTION () : - ;
+          Calls ResolutionDone and ResolutionClear procedures.
+
+    ANICKDISPLAY () : - ;
+          Prints the Betti numbers into the result file.
+
+    CALCULATEANICKRESOLUTIONTOLIMIT (limdeg:int) : - ;
+          Countinues the process of Anick resolution calculation up to
+	  the degree limdeg. It maybe called after the Groebner basis is
+	  calculated, in case it is finite and calculations stopped
+	  at a lower degree than thatonto which the Anick resolution
+	  should be calculated.
+
+    ExtractAnickModes () : lmodestate ;
+	  Returns the list of modestates.
+
+    RestoreAnickModes (modeinfo:lmodestate) : - ;
+	  Restores modestates supplied  by modeinfo.
+
+
+		CHAINS
+		(Source file: chrecords.sl)
+
+		Variables:
+
+    anEDGESTRING
+          This string is printed between vertexes when chain is
+	  printed. Default value is " " (space).
+
+
+    anCHAINS
+          contains the chains in a degree list, with respect to the
+	  total degree. I.e., it is a list of sub-lists, one for each
+          total degree. Each sub-list starts with the total degree
+	  and then lists the chains of this total degree in
+          increasing order (with respect to the procedure anLESSCHAIN).
+
+    anNEWCHAINS
+          contains the current total degree (cDeg) and the chains
+          of this degree, ordered increasingly.
+
+
+	((For reference, a couple of friendly bergman procedures are
+	  mentioned:
+
+    (CADR RIGHTMONFACTORS) gives the nontrivial vertices of the graph,
+	as augmented monomials.
+
+    (MONLISPOUT (PMon augmon)), (MONPRINT augmon) gives the lispform
+	or prints the algebraic form of its argument, respectively. ))
+
+
+		Macros:
+ 
+    anChn2LowerChn (inchain:chn) : chn ;
+          Gets the left factor chain of length one less than the
+	  length of inchain.
+
+    anChn2HiChns (inchain:chn) : chn ;
+          Returns a list of all as yet known chains of length one
+          more than the length of inchain, such that inchain is a
+          left factor chain of them.
+
+    anChn2LastVx (chain:chn) : augmon ;
+          Gives the last vertex in the graph for chain, considered
+	  as a path (with augmon vertices).
+
+    anChn2Length (chain:chn) : int ;
+          Returns the length of chain (the number of vertices in
+	  the path graph corresponding to chain).
+
+    anChn2Diff (chain:chn) : gentp ;
+          Returns the result of the differential for chain if it
+	  is calculated, or NIL otherwise.
+          (Thus a calculated differential MUST NOT be represented by
+          an empty list!)
+
+    anSetDiff (chain:chn, newdiff:tp) : - ; DESTRUCTIVE (1)
+          Sets the differential of chain to newdiff.
+
+
+		Procedures:
+
+    anPROLONGCHAIN (inchain:chn, intail:augmon) : (chn . augmon) ;
+          inchain should be an n-chain and intail an augmon, such that
+	  there is an (n+1)-chain "outchain" which is a left factor
+	  of inchain * intail. Then (outchain . outtail) is returned,
+	  where outtail fulfills
+          inchain * intail§ = outchain * outtail.
+	  (Else, an error may be signaled, or the result may be
+	  arbitrary.)
+
+    PRINTCHAIN (chain:chn) : - ;
+          Prints chain. The vertices are printed as monomials
+          (corresponding to the present ALGOUTMODE and minor output
+	  mode settings). If PRINTEDGESTRING is ON, then between
+	  vertices it prints the value of anEDGESTRING.
+
+    anCONSTRUCTNEWCHAINS (inchain:chn, degdiff:int) : - ;
+          Constructing new chains from inchain and a total
+	  degree difference number degdiff. The new chains
+	  represent the chains of length = 1 + length[inchain] and
+	  total-degree = degdiff + totaldegree[inchain], and with
+	  inchain as a left factor. They are sorted into their
+	  proper positions on anNEWCHAINS.
+
+    anCONSTRUCTZEROCHAINS () : - ;
+          This routine should be called before the calculation of
+          Anick's resolution to construct initial data for
+          differential and integral recursive functions.
+
+    anNEWGBELM2CHAIN (gbelm:augmon) : chn ;
+          Returns a 1-chain corresponding to gbelm (which ordinarily
+	  would be a leading monomial of a new Groebner basis).
+	  Calculates and sets the differential of the output chain.
+
+    anLESSCHAIN (chain1:chn, chain2:chn) : bool ;
+          Returns NIL if chain1 doesn't precede chain2 in "monomial
+	  deg-lex" order.
+
+    anExtractChnModes () : lmodestate ;
+        Returns the list of anick settings keywords and their values
+	related to the module of chain structures.
+
+
+
+                ANICK DIFFERENTIAL
+		(Source file: diffint.sl)
+
+	        Procedures:
+
+    anDIFF (inchain:chn) : tp ;
+          The chain inchain is processed according to the
+	  algorithm of calculating the differential in the Anick
+	  resolution. The result semi-distributed polynomial is
+	  returned.
+
+    andiINTEG (pol:tp) : tp ; DESTRUCTIVE
+	  This procedure is used in the calculation of Anick differential
+	  in order to complete the algorithm for calculating the Anick
+	  differential.
+
+
+
+	        GAUSS METHOD IMPLEMENTATION
+		(Source file: gauss.sl)
+
+	        Procedures:
+
+    MPRINT (mat:matrix) : bool ;
+          Prints mat as a matrix to standard output and returns T, if
+	  that is not NIL. Else it prints nothing and returns NIL.
+
+    CFLINEPRINT (ln:lcoeff) : bool ;
+          Prints the list of coefficients ln in one line and returns
+	  T if ln is non-NIL. Else it prints nothing and returns NIL.
+
+    RANK (mat:inputmatrix) : int ;
+          Returns the rank of mat calculated in present coefficient
+	  field.
+
+    INPUTMATRIX2REDANDMATRIX (mtrx:inputmatrix) : matrix ; DESTRUCTIVE
+          Modifies the elements of mtrx so that their type is of
+	  acceptance by further procedures.
+
+    anRANK (mat:matrix) : int ; DESTRUCTIVE
+          Returns the rank of mat.
+	  ((Transform mat to triangular form by applying Gauss
+	  method.))
+
+
+
+		TENSOR POLYNOMIALS
+		(Source files: tenspol.sl, t_inout.sl)
+
+
+		Variables:
+
+    SObeg
+        This string is printed in the beginning of a tensor monomial.
+
+    SOmid
+        This string is printed for a tensor multiplication sign.
+
+    SOend
+        This string is printed in the end of a tensor monomial.
+
+    anPrintSDPMode
+        Contains the mode which is used for printing semi-distributed
+	polynomials. The values are DISTRIBUTED and SEMIDISTRIBUTED.
+
+	        Procedures:
+
+    PRETTYPRINTSDP (pol:tp) : - ;
+        Prints the semi-distributed polynomial pol in a form decided by
+	the tensor polynomials print-mode. (See GETTENSORPOLSPRINTMODE).
+
+
+    anSDP!_PRETTYPRINTSDP (pol:tp) : - ;
+        Prints semi-distributed polynomial pol in a semi-distributed
+	form.
+
+    anDP!_PRETTYPRINTSDP (pol:tp) : - ;
+        Prints semi-distributed polynomial pol in a distributed form.
+
+
+    PRINTTENSORPOLSDISTRIBUTED () : - ;
+        Selects distributed form for printing semi-distributed
+	polynomials.
+
+    PRINTTENSORPOLSSEMIDISTRIBUTED () : - ;
+        Selects semi-distributed form for printing semi-distributed
+	polynomials.
+
+    anExtractTPModes () : lmodestate ;
+        Returns the list of anick settings keywords and their values
+	related to the module of tensor structures.
+
+    anAssignSDPMode (var:id, value:id) : - ;
+        Property function for selecting printing form for tensor
+	polynomials.
+
+    anAssignTMstrings (var:ld lst:lstr) : - ;
+        Property function for assigning vaules to variables used
+        in printing of the tensor term.
+
+    ---
+
+    anCONCATTENSPOLMON (pol:tp, mon:augmon) : tp ;
+	Concatenates mon to each element of the tensor polynomial pol
+	to the right side, reduces them by means of the current
+	Groebner basis, and returns the result.
+
+    anMAKETENSPOL (inchain:chn, mon:augmon) : tp ;
+	Creates and returns the tensor polynomial which contains only
+	one element: inchain tensor multiplied by mon.
+
+    anDESTRUCTADDTENSPOLS (pol1:tp, pol2:tp, cf:coeff):tp; DESTRUCTIVE(1)
+	Modifies pol1 so that pol1 = pol1+cf*pol2.
+	Returns the modified pol1.
+
+
+    anEXTRACTHIGHTENSMON (pol:tp) : (chn . augmon) ;
+	Returns a dotted pair which represents a highest
+	element in the deg-lex sense of pol.
+
+    anPRINTQPOLORCONSTANT (pol:qpol) : - ;
+        Prints a rational coefficient cf, a *, and then within
+	parentheses the polynomial multiplied by the inverse of cf.
+	If the polynomial is constant, prints only it as a
+	rational coefficient.
+
+    GETTENSORPOLSPRINTMODE () : id ;
+        Returns the identifier which is a keyword either DISTRIBUTED
+	or SEMIDISTRIBUTED. This identifier points out how the current
+	semi-distributed polynomials are printed.
+
+## End of the document ##

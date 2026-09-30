@@ -1,0 +1,98 @@
+This is a transitory version; installment procedures are changing.
+
+ * To install bergman, you should uncompress and untar it. Then
+   install it with stand alone psl, with reduce, or with common lisp.
+   Normally, this is a one line operation: if you install bergman
+   under Psl, do
+
+<bergman-root-dir>/scripts/<mchn>/mkbergman <psl-root-dir> <bergman-root-dir>
+
+   and if you install it under Reduce, do
+
+<bergman-root-dir>/scripts/Red/<mchn>/mkbergman <reduce-root-dir> <bergman-root-dir>
+
+   Here <bergman-root-dir> is the full name of the bergman root
+   directory (where you find this file).
+
+ * <mchn> is the machine and architecture type denomination as
+   (probably) given in your Psl/Reduce delivery. It may be available
+   as the variable $MACHINE; and in this version of bergman, it
+   should be one of the following:
+
+     sun4
+     solaris
+     alpha
+     msdos
+     Linux_elf
+
+ * <psl-root-dir> should be the full name of the psl root directory
+   (which may be available as the value of the variable $proot).
+
+ * <reduce-root-dir> should be the full name of the reduce root
+   directory (which may be available as the value of the variable $reduce).
+
+   The directory names should be given without the final / .
+
+
+ ***  IMPORTANT: However, if your chosen set-up directory
+ ***  <bergman-root-dir>/scripts/<mchn> contains a file named
+ ***  install.doc, then instead follow the instructions in this.
+
+ * In particular, if you wish to install bergman under Common Lisp
+   (and on a unix machine), then follow the instructions in the file
+<bergman-root-dir>/scripts/clisp/unix/install.doc
+
+
+ * EXAMPLE: If you placed the bergman root directory as bergman
+   under /usr/local/mathematics, and psl is sorted under
+   /usr/local/lang, and you work with a SunOS 4 set-up, then do
+
+/usr/local/mathematics/bergman/scripts/sun4/mkbergman /usr/local/lang/psl /usr/local/mathematics/bergman
+
+   (in one line).
+
+If you are in the bergman root directory and $proot is defined properly,
+
+./scripts/sun4/mkbergman $proot .
+
+   might do instead (but you'll have to recompile if the directories
+   are moved around later).
+
+
+ * When finished, if you are lucky, there is an executable file
+   "bergman" in the <bergman-root-dir>/bin/<mchn> or the
+   <bergman-root-dir>/bin/Red/<mchn> directory, starting bergman.
+
+   If something doesn't work as it should, you might wish to
+   consult the files logs/(r)<mchn>c.log and logs/(r)<mchn>bt.log,
+   which are loggings from the two main mkbergman passes, where
+   the file compile.sl and the file bmtop sl are treated by psl
+   or reduce. Please include these log files and errors you got
+   on the screen in error messages, in case you wish to contact
+   us after (the very plausible) failure in installing bergman.
+
+ * If your installation actually should work, you may want to
+   consult the documentation on how to use bergman you find in
+   the doc directory; in particular, the TeX-ed manual. (You
+   may also read the manual at our home page,
+
+   http://www.matematik.su.se/research/bergman/ ).
+
+   You'll either work in Lisp syntax, or (if you installed
+   bergman under Reduce and choose to do so) in Reduce
+   symbolic and algebraic mode. In either case, you should be
+   well acquaintanced to the syntax before trying to employ
+   anything more than the most simple bergman procedures.
+
+ * If anything goes wrong - don't let the fact that I am a very
+   bad letter answerer stop you from mailing me, at
+
+           joeb@math.su.se.
+
+   You may also consult the information on known bugs in the doc
+   subdirectory of this directory.
+
+
+	* * *	Good luck - you'll need it!	* * *
+
+
