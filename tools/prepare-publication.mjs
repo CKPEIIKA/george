@@ -1,4 +1,5 @@
-// Prepare reviewable local publication branches; never push or replace old refs.
+// Prepare publication branches; --update advances existing prepared refs with
+// compare-and-swap protection. Remote publication is a separate user action.
 import fs from 'node:fs';
 import path from 'node:path';
 import assert from 'node:assert/strict';
@@ -9,9 +10,11 @@ const original=git(['rev-parse','HEAD']);
 const oldPages=git(['rev-parse','refs/heads/gh-pages']);
 const tree=git(['rev-parse',original+':web']);
 const refs=['refs/heads/publish/main','refs/heads/publish/gh-pages'];
+const update=process.argv.includes('--update'),previous=new Map();
 for(const ref of refs){
   let existing;try{existing=git(['rev-parse','--verify',ref]);}catch{}
-  assert.ok(!existing,ref+' already exists; preserve it and choose new branch names.');
+  assert.ok(!existing||update,ref+' already exists; use --update to advance the prepared release.');
+  previous.set(ref,existing||'0'.repeat(40));
 }
 const map=new Map(),rewritten=[];
 function clean(id){
@@ -29,13 +32,13 @@ function clean(id){
   assert.equal(git(['rev-parse',id+'^{tree}']),git(['rev-parse',next+'^{tree}']));
   map.set(id,next);rewritten.push({original:id,clean:next});return next;
 }
-const main=clean(original),pagesParent=clean(oldPages);
+const main=clean(original),pagesParent=clean(previous.get(refs[1])==='0'.repeat(40)?oldPages:previous.get(refs[1]));
 const out='build/publication';fs.mkdirSync(out,{recursive:true});
 const body=path.resolve(out,'pages-message.txt');
-fs.writeFileSync(body,'Publish validated bergman-1.001-fix interface and engine\n');
+const version=JSON.parse(fs.readFileSync('package.json','utf8')).version;
+fs.writeFileSync(body,`Publish George ${version} and validated bergman-1.001-fix engine\n`);
 const pages=git(['commit-tree',tree,'-p',pagesParent,'-F',body]);
-const zero='0'.repeat(40);
-git(['update-ref','--stdin'],`start\nupdate ${refs[0]} ${main} ${zero}\nupdate ${refs[1]} ${pages} ${zero}\nprepare\ncommit\n`);
+git(['update-ref','--stdin'],`start\nupdate ${refs[0]} ${main} ${previous.get(refs[0])}\nupdate ${refs[1]} ${pages} ${previous.get(refs[1])}\nprepare\ncommit\n`);
 for(const ref of refs){
   const history=git(['log',ref,'--format=%an <%ae>%n%B']);
   assert.doesNotMatch(history,/^Co-Authored-By:.*(?:Claude|anthropic)/im);
@@ -48,5 +51,22 @@ const command=`git push --atomic --force-with-lease=refs/heads/main:${leases.mai
 const plan={date:new Date().toISOString(),original,oldPages,main,pages,pagesParent,webTree:tree,
   rewritten,leases,command,remotePublication:false,originalRefsPreserved:true};
 fs.writeFileSync(path.join(out,'plan.json'),JSON.stringify(plan,null,2)+'\n');
-fs.writeFileSync(path.join(out,'publish.sh'),'#!/bin/sh\nset -eu\n'+command+'\n');
+fs.writeFileSync(path.join(out,'publish.sh'),`#!/bin/sh
+set -eu
+# Optional key argument: starts an agent in this shell if necessary. A key
+# passphrase is entered into ssh-add, never stored in this script or Git.
+if [ "$#" -gt 0 ]; then
+  key=$1
+  if [ -z "\${SSH_AUTH_SOCK:-}" ] || ! ssh-add -l >/dev/null 2>&1; then
+    eval "$(ssh-agent -s)" >/dev/null
+    trap 'ssh-agent -k >/dev/null 2>&1 || true' EXIT
+  fi
+  ssh-add "$key"
+fi
+cd "$(git rev-parse --show-toplevel)"
+# Refuse stale prepared refs; publish the exact commits reviewed in the plan.
+test "$(git rev-parse publish/main)" = '${main}'
+test "$(git rev-parse publish/gh-pages)" = '${pages}'
+${command}
+`);
 console.log(JSON.stringify({main,pages,webTree:tree,rewritten:rewritten.length,plan:path.join(out,'plan.json'),remotePublication:false},null,2));

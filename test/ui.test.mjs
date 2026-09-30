@@ -15,7 +15,7 @@ test('every static and dynamic interface key has an EN/RU translation', () => {
   const html = fs.readFileSync('web/index.html', 'utf8');
   const keys = [...html.matchAll(/data-i18n(?:-html)?="([^"]+)"/g)].map(m => m[1]);
   for (const m of html.matchAll(/data-i18n-attr="([^"]+)"/g)) for (const pair of m[1].split(';')) keys.push(pair.split(':')[1]);
-  const app = fs.readFileSync('web/src/app.js', 'utf8');
+  const app = ['app','console'].map(n=>fs.readFileSync(`web/src/${n}.js`, 'utf8')).join('\n');
   for (const m of app.matchAll(/\bt\('([^']+)'(?=[,)])/g)) keys.push(m[1]);
   for (const task of TASKS) for (const suffix of ['', '.d', '.b']) keys.push(`task.${task.id}${suffix}`);
   for (const order of Object.values(ORDERS).flat()) keys.push('order.' + order.id);

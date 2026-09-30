@@ -16,7 +16,7 @@ const upstream=JSON.parse(fs.readFileSync('test/fixtures/upstream-cases.json','u
 const out=`build/validation/ui-${Date.now()}`;fs.mkdirSync(out,{recursive:true});
 const sha=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
 const browserFiles=['web/index.html','web/style.css',...fs.readdirSync('web/src').filter(n=>n.endsWith('.js')).map(n=>'web/src/'+n),'web/engine/worker.js','web/engine/runner.js'];
-const report={debuggerDuringCalculations:false,mobileViewportControl:'CDP Emulation only; no Runtime, Debugger or Profiler domains',engine:JSON.parse(fs.readFileSync('web/engine/build.json','utf8')),sourceHashes:Object.fromEntries(browserFiles.map(p=>[p,sha(p)])),browser:null,mounts:[],examples:[],checks:[],errors:[],externalRequests:[]};
+const report={debuggerDuringCalculations:false,mobileViewportControl:'CDP Emulation only; no Runtime, Debugger or Profiler domains',engine:JSON.parse(fs.readFileSync('web/engine/build.json','utf8')),sourceHashes:Object.fromEntries(browserFiles.map(p=>[p,sha(p)])),browser:null,mounts:[],console:[],examples:[],checks:[],errors:[],externalRequests:[]};
 const data={tutorials:TUTORIALS.map(t=>({...t,form:tutorialForm(t.id)})),examples:EXAMPLES,
  upstream:upstream.cases.filter(c=>['sympy-katsura3','singular-gb_braid3-11','gbnp-weighted','gbnp-sl2-quotient'].includes(c.id))};
 
@@ -52,7 +52,35 @@ async function checkUI(){
    $('[data-tutorial="monoid"]').click();await compute();ok(!$('#view-compute').hidden,'mobile computed result visible');ok($('#bettiOut').textContent.includes('Ungraded Betti numbers'),'mobile Betti result');ok(document.documentElement.scrollWidth<=innerWidth+1,'mobile result overflow');await post('done',{mode,errors,checks:['390px guide and computed monoid result have no page overflow']});return;
   }
   if(phase==='start'){
-   language('en');eq($('.brand-sub').textContent,'an interface to bergman','English interface wording');await theme('light');eq(getComputedStyle(document.body).backgroundColor,'rgb(238, 242, 243)','light theme');await theme('dark');eq(getComputedStyle(document.body).backgroundColor,'rgb(17, 26, 39)','dark theme');await theme('auto');eq(document.documentElement.getAttribute('data-theme'),null,'automatic theme');eq(getComputedStyle(document.body).backgroundColor,matchMedia('(prefers-color-scheme: dark)').matches?'rgb(17, 26, 39)':'rgb(238, 242, 243)','automatic follows OS');
+   language('en');eq($('.brand-sub').textContent,'an interface to bergman','English interface wording');eq($('.brand-version').textContent,'0.2','application version');
+   location.hash='#console';
+   const command=async(src,expected)=>{
+    const term=$('#terminal'),start=term.children.length;
+    set('promptInput',src);$('#promptForm').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));
+    await wait(()=>!$('#promptForm button[type="submit"]').disabled&&term.children.length>start,'console '+src);
+    const result=[...term.children].slice(start).filter(n=>!n.classList.contains('in')).map(n=>n.textContent).join('');
+    if(expected)ok(expected.test(result),'console '+src+': '+result);
+    return result;
+   };
+   eq((await command('t')).trim(),'T','first result has one legitimate T');
+   await command('(setq console-marker 73)',/73/);await command('(setmaxdeg 6)');
+   await command('(with-open-file (s "kept.txt" :direction :output :if-exists :supersede) (write-line "retained" s))');
+   for(const legacy of ['nil','t']){
+    await command('(setlegacymode '+legacy+')');
+    for(const src of ['(simple)','(simple "missing.bg" "out.gb")','(progn (algforminput))','(progn (rds nil) (ratom))']){
+     await command(src,src.includes('missing.bg')?/Cannot open/:/Keyboard input is unavailable/);
+     await command('(list console-marker (getmaxdeg))',/\(73 6\)/);await command('(show "kept.txt")',/retained/);
+    }
+   }
+   await command('(setlegacymode nil)');
+   await command('?simple',/simple|SIMPLE/);ok($('#terminal .o-help'),'original help is displayed');
+   $('#promptInput').focus();set('promptInput','(setma');$('#promptInput').dispatchEvent(new KeyboardEvent('keydown',{key:'Tab',bubbles:true,cancelable:true}));ok($('#promptInput').value.startsWith('(setmaxdeg'),'console Tab completion');set('promptInput','');
+   $('#promptInput').dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowUp',bubbles:true,cancelable:true}));eq($('#promptInput').value,'?simple','console history');set('promptInput','');
+   set('preset','tutorial:char2');$('#pasteJob').click();await wait(()=>!$('#pasteJob').disabled,'console current computation');
+   await command('(show "input.bg")',/ALGFORMINPUT/i);await command('(files)',/result/);
+   ok(!/session was restarted/.test($('#terminal').textContent),'reader recovery preserves session');
+   await post('console',{mount:data.mount,recoveryCases:8,settingsAndFilesRetained:true,firstValue:true,help:true,completion:true,history:true,currentComputation:true});
+   location.hash='#compute';await theme('light');eq(getComputedStyle(document.body).backgroundColor,'rgb(238, 242, 243)','light theme');await theme('dark');eq(getComputedStyle(document.body).backgroundColor,'rgb(17, 26, 39)','dark theme');await theme('auto');eq(document.documentElement.getAttribute('data-theme'),null,'automatic theme');eq(getComputedStyle(document.body).backgroundColor,matchMedia('(prefers-color-scheme: dark)').matches?'rgb(17, 26, 39)':'rgb(238, 242, 243)','automatic follows OS');
    set('preset','tutorial:weights');await compute();const before=form(),raw=files();language('ru');eq($('.brand-sub').textContent,'интерфейс к bergman','Russian interface wording');eq(document.documentElement.lang,'ru','Russian lang');ok(/Вычислить/.test($('#go').textContent),'Russian controls');ok(/Вычислено/.test($('#runStatus').textContent),'Russian status');eq(form(),before,'language preserves form');eq(files(),raw,'language preserves files');
    location.hash='#guide';await math();eq($('#guideTitle').textContent,'Руководство пользователя','Russian guide');checkMath();await theme('dark');sessionStorage.setItem('validation.savedForm',JSON.stringify(before));next('persist');return;
   }
@@ -121,6 +149,9 @@ async function run(mount,mode='desktop'){
      if(item.example){const e=EXAMPLES.find(e=>e.id===item.example);for(const [k,text]of Object.entries(e.out))assert.equal(v.files['result.'+k],text,v.id+'/'+k);}
      else{assert.deepEqual(JSON.parse(v.files['homology.json']).betti.slice(0,5),[1,1,0,0,0]);assert.ok(v.resolutionLines>0);}
      report.examples.push({id:item.id,task:tutorialForm(item.id).task,outputs:Object.keys(v.files),hashes:Object.fromEntries(Object.entries(v.files).map(([n,s])=>[n,crypto.createHash('sha256').update(s).digest('hex')]))});console.log(item.id,'PASS');
+    }else if(kind==='console'){
+     assert.equal(v.recoveryCases,8);for(const key of ['settingsAndFilesRetained','firstValue','help','completion','history','currentComputation'])assert.equal(v[key],true,key);
+     report.console.push(v);console.log(mount,'console recovery PASS');
     }else if(kind==='done'){
      assert.deepEqual(v.errors,[]);assert.deepEqual(v.externalRequests||[],[]);report.checks.push(...v.checks);res.end('ok');resolve(v);return;
     }else throw Error('Unknown validation endpoint');
@@ -157,6 +188,6 @@ async function run(mount,mode='desktop'){
  finally{clearTimeout(timer);await attached?.close().catch(()=>{});viewport?.close();browser.kill('SIGTERM');server.close();fs.writeFileSync(`${out}/browser-${mode}-${mount==='/'?'root':'project'}.log`,stderr);}
 }
 try{for(const mount of ['/','/george/']){console.log('Checking',mount);await run(mount);}await run('/george/','mobile');await run('/','blocked');
- assert.equal(report.examples.length,8);assert.equal(report.mounts.length,2);assert.deepEqual(report.errors,[]);assert.deepEqual(report.externalRequests,[]);for(const [p,h]of Object.entries(report.sourceHashes))assert.equal(sha(p),h,p+': sources changed during validation');
+ assert.equal(report.examples.length,8);assert.equal(report.mounts.length,2);assert.equal(report.console.length,2);assert.deepEqual(report.errors,[]);assert.deepEqual(report.externalRequests,[]);for(const [p,h]of Object.entries(report.sourceHashes))assert.equal(sha(p),h,p+': sources changed during validation');
  fs.writeFileSync(`${out}/report.json`,JSON.stringify(report,null,2)+'\n');console.log(out,'PASS');
 }catch(e){console.error(e);process.exitCode=1;}

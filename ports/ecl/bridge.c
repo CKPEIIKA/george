@@ -18,6 +18,7 @@
 #endif
 
 static int initialized = 0;
+static cl_object evaluate_text_function = ECL_NIL;
 
 static void set_bergman_environment(const char *root)
 {
@@ -61,6 +62,11 @@ GEORGE_EXPORT int george_init(void)
   result = cl_safe_eval(ecl_read_from_cstring("(GEORGE:INITIALIZE)"), ECL_NIL, ECL_NIL);
   if (result == ECL_NIL) return 3;
 
+  /* Never read the bridge's function name through a user-modified readtable.
+     Keep the function reachable across collections and subsequent calls. */
+  ecl_register_root(&evaluate_text_function);
+  evaluate_text_function = ecl_fdefinition(ecl_read_from_cstring("GEORGE:EVALUATE-TEXT"));
+
   initialized = 1;
   return 0;
 }
@@ -68,7 +74,6 @@ GEORGE_EXPORT int george_init(void)
 GEORGE_EXPORT int george_eval(const char *source, int echo_values)
 {
   if (!initialized) return 10;
-  cl_object evaluate_text_function = ecl_read_from_cstring("GEORGE:EVALUATE-TEXT");
   cl_object text = ecl_make_simple_base_string(source, -1);
   cl_object echo = echo_values ? ECL_T : ECL_NIL;
   cl_object result = cl_funcall(3, evaluate_text_function, text, echo);

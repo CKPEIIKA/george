@@ -2,21 +2,21 @@
   "report": [
     {
       "legacy": true,
-      "totalMs": 6461.0999999940395,
-      "computationMs": 1384.2999999970198,
+      "totalMs": 4453.100000008941,
+      "computationMs": 1055.7000000029802,
       "memoryBytes": 67108864,
-      "ticks": 324
+      "ticks": 223
     },
     {
       "legacy": false,
-      "totalMs": 5585.399999991059,
-      "computationMs": 1629.5999999940395,
+      "totalMs": 4581.20000000298,
+      "computationMs": 1206.7999999970198,
       "memoryBytes": 67108864,
-      "ticks": 279
+      "ticks": 229
     }
   ],
   "cancellation": "AbortError",
-  "exactInteger": "T \n12157665459056928801",
+  "exactInteger": "12157665459056928801",
   "memoryGrowthBytes": 123011072,
   "errors": [],
   "browser": "153.0.8010.52"

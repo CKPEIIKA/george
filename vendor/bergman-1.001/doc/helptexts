@@ -1,0 +1,756 @@
+NIL
+NIL is the Lisp general 'null entity', interpreted as 'the
+empty list', or as 'false', when Lisp expressions are
+considered as boolean expressions. Often used to stand for a
+'null object' in Lisp programming.
+NIL Updated 2004-05-02:
+mode
+Bergman operates under certain assumptions on the mathematical
+objects, input and output behaviour, and preferred algorithmic
+behaviour. These may be changed by the user, by modifying the
+corresponding 'modes'. The totality of all mode settings is
+called the 'setup'.
+ You may inspect the mode setup by the procedure call
+(PRINTSETUP), or get a lisp list representation of it as the
+return value of (GETSETUP). Many modes may be set at once by
+means of the procedure SETSETUP, which should be given a lisp
+list similar to those returned by (GETSETUP) as argument.
+Alternatively, you could use a specific mode setting procedure
+for changing just one mode.
+ Note that the bergman mode concept is rather general. E. g.,
+ a specification of a list of input variables (specifying the
+polynomial ring) is considered as a mode setting.
+ You may get a survey of the modes and of the corresponding
+mode setting procedures at [allmodes].
+NIL Updated 2005-02-04:
+allmodes
+Here is a list (hopefully complete) of all modes, with submodes
+and mode changing procedures; except the submodes to the
+resolution mode ANICK.
+
+Object type:
+	Ring (default)				SETRINGOBJECT()
+	Module					SETMODULEOBJECT()
+	Two modules (for calculating Tor(*,*))	SETTWOMODULESOBJECT()
+	Factor Algebra ( = Residue class ring)	SETFACTALGOBJECT()
+  Minor variants:
+	Right, Left, 2-sided module?
+	Autoadding of relations?		SETAUTOADDRELATIONSTATE(state)
+		Yes!				AUTOADDRELATIONS()
+		No, absolutely not!		NOAUTOADDRELATIONS()
+		Perhaps, but not right now!	CANCELAUTOADDRELATIONSSETTINGS()
+	Permit linear or constant terms?	LOWTERMSHANDLING(state)
+		Yes!				state := SAFE
+		No, since using fast tricks	state := QUICK
+
+Resolution calculations type:
+	None (default)				SETRESOLUTIONTYPE(NIL)
+	Anick					SETRESOLUTIONTYPE(ANICK)
+
+Anick minor modes (only present when the module anick is loaded):
+	In what form is tenspols (Anick resolution elements) printed?
+		Semidistributed			PRINTTENSORPOLSSEMIDISTRIBUTED()
+		(Fully) distributed		PRINTTENSORPOLSDISTRIBUTED()
+	The beginning, tensor sign, and end of a tensor product term:
+					SETTENSPOLPRTSTRINGS(string,string,string)
+	The chain link demarkation string	SETEDGESTRING(string)
+	Should this string be printed?		SETEDGESTRINGPRINTING(boole)
+	Should the Betti numbers of the homology be calculated at each degree end?
+		Yes, and immediately displayed!	      ONFLYBETTI(T)
+		Yes, but not automatically displayed  CALCBETTI(T) + ONFLYBETTI(NIL)
+		No				      CALCBETTI(NIL)
+
+Polynomial ring (or correspondingly for other objects) set-up:
+	Type of ring (or correpondingly);	SETRINGTYPE(),COMMIFY(),
+						NONCOMMIFY()
+	Commutative DEG-REVLEX (default);	COMMIFY(),DEGREVLEXIFY()
+	Commutative DEG-LEX;			  - " -  ,DEGLEXIFY()
+	Non-commutative DEG-LEFTLEX (default);	NONCOMMIFY(),DEGLEFTLEXIFY()
+	Non-commutative ELIM-DEG-LEFTLEX	NONCOMMIFY(),ELIMORDER()
+  Minor variants:
+	Ordinary ( = unit) weights		CLEARWEIGHTS(),SETWEIGHTS()
+	Alternative weights			SETWEIGHTS()
+	Homogenising variable:			SETHOMOGVARIABLE()
+
+Coefficient arithmetics:
+	Characteristic 0, arbitrary integers (default); SETMODULUS(0)
+	Characteristic 0, only inums;		NOBIGNUMS, - " -
+	Characteristic 2;			SETMODULUS(2)
+	Odd characteristic, ordinary inum arithmetics;  SETMODULUS(pr)
+	Odd characteristic, ordinary bignum arithmetics; - " -
+	Odd characteristic, logarithm table inum arithmetics; - " -,
+						MODLOGARITHMS
+	(Arbitrary Reduce Standard Forms;	SETREDUCESFCOEFFS()
+	 only available in bergman-under-reduce)
+
+Fundamental strategy:				SETSTRATEGY(clause)
+	Default, ordinary (Buchberger, Bergman) (with degree first)
+						SETDEFAULTSTRATEGY()
+	Rabbit (jumping back to lower degrees)	SETRABBITSTRATEGY()
+	Staggered with substance (SAWS).	SETSAWSSTRATEGY()
+	Ordinary (Buchberger, Bergman) (with degree first) (default);
+  Minor variants:
+	    with immediate full autoreduction (default);
+						IMMEDIATEFULLREDUCTION
+	    without immediate full autoreduction;    -  "  -
+	Staggered with substance (SAWS).	Various.
+	Densely or sparsely performed factoring out of contents:
+						DENSECONTENTS(),
+						SPARSECONTENTS()
+	Ordinary or Hilbert series limit interruption strategy:
+						ORDNGBESTRATEGY(),
+						MINHILBLIMITSTRATEGY()
+	   (or use SETINTERRUPTSTRATEGY)
+	Calculation start and end points:	SETMINDEG(),
+						GETMINDEG(),
+						SETMAXDEG(),
+						GETMAXDEG().
+
+Input mode minor modification:
+	(No) case sensitivity in algebraic input SETCASESENSALGIN (NIL/T)
+
+Output mode:
+	Lisp form (default):			SETALGOUTMODE(LISP)
+	Ordinary algebraic form:		SETALGOUTMODE(ALG)
+	Macaulay-like algebraic form:		SETALGOUTMODE(MACAULAY)
+
+Minor mode modifications:
+	Collect common factors to exponents (default):
+						EXPTSPRINTMODE()
+	Print each factor separately:		NOEXPTSPRINTMODE()
+
+	If the associated monomial ring Poincare-Betti series is calculated
+	degree by degree, should it be printed automatically or not:
+					SETIMMEDIATEASSOCRINGPBDISPLAY (NIL/T)
+
+ Mode influencing user available switches - hopefully a
+complete list, except for ANICK switches.
+(However, note that we plan to replace them by mode changers!)
+
+CUSTSHOW, CUSTSTRATEGY, DEGREEPRINTOUTPUT, DYNAMICLOGTABLES,
+HOMOGENISED, IMMEDIATECRIT, IMMEDIATEFULLREDUCTION,
+IMMEDIATERECDEFINE, NOBIGNUM, OBSOLETENAMESINFORM,
+OLDPRINTMODES1, OLDSERIESMODES1, PBSERIES, REDUCTIVITY,
+SAVEDEGREE, SAVERECVALUES, STANDARDANICKMODES.
+NIL Updated 2004-04-17:
+object
+An object is one or more mathematical structures, for
+which bergman is performing calculations. Presently,
+the choices are:
+ Ring, module, two modules [twomodules], or factor algebra
+[factoralgebra].
+Investigating a (two-sided) ideal in a polynomial ring is
+regarded as investigating the residue class factor algebra,
+and thus headed under "ring".
+
+NIL
+ type:
+	Ring (default)				SETRINGOBJECT()
+	Module					SETMODULEOBJECT()
+	Two modules (for calculating Tor(*,*))	SETTWOMODULESOBJECT()
+	Factor Algebra ( = Residue class ring)	SETFACTALGOBJECT()
+  Minor variants:
+	Right, Left, 2-sided module?
+	Autoadding of relations?		SETAUTOADDRELATIONSTATE(state)
+		Yes!				AUTOADDRELATIONS()
+		No, absolutely not!		NOAUTOADDRELATIONS()
+		Perhaps, but not right now!	CANCELAUTOADDRELATIONSSETTINGS()
+	Permit linear or constant terms?	LOWTERMSHANDLING(state)
+		Yes!				state := SAFE
+		No, since using fast tricks	state := QUICK
+
+Resolution calculations type:
+	None (default)				SETRESOLUTIONTYPE(NIL)
+	Anick					SETRESOLUTIONTYPE(ANICK)
+
+Anick minor modes (only present when the module anick is loaded):
+	In what form is tenspols (Anick resolution elements) printed?
+		Semidistributed			PRINTTENSORPOLSSEMIDISTRIBUTED()
+		(Fully) distributed		PRINTTENSORPOLSDISTRIBUTED()
+	The beginning, tensor sign, and end of a tensor product term:
+					SETTENSPOLPRTSTRINGS(string,string,string)
+	The chain link demarkation string	SETEDGESTRING(string)
+	Should this string be printed?		SETEDGESTRINGPRINTING(boole)
+	Should the Betti numbers of the homology be calculated at each degree end?
+		Yes, and immediately displayed!	      ONFLYBETTI(T)
+		Yes, but not automatically displayed  CALCBETTI(T) + ONFLYBETTI(NIL)
+		No				      CALCBETTI(NIL)
+
+Polynomial ring (or correspondingly for other objects) set-up:
+	Type of ring (or correpondingly);	SETRINGTYPE(),COMMIFY(),
+						NONCOMMIFY()
+	Commutative DEG-REVLEX (default);	COMMIFY(),DEGREVLEXIFY()
+	Commutative DEG-LEX;			  - " -  ,DEGLEXIFY()
+	Non-commutative DEG-LEFTLEX (default);	NONCOMMIFY(),DEGLEFTLEXIFY()
+	Non-commutative ELIM-DEG-LEFTLEX	NONCOMMIFY(),ELIMORDER()
+  Minor variants:
+	Ordinary ( = unit) weights		CLEARWEIGHTS(),SETWEIGHTS()
+	Alternative weights			SETWEIGHTS()
+	Homogenising variable:			SETHOMOGVARIABLE()
+
+Coefficient arithmetics:
+	Characteristic 0, arbitrary integers (default); SETMODULUS(0)
+	Characteristic 0, only inums;		NOBIGNUMS, - " -
+	Characteristic 2;			SETMODULUS(2)
+	Odd characteristic, ordinary inum arithmetics;  SETMODULUS(pr)
+	Odd characteristic, ordinary bignum arithmetics; - " -
+	Odd characteristic, logarithm table inum arithmetics; - " -,
+						MODLOGARITHMS
+	(Arbitrary Reduce Standard Forms;	SETREDUCESFCOEFFS()
+	 only available in bergman-under-reduce)
+
+Fundamental strategy:				SETSTRATEGY(clause)
+	Default, ordinary (Buchberger, Bergman) (with degree first)
+						SETDEFAULTSTRATEGY()
+	Rabbit (jumping back to lower degrees)	SETRABBITSTRATEGY()
+	Staggered with substance (SAWS).	SETSAWSSTRATEGY()
+  Minor variants:
+	    with immediate full autoreduction (default);
+						IMMEDIATEFULLREDUCTION
+	    without immediate full autoreduction;    -  "  -
+	Densely or sparsely performed factoring out of contents:
+						DENSECONTENTS(),
+						SPARSECONTENTS()
+	Ordinary or Hilbert series limit interruption strategy:
+						ORDNGBESTRATEGY(),
+						MINHILBLIMITSTRATEGY()
+	   (or use SETINTERRUPTSTRATEGY)
+	Calculation start and end points:	SETMINDEG(),
+						GETMINDEG(),
+						SETMAXDEG(),
+						GETMAXDEG().
+
+Input mode minor modification:
+	(No) case sensitivity in algebraic input SETCASESENSALGIN (NIL/T)
+
+Output mode:
+	Lisp form (default):			SETALGOUTMODE(LISP)
+	Ordinary algebraic form:		SETALGOUTMODE(ALG)
+	Macaulay-like algebraic form:		SETALGOUTMODE(MACAULAY)
+
+Minor mode modifications:
+	Collect common factors to exponents (default):
+						EXPTSPRINTMODE()
+	Print each factor separately:		NOEXPTSPRINTMODE()
+
+	If the associated monomial ring Poincare-Betti series is calculated
+	degree by degree, should it be printed automatically or not:
+					SETIMMEDIATEASSOCRINGPBDISPLAY (NIL/T)
+
+
+			    MODES DESCRIPTION
+     The following modes are used in anick module to configure printings
+     and calculations:
+
+     Keyword                 Description
+  -------------------------------------------------------------------
+     TENSPOL!-PRINTMODE        Either DISTRIBUTED or SEMIDISTRIBUTED
+			       keyword, meaning the mode for printing
+			       tensor polynomials.
+
+     TENSTERM!-PRINTMODE       A list of three strings which are beginning,
+			       middle, and ending in printing of tensor
+			       term.
+     EDGE!-STRING              Equals a string which is printed between
+			       edges while chain is printed.
+
+     EDGE!-STRING!-PRINTING    Bolean, meaning whether to use EDGE!-STRING
+			       in chain printings
+
+     BETTI		       True, when Betti numbers are to be calculated
+     BETTI-FOREACHDEGREE       True, when Betti numbers are allowed to
+			       be calculated and they are updated every
+			       time the Groebner basis element is found.
+  -------------------------------------------------------------------
+
+NIL Updated 2004-04-24
+coefficients
+ There are two fundamental mathematical concepts for the polynomials,
+the coefficient field and the coefficient domain. We always assume
+that the polynomial base ring is a (commutative) field. The
+coefficient domain may consist of the entire field, or of a proper
+subring such that the coefficient field is its field of fractions.
+In either case, the normal forms of S-polynomials are only assumed
+to be used for testing whether or not they are zero, and as reductor
+polynomials; thus they may be replaced with associated polynomials;
+and indeed, ordinarily they are. Therefore it is sufficient to use
+coefficient domain elements in the calculation of such normal forms.
+
+ On the other hand, if you really need the normal form of a
+polynomial, then there may appear denominators. Therefore we added
+'ratio' (or rate) coefficients and polynomials with a ratio
+coefficient factor as structures, but use them only in connection
+with such 'absolute' normal forms.
+
+ A principal example is the default case, where the coefficient field
+(Q) consists of the rational numbers, and the coefficient domain (Z)
+of the integers. The 'ratio coefficients' are just the (non-zero)
+rational numbers. (Recall that here 'rational' refers to the 'ratio'
+or proportion of two integers; which we consider as their quotient.)
+
+ Input, LispForm, Output coefficients are either integers or
+Reduce standard forms (as yet).
+
+
+ There are two internal representations of (non-zero) domain elements:
+redandcoeffs (reductand coefficients) and redorcoeffs (reductor
+coefficients). (See [polynomials] for an explanation of the difference.)
+
+ Redandcoeffs represent non-zero coefficients in reductand polynomials.
+
+ Redorcoeffs represent non-zero coefficients in reductor polynomials.
+
+ Ratcoeffs ('ratio' coefficients) represent non-zero quotients of
+coefficient domain elements. A ratcoeff has a numerator and a
+denominator part; they are redandcoeffs.
+NIL Updated 2004-04-24
+setmodulus
+SETMODULUS (name:field-descriptor) : field-descriptor ; !! HAS CHANGED; DOCUMENT THIS !!
+    name should be some way to denote what to use for the new
+    coefficient field. Legal values right now are: NIl or
+    0 (denoting the field Q of rational numbers); and a
+    prime p (denoting the Galois field with p elements).
+    If bergman is running under Reduce, the identifier SF
+    also is a legal value; denoting that Reduce "Standard
+    Forms" be considered as representing the coefficient
+    domain elements. (The correctness of the input need not be
+    checked. Likewise, if the SF alternative is used, there need
+    not be a check of the Reduce set-up.) The coefficient field
+    is set to name. If name is an odd prime, then the field may
+    or may not be of `logarithmic' type, depending on whether
+    the switch MODLOGARITHMS was on or off.
+NIL Updated 2004-04-24
+setmodulus2
+ SETMODULUS2 : - ;
+    The same effects as with (SETMODULUS 2).
+NIL Updated 2004-04-24
+restorechar0
+ RESTORECHAR0 : - ;
+    The same effects as with (SETMODULUS 0).
+NIL Updated 2004-04-24
+setreducesfcoeffs
+ SETREDUCESFCOEFFS ( ) : - ;
+    The same effects as with (SETMODULUS SF).
+    (Only active for bergman under Reduce.)
+NIL Updated 2004-04-24
+getmodulus
+ GETMODULUS ( ) : field-descriptor ;
+    Returns the characteristic of the coefficient field, or SF
+    if the coefficients are standard forms. (Characteristic 0
+    may be represented by NIL.)
+NIL Updated 2004-04-24
+densecontents
+ DENSECONTENTS ( ) : - ;
+    In coefficient modes where the coefficient domain differs
+    from the coefficient field, search for the content of a
+    polynomial (and factor out this content if it is non unit)
+    rather often.
+    Not only may affect the current coefficient mode, but
+    also any coefficient mode with domain different from field
+    which is set later in this bergman session.
+NIL Updated 2004-04-24
+sparsecontents
+ SPARSECONTENTS ( ) : - ;
+    In coefficient modes where the coefficient domain differs
+    from the coefficient field, search for the content of a
+    polynomial (and factor out this content if it is non unit)
+    rather seldom.
+    Not only may affect the current coefficient mode, but
+    also any coefficient mode with domain different from field
+    which is set later in this bergman session.
+NIL
+    Coefficient domain dependent (all of whom may be RESET):
+
+ REDANDCF!+ (Cf1:redandcoeff, Cf2:redandcoeff) : redandcoeff ;
+ REDANDCF!- (Cf1:redandcoeff) : redandcoeff ;
+ REDANDCF!-!- (Cf1:redandcoeff, Cf2:redandcoeff) : redandcoeff ;
+ REDANDCF!* (Cf1:redandcoeff, Cf2:redandcoeff) : redandcoeff ;
+ REDANDCF!/ (Cf1:redandcoeff, Cf2:redandcoeff) : redandcoeff ;
+ REDANDCFREMAINDER (Cf1:redandcoeff, Cf2:redandcoeff) : redandcoeff ;
+ REDANDCFDIVISION (Cf1:redandcoeff, Cf2:redandcoeff) : dpredandcoeff ;
+    Perform the operations addition, negation ( = "unary minus"),
+    subtraction, multiplication, truncated division, taking of
+    remainder with respect to truncated division, and lastly
+    performing both these operations at once, yielding an output
+    (Cf3 . Cf4) (where Cf3 is the resulting truncated quotient and
+    Cf4 the remainder). As always, NIL represents zero in the output.
+    Zero input is not permitted.
+    The 'truncated division' and 'taking remainder' operations should
+    be compatible in the sense that
+	Cf1 = Cf2 * Cf3 + Cf4,
+    and the division should be exact (whence the remainder should
+    be zero) whenever possible.
+NIL Updated 2004-04-24
+redandcfnegative
+ REDANDCFNEGATIVE (Cf:redandcoeff) : boolean ;
+    Returns T if there is a meaningful concept of "negativity" in the
+    coefficient domain and Cf is negative; NIL else.
+NIL
+ RATCF2NUMERATOR (Cf:ratcoeff) : redandcoeff ;
+ RATCF2DENOMINATOR (Cf:ratcoeff) : redandcoeff ;
+ REDANDCF2RATCF (Cf:redandcoeff) : ratcoeff ;
+ REDANDCFS2RATCF (Cf1:redandcoeff, Cf2:redandcoeff) : ratcoeff ;
+    Converters between ratcoeffs and redandcoeffs. The first two
+    return the numerator and denominator parts of their argument.
+    REDANDCFS2RATCF constructs and returns a ratcoeff corresponding
+    to the quotient of the coefficient domain elements represented
+    by the arguments. REDANDCF2RATCF constructs and returns a
+    ratcoeff representing the same element as does its argument.
+     The procedures in general are NOT reversible: e.g.,
+    RATCF2NUMERATOR (REDANDS2RATCF (Cf1,Cf2)) need not represent the
+    same element as Cf1 does.
+NIL Updated 2004-04-24
+ratcf
+ RATCF!- (Cf:ratcoeff) : ratcoeff ;
+    Perform negation ( = unary minus).
+NIL Updated 2004-04-24
+shortenratcf
+ SHORTENRATCF (Cf:ratcoeff) : ratcoeff ; DESTRUCTIVE
+    Changes Cf to a "simple" representative for the same coefficient
+    field element, and returns this changed input. (Thus destructive.)
+    If the coefficient domain comprises an algorithm for calculating greatest
+    common divisors, the "simple" representative may be achieved by factoring
+    out the GCD of the numerator and the denominator parts from both.
+NIL Updated 2004-04-24
+integerise
+ INTEGERISE (Line:lgenratcoeff) : ratcoeff ; DESTRUCTIVE
+    Each (non-NIL) ratcoeff in Line is replaced by a redandcoeff,
+    representing some c times the element which the ratcoeff
+    represents, using the same c for the whole list. Returns c.
+    (Should not be called if Line does not contain some non-NIL
+    entry.?)
+NIL Updated 2004-04-24
+cfmonredandmult
+ CFMONREDANDMULT (Cf:redandcoeff, Mon:puremon, Pol:augredand) : augredand ;
+    augredand := Cf*Mon*Pol (non-destructively and in this order).
+NIL Updated 2004-04-24
+redandcoeffone
+ A  global variable. The reductand representation of the unit in the
+coefficient domain.
+NIL Updated 2004-04-24
+monomial
+ In bergman, "monomial" always refers to "monic" (coefficient free)
+monomials.
+
+ LispForm monomials are lists of exponents / of variable indices
+in the commutative / non-commutative case.
+
+ Internally, there are two representations, puremons ("pure monomials")
+and augmons ("augmented monomials", which hold some extra information).
+This rarely should concern the ordinary user; except that the augmons
+normally are non-printable objects.  If you create an augmon, e.g. by
+means of [MONINTERN], then this should not be done in such a manner
+that an automatic attempt to print it results.
+
+ The augmons have a unique representation property: They are different
+as lisp object if and only if they represent different mathematical
+objects. This may be tested by means of the lisp procedure EQ.
+NIL Updated 2004-04-24
+monintern
+ MONINTERN (lispform_monomial) : augmon ;
+Returns the unique augmon ('augmented [monomial]') representing the
+same mathematical object as does the input lisp form monomial.
+
+WARNING: Augmons in general are unprintable lisp objects. If you
+call MONLISP at lisp top level, or in some subordinate read-eval-print
+loop, then lisp may try to print the output, resulting in a chrash.
+NIL Updated 2004-04-24
+monlispout
+ MONLISPOUT (puremon) : lispform_monomial ;
+Returns the Lispform monomial representing the same mathematical object
+as does the input puremon ('pure [monomial']).
+NIL Updated 2004-04-24
+monlessp
+ MONLESSP (Mon1:puremon, Mon2:puremon) : bool ;
+    Undefined (possibly erroneous) if Mon1 and Mon2 represent the
+    same monomial or are of different total-degrees. Else, non-NIL
+    iff Mon1 is less than Mon2 with respect to the active monoid order.
+NIL Updated 2004-04-24
+montimes2
+ MONTIMES2 (Mon1:puremon, Mon2:puremon) : augmon ;
+    The output represents the product Mon1 * Mon2 (in the given order).
+    NOTE: In the non-commutative case, this is mostly NOT what we need.
+NIL Updated 2004-04-24
+monfactorp
+ MONFACTORP (Mon1:puremon, Mon2:puremon) : mon_factor_data ;
+    Decides whether or not the first puremon ('pure [monomial]') is a
+    factor of the second one. In the latter case, the output is non-nil,
+    and may contain enough information for deciding in what manner the
+    first one is a factor in the second. (In the non-commutative, there
+    indeed may be several such ways.)
+NIL Updated 2004-04-24
+totaldegree
+ TOTALDEGREE (Mon:puremon) : degree ;
+    Returns the total degree of the puremon ('pure [monomial]'), calculated
+    with respect to the setting of [weights].
+NIL Updated 2004-04-24
+redandmonmult
+ REDANDMONMULT (Pol:augredand, Mon:puremon) : augredand ;
+    Returns the product of Pol and Mon (in this order).
+    Non-destructive.
+NIL Updated 2004-04-24
+qpolmonmult
+ QPOLMONMULT (Pol:qpol, puremon) : qpol ;
+    Returns the product of Pol and Mon (in this order).
+    Non-destructive.
+NIL Updated 2004-04-24
+printratcf
+ PRINTRATCF (Cf:ratcoeff) : boole ;
+    If Cf is a/b (with a and b relatively prime as they should),
+    the procedure does one of the following
+	Prints a/b and returns T if b <> 0;
+	Prints a and returns T if b = 1 but a <> 1;
+	Doesn't print and returns NIL if a = b = 1.
+    The procedure may or may not surround the print form of a
+    (and b) with parentheses, depending on the domain and
+    other mode settings.
+NIL Updated 2004-04-24
+printqpolratfactor
+ PRINTQPOLRATFACTOR (Pol:qpol) : bool ;
+    If the rational factor or "quotient" of Pol is a/b (with
+    a and b relatively prime as they should), the procedure does
+    one of the following
+	Prints a/b and returns T if b <> 0;
+	Prints a and returns T if b = 1 but a <> 1;
+	Doesn't print and returns NIL if a = b = 1.
+    The procedure may or may not surround the print form of a
+    (and b) with parentheses, depending on the domain and
+    other mode settings.
+NIL Updated 2004-04-24
+normalform
+ NORMALFORM (Pol:qpol) : genqpol ; DESTRUCTIVE
+    Changes Pol to the normal form of its input (with respect
+    to GBasis). Returns NIL if the normal form is zero, its changed
+    argument else.
+NIL
+	(THE PAD
+
+ Under development. Should contain:
+
+ READLISPINPUT (FileIndex/NIL/T);
+
+ SETINVARS, SETOUTVARS, SETVARS; PRINTINVARS, PRINTOUTVARS,
+PRINTVARS. Intended to improve the user and window system
+interfaces. Similarly, there are Reduce interface procedures
+planned, which should benefit from the above.)
+
+
+
+NIL
+     TENSPOL!-PRINTMODE        Either DISTRIBUTED or SEMIDISTRIBUTED
+			       keyword, meaning the mode for printing
+			       tensor polynomials.
+
+     TENSTERM!-PRINTMODE       A list of three strings which are beginning,
+			       middle, and ending in printing of tensor
+			       term.
+     EDGE!-STRING              Equals a string which is printed between
+			       edges while chain is printed.
+
+     EDGE!-STRING!-PRINTING    Bolean, meaning whether to use EDGE!-STRING
+			       in chain printings
+
+     BETTI		       True, when Betti numbers are to be calculated
+     BETTI-FOREACHDEGREE       True, when Betti numbers are allowed to
+			       be calculated and they are updated every
+			       time the Groebner basis element is found.
+  -------------------------------------------------------------------
+
+NIL Updated 2004-04-24
+member2nil
+    MEMBER2NIL (element:any, list:lany) : genint ; DESTRUCTIVE (2)
+          Searches list for its first occurrence of element.
+	  If found, the occurrence is (destructively) replaced by
+	  NIL, and the number of the position of element in list is
+	  returned. If element is not found in list, NIL is returned.
+NIL Updated 2004-04-24
+printbettinumber
+    PRINTBETTINUMBER (btnumber:btnum) : - ;
+          Prints Betti number btnumber as follows:
+	                 B(homological degree, total degree) = value
+NIL Updated 2004-04-24
+printbetti
+    PRINTBETTI () : - ;
+          Prints all the calculated  Betti numbers.
+          ((Applies the procedure PRINTBETTINUMBER to all elements of the
+	  anBETTINUMS list.))
+NIL Updated 2004-04-24
+printcurrentbetti
+    PRINTCURRENTBETTI () : - ;
+          Prints Betti numbers for the last calculated Groebner basis
+	  degree.
+          ((Applies the procedure PRINTBETTINUMBER to all elements of the
+	  anCURRENTBETTINUMS list.))
+NIL Updated 2004-04-24
+macbettiprint
+    MACBETTIPRINT () : bool ;
+          Prints Betti numbers in Macaulay form. Returns boolean value T.
+NIL Updated 2004-04-24
+anickresolutionoutputfile
+    ANICKRESOLUTIONOUTPUTFILE
+           Is equal to the name of output file. In case it equals to NIL,
+	   the output channel will be associated with the file name
+	   "andifres.txt".
+NIL Updated 2004-04-24
+settenspolprtstrings
+    SETTENSPOLPRTSTRINGS (strings:lstr) : lstr ;
+          The list strings should consist of 3 strings which are
+	  used to print tensor product. First string is printed
+	  at the beginning, second - as a tensor multiplication sign
+	  and the third - as the ending of thensor monomial.
+	  The list of 3 strings of old settings is returned.
+NIL Updated 2004-04-24
+gettenspolprtstrings
+    GETTENSPOLPRTSTRINGS () : lstr ;
+	  Returns a list of 3 strings which are used when tensor
+	  monomials are printed as beginning, middle and ending
+	  strings.
+NIL Updated 2004-04-24
+setedgestring
+    SETEDGESTRING (strng:string) : genstring ;
+          The string strng is taken for printing as edges when chain
+	  vertexes are printed. The old value of it is returned.
+NIL Updated 2004-04-24
+getedgestring
+    GETEDGESTRING () : - ;
+          Returns the value of string which is printed between chain
+	  vertexes.
+NIL Updated 2004-04-24
+printnewchainsdiff
+    PRINTNEWCHAINSDIFF (chan:genint) : - ;
+          Prints differentials for the new generated chains
+	  to the channel chan
+NIL Updated 2004-04-24
+printchainsdiff
+    PRINTCHAINSDIFF (chan:genint) : - ;
+          Prints differentials for the all generated chains
+	  to the channel chan
+NIL Updated 2004-04-24
+prtchndiff
+    PRTCHNDIFF (inchain:chn) : - ;
+          Prints differential for the chain inchain in form
+	     D (chain length, chain) = differential
+NIL Updated 2004-04-24
+calcbetti
+    CALCBETTI (flag:bool) : - ;
+          Depending on whether flag is non-NIL or not, switches on/off
+	  the calculation of Betti numbers. It sets corresponding flags.
+NIL Updated 2004-04-24
+onflybetti
+    ONFLYBETTI (flag:bool) : - ;
+          Depending on whether flag is non-NIL or not, switches on/off
+	  the calculation of Betti numbers. Also, the feature of
+	  calculating and printing them while Groebner basis is being
+	  calculated degree by degree. It sets corresponding flags.
+NIL Updated 2004-04-24
+getbettinums
+    GETBETTINUMS () : lbtnum;
+          Returns the list of Betti numbers.
+NIL Updated 2004-04-24
+getbtorder
+    GETBTORDER (btnumber:btnum) : int ;
+          Returns the order of Betti number btnumber.
+NIL Updated 2004-04-24
+getbtdegree
+    GETBTDEGREE (btnumber:btnum) : int ;
+          Returns the degree of Betti number btnumber.
+NIL Updated 2004-04-24
+getbtvalue
+    GETBTVALUE (btnumber:btnum) : int ;
+          Returns the value of Betti number btnumber.
+NIL Updated 2004-04-24
+clearresolution
+    CLEARRESOLUTION () : - ;
+          Calls ResolutionDone and ResolutionClear procedures.
+NIL Updated 2004-04-24
+anickdisplay
+    ANICKDISPLAY () : - ;
+          Prints the Betti numbers into the result file.
+NIL Updated 2004-04-24
+calculateanickresolutiontolimit
+    CALCULATEANICKRESOLUTIONTOLIMIT (limdeg:int) : - ;
+          Countinues the process of Anick resolution calculation up to
+	  the degree limdeg. It maybe called after the Groebner basis is
+	  calculated, in case it is finite and calculations stopped
+	  at a lower degree than thatonto which the Anick resolution
+	  should be calculated.
+NIL Updated 2004-04-24
+printchain
+    PRINTCHAIN (chain:chn) : - ;
+          Prints chain. The vertices are printed as monomials
+          (corresponding to the present ALGOUTMODE and minor output
+	  mode settings). If PRINTEDGESTRING is ON, then between
+	  vertices it prints the value of anEDGESTRING.
+NIL Updated 2004-04-24
+mprint
+    MPRINT (mat:matrix) : bool ;
+          Prints mat as a matrix to standard output and returns T, if
+	  that is not NIL. Else it prints nothing and returns NIL.
+NIL Updated 2004-04-24
+cflineprint
+    CFLINEPRINT (ln:lcoeff) : bool ;
+          Prints the list of coefficients ln in one line and returns
+	  T if ln is non-NIL. Else it prints nothing and returns NIL.
+NIL Updated 2004-04-24
+rank
+    RANK (mat:inputmatrix) : int ;
+          Returns the rank of mat calculated in present coefficient
+	  field.
+NIL Updated 2004-04-24
+inputmatrix2redandmatrix
+    INPUTMATRIX2REDANDMATRIX (mtrx:inputmatrix) : matrix ; DESTRUCTIVE
+          Modifies the elements of mtrx so that their type is of
+	  acceptance by further procedures.
+NIL Updated 2004-04-24
+prettyprintsdp
+    PRETTYPRINTSDP (pol:tp) : - ;
+        Prints the semi-distributed polynomial pol in a form decided by
+	the tensor polynomials print-mode. (See GETTENSORPOLSPRINTMODE).
+NIL Updated 2004-04-24
+printtensorpolsdistributed
+    PRINTTENSORPOLSDISTRIBUTED () : - ;
+        Selects distributed form for printing semi-distributed
+	polynomials.
+NIL Updated 2004-04-24
+printtensorpolssemidistributed
+    PRINTTENSORPOLSSEMIDISTRIBUTED () : - ;
+        Selects semi-distributed form for printing semi-distributed
+	polynomials.
+NIL Updated 2004-04-24
+gettensorpolsprintmode
+    GETTENSORPOLSPRINTMODE () : id ;
+        Returns the identifier which is a keyword either DISTRIBUTED
+	or SEMIDISTRIBUTED. This identifier points out how the current
+	semi-distributed polynomials are printed.
+NIL
+2005-02-04: A short summary of the (experimental) ring stack feature:
+
+Normally, the ring structure is given by the present setup.
+Sometimes, we may want to work with several rings simultaneously. In
+order to do this, the present ring characteristica may be saved on a
+stack, or restored therefrom. (Or, should I call it a 'heap'? Anyhow,
+a 'last in, first out' object.) It then may be restored at a later stage.
+
+For the moment, the 'ring structure' is taken as meaning the
+VARIABLESETUP part of the setup, together with the internal
+representations of the 'interned' monomials.
+
+For the moment, the following (user available) procedures exist:
+
+ POPRING (void) ; genint
+    If the ring stack is non-empty, then restore the ring setting
+    from the topmost ring stack object; remove this; and return the
+    former ring stack length. Else, do nothing, and return NIL.
+
+ PUSHRING (void) ; int
+    Add an item on top of the ring stack, corresponding to the
+    present ring setting. Return the new ring stack length.
+
+ RINGSTACKLENGTH () : int
+    Return the length of the ring stack.
+
+ SWITCHRING (void) ; boolean
+    If the ring stack is empty, then do nothing, and return NIL.
+    Else, replace the current ring setting with the one given
+    by the topmost ring stack element, and vice versa, and return T.
+

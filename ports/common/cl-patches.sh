@@ -11,6 +11,7 @@
 set -e
 bm=$1; env=$2
 python3 "$(dirname "$0")/behavior-patches.py" "$bm"
+python3 "$(dirname "$0")/reader-patches.py" "$bm" "$env"
 notice() { # file comment-prefix text
   sed -i "1i $2 Modified by George on 2026-09-30 (ports/common/cl-patches.sh): $3" "$1"
 }

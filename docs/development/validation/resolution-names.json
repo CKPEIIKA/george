@@ -53,7 +53,7 @@
     },
     "identities": 7,
     "ambiguities": 3,
-    "elapsedMs": 1061.9019690000005
+    "elapsedMs": 776.766611
   },
   {
     "id": "collision-F0",
@@ -94,7 +94,7 @@
     },
     "identities": 2,
     "ambiguities": 4,
-    "elapsedMs": 1172.7987199999989
+    "elapsedMs": 566.0567109999993
   },
   {
     "id": "monoid-F0",
@@ -150,7 +150,7 @@
     },
     "identities": 7,
     "ambiguities": 3,
-    "elapsedMs": 764.3881770000007
+    "elapsedMs": 969.5696740000021
   },
   {
     "id": "cubic-F0",
@@ -196,7 +196,7 @@
     },
     "identities": 4,
     "ambiguities": 4,
-    "elapsedMs": 1448.2057270000005
+    "elapsedMs": 789.7411750000028
   },
   {
     "id": "idempotent-F2",
@@ -252,7 +252,7 @@
     },
     "identities": 7,
     "ambiguities": 3,
-    "elapsedMs": 1711.2741959999985
+    "elapsedMs": 930.0020210000002
   },
   {
     "id": "collision-F2",
@@ -293,7 +293,7 @@
     },
     "identities": 2,
     "ambiguities": 4,
-    "elapsedMs": 647.2079389999999
+    "elapsedMs": 703.9279730000053
   },
   {
     "id": "monoid-F2",
@@ -349,7 +349,7 @@
     },
     "identities": 7,
     "ambiguities": 3,
-    "elapsedMs": 2201.8396950000024
+    "elapsedMs": 762.7964929999871
   },
   {
     "id": "cubic-F2",
@@ -395,7 +395,7 @@
     },
     "identities": 4,
     "ambiguities": 4,
-    "elapsedMs": 897.5214710000146
+    "elapsedMs": 683.177416999999
   },
   {
     "id": "idempotent-F5",
@@ -451,7 +451,7 @@
     },
     "identities": 7,
     "ambiguities": 3,
-    "elapsedMs": 994.2503190000134
+    "elapsedMs": 978.3992140000046
   },
   {
     "id": "collision-F5",
@@ -492,7 +492,7 @@
     },
     "identities": 2,
     "ambiguities": 4,
-    "elapsedMs": 1032.3881129999936
+    "elapsedMs": 687.3348049999913
   },
   {
     "id": "monoid-F5",
@@ -548,7 +548,7 @@
     },
     "identities": 7,
     "ambiguities": 3,
-    "elapsedMs": 920.8176319999911
+    "elapsedMs": 951.1910979999957
   },
   {
     "id": "cubic-F5",
@@ -594,7 +594,7 @@
     },
     "identities": 4,
     "ambiguities": 4,
-    "elapsedMs": 678.6667489999963
+    "elapsedMs": 713.4304360000096
   },
   {
     "id": "rational",
@@ -650,7 +650,7 @@
     },
     "identities": 7,
     "ambiguities": 3,
-    "elapsedMs": 1231.0890420000069
+    "elapsedMs": 653.9844419999863
   },
   {
     "id": "large-rational",
@@ -706,7 +706,7 @@
     },
     "identities": 7,
     "ambiguities": 3,
-    "elapsedMs": 1360.6750600000087
+    "elapsedMs": 668.5063990000053
   },
   {
     "id": "weighted-reversed",
@@ -763,7 +763,7 @@
     },
     "identities": 5,
     "ambiguities": 3,
-    "elapsedMs": 1780.0926460000046
+    "elapsedMs": 584.0183060000127
   },
   {
     "id": "weighted-collision",
@@ -804,7 +804,7 @@
     },
     "identities": 2,
     "ambiguities": 4,
-    "elapsedMs": 1455.6651040000143
+    "elapsedMs": 418.3771790000028
   },
   {
     "id": "case-and-underscore",
@@ -860,7 +860,7 @@
     },
     "identities": 7,
     "ambiguities": 3,
-    "elapsedMs": 2174.9219579999917
+    "elapsedMs": 560.6237330000149
   },
   {
     "id": "exterior-prefixes",
@@ -916,7 +916,7 @@
     },
     "identities": 161,
     "ambiguities": 22,
-    "elapsedMs": 3170.3204260000493
+    "elapsedMs": 2337.4067480000085
   },
   {
     "id": "monoid-weighted-reversed",
@@ -973,7 +973,7 @@
     },
     "identities": 5,
     "ambiguities": 3,
-    "elapsedMs": 2155.124306999962
+    "elapsedMs": 723.9835099999909
   },
   {
     "id": "ocaml-mirai-renamed",
@@ -1017,6 +1017,6 @@
     },
     "identities": 4,
     "ambiguities": 8,
-    "elapsedMs": 1436.044022999995
+    "elapsedMs": 649.4210089999833
   }
 ]

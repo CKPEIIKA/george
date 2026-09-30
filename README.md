@@ -103,31 +103,32 @@ and results are compared with a native SBCL build, Bergman 2 and Singular
 | `npm run test:upstream` | 90 adapted Singular/Plural, SymPy and GBNP field cases; independent oracles |
 | `npm run test:resolution:names` | long generator names, differentials |
 | `npm run test:braid` | native/Wasm braid resolutions, full differentials, projectivity and weighted bounds |
+| `npm run test:reader` | same-session recovery after missing files, EOF, stream redirection and syntax errors |
 | `npm run test:browser`, `test:browser:regression` | Chromium suites |
 | `npm run test:ui` | guide, EN/RU, themes, MathJax, `/george/` path |
 
 ## PUBLISHING
 
-```
-git push -u origin main
-git subtree push --prefix=web origin gh-pages
-```
-
-Then *Settings → Pages → Deploy from a branch → gh-pages, /(root)*.
-
-For the one-time contributor-history cleanup, after committing the release:
+After committing the release, prepare source and Pages branches together:
 
 ```sh
-node tools/prepare-publication.mjs
+node tools/prepare-publication.mjs --update
 cat build/publication/plan.json
 sh build/publication/publish.sh
 ```
+
+Set *Settings → Pages → Deploy from a branch → gh-pages, /(root)*.
 
 The helper creates `publish/main` and `publish/gh-pages` with Claude co-author
 trailers removed, preserving authors and file trees. The Pages branch contains
 the committed `web/` tree. Original local branches remain available. The last
 command replaces both remote histories atomically with explicit force leases;
 preparation alone does not change GitHub or its contributors graph.
+
+George 0.2 includes the persistent Lisp console: command completion, history,
+original Bergman help, and session files. Missing files or unavailable keyboard
+input now report errors in the engine without restarting the session. The
+reader and streams recover after errors; variables and files remain available.
 
 ## FILES
 
@@ -195,5 +196,5 @@ bergman, ECL, GMP, the GC, Emscripten and MathJax keep their own licenses.
 See *LICENSE.md*.
 
 ```
-George 0.1.0                     2026-09-30                       GEORGE(1)
+George 0.2.0                     2026-09-30                       GEORGE(1)
 ```

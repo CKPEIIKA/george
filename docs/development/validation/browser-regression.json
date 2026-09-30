@@ -4,64 +4,64 @@
     {
       "legacy": true,
       "outputs": 37,
-      "computationMs": 28492.60000000894,
-      "totalMs": 37130.09999999404,
+      "computationMs": 15884,
+      "totalMs": 19286.79999999702,
       "memoryBytes": 67108864,
-      "ticks": 1856
+      "ticks": 964
     },
     {
       "legacy": false,
       "outputs": 37,
-      "computationMs": 33601.60000000894,
-      "totalMs": 39528.19999998808,
+      "computationMs": 16070.20000000298,
+      "totalMs": 19739,
       "memoryBytes": 67108864,
-      "ticks": 1974
+      "ticks": 987
     }
   ],
   "additional": [
     {
       "id": "sympy-katsura4",
       "outputs": 1,
-      "computationMs": 2372.6000000089407,
-      "totalMs": 8265.89999999106,
+      "computationMs": 476.79999999701977,
+      "totalMs": 3476.5,
       "memoryBytes": 67108864,
-      "ticks": 413,
+      "ticks": 174,
       "nativeEquality": true
     },
     {
       "id": "singular-gb_braid3-11",
       "outputs": 1,
-      "computationMs": 1240.3999999910593,
-      "totalMs": 7268.600000008941,
+      "computationMs": 505.29999999701977,
+      "totalMs": 3565.800000011921,
       "memoryBytes": 67108864,
-      "ticks": 364,
+      "ticks": 179,
       "nativeEquality": true
     },
     {
       "id": "gbnp-weighted",
       "outputs": 1,
-      "computationMs": 233.5,
-      "totalMs": 6620.5,
+      "computationMs": 175.5,
+      "totalMs": 3228.2999999970198,
       "memoryBytes": 67108864,
-      "ticks": 331,
+      "ticks": 161,
       "nativeEquality": true
     },
     {
       "id": "gbnp-sl2-quotient",
       "outputs": 1,
-      "computationMs": 352.90000000596046,
-      "totalMs": 7424.0999999940395,
+      "computationMs": 179.90000000596046,
+      "totalMs": 3175.3999999910593,
       "memoryBytes": 67108864,
-      "ticks": 371,
+      "ticks": 158,
       "nativeEquality": true
     },
     {
       "id": "braid-prefix-F0",
       "outputs": 4,
-      "computationMs": 3399.7000000029802,
-      "totalMs": 9948.09999999404,
+      "computationMs": 1972.5,
+      "totalMs": 4987.29999999702,
       "memoryBytes": 67108864,
-      "ticks": 497,
+      "ticks": 249,
       "nativeEquality": true,
       "homology": {
         "kind": "ungraded",
@@ -113,10 +113,10 @@
     {
       "id": "braid-weighted-reversed-F0",
       "outputs": 4,
-      "computationMs": 2589.6000000089407,
-      "totalMs": 8621.199999988079,
+      "computationMs": 1402,
+      "totalMs": 4475.5,
       "memoryBytes": 67108864,
-      "ticks": 430,
+      "ticks": 223,
       "nativeEquality": true,
       "homology": {
         "kind": "ungraded",

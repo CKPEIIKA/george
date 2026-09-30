@@ -3,13 +3,16 @@
 Release audit: **2026-09-30**. This is a working Bergman → ECL → Wasm → HTML
 application running **bergman-1.001-fix**. Fixed behavior is the default;
 legacy mode retains the original Bergman 1.001 behavior and version identity.
+The current interface release is **George 0.2** (package version 0.2.0).
 The reports below describe executed checks, with their scope.
 
 ## Results
 
 | Layer | Executed result |
 |---|---|
-| JavaScript unit tests | 43 passed: parsing, validation, exact arithmetic, structural export, complete incoming-chain bounds, worker lifecycle, preferences, guide and locale coverage |
+| JavaScript unit tests | 51 passed: parsing, validation, exact arithmetic, structural export, complete incoming-chain bounds, worker lifecycle/error recovery, console editor/help, preferences, guide and locale coverage |
+| Reader recovery | Eight native EOF checks and 23 consecutive failed commands in each Wasm mode; variables/files survive, and the same session computes successfully afterward and survives GC |
+| Persistent console UI | Both `/` and `/george/`: eight error/recovery cases each, retained settings/files, first `T`, original help, completion, history, and current-computation/file shortcuts |
 | Original 2007 CLISP regression | All 37 files match byte for byte in legacy mode, in native SBCL, Node/Wasm and Chromium/Wasm |
 | Default-mode regression | All 37 expected files pass on the same engines; the PB file uses the corrected pre-2004 reference |
 | Additional original sources | 20 sessions: 18 calculations, one mode-only smoke test, one expected rejection of a malformed backup; 23 output files match native Bergman |
@@ -122,12 +125,12 @@ Original legacy branches and vendored sources remain unchanged.
 ## Browser and performance
 
 Verified using Chromium 153.0.8010.52 on this Linux x86_64 workspace. The
-complete historical suites took **28.49–33.60 seconds of computation** each
-in the current run (37.13–39.53 seconds including startup). Measurements are in
+complete historical suites took **15.88–16.07 seconds of computation** each
+in the current run (19.29–19.74 seconds including startup). Measurements are in
 [browser-regression.json](validation/browser-regression.json); timing varies
 with machine load. These are entire-suite timings, not per-polynomial claims. This
-run was on a heavily loaded workspace; the six additional normal-browser cases
-took 0.23–3.40 seconds of computation each, matching native outputs exactly.
+run was on a loaded workspace; the six additional normal-browser cases
+took 0.18–1.97 seconds of computation each, matching native outputs exactly.
 They cover Katsura 4, Singular braid, weighted GBNP, the sl₂ quotient and
 two braid resolutions. The instrumented form timed out at two and five
 minutes, while the exact

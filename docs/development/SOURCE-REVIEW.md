@@ -5,6 +5,10 @@ not generated engine files. The patched distribution is **bergman-1.001-fix**;
 fixed behavior is the default, and `(SETLEGACYMODE T)` selects the original
 behavior and restores the original version identity.
 
+George 0.2 also repairs the Common Lisp reader's error recovery and the ECL
+bridge's recovery from unavailable keyboard input. The investigation and
+native/Wasm/browser evidence are in [READER-FIX.md](READER-FIX.md).
+
 ## Sources and scope
 
 - `vendor/bergman-1.001`: Bergman 1.001, August 2007, Standard Lisp,

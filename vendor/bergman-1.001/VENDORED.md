@@ -10,10 +10,12 @@ taken unmodified from the original distribution:
     scripts/clisp/    the Common Lisp build scripts
     tests/test_bergman/, tests/clisp/   regression inputs and reference outputs
     doc/copyright     the Bergman General Public License
+    doc/helptexts     the help file read by HELPPRINT; the console's help
+                      shows its entries (a copy is at web/vendor/bergman/)
     ReadMe            the original installation notes
 
 Not included: the PSL/Reduce binaries and scripts for other platforms, the
-Java shell, and the manual (doc/).  Do not edit files here; portability
+Java shell, and the rest of doc/ (the manual).  Do not edit files here; portability
 changes live in ports/ and are applied to a build copy.
 
 Release cleanup also excludes upstream `.nfs*` filesystem remnants,

@@ -18,6 +18,7 @@ const sources={
  'resolution-names.json':`${root}/${latest('resolution-names-')}/report.json`,
  'upstream.json':`${root}/${latest('upstream-')}/report.json`,
  'braid.json':`${root}/${latest('braid-')}/report.json`,
+ 'reader.json':`${root}/${latest('reader-')}/report.json`,
  'resolution-limits.json':`${root}/anick-braid-diagnostic/record.json`,
 };
 // The native-browser report has the same prefix as the UI report.
@@ -49,8 +50,15 @@ assert.deepEqual(data['ui.json'].mounts.map(m=>m.mount),['/','/george/']);
 assert.deepEqual(data['ui.json'].errors,[]);
 assert.deepEqual(data['ui.json'].externalRequests,[]);
 assert.equal(data['ui.json'].debuggerDuringCalculations,false);
+assert.equal(data['ui.json'].console.length,2);
 assert.deepEqual(data['ui.json'].engine,data['engine.json']);
 const sha=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
+const reader=data['reader.json'];
+assert.deepEqual(reader.engine,data['engine.json']);
+assert.equal(reader.nativeCases,8);
+assert.deepEqual(reader.modes.map(m=>m.legacy),[false,true]);
+for(const mode of reader.modes){assert.equal(mode.cases.length,23);assert.ok(mode.cases.every(c=>c.recovered));assert.ok(mode.successfulComputationAfterErrors&&mode.gcRecovery);}
+for(const [p,digest]of Object.entries(reader.sourceHashes))assert.equal(sha(p),digest,p+': rerun reader verification after changes');
 for(const [p,digest]of Object.entries(data['ui.json'].sourceHashes))assert.equal(sha(p),digest,p+': UI report sources');
 const upstream=data['upstream.json'],fixture=JSON.parse(fs.readFileSync('test/fixtures/upstream-cases.json','utf8'));
 assert.equal(upstream.cases.length,90);
@@ -67,13 +75,15 @@ assert.equal(upstream.cases.filter(c=>c.pluralIdealEquality).length,6);
 for(const [p,digest]of Object.entries(upstream.validatorHashes))assert.equal(sha(p),digest,p+': rerun upstream validation after changes');
 for(const mode of ['legacy','fixed'])assert.match(fs.readFileSync(`${root}/sbcl-${mode}.log`,'utf8'),new RegExp('37 exact outputs passed'));
 const walk=dir=>fs.readdirSync(dir,{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name)).flatMap(e=>e.isDirectory()?walk(path.join(dir,e.name)):[path.join(dir,e.name)]);
-const browserFiles=['web/src/app.js','web/src/engine.js','web/src/bergman-syntax.js','web/src/homology.js','web/src/resolution-data.js','web/src/i18n.js','web/src/guide.js','web/src/math.js','web/src/preferences.js','web/src/tutorials.js','web/engine/runner.js','web/engine/worker.js','web/index.html','web/style.css','web/vendor/mathjax/build.json'];
+const browserFiles=[...fs.readdirSync('web/src').filter(n=>n.endsWith('.js')).map(n=>'web/src/'+n),'web/engine/runner.js','web/engine/worker.js','web/index.html','web/style.css','web/vendor/mathjax/build.json'];
 const algebra=data['algebra.json'];
 const unitLog=fs.readFileSync(`${root}/unit-tests.log`,'utf8');
 const unitTests=Number(/tests (\d+)/.exec(unitLog)[1]);
 assert.ok(unitTests>=43,'The actual unit assertions, including weighted homology certification, must run, not just test-file processes.');
 assert.match(unitLog,/fail 0\b/);
 const summary={date:new Date().toISOString(),sources,unitTests:Number(/tests (\d+)/.exec(fs.readFileSync(`${root}/unit-tests.log`,'utf8'))[1]),
+ appVersion:JSON.parse(fs.readFileSync('package.json','utf8')).version,
+ readerRecoveryCases:reader.modes.reduce((s,m)=>s+m.cases.length,0),nativeReaderCases:reader.nativeCases,consoleMounts:data['ui.json'].console.map(c=>c.mount),
  historicalOutputsPerMode:37,extraSessions:20,expectedInvalidBackup:1,formPresets:14,ocamlUpstreamAliases:24,
  basisCases:algebra.filter(c=>c.basisSize!==undefined).length,criticalAmbiguities:algebra.reduce((s,c)=>s+(c.ambiguities||0),0),
  resolutionCases:algebra.filter(c=>c.homology).length,differentialIdentities:algebra.reduce((s,c)=>s+(c.identities||0),0),

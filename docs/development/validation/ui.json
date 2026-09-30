@@ -10,29 +10,33 @@
     "emscripten": "4.0.12",
     "files": {
       "ecl.data": {
-        "bytes": 3018772,
-        "sha256": "b5544505f6306d0e7f4deb6a6e2a57583228ed3e5e8636819520a276d178917f"
+        "bytes": 3022020,
+        "sha256": "0acbdaa4f0add5cd05ac44a1d216776fc3200f01e7da170df49bff8816d6ca1e"
       },
       "ecl.js": {
         "bytes": 108260,
-        "sha256": "b6d0dcb4727e77e132878f420521c58e3322bf9b009e528b7bfd999f68495cda"
+        "sha256": "10a9e7995b3d562c7d3f37317ed9dd2ed8c3fb64b3b7c2c130af42f63bed7e02"
       },
       "ecl.wasm": {
-        "bytes": 4617578,
-        "sha256": "700f9515f64fdc645425df08b12b5b0a753be6f39a60347e86e7b0d3f8d88ffa"
+        "bytes": 4617809,
+        "sha256": "b8a73edd93cbb5974155ee0f26fc40930035ed0794c1d965e3a57f78005788c2"
       }
-    }
+    },
+    "appVersion": "0.2.0"
   },
   "sourceHashes": {
-    "web/index.html": "820a5af8c0d06d0e345522df0364051d13b615beb2b30b87692ed255ef5fbbf4",
-    "web/style.css": "71ec7f9f3dadf01dda70ce0fca3d6f1e8fa85bbc59e7539f74594c9aafc4182b",
-    "web/src/app.js": "d584c1210ed6f52a734fb6c859807a1858b375f2d43f5507be3f6be36ce4edc2",
+    "web/index.html": "65c31dd16658f25c7c801c8f28cb9e4f589c2bd5704ab75a0ed5806b9d37380d",
+    "web/style.css": "9318becb4a29b98e06c51fe03dc3108cb10140e5fb788e4dedc4954f010bd7df",
+    "web/src/app.js": "7c95f368fed79f4952aa3978541ca7001b3ff2bc81a91b8a63a5f9c7c7d31b5a",
     "web/src/bergman-syntax.js": "2bebed3bcc91a4bd6aaf96ee8f88a7285384199e1160ed6fc0b6897f3b189d09",
+    "web/src/console-commands.js": "19632c1257b8d9469d30921ddbf4a6ccee4a5151eb709f3f1e56add2ed4c59fa",
+    "web/src/console.js": "45eddad526c9372bc6ab83a5e7040bd0b48a9cbc94b569b48fbb1e49d7a6970a",
     "web/src/engine.js": "92fa68e6f4ce780365bd5129721aa4c8b1996268d4f4cb34b32b36720e817baf",
     "web/src/examples.js": "50c4294ada3efb095386ce57df9b54efd560612e8487dd15b741a05acd053bc0",
-    "web/src/guide.js": "dc25e7e0a2e54174adeca6331ab678eb0feb7f49f382ffff67116fdb78f55462",
+    "web/src/guide.js": "0e905fac7b55ca2e7c2b77bcdb4e7b41b14644f1a1c574c9ca8fb25a955caed5",
     "web/src/homology.js": "ad72c6d5792f90e08c15768c0c1725e6b71d0077b041518fef21f376cccecdca",
-    "web/src/i18n.js": "f006d588f6c0e55f3f802fbc773d28b97b3cb74a9d46598a83ec1c140e87d1b4",
+    "web/src/i18n.js": "4a2ecd3a21c85b1211fce858ab97c62a6cd8dea7811adad21b75c36807f81366",
+    "web/src/lisp.js": "acc71cb91bdcd091b7299403c6a05b75c7a97890008877944781cc5d95dd817c",
     "web/src/math.js": "daf8b75527b72938995b7e83d75dffcf86e12f79e0b534f7d70251a8da3a1655",
     "web/src/preferences.js": "d686c5621c36648104e5a2d3d981bba4222ba3e2951a1c77bcfed51c907007dc",
     "web/src/resolution-data.js": "e9bf9e7cec5738346f4b32a4c7c265ae82a6843e848938ccdf85bd6a71076ec4",
@@ -44,17 +48,39 @@
   "mounts": [
     {
       "mount": "/",
-      "requests": 142,
+      "requests": 171,
       "mathjaxSVGs": 38,
       "badResponses": [],
       "diagnostics": []
     },
     {
       "mount": "/george/",
-      "requests": 219,
+      "requests": 248,
       "mathjaxSVGs": 38,
       "badResponses": [],
       "diagnostics": []
+    }
+  ],
+  "console": [
+    {
+      "mount": "/",
+      "recoveryCases": 8,
+      "settingsAndFilesRetained": true,
+      "firstValue": true,
+      "help": true,
+      "completion": true,
+      "history": true,
+      "currentComputation": true
+    },
+    {
+      "mount": "/george/",
+      "recoveryCases": 8,
+      "settingsAndFilesRetained": true,
+      "firstValue": true,
+      "help": true,
+      "completion": true,
+      "history": true,
+      "currentComputation": true
     }
   ],
   "examples": [

@@ -7,16 +7,17 @@
   "emscripten": "4.0.12",
   "files": {
     "ecl.data": {
-      "bytes": 3018772,
-      "sha256": "b5544505f6306d0e7f4deb6a6e2a57583228ed3e5e8636819520a276d178917f"
+      "bytes": 3022020,
+      "sha256": "0acbdaa4f0add5cd05ac44a1d216776fc3200f01e7da170df49bff8816d6ca1e"
     },
     "ecl.js": {
       "bytes": 108260,
-      "sha256": "b6d0dcb4727e77e132878f420521c58e3322bf9b009e528b7bfd999f68495cda"
+      "sha256": "10a9e7995b3d562c7d3f37317ed9dd2ed8c3fb64b3b7c2c130af42f63bed7e02"
     },
     "ecl.wasm": {
-      "bytes": 4617578,
-      "sha256": "700f9515f64fdc645425df08b12b5b0a753be6f39a60347e86e7b0d3f8d88ffa"
+      "bytes": 4617809,
+      "sha256": "b8a73edd93cbb5974155ee0f26fc40930035ed0794c1d965e3a57f78005788c2"
     }
-  }
+  },
+  "appVersion": "0.2.0"
 }

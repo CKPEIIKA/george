@@ -25,6 +25,14 @@ test('a cancelled initialization cannot mark a replacement command idle',async()
 test('concurrent commands are rejected',async()=>{
  const e=new EclEngine(),p=e.eval('one');await assert.rejects(e.eval('two'),/already running/);await tick();e.worker.reply(e.worker.messages.at(-1),{});await p;e.cancel();
 });
+test('a Lisp command error retains the worker and permits the next console command',async()=>{
+ const e=new EclEngine(),failed=e.eval('(simple)'),rejected=assert.rejects(failed,/Keyboard input is unavailable/);
+ await tick();const w=e.worker,request=w.messages.at(-1);
+ w.onmessage({data:{id:request.id,error:'Bergman evaluation failed.\nError: Keyboard input is unavailable.'}});
+ await rejected;assert.equal(e.worker,w);assert.equal(e.busy,false);assert.equal(e.used,true);
+ const next=e.eval('(+ 1 2)');await tick();assert.equal(e.worker,w);w.reply(w.messages.at(-1),{stdout:'3\n'});
+ assert.equal((await next).stdout,'3\n');e.cancel();
+});
 test('worker startup failures reject pending commands',async()=>{
  const e=new EclEngine(),p=e.eval('one'),rejected=assert.rejects(p,/missing engine/);e.worker.onerror({message:'missing engine',preventDefault(){}});await rejected;assert.equal(e.worker,null);assert.equal(e.pending.size,0);
 });

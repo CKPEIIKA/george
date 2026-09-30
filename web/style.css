@@ -20,6 +20,13 @@
   --error: #b42318;
   --warn: #8a5a00;
   --warn-bg: #fff6d6;
+  --hl-cmd: #1f5fbf;
+  --hl-str: #2d7a3a;
+  --hl-num: #8a4fb8;
+  --hl-const: #a2406f;
+  --br-1: #b36b00;
+  --br-2: #2f6fd6;
+  --br-3: #8a4fb8;
 
   --serif: "STIX Two Text", "STIX Two Math", Cambria, "Times New Roman", serif;
   --sans: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -50,6 +57,13 @@
     --error: #ff8a80;
     --warn: #f0c36b;
     --warn-bg: rgba(240, 195, 107, 0.1);
+    --hl-cmd: #8cb8ff;
+    --hl-str: #8fd19e;
+    --hl-num: #d3a6ff;
+    --hl-const: #f2a0c4;
+    --br-1: #f0c36b;
+    --br-2: #7fb0ff;
+    --br-3: #d3a6ff;
     color-scheme: dark;
   }
 }
@@ -71,6 +85,13 @@
   --error: #ff8a80;
   --warn: #f0c36b;
   --warn-bg: rgba(240, 195, 107, 0.1);
+  --hl-cmd: #8cb8ff;
+  --hl-str: #8fd19e;
+  --hl-num: #d3a6ff;
+  --hl-const: #f2a0c4;
+  --br-1: #f0c36b;
+  --br-2: #7fb0ff;
+  --br-3: #d3a6ff;
   color-scheme: dark;
 }
 
@@ -113,6 +134,7 @@ code, .code { font-family: var(--mono); font-size: 0.9em; }
   padding: 10px var(--gutter) 6px;
 }
 .brand { text-decoration: none; display: flex; align-items: baseline; gap: 8px; min-width: 0; white-space: nowrap; }
+.brand-version { font: 400 0.8rem/1 var(--sans); color: var(--ink-2); }
 .brand-name { font: 600 1.6rem/1 var(--serif); letter-spacing: 0.005em; }
 /* the diamond of the diamond lemma */
 .logo { width: 26px; height: 26px; align-self: center; flex: none; }
@@ -609,11 +631,82 @@ pre.code-block {
   height: min(58vh, 540px);
   overflow-y: auto;
 }
-.terminal .in { color: var(--ink-2); }
-.terminal .note { color: var(--warn); }
-.prompt { display: flex; gap: 8px; align-items: center; }
-.prompt-label { font: 0.9rem var(--mono); color: var(--ink-2); white-space: nowrap; }
-.prompt input { flex: 1; }
+.terminal .in { color: var(--ink-2); margin-top: 6px; }
+.terminal .prompt-echo { color: var(--ink-3); }
+.terminal .o-err { color: var(--error); }
+.terminal .o-warn { color: var(--warn); }
+.terminal .o-tip, .terminal .o-help { font-family: var(--sans); font-size: 0.86rem; line-height: 1.5; color: var(--ink-2); white-space: normal; margin: 2px 0 6px; }
+.terminal .o-tip code, .terminal .o-help code { font-family: var(--mono); background: var(--tint); padding: 0 4px; border-radius: 4px; }
+.terminal .o-help { border-left: 3px solid var(--rule); padding-left: 10px; }
+.terminal .o-help p { margin: 4px 0; }
+.terminal .o-help b { color: var(--ink); font-weight: 600; }
+.terminal .o-help pre { font: 0.82rem/1.45 var(--mono); color: var(--ink); white-space: pre-wrap; margin: 4px 0; tab-size: 8; }
+.terminal .o-help .src, .terminal .o-help .keys { color: var(--ink-3); }
+.terminal .o-help summary { cursor: pointer; color: var(--ink-2); }
+.terminal .o-help .sig-name { color: var(--hl-cmd); font-weight: 600; }
+.terminal button.cmd {
+  font: 0.84rem var(--mono); color: var(--hl-cmd); background: none; border: 0; padding: 0 2px;
+  text-decoration: underline dotted; text-underline-offset: 3px; cursor: pointer;
+}
+.terminal button.cmd:hover { background: var(--tint); border-radius: 3px; }
+
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip {
+  font: 0.8rem var(--mono); color: var(--ink-2); background: var(--tint);
+  border: 1px solid transparent; border-radius: 999px; padding: 2px 10px;
+}
+.chip:hover { border-color: var(--rule); color: var(--ink); }
+
+.prompt { display: flex; gap: 8px; align-items: flex-start; }
+.prompt-label { font: 0.9rem/1.5 var(--mono); color: var(--ink-2); white-space: nowrap; padding-top: 8px; }
+.prompt > button { margin-top: 3px; }
+@media (max-width: 520px) {
+  .prompt-label { display: none; }
+  .chips { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin: 0 -2px; padding: 0 2px; }
+  .chip { flex: none; }
+  .terminal { font-size: 0.82rem; }
+}
+.editor { position: relative; flex: 1; min-width: 0; }
+.editor .editor-hl, .editor textarea {
+  margin: 0; font: 0.9rem/1.5 var(--mono); letter-spacing: 0; tab-size: 2;
+  padding: 7px 9px; border: 1px solid var(--rule); border-radius: var(--r-sm);
+  white-space: pre-wrap; overflow-wrap: anywhere; word-break: normal;
+}
+.editor .editor-hl {
+  position: absolute; inset: 0; overflow: hidden; pointer-events: none;
+  color: var(--ink); background: var(--field);
+}
+.editor textarea {
+  position: relative; display: block; width: 100%; min-height: 0; resize: none; overflow: hidden;
+  background: transparent; color: transparent; caret-color: var(--ink);
+}
+.editor textarea::placeholder { color: var(--ink-3); }
+.editor textarea::selection { background: color-mix(in srgb, var(--focus) 28%, transparent); color: transparent; }
+.editor textarea:hover { border-color: var(--ink-3); }
+.editor textarea:focus { outline: 2px solid var(--focus); outline-offset: 1px; }
+.editor-hl .ghost { color: var(--ink-3); opacity: 0.75; }
+.k-cmd { color: var(--hl-cmd); }
+.k-str { color: var(--hl-str); }
+.k-num { color: var(--hl-num); }
+.k-const { color: var(--hl-const); }
+.k-com { color: var(--ink-3); font-style: italic; }
+.k-q { color: var(--hl-const); }
+.br.d0 { color: var(--ink-2); }
+.br.d1 { color: var(--br-1); }
+.br.d2 { color: var(--br-2); }
+.br.d3 { color: var(--br-3); }
+.br-pair { background: var(--mark); color: var(--mark-ink) !important; border-radius: 2px; font-weight: 700; }
+.br-bad { color: var(--error) !important; text-decoration: underline wavy var(--error); }
+.terminal .in .br-bad { text-decoration: none; }
+.prompt-status {
+  display: flex; gap: 6px 14px; justify-content: space-between; flex-wrap: wrap;
+  font-size: 0.82rem; color: var(--ink-3); min-height: 1.3em; margin-top: -6px;
+}
+.prompt-status .sig code { font-family: var(--mono); color: var(--hl-cmd); }
+.prompt-status .sig .more { color: var(--ink-3); font-family: var(--mono); }
+.prompt-status .sig { color: var(--ink-2); min-width: 0; }
+.prompt-status .bal { font-family: var(--mono); color: var(--warn); }
+.prompt-status .bal.bad { color: var(--error); font-weight: 600; }
 .console-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
 /* ------------------------------------------------------------ about */

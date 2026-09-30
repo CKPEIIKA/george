@@ -32,6 +32,8 @@ Why both:
 `vendor/bergman-1.001/` is Copyright © 1992–2006 Jörgen Backelin and others,
 under the Bergman General Public License (`vendor/bergman-1.001/doc/copyright`,
 also in `licenses/BGPL.txt`). It is vendored unmodified.
+`web/vendor/bergman/helptexts` is an unmodified copy of bergman's help file
+(`doc/helptexts`), which the console's help displays.
 
 - **Modified files (§2a).** The builds patch copies of bergman files for
   portability and documented fixes (`ports/common/` and `ports/ecl/`). Each patched copy gets a dated

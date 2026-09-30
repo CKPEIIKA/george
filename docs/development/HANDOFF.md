@@ -2,7 +2,8 @@
 
 Updated 2026-09-30. The **Bergman → ECL → Wasm → HTML** MVP computes with the
 real **bergman-1.001-fix** engine with fixed behavior by default and original
-Bergman 1.001 behavior in legacy mode. It has the validation runs listed below. The
+Bergman 1.001 behavior in legacy mode. George 0.2 includes the persistent console
+and engine reader recovery. It has the validation runs listed below. The
 former
 single-letter adapter restriction is removed. The native idempotent-braid
 resolution stall is fixed in default mode. Earlier prototype/demo-only
@@ -18,6 +19,8 @@ notes are superseded by this document.
   SymPy and GBNP presentations, oracle checks and adaptations.
 - [Braid fix](BRAID-FIX.md): both native causes, independent algebraic
   certificate and conservative weighted homology reporting.
+- [Reader fix](READER-FIX.md): readtable/RAISE restoration, cached bridge
+  function, unavailable keyboard input and same-session recovery evidence.
 - [Capability map](CAPABILITIES.md): original / OCaml / Singular / George.
 - [User guide](../USER-GUIDE.md): source provenance and interface features.
 - [Evidence manifest](validation/summary.json): retained reports and full
@@ -27,8 +30,12 @@ notes are superseded by this document.
 
 - All 37 historical outputs match in legacy mode; all 37 corrected references
   pass in default mode, on native SBCL, Node/Wasm and real Chromium.
-- 43 unit tests; 20 extra original sessions, including one intentionally
+- 51 unit tests; 20 extra original sessions, including one intentionally
   invalid backup; all 14 form presets.
+- Eight native reader EOF checks; 23 consecutive failed commands in each
+  Wasm mode, followed by successful computation and GC in the same session.
+- Persistent console checks at root and project paths: retained settings/files,
+  missing/no input, nested readers, help, completion, history and file shortcuts.
 - All 24 upstream OCaml aliases; all five relevant active examples compared.
 - 42 independent basis cases, 597 critical ambiguities, nine resolution cases
   and 560 identities d²=0 before augmentation. Singular/Plural, Hilbert
@@ -93,8 +100,8 @@ against the final stable files.
 ## Reproduction and publication
 
 All commands are local. There are no repository CI/Actions workflows.
-Publish prebuilt `web/` on the `gh-pages` branch with the documented subtree
-command, and select that branch's root in Settings → Pages. Run `npm run sources` after changes to keep
+Publish prebuilt `web/` on the `gh-pages` branch with the prepared publication
+script, and select that branch's root in Settings → Pages. Run `npm run sources` after changes to keep
 the downloadable source archives current. Stage new release files first:
 the George archive includes tracked/staged files and excludes untracked
 workspace drafts. Its ECL archive includes bundled
@@ -103,10 +110,10 @@ asset hashes are under `web/vendor/mathjax/`.
 
 The final engine runtime build is identified by `build/engine-build.json`.
 This release compiled the patched Bergman runtime in
-`/tmp/george-upstream-final-runtime-20260930` and relinked it with the previously
-validated ECL Wasm library under `build/toolchain/ecl-wasm`. The Wasm code
-hash is unchanged; the bytecode/data contains the fixes. Its native reference
-is `build/sbcl-upstream-final-20260930/bin/clisp/unix/bergman`.
+`/tmp/george-reader-02-v2-runtime-20260930` and relinked it with the previously
+validated ECL Wasm library under `build/toolchain/ecl-wasm`. Both the bridge
+Wasm code and bytecode/data now contain the reader fixes. Its native reference
+is `build/sbcl-reader-02-v2-20260930/bin/clisp/unix/bergman`.
 The user previously chose the validated toolchain after a neutral-path ECL
 rebuild terminated before linking. That library rebuild was not resumed.
 `ports/ecl/build.sh` and `link-wasm.sh` now contain the neutral-path changes;
@@ -169,17 +176,35 @@ atomic force-with-lease publication. Remote history and the GitHub contributor
 graph are unchanged until those clean refs are pushed; do not publish an old
 history afterward and reintroduce the trailers.
 
-The user explicitly deferred the concurrent console edits. They remain in
-the shared workspace, including changes to app.js, style.css, index.html,
-i18n.js, guide.js, LICENSE.md, VENDORED.md and new console/help files and tests.
-The release was validated and packaged in the isolated checkout `/tmp/george-release-20260930`;
-only the branding/version changes from the shared HTML and locale files enter
-this commit. All console files, their tests and help additions are excluded from the release
-and source archive. Preserve them for the user's later console work.
+The previously deferred console work is now included in George 0.2. Its
+JavaScript guards, automatic session restart after input EOF, and first-T
+filter have been removed. Recovery is implemented in the Common Lisp reader
+patches and ECL host; see READER-FIX.md. The source archive includes the new
+console, its tests and unmodified Bergman help texts.
 
-No remote publication was performed during this work. `npm test` uses
-`--experimental-test-isolation=none` (Node >=22.8): the nonisolated run
-executes and reports all 43 assertions. Reports and browser source hashes
-refer to the isolated release, not the newer uncommitted console interface.
-The collector was run with `build/validation/upstream-release-reports.json`
-to select these exact runs instead of concurrent console-validation reports.
+The rebuilt native reference is
+`build/sbcl-reader-02-v2-20260930/bin/clisp/unix/bergman`; the rebuilt ECL
+runtime is `/tmp/george-reader-02-v2-runtime-20260930`. The existing validated
+Wasm ECL library was reused and relinked with the corrected bridge. Manifest
+`web/engine/build.json` records the exact engine hashes and appVersion 0.2.0.
+
+All checks in the evidence manifest were rerun against this release. The
+collector's exact selections are in `build/validation/reader02-release-reports.json`.
+`npm test` executes all 51 assertions with Node >=22.8 and
+`--experimental-test-isolation=none`. The browser checks include the actual
+current console/form interface, rather than the earlier isolated checkout.
+
+No remote publication was performed: SSH authentication failed, and the user
+requested a single command to publish afterward. The prepared publication
+script accepts an SSH key path, starts an agent in the same shell when needed,
+and uses explicit force leases for both branches. Run from the repository:
+
+```sh
+sh build/publication/publish.sh
+```
+
+This pushes clean source history to main and the exact web tree to gh-pages.
+The original local refs remain available; avoid publishing those old histories
+and reintroducing the removed coauthor trailers. If another party updates the
+remote tips, the lease rejects the push and the publication plan must be
+reviewed/refreshed. GitHub Pages may take time to deploy after the push.

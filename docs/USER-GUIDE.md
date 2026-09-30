@@ -43,6 +43,26 @@ The first six reuse original inputs; the last two are algebraic sanity cases.
 Loading an example resets computational options to its documented settings.
 Changing display language preserves the current presentation and output files.
 
+## Console (George 0.2)
+
+The **Console** tab evaluates Lisp in the current Bergman session. Enter
+runs a complete form, Shift+Enter inserts a line, Ctrl+Enter submits incomplete
+input, Tab completes a command, and ↑ recalls earlier commands. History is
+saved when browser storage is available.
+
+`(help)` lists commands; `?simple` or `(help simple)` displays Bergman's
+original help. **Run the current computation** writes `input.bg` and executes
+the presentation form's commands. `(files)` lists session files;
+`(show "input.bg")` prints one. A file-based computation uses explicit names,
+for example `(simple "input.bg" "out.gb")`.
+
+Missing input files and commands that require keyboard input report an error.
+The engine recovers without restarting: existing variables, settings and files
+remain available. A new presentation-form computation starts a fresh session,
+as does **Stop** before the next command. Errors during parsing or algebra
+computation can leave partial algebra data; clear it with `(clearring)` before
+loading replacement input.
+
 ## Language, theme and notation
 
 English and Russian cover navigation, form settings, validation, result
