@@ -16,11 +16,12 @@ export function regressionJob(legacy) {
   const expected = Object.fromEntries(names.map(n => [outputs[n], fs.readFileSync(path.join(root, 'test_bergman', !legacy && n === 'ncpbhg.pb' ? 'ncpbhg.pb.old' : `clisp/${n}`), 'utf8')]));
   return { job: { files, script, outputs }, expected };
 }
-export async function wasmRuntime() {
+export async function wasmRuntime({onOutput}={}) {
   const { default: create } = await import('../../web/engine/ecl.js');
   let stdout = '';
   const start = performance.now();
-  const m = await create({ locateFile: p => path.resolve('web/engine', p), print: s => { stdout += s + '\n'; }, printErr: s => { stdout += s + '\n'; }, stdin: () => null });
+  const output = s => { stdout += s + '\n'; onOutput?.(s); };
+  const m = await create({ locateFile: p => path.resolve('web/engine', p), print: output, printErr: output, stdin: () => null });
   const code = m.ccall('george_init', 'number', [], []);
   if (code) throw new Error(`init ${code}: ${stdout}`);
   m.FS.mkdirTree('/work'); m.FS.chdir('/work');

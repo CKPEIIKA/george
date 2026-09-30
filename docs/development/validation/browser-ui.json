@@ -1,0 +1,23 @@
+{
+  "report": [
+    {
+      "legacy": true,
+      "totalMs": 3396,
+      "computationMs": 787.2000000029802,
+      "memoryBytes": 67108864,
+      "ticks": 170
+    },
+    {
+      "legacy": false,
+      "totalMs": 3813.2999999970198,
+      "computationMs": 869.7000000029802,
+      "memoryBytes": 67108864,
+      "ticks": 190
+    }
+  ],
+  "cancellation": "AbortError",
+  "exactInteger": "T \n12157665459056928801",
+  "memoryGrowthBytes": 123011072,
+  "errors": [],
+  "browser": "153.0.8010.52"
+}

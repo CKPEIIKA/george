@@ -1,7 +1,8 @@
-// Exact homology of the augmented, ungraded complex printed by Bergman.
+// Exact homology of the augmented, ungraded structural Bergman complex.
 // Nonhomogeneous differentials can lower internal degree; computing each
 // internal degree separately (the historical Betti routine) misses these maps.
-import { parseAnick, parseRelation, parseBasis, termDegree } from './bergman-syntax.js';
+import { parseRelation, parseBasis, termDegree } from './bergman-syntax.js';
+import { readResolution, chainKey } from './resolution-data.js';
 const gcd=(a,b)=>{a=a<0n?-a:a;b=b<0n?-b:b;while(b)[a,b]=[b,a%b];return a;};
 export function augmentedHomology(text, vars, modulus=0, completion=null) {
   const p=BigInt(modulus);
@@ -23,24 +24,18 @@ export function augmentedHomology(text, vars, modulus=0, completion=null) {
       row++;
     }return row;
   };
-  const word=s=>s==='1'?'':parseRelation(s,vars)[0].factors.map(f=>f.v.repeat(f.e)).join('');
-  const diffs=parseAnick(text).diffs;
-  const top=Math.max(...diffs.keys())+1;
-  if(!Number.isFinite(top))throw new Error('The resolution has no differentials.');
-  const chains=[['']];
-  for(let n=1;n<=top;n++)chains[n]=(diffs.get(n-1)||[]).map(d=>word(d.chain));
+  const {diffs,top}=readResolution(text,vars,modulus);
+  const chains=[[[]]];
+  for(let n=1;n<=top;n++)chains[n]=diffs.get(n-1).map(d=>d.chain);
   const matrices=[[]],ranks=[0];
   for(let n=1;n<=top;n++){
     const a=chains[n-1].map(()=>chains[n].map(()=>q(0)));
+    const targets=new Map(chains[n-1].map((word,i)=>[chainKey(word),i]));
     for(const [col,d] of (diffs.get(n-1)||[]).entries()){
-      for(const term of d.image.replaceAll(' ','').match(/[+-]?[^+-]+/g)||[]){
-        const m=/^([+-]?)(?:(\d+)(?:\/(\d+))?)?([^.]*)\.(.*)$/.exec(term);
-        if(!m)throw new Error(`Cannot read differential term: ${term}`);
-        const [,sign,num,den,target,elt]=m;
-        if(elt!=='1')continue; // augmentation of shifted generators is zero
-        const row=chains[n-1].indexOf(word(target.replace(/^\*/, '')||'1'));
-        if(row<0)throw new Error(`Missing target chain ${target}`);
-        a[row][col]=add(a[row][col],q((sign==='-'?-1n:1n)*BigInt(num||1),BigInt(den||1)));
+      for(const term of d.terms){
+        if(term.word.length)continue; // augmentation of shifted generators is zero
+        const row=targets.get(chainKey(term.target));
+        a[row][col]=add(a[row][col],q(...term.coefficient));
       }
     }
     matrices[n]=a;ranks[n]=rank(a);
@@ -55,7 +50,7 @@ export function augmentedHomology(text, vars, modulus=0, completion=null) {
     const weights=new Map(vars.map((v,i)=>[v,Number(String(completion.weights||'').trim().split(/[\s,]+/)[i])||1]));
     const degree=s=>Math.max(0,...parseRelation(s,vars).map(t=>termDegree(t,weights)));
     const maxRelation=Math.max(0,...parseBasis(completion.basis).groups.flatMap(g=>g.polys).map(degree));
-    const maxChain=Math.max(0,...(diffs.get(top-1)||[]).map(d=>degree(d.chain)));
+    const maxChain=Math.max(0,...diffs.get(top-1).map(d=>d.chain.reduce((s,v)=>s+weights.get(v),0)));
     // Every next Anick chain extends a current chain by a proper tail of
     // a leading word. If all possible extensions fit and none exists, the
     // chain complex ends here. This also certifies its zero tail.

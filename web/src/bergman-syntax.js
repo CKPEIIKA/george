@@ -85,7 +85,7 @@ export function parseRelation(src, vars) {
         i++; continue;
       }
       if (tk.t === 'op' && (tk.v === '(' || tk.v === ')')) {
-        throw new SyntaxError('Bergman reads relations as sums of monomials: expand the brackets first');
+        throw new SyntaxError('bergman reads relations as sums of monomials: expand the brackets first');
       }
       if (tk.t === 'op' && tk.v === '.') throw new SyntaxError('Coefficients must be integers');
       if (tk.t === 'op' && tk.v === '^') throw new SyntaxError('“^” must follow a generator');
@@ -331,13 +331,12 @@ export const ORDERS = {
     { id: 'elim', label: 'Elimination', cmd: 'ELIMORDER' },
     { id: 'homogelim', label: 'Homogeneous elimination', cmd: 'HOMOGELIMORDER' },
     { id: 'invelim', label: 'Inverse elimination', cmd: 'INVELIMORDER' },
+    { id: 'invwelim', label: 'Inverse weighted elimination', cmd: 'INVWELIMORDER' },
   ],
   comm: [
     { id: 'degrevlex', label: 'Degree reverse lexicographic', cmd: 'DEGREVLEXIFY' },
     { id: 'deglex', label: 'Degree lexicographic', cmd: 'DEGLEXIFY' },
     { id: 'purelex', label: 'Pure lexicographic', cmd: 'PURELEXIFY' },
-    { id: 'revlex', label: 'Reverse lexicographic', cmd: 'REVLEXIFY' },
-    { id: 'elim', label: 'Elimination', cmd: 'ELIMORDER' },
     { id: 'matrix', label: 'Matrix order', cmd: 'MATRIXIFY' },
   ],
 };
@@ -445,7 +444,6 @@ export function buildJob(form) {
     }
   }
   const extended = !form._resolutionStage && !form.legacy && task.id === 'anick' && (nonhomogeneous || form.nonhomog === 'itemwise' || augmentation === 'monoid');
-  if (extended && form.vars.some(v => !/^[A-Za-z]$/.test(v))) throw new Error('Nonhomogeneous resolutions currently require single-letter generators.');
   if (form.legacy && augmentation === 'monoid') throw new Error('Monoid augmentation requires default mode; original Bergman has no monoid augmentation setting.');
   const vars = form.reverseVars ? [...form.vars].reverse() : [...form.vars];
   const input = [];
@@ -501,11 +499,13 @@ export function buildJob(form) {
       session.push(`(SETQ ANICKRESOLUTIONOUTPUTFILE ${q(outs.anick)})`);
       session.push(`(${task.proc} ${q('input.bg')} ${q(outs.gb)})`);
       session.push('(CALCULATEANICKRESOLUTIONTOLIMIT (GETMAXDEG))', '(ANICKDISPLAY)');
+      if (task.id === 'anick' && !form.legacy) session.push('(GEORGEWRITERESOLUTION "resolution.jsonl")');
   }
   if (form.outmode === 'MACAULAY') session.push('(SETALGOUTMODE MACAULAY)', '(GEORGEWRITEBASIS "result.macaulay")', '(SETALGOUTMODE ALG)');
   session.push('(CLEARRING)');
   const outputs = {};
   for (const k of extended ? ['gb'] : task.out) outputs[k] = outs[k];
+  if (task.id === 'anick' && !form.legacy && !extended) outputs.resolution = 'resolution.jsonl';
   if (form.outmode === 'MACAULAY') outputs.macaulay = 'result.macaulay';
   const job = { task: task.id, files, script: session.join('\n') + '\n', outputs, legacy: !!form.legacy, degreeBound: form.maxdeg || (task.group === 'Resolutions' ? 6 : null) };
   if (extended) {

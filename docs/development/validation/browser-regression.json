@@ -1,0 +1,21 @@
+{
+  "devtools": false,
+  "report": [
+    {
+      "legacy": true,
+      "outputs": 37,
+      "computationMs": 6283.899999991059,
+      "totalMs": 7877.70000000298,
+      "memoryBytes": 67108864,
+      "ticks": 393
+    },
+    {
+      "legacy": false,
+      "outputs": 37,
+      "computationMs": 5121.70000000298,
+      "totalMs": 6244.100000008941,
+      "memoryBytes": 67108864,
+      "ticks": 312
+    }
+  ]
+}

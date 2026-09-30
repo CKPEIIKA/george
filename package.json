@@ -7,14 +7,17 @@
   "scripts": {
     "serve": "node tools/serve.mjs web 8000",
     "examples": "node tools/make-examples.mjs",
-    "test": "node --test test/*.test.mjs",
+    "ui:package": "node tools/package-ui.mjs",
+    "test": "node --test --experimental-test-isolation=none test/*.test.mjs",
     "wasm:build": "ports/ecl/build.sh",
     "wasm:test": "node tools/validate-wasm.mjs",
     "test:ocaml": "tools/validate-ocaml.sh && node tools/export-ocaml.mjs",
     "test:algebra": "node tools/validate-algebra.mjs",
+    "test:resolution:names": "node tools/validate-resolution-names.mjs",
     "test:extra": "node tools/validate-extra.mjs",
     "test:examples": "node tools/validate-examples.mjs",
     "test:browser": "node tools/validate-browser.mjs",
+    "test:ui": "node tools/validate-ui.mjs",
     "test:browser:regression": "node tools/validate-browser-uninstrumented.mjs",
     "sources": "bash tools/package-sources.sh",
     "sbcl:build": "ports/sbcl/build.sh vendor/bergman-1.001 build/sbcl-$(date +%Y%m%d-%H%M%S)",
@@ -22,9 +25,10 @@
     "sbcl:test:legacy": "ports/sbcl/runtests.sh $(ls -td build/sbcl-* | head -1) legacy-$(date +%Y%m%d-%H%M%S) legacy"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22.8.0"
   },
   "devDependencies": {
+    "mathjax": "4.1.3",
     "playwright-core": "1.63.0"
   }
 }

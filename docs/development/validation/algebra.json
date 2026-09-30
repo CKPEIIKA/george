@@ -1,0 +1,771 @@
+[
+  {
+    "id": "comm-0",
+    "basisSize": 3,
+    "ambiguities": 9,
+    "elapsedMs": 56.1657909999999,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": false
+  },
+  {
+    "id": "nc-0",
+    "basisSize": 4,
+    "ambiguities": 18,
+    "elapsedMs": 56.53298799999993,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": false
+  },
+  {
+    "id": "exterior-0",
+    "basisSize": 6,
+    "ambiguities": 22,
+    "elapsedMs": 66.48926900000015,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": false
+  },
+  {
+    "id": "symmetric-0",
+    "basisSize": 3,
+    "ambiguities": 7,
+    "elapsedMs": 55.10950099999991,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": false
+  },
+  {
+    "id": "comm-2",
+    "basisSize": 3,
+    "ambiguities": 9,
+    "elapsedMs": 93.36349599999994,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": false
+  },
+  {
+    "id": "nc-2",
+    "basisSize": 4,
+    "ambiguities": 18,
+    "elapsedMs": 67.74360699999943,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": false
+  },
+  {
+    "id": "exterior-2",
+    "basisSize": 6,
+    "ambiguities": 22,
+    "elapsedMs": 72.26656699999876,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": false
+  },
+  {
+    "id": "symmetric-2",
+    "basisSize": 3,
+    "ambiguities": 7,
+    "elapsedMs": 61.52529200000026,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": false
+  },
+  {
+    "id": "comm-5",
+    "basisSize": 3,
+    "ambiguities": 9,
+    "elapsedMs": 72.953125,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": false
+  },
+  {
+    "id": "nc-5",
+    "basisSize": 4,
+    "ambiguities": 18,
+    "elapsedMs": 78.37483500000053,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": false
+  },
+  {
+    "id": "exterior-5",
+    "basisSize": 6,
+    "ambiguities": 22,
+    "elapsedMs": 89.0877789999995,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": false
+  },
+  {
+    "id": "symmetric-5",
+    "basisSize": 3,
+    "ambiguities": 7,
+    "elapsedMs": 75.80297799999971,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": false
+  },
+  {
+    "id": "huge-integer",
+    "basisSize": 3,
+    "ambiguities": 10,
+    "elapsedMs": 43.787641000000804,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": false
+  },
+  {
+    "id": "truncated-cubic",
+    "basisSize": 1,
+    "ambiguities": 4,
+    "elapsedMs": 46.97020199999861,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": false
+  },
+  {
+    "id": "quantum-plane",
+    "basisSize": 3,
+    "ambiguities": 11,
+    "elapsedMs": 64.11480300000039,
+    "oracle": "Singular Letterplace + Plural",
+    "degreeBound": 6,
+    "allAmbiguities": false
+  },
+  {
+    "id": "plactic",
+    "basisSize": 11,
+    "ambiguities": 48,
+    "elapsedMs": 117.92260899999746,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": false
+  },
+  {
+    "id": "pow",
+    "basisSize": 3,
+    "ambiguities": 14,
+    "elapsedMs": 74.63718000000154,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": false
+  },
+  {
+    "id": "sklyanin",
+    "basisSize": 2,
+    "ambiguities": 7,
+    "elapsedMs": 56.14665199999945,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": false
+  },
+  {
+    "id": "symgroup",
+    "basisSize": 3,
+    "ambiguities": 11,
+    "elapsedMs": 33.033252999997785,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": true
+  },
+  {
+    "id": "singular-freegb-example",
+    "basisSize": 6,
+    "ambiguities": 31,
+    "elapsedMs": 115.826259999998,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": false
+  },
+  {
+    "id": "original-nhom",
+    "basisSize": 10,
+    "ambiguities": 58,
+    "elapsedMs": 59.89073500000086,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": true
+  },
+  {
+    "id": "ocaml-mirai",
+    "basisSize": 8,
+    "ambiguities": 20,
+    "elapsedMs": 39.2146410000023,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": true
+  },
+  {
+    "id": "ocaml-ab-e",
+    "basisSize": 3,
+    "ambiguities": 7,
+    "elapsedMs": 18.59158099999695,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": true
+  },
+  {
+    "id": "ocaml-idempotent",
+    "basisSize": 1,
+    "ambiguities": 3,
+    "elapsedMs": 16.085745000000315,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": true
+  },
+  {
+    "id": "ocaml-idempotent-braid",
+    "basisSize": 3,
+    "ambiguities": 11,
+    "elapsedMs": 34.0709629999983,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": true
+  },
+  {
+    "id": "ocaml-ab-ee",
+    "basisSize": 4,
+    "ambiguities": 12,
+    "elapsedMs": 52.82142099999692,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": false
+  },
+  {
+    "id": "ocaml-square-sum",
+    "basisSize": 1,
+    "ambiguities": 3,
+    "elapsedMs": 38.68591599999854,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": false
+  },
+  {
+    "id": "ocaml-square-minus",
+    "basisSize": 2,
+    "ambiguities": 6,
+    "elapsedMs": 52.62940399999934,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": false
+  },
+  {
+    "id": "ocaml-square-difference",
+    "basisSize": 2,
+    "ambiguities": 6,
+    "elapsedMs": 49.27410500000042,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": false
+  },
+  {
+    "id": "ocaml-symmetric6",
+    "basisSize": 15,
+    "ambiguities": 50,
+    "elapsedMs": 93.31065700000181,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": false
+  },
+  {
+    "id": "seeded-0",
+    "basisSize": 3,
+    "ambiguities": 9,
+    "elapsedMs": 66.04839899999934,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": false
+  },
+  {
+    "id": "seeded-1",
+    "basisSize": 2,
+    "ambiguities": 6,
+    "elapsedMs": 65.6261730000042,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": false
+  },
+  {
+    "id": "seeded-2",
+    "basisSize": 3,
+    "ambiguities": 12,
+    "elapsedMs": 84.843667000001,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": false
+  },
+  {
+    "id": "seeded-3",
+    "basisSize": 4,
+    "ambiguities": 18,
+    "elapsedMs": 67.72180099999969,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": false
+  },
+  {
+    "id": "seeded-4",
+    "basisSize": 1,
+    "ambiguities": 1,
+    "elapsedMs": 47.3627290000004,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": false
+  },
+  {
+    "id": "seeded-5",
+    "basisSize": 4,
+    "ambiguities": 18,
+    "elapsedMs": 105.3059379999977,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": false
+  },
+  {
+    "id": "seeded-6",
+    "basisSize": 4,
+    "ambiguities": 18,
+    "elapsedMs": 68.12107899999683,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": false
+  },
+  {
+    "id": "seeded-7",
+    "basisSize": 1,
+    "ambiguities": 2,
+    "elapsedMs": 48.96579200000269,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": false
+  },
+  {
+    "id": "seeded-8",
+    "basisSize": 3,
+    "ambiguities": 9,
+    "elapsedMs": 86.89711199999874,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": false
+  },
+  {
+    "id": "seeded-9",
+    "basisSize": 3,
+    "ambiguities": 12,
+    "elapsedMs": 79.93451500000083,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": false
+  },
+  {
+    "id": "seeded-10",
+    "basisSize": 2,
+    "ambiguities": 6,
+    "elapsedMs": 71.40910300000542,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": false
+  },
+  {
+    "id": "seeded-11",
+    "basisSize": 2,
+    "ambiguities": 6,
+    "elapsedMs": 73.73025799999596,
+    "oracle": "Singular",
+    "degreeBound": 6,
+    "allAmbiguities": false
+  },
+  {
+    "id": "anick0",
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "Q",
+      "betti": [
+        1,
+        3,
+        6,
+        10,
+        15,
+        21,
+        28,
+        36,
+        45,
+        55
+      ],
+      "chainDimensions": [
+        1,
+        3,
+        6,
+        10,
+        15,
+        21,
+        28,
+        36,
+        45,
+        55,
+        66
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 9,
+      "finiteTailZero": false
+    },
+    "identities": 282,
+    "comparedBetti": 10,
+    "elapsedMs": 1180.782217
+  },
+  {
+    "id": "anick1",
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "Q",
+      "betti": [
+        1,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "chainDimensions": [
+        1,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 7,
+      "finiteTailZero": false
+    },
+    "identities": 7,
+    "comparedBetti": 0,
+    "elapsedMs": 194.53106300000218
+  },
+  {
+    "id": "anick2",
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "Q",
+      "betti": [
+        1,
+        3,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        3,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        1
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 7,
+      "finiteTailZero": false
+    },
+    "identities": 13,
+    "comparedBetti": 6,
+    "elapsedMs": 231.3664670000071
+  },
+  {
+    "id": "anick3",
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "Q",
+      "betti": [
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 10,
+      "finiteTailZero": false,
+      "shifted": true
+    },
+    "identities": 10,
+    "comparedBetti": 11,
+    "elapsedMs": 220.16584599999624
+  },
+  {
+    "id": "mirai",
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "Q",
+      "betti": [
+        1,
+        3,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        7,
+        4
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        4
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 2,
+      "finiteTailZero": true,
+      "shifted": true
+    },
+    "identities": 4,
+    "comparedBetti": 4,
+    "elapsedMs": 191.44087199999922
+  },
+  {
+    "id": "exterior-resolution-F2",
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "F_2",
+      "betti": [
+        1,
+        3,
+        6,
+        10,
+        15,
+        21,
+        28
+      ],
+      "chainDimensions": [
+        1,
+        3,
+        6,
+        10,
+        15,
+        21,
+        28,
+        36
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 6,
+      "finiteTailZero": false
+    },
+    "identities": 116,
+    "elapsedMs": 437.2112229999984
+  },
+  {
+    "id": "monoid-resolution-F2",
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "F_2",
+      "betti": [
+        1,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "chainDimensions": [
+        1,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 6,
+      "finiteTailZero": false,
+      "shifted": true
+    },
+    "identities": 6,
+    "elapsedMs": 193.61658899999748
+  },
+  {
+    "id": "exterior-resolution-F5",
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "F_5",
+      "betti": [
+        1,
+        3,
+        6,
+        10,
+        15,
+        21,
+        28
+      ],
+      "chainDimensions": [
+        1,
+        3,
+        6,
+        10,
+        15,
+        21,
+        28,
+        36
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 6,
+      "finiteTailZero": false
+    },
+    "identities": 116,
+    "elapsedMs": 453.1896259999994
+  },
+  {
+    "id": "monoid-resolution-F5",
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "F_5",
+      "betti": [
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 6,
+      "finiteTailZero": false,
+      "shifted": true
+    },
+    "identities": 6,
+    "elapsedMs": 226.36987099999533
+  }
+]

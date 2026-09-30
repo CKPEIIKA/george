@@ -4,9 +4,12 @@ root=$(cd "$(dirname "$0")/../.." && pwd)
 toolchain=${GEORGE_TOOLCHAIN:-$root/build/toolchain}
 runtime=${1:-$root/build/ecl-runtime}
 source "$toolchain/emsdk/emsdk_env.sh" >/dev/null 2>&1
-prefix=$toolchain/ecl-wasm
+prefix=${GEORGE_ECL_WASM:-$toolchain/ecl-wasm-neutral}
 mkdir -p "$root/web/engine"
-emcc "$root/ports/ecl/bridge.c" -I"$prefix" \
+# Link from inside web/engine with a relative output name, so the loader
+# refers to "ecl.data" rather than to this checkout's absolute path.
+cd "$root/web/engine"
+emcc "$root/ports/ecl/bridge.c" -ffile-prefix-map="$root"=. -I"$prefix" \
   -L"$prefix" -lecl -leclgmp -leclgc -lm \
   "${GEORGE_LINK_OPT:--O2}" -DECL_C_COMPATIBLE_VARIADIC_DISPATCH \
   -sBINARYEN_EXTRA_PASSES=--spill-pointers -sSTACK_SIZE=8388608 \
@@ -16,4 +19,4 @@ emcc "$root/ports/ecl/bridge.c" -I"$prefix" \
   -sEXPORTED_RUNTIME_METHODS='["ccall","FS","HEAPU8"]' \
   --no-entry --preload-file "$runtime@/george" \
   --exclude-file '*.log' --exclude-file '*.old' --exclude-file '*~' \
-  -o "$root/web/engine/ecl.js"
+  -o ecl.js

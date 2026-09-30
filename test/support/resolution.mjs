@@ -1,21 +1,18 @@
 // Independent check of d²=0 over the presented algebra, before augmentation.
 import assert from 'node:assert/strict';
-import {parseAnick,parseRelation} from '../../web/src/bergman-syntax.js';
+import {readResolution,chainKey} from '../../web/src/resolution-data.js';
 import {algebra} from './algebra.mjs';
 export function certifyResolution(text, basis, vars, modulus=0) {
   const a=algebra(vars,false,modulus),gb=a.basis(basis);
-  const word=s=>s==='1'?'':parseRelation(s.replace(/^\*/,''),vars)[0].factors.map(f=>f.v.repeat(f.e)).join('');
   const maps=new Map();let identities=0;
-  for(const [degree,rows] of parseAnick(text).diffs){
+  for(const [degree,rows] of readResolution(text,vars,modulus).diffs){
     const map=new Map();maps.set(degree,map);
     for(const row of rows){
-      const value=new Map();map.set(word(row.chain),value);
-      for(const term of row.image.replaceAll(' ','').match(/[+-]?[^+-]+/g)||[]){
-        const m=/^([+-]?)(?:(\d+)(?:\/(\d+))?)?([^.]*)\.(.*)$/.exec(term);
-        assert.ok(m,`differential term ${term}`);
-        const [,sign,num,den,target,elt]=m,key=word(target||'1');
+      const value=new Map();map.set(chainKey(row.chain),value);
+      for(const term of row.terms){
+        const key=chainKey(term.target);
         const f=value.get(key)||new Map();value.set(key,f);
-        for(const [w,c] of a.scale(a.parse(elt),a.q((sign==='-'?-1n:1n)*BigInt(num||1),BigInt(den||1))))a.put(f,w,c);
+        for(const [w,c] of a.scale(a.parse(term.word.join('*')||'1'),a.q(...term.coefficient)))a.put(f,w,c);
       }
     }
   }

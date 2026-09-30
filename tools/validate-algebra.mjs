@@ -83,7 +83,8 @@ try{
  for(const c of ocaml){
   const rt=await wasmRuntime();const j=buildJob({task:'anick',ring:'noncomm',order:'degleftlex',field:'0',...c});const r=rt.run(j);
   const text=r.files['result.anick'];fs.writeFileSync(`${out}/${c.id}.anick`,text);
-  const h=r.homology||augmentedHomology(text,c.vars);
+  const data=r.files['resolution.jsonl']||text;
+  const h=r.homology||augmentedHomology(data,c.vars);
   const expected=references[c.id].betti;
   const actual=h.finiteTailZero?Array.from({length:expected.length},(_,i)=>h.betti[i]||0):h.betti.slice(0,expected.length);
   if(expected.length)assert.deepEqual(actual,expected,`${c.id}: OCaml Betti numbers`);
@@ -91,13 +92,14 @@ try{
     const chain=s=>parseRelation(s,c.vars)[0].factors.map(f=>f.v.repeat(f.e)).join('');
     assert.deepEqual(references.anick1.chains.map((_,i)=>(d.get(i)||[]).map(x=>chain(x.chain)).sort()),references.anick1.chains.map(x=>x.slice().sort()));
   }
-  const identities=certifyResolution(text,r.files['resolution.gb']||r.files['result.gb'],c.vars);
+  const identities=certifyResolution(data,r.files['resolution.gb']||r.files['result.gb'],c.vars);
   report.push({id:c.id,homology:h,identities,comparedBetti:expected.length,elapsedMs:r.elapsedMs});console.log(c.id,'PASS',h.betti);
  }
  for(const p of [2,5])for(const monoid of [false,true]){
   const c=monoid?{vars:['x','y'],rels:['x^2-1'],augmentation:'monoid'}:FAMILIES.exterior.build(3);
   const rt=await wasmRuntime(),r=rt.run(buildJob({task:'anick',ring:'noncomm',order:'degleftlex',field:'p',modulus:p,maxdeg:7,...c}));
-  const h=r.homology||augmentedHomology(r.files['result.anick'],c.vars,p),identities=certifyResolution(r.files['result.anick'],r.files['resolution.gb']||r.files['result.gb'],c.vars,p);
+  const data=r.files['resolution.jsonl']||r.files['result.anick'];
+  const h=r.homology||augmentedHomology(data,c.vars,p),identities=certifyResolution(data,r.files['resolution.gb']||r.files['result.gb'],c.vars,p);
   const expected=monoid?[1,p===2?2:1,...Array(5).fill(p===2?1:0)]:[1,3,6,10,15,21,28];
   assert.deepEqual(h.betti.slice(0,7),expected);
   report.push({id:`${monoid?'monoid':'exterior'}-resolution-F${p}`,homology:h,identities,elapsedMs:r.elapsedMs});

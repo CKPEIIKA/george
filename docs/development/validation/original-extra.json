@@ -1,0 +1,101 @@
+[
+  {
+    "id": "anick_5",
+    "outputs": 2,
+    "elapsedMs": 228.1280310000002
+  },
+  {
+    "id": "anick_w",
+    "outputs": 2,
+    "elapsedMs": 193.36600999999973
+  },
+  {
+    "id": "simp_w_max",
+    "outputs": 1,
+    "elapsedMs": 104.19404500000019
+  },
+  {
+    "id": "homog_c",
+    "outputs": 1,
+    "elapsedMs": 256.0218299999997
+  },
+  {
+    "id": "tst",
+    "outputs": 1,
+    "elapsedMs": 54.748420000000806
+  },
+  {
+    "id": "homog-mode-smoke",
+    "outputs": 0,
+    "elapsedMs": 28.732092000000193
+  },
+  {
+    "id": "anick5~",
+    "outputs": 2,
+    "elapsedMs": 246.83543800000007
+  },
+  {
+    "id": "anick_tm~",
+    "outputs": 2,
+    "elapsedMs": 181.8335390000011
+  },
+  {
+    "id": "anick_w~",
+    "outputs": 2,
+    "elapsedMs": 158.94222499999887
+  },
+  {
+    "id": "lin_nc~",
+    "expectedRejection": "undeclared uppercase X; both engines reject, native EMSG and Wasm reader diagnostics differ"
+  },
+  {
+    "id": "lin~",
+    "outputs": 1,
+    "elapsedMs": 31.083511000000726
+  },
+  {
+    "id": "nhom~",
+    "outputs": 1,
+    "elapsedMs": 32.552300999999716
+  },
+  {
+    "id": "simp_w_max~",
+    "outputs": 1,
+    "elapsedMs": 43.294912999999724
+  },
+  {
+    "id": "skipcdeg-1",
+    "outputs": 1,
+    "elapsedMs": 284.8570810000019
+  },
+  {
+    "id": "skipcdeg-2",
+    "outputs": 1,
+    "elapsedMs": 190.12313100000028
+  },
+  {
+    "id": "skipcdeg-3",
+    "outputs": 1,
+    "elapsedMs": 266.8026370000007
+  },
+  {
+    "id": "skipcdeg-4",
+    "outputs": 1,
+    "elapsedMs": 139.56372399999964
+  },
+  {
+    "id": "skipcdegall-1",
+    "outputs": 1,
+    "elapsedMs": 146.25669500000004
+  },
+  {
+    "id": "skipcdegall-2",
+    "outputs": 1,
+    "elapsedMs": 248.9044419999991
+  },
+  {
+    "id": "skipcdegall-3",
+    "outputs": 1,
+    "elapsedMs": 127.66781800000172
+  }
+]

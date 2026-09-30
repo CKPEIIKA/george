@@ -1,11 +1,20 @@
 #!/usr/bin/env bash
-# Reproducible ECL -> Wasm build. Downloads and outputs stay under build/.
+# Reproducible ECL -> Wasm build. Downloads and cached tools stay under build/.
+#
+# Everything whose path ends up inside the published engine files (the Wasm
+# ECL library and the compiled bergman runtime) is compiled below a neutral
+# directory, GEORGE_NEUTRAL_DIR (default /tmp/george-build), so the engine
+# does not contain the builder's home directory.  That directory is never
+# deleted by this script; a previous one must be removed by hand or another
+# GEORGE_NEUTRAL_DIR given.
 set -euo pipefail
 root=$(cd "$(dirname "$0")/../.." && pwd)
 toolchain=${GEORGE_TOOLCHAIN:-$root/build/toolchain}
 revision=59f60e09102961bf5872c672fdd9d200b2e83d6b
 emsdk_revision=e566f7bdcc7735f44037911c24b87a58a3c93145
 jobs=${JOBS:-4}
+neutral=${GEORGE_NEUTRAL_DIR:-/tmp/george-build}
+eclwasm=$toolchain/ecl-wasm-neutral
 mkdir -p "$toolchain"
 if [[ ! -d "$toolchain/emsdk/.git" ]]; then
   git clone https://github.com/emscripten-core/emsdk.git "$toolchain/emsdk"
@@ -26,19 +35,25 @@ done
 if [[ ! -x "$toolchain/ecl-host/bin/ecl" ]]; then
   (cd "$toolchain/ecl-src"; ./configure --prefix="$toolchain/ecl-host"; make -j"$jobs"; make install) >"$toolchain/ecl-host-build.log" 2>&1
 fi
-if [[ ! -f "$toolchain/ecl-wasm/libecl.a" ]]; then
+if [[ ! -f "$eclwasm/libecl.a" ]]; then
+  [[ ! -e "$neutral/ecl-wasm-src" && ! -e "$neutral/ecl-wasm" ]] || {
+    echo "$neutral already holds an ECL build; remove it or set GEORGE_NEUTRAL_DIR" >&2; exit 2; }
+  mkdir -p "$neutral"
+  git clone -q "$toolchain/ecl-wasm-src" "$neutral/ecl-wasm-src"
+  git -C "$neutral/ecl-wasm-src" checkout -q "$revision"
   source "$toolchain/emsdk/emsdk_env.sh" >/dev/null 2>&1
   export ECL_TO_RUN="$toolchain/ecl-host/bin/ecl" EMSDK_PATH="$toolchain/emsdk"
-  (cd "$toolchain/ecl-wasm-src"
+  (cd "$neutral/ecl-wasm-src"
    emconfigure ./configure --host=wasm32-unknown-emscripten --build="$(./src/gmp/config.guess)" \
-    --with-cross-config="$toolchain/ecl-wasm-src/src/util/wasm32-unknown-emscripten.cross_config" \
-    --prefix="$toolchain/ecl-wasm" --disable-shared --disable-threads --with-tcp=no --with-cmp=no
+    --with-cross-config="$neutral/ecl-wasm-src/src/util/wasm32-unknown-emscripten.cross_config" \
+    --prefix="$neutral/ecl-wasm" --disable-shared --disable-threads --with-tcp=no --with-cmp=no
    emmake make -j"$jobs"
-   emmake make install) >"$toolchain/ecl-wasm-build.log" 2>&1
+   emmake make install) >"$toolchain/ecl-wasm-neutral-build.log" 2>&1
+  cp -a "$neutral/ecl-wasm" "$eclwasm"
 fi
-runtime=$root/build/ecl-runtime-$(date +%Y%m%d-%H%M%S)-$$
+runtime=$neutral/runtime-$(date +%Y%m%d-%H%M%S)-$$
 "$root/ports/ecl/build-bergman.sh" "$root/vendor/bergman-1.001" "$runtime" "$toolchain/ecl-host/bin/ecl"
-"$root/ports/ecl/link-wasm.sh" "$runtime"
+GEORGE_ECL_WASM="$eclwasm" "$root/ports/ecl/link-wasm.sh" "$runtime"
 python3 - "$root" "$runtime" <<'PY'
 from pathlib import Path
 import hashlib,json,sys

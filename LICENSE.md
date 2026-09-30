@@ -5,7 +5,8 @@ This is the maintainers' reading of the licenses involved, not legal advice.
 ## George's own code
 
 Everything written for George is Copyright © 2026 the George contributors.
-That covers `web/`, `tools/`, `test/`, `ports/`, `experiments/` and `docs/`.
+That covers George's code in `web/`, `tools/`, `test/`, `ports/` and `docs/`.
+Third-party engine components and `web/vendor/mathjax/` retain their own licenses.
 You may use, modify and redistribute it under **either** of:
 
 - the **Bergman General Public License** (`licenses/BGPL.txt`), or
@@ -74,8 +75,17 @@ bergman's own distributions: bergman's Linux distribution shipped it inside
 PSL images. George treats ECL the same way, as the platform, and keeps it
 under its own license.
 
-## Not distributed
+## Mathematical renderer
 
-- **Fonts** use locally available families and browser fallbacks. No external
-  font requests or font binaries are included.
+MathJax 4.1.3 and its New Computer Modern SVG data are distributed under
+Apache-2.0. Original component notices and the license accompany them in
+`web/vendor/mathjax/`. The package versions and integrity values are pinned
+in `package-lock.json`; `tools/package-ui.mjs` copies the needed browser
+components. The combined renderer's required SRE worker and rule data are
+included locally under the same upstream component license.
+
+## Build tools and text fonts
+
+- **UI text fonts** use locally available families and browser fallbacks.
+  MathJax's mathematical glyphs are included as SVG data and served locally.
 - **SBCL and the Emscripten SDK** are build tools only.

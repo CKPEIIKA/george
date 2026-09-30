@@ -63,6 +63,94 @@
 
 (ON RAISE)
 
+% 2026-09-30: Explicit structural export for ordinary algebra Anick chains.
+% Read the original access macros; no printed chain text is parsed here.
+% This opt-in command leaves ANICKDISPLAY and historical output unchanged.
+(LAPIN (MKBMPATHEXPAND "$bmsrc/macros.sl"))
+(DSKIN (MKBMPATHEXPAND "$bmsrc/anick/anmacros.sl"))
+(OFF RAISE)
+
+% Noncommutative generator indices, in order; MONONE is the empty word.
+(DE GEORGEWORD (mon)
+ (COND ((Mon!= mon MONONE) NIL) (T (MONLISPOUT (PMon mon)))))
+
+(DE GEORGECHAINWORD (chn)
+ (PROG (vertices pc result)
+  (COND ((anChn!= chn anUNITCHAIN) (RETURN NIL)))
+  (SETQ pc chn)
+  (SETQ vertices (NCONS (anChn2LastVx pc)))
+  Loop (COND ((NOT (ZEROP (anChn2Length pc)))
+              (SETQ pc (anChn2LowerChn pc))
+              (SETQ vertices (CONS (anChn2LastVx pc) vertices))
+              (GO Loop)))
+  (MAPC vertices (FUNCTION (LAMBDA (mon)
+    (SETQ result (APPEND result (GEORGEWORD mon))))))
+  (RETURN result)))
+
+% Names admitted by George's form and integer coefficients need no escaping.
+% Coefficients are JSON strings, so JavaScript never rounds large integers.
+(DE GEORGEJSONSTRING (value)
+ (PROGN (PRIN2 (CODE-CHAR 34)) (PRIN2 value) (PRIN2 (CODE-CHAR 34))))
+
+(DE GEORGEJSONWORD (indices)
+ (PROG (first)
+  (SETQ first T) (PRIN2 "[")
+  (MAPC indices (FUNCTION (LAMBDA (index)
+    (COND ((NOT first) (PRIN2 ",")))
+    (SETQ first NIL) (PRIN2 index))))
+  (PRIN2 "]")))
+
+(DE GEORGEJSONDIFFERENTIAL (chn)
+ (PROG (sdp qpol pol coefficient first)
+  (COND ((NULL (anChn2Diff chn)) (ERROR 99 "Cannot export an uncalculated differential")))
+  (PRIN2 "{") (GEORGEJSONSTRING "degree") (PRIN2 ":")
+  (PRIN2 (anChn2Length chn))
+  (PRIN2 ",") (GEORGEJSONSTRING "chain") (PRIN2 ":")
+  (GEORGEJSONWORD (GEORGECHAINWORD chn))
+  (PRIN2 ",") (GEORGEJSONSTRING "terms") (PRIN2 ":[")
+  (SETQ first T)
+  (SETQ sdp (CDR (anChn2Diff chn)))
+  NextTarget (COND ((NULL sdp) (GO Done)))
+  (SETQ qpol (anSDP2FirstQPol sdp))
+  (SETQ pol (PPol qpol))
+  NextTerm (COND ((NULL pol) (GO DoneTarget)))
+  (SETQ coefficient (SHORTENRATCF
+    (REDANDCFS2RATCF (TIMES2 (PolNum qpol) (Lc pol)) (PolDen qpol))))
+  (COND ((NOT first) (PRIN2 ","))) (SETQ first NIL)
+  (PRIN2 "{") (GEORGEJSONSTRING "target") (PRIN2 ":")
+  (GEORGEJSONWORD (GEORGECHAINWORD (anSDP2FirstChn sdp)))
+  (PRIN2 ",") (GEORGEJSONSTRING "coefficient") (PRIN2 ":[")
+  (GEORGEJSONSTRING (RedandCoeff2OutCoeff (RATCF2NUMERATOR coefficient)))
+  (PRIN2 ",")
+  (GEORGEJSONSTRING (RedandCoeff2OutCoeff (RATCF2DENOMINATOR coefficient)))
+  (PRIN2 "],") (GEORGEJSONSTRING "word") (PRIN2 ":")
+  (GEORGEJSONWORD (GEORGEWORD (Lm pol))) (PRIN2 "}")
+  (PolDecap pol) (GO NextTerm)
+  DoneTarget (SETQ sdp (CDR sdp)) (GO NextTarget)
+  Done (PRIN2 "]}") (TERPRI)))
+
+(DE GEORGEWRITERESOLUTION (file)
+ (PROG (channel old oldLL first)
+  (COND ((CommP) (ERROR 99 "Structural Anick export requires a noncommutative algebra")))
+  (SETQ channel (OPEN file 'OUTPUT))
+  (SETQ old (WRS channel)) (SETQ oldLL (LINELENGTH 1000000))
+  (UNWIND-PROTECT
+   (PROGN
+    (PRIN2 "{") (GEORGEJSONSTRING "format") (PRIN2 ":")
+    (GEORGEJSONSTRING "george-resolution")
+    (PRIN2 ",") (GEORGEJSONSTRING "version") (PRIN2 ":1,")
+    (GEORGEJSONSTRING "modulus") (PRIN2 ":") (PRIN2 (OR (GETMODULUS) 0))
+    (PRIN2 ",") (GEORGEJSONSTRING "generators") (PRIN2 ":[")
+    (SETQ first T)
+    (MAPC (GETINVARS) (FUNCTION (LAMBDA (name)
+      (COND ((NOT first) (PRIN2 ",")))
+      (SETQ first NIL) (GEORGEJSONSTRING name))))
+    (PRIN2 "]}") (TERPRI)
+    (MAPC anCHAINS (FUNCTION (LAMBDA (degree)
+      (MAPC (CDR degree) (FUNCTION GEORGEJSONDIFFERENTIAL))))))
+   (PROGN (WRS old) (LINELENGTH oldLL) (CLOSE channel)))))
+(ON RAISE)
+
 % 2026-09-30: Export the final basis for itemwise computations. The original
 % SIMPLE degree-output file is empty in that mode. This explicit command does
 % not change the historical procedures or their legacy output.

@@ -1,0 +1,1008 @@
+[
+  {
+    "id": "idempotent-F0",
+    "generators": [
+      "a",
+      "aa"
+    ],
+    "modulus": 0,
+    "reversed": false,
+    "weights": null,
+    "nativeEquality": true,
+    "renamingEquality": true,
+    "legacyEquality": false,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "Q",
+      "betti": [
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 7,
+      "finiteTailZero": false,
+      "shifted": false
+    },
+    "identities": 7,
+    "ambiguities": 3,
+    "elapsedMs": 185.15225699999996
+  },
+  {
+    "id": "collision-F0",
+    "generators": [
+      "a",
+      "ab",
+      "bc",
+      "c"
+    ],
+    "modulus": 0,
+    "reversed": false,
+    "weights": null,
+    "nativeEquality": true,
+    "renamingEquality": true,
+    "legacyEquality": false,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "Q",
+      "betti": [
+        1,
+        2,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        4,
+        2
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        2
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 2,
+      "finiteTailZero": true,
+      "shifted": false
+    },
+    "identities": 2,
+    "ambiguities": 4,
+    "elapsedMs": 149.7578179999996
+  },
+  {
+    "id": "monoid-F0",
+    "generators": [
+      "x1",
+      "x11"
+    ],
+    "modulus": 0,
+    "reversed": false,
+    "weights": null,
+    "nativeEquality": true,
+    "renamingEquality": true,
+    "legacyEquality": false,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "Q",
+      "betti": [
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 7,
+      "finiteTailZero": false,
+      "shifted": true
+    },
+    "identities": 7,
+    "ambiguities": 3,
+    "elapsedMs": 196.81417599999986
+  },
+  {
+    "id": "cubic-F0",
+    "generators": [
+      "alpha",
+      "alpha2"
+    ],
+    "modulus": 0,
+    "reversed": false,
+    "weights": null,
+    "nativeEquality": true,
+    "renamingEquality": true,
+    "legacyEquality": true,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "Q",
+      "betti": [
+        1,
+        2,
+        1,
+        1,
+        1
+      ],
+      "chainDimensions": [
+        1,
+        2,
+        1,
+        1,
+        1,
+        1
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 4,
+      "finiteTailZero": false
+    },
+    "identities": 4,
+    "ambiguities": 4,
+    "elapsedMs": 149.13906899999984
+  },
+  {
+    "id": "idempotent-F2",
+    "generators": [
+      "a",
+      "aa"
+    ],
+    "modulus": 2,
+    "reversed": false,
+    "weights": null,
+    "nativeEquality": true,
+    "renamingEquality": true,
+    "legacyEquality": false,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "F_2",
+      "betti": [
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 7,
+      "finiteTailZero": false,
+      "shifted": false
+    },
+    "identities": 7,
+    "ambiguities": 3,
+    "elapsedMs": 207.14318600000115
+  },
+  {
+    "id": "collision-F2",
+    "generators": [
+      "a",
+      "ab",
+      "bc",
+      "c"
+    ],
+    "modulus": 2,
+    "reversed": false,
+    "weights": null,
+    "nativeEquality": true,
+    "renamingEquality": true,
+    "legacyEquality": false,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "F_2",
+      "betti": [
+        1,
+        2,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        4,
+        2
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        2
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 2,
+      "finiteTailZero": true,
+      "shifted": false
+    },
+    "identities": 2,
+    "ambiguities": 4,
+    "elapsedMs": 157.33392300000014
+  },
+  {
+    "id": "monoid-F2",
+    "generators": [
+      "x1",
+      "x11"
+    ],
+    "modulus": 2,
+    "reversed": false,
+    "weights": null,
+    "nativeEquality": true,
+    "renamingEquality": true,
+    "legacyEquality": false,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "F_2",
+      "betti": [
+        1,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "chainDimensions": [
+        1,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 7,
+      "finiteTailZero": false,
+      "shifted": true
+    },
+    "identities": 7,
+    "ambiguities": 3,
+    "elapsedMs": 191.4918600000001
+  },
+  {
+    "id": "cubic-F2",
+    "generators": [
+      "alpha",
+      "alpha2"
+    ],
+    "modulus": 2,
+    "reversed": false,
+    "weights": null,
+    "nativeEquality": true,
+    "renamingEquality": true,
+    "legacyEquality": true,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "F_2",
+      "betti": [
+        1,
+        2,
+        1,
+        1,
+        1
+      ],
+      "chainDimensions": [
+        1,
+        2,
+        1,
+        1,
+        1,
+        1
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 4,
+      "finiteTailZero": false
+    },
+    "identities": 4,
+    "ambiguities": 4,
+    "elapsedMs": 163.1611499999999
+  },
+  {
+    "id": "idempotent-F5",
+    "generators": [
+      "a",
+      "aa"
+    ],
+    "modulus": 5,
+    "reversed": false,
+    "weights": null,
+    "nativeEquality": true,
+    "renamingEquality": true,
+    "legacyEquality": false,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "F_5",
+      "betti": [
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 7,
+      "finiteTailZero": false,
+      "shifted": false
+    },
+    "identities": 7,
+    "ambiguities": 3,
+    "elapsedMs": 230.68085299999802
+  },
+  {
+    "id": "collision-F5",
+    "generators": [
+      "a",
+      "ab",
+      "bc",
+      "c"
+    ],
+    "modulus": 5,
+    "reversed": false,
+    "weights": null,
+    "nativeEquality": true,
+    "renamingEquality": true,
+    "legacyEquality": false,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "F_5",
+      "betti": [
+        1,
+        2,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        4,
+        2
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        2
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 2,
+      "finiteTailZero": true,
+      "shifted": false
+    },
+    "identities": 2,
+    "ambiguities": 4,
+    "elapsedMs": 183.47833100000207
+  },
+  {
+    "id": "monoid-F5",
+    "generators": [
+      "x1",
+      "x11"
+    ],
+    "modulus": 5,
+    "reversed": false,
+    "weights": null,
+    "nativeEquality": true,
+    "renamingEquality": true,
+    "legacyEquality": false,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "F_5",
+      "betti": [
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 7,
+      "finiteTailZero": false,
+      "shifted": true
+    },
+    "identities": 7,
+    "ambiguities": 3,
+    "elapsedMs": 217.81081099999938
+  },
+  {
+    "id": "cubic-F5",
+    "generators": [
+      "alpha",
+      "alpha2"
+    ],
+    "modulus": 5,
+    "reversed": false,
+    "weights": null,
+    "nativeEquality": true,
+    "renamingEquality": true,
+    "legacyEquality": true,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "F_5",
+      "betti": [
+        1,
+        2,
+        1,
+        1,
+        1
+      ],
+      "chainDimensions": [
+        1,
+        2,
+        1,
+        1,
+        1,
+        1
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 4,
+      "finiteTailZero": false
+    },
+    "identities": 4,
+    "ambiguities": 4,
+    "elapsedMs": 169.7973439999987
+  },
+  {
+    "id": "rational",
+    "generators": [
+      "x1",
+      "x11"
+    ],
+    "modulus": 0,
+    "reversed": false,
+    "weights": null,
+    "nativeEquality": true,
+    "renamingEquality": true,
+    "legacyEquality": false,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "Q",
+      "betti": [
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 7,
+      "finiteTailZero": false,
+      "shifted": false
+    },
+    "identities": 7,
+    "ambiguities": 3,
+    "elapsedMs": 178.69463200000246
+  },
+  {
+    "id": "large-rational",
+    "generators": [
+      "a",
+      "aa"
+    ],
+    "modulus": 0,
+    "reversed": false,
+    "weights": null,
+    "nativeEquality": true,
+    "renamingEquality": true,
+    "legacyEquality": false,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "Q",
+      "betti": [
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 7,
+      "finiteTailZero": false,
+      "shifted": false
+    },
+    "identities": 7,
+    "ambiguities": 3,
+    "elapsedMs": 181.94741699999577
+  },
+  {
+    "id": "weighted-reversed",
+    "generators": [
+      "x_1",
+      "x_11"
+    ],
+    "modulus": 0,
+    "reversed": true,
+    "weights": "2 3",
+    "nativeEquality": true,
+    "renamingEquality": true,
+    "legacyEquality": false,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "Q",
+      "betti": [
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 5,
+      "finiteTailZero": false,
+      "shifted": false
+    },
+    "identities": 5,
+    "ambiguities": 3,
+    "elapsedMs": 201.63832700000057
+  },
+  {
+    "id": "weighted-collision",
+    "generators": [
+      "a",
+      "ab",
+      "bc",
+      "c"
+    ],
+    "modulus": 0,
+    "reversed": false,
+    "weights": "1 1 2 2",
+    "nativeEquality": true,
+    "renamingEquality": true,
+    "legacyEquality": false,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "Q",
+      "betti": [
+        1,
+        2,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        4,
+        2
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        2
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 2,
+      "finiteTailZero": true,
+      "shifted": false
+    },
+    "identities": 2,
+    "ambiguities": 4,
+    "elapsedMs": 236.4784010000003
+  },
+  {
+    "id": "case-and-underscore",
+    "generators": [
+      "X_1",
+      "x_11"
+    ],
+    "modulus": 0,
+    "reversed": false,
+    "weights": null,
+    "nativeEquality": true,
+    "renamingEquality": true,
+    "legacyEquality": false,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "Q",
+      "betti": [
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 7,
+      "finiteTailZero": false,
+      "shifted": false
+    },
+    "identities": 7,
+    "ambiguities": 3,
+    "elapsedMs": 178.80439100000513
+  },
+  {
+    "id": "exterior-prefixes",
+    "generators": [
+      "a",
+      "aa",
+      "aaa"
+    ],
+    "modulus": 0,
+    "reversed": false,
+    "weights": null,
+    "nativeEquality": true,
+    "renamingEquality": true,
+    "legacyEquality": false,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "Q",
+      "betti": [
+        1,
+        3,
+        6,
+        10,
+        15,
+        21,
+        28,
+        36
+      ],
+      "chainDimensions": [
+        1,
+        3,
+        6,
+        10,
+        15,
+        21,
+        28,
+        36,
+        45
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 7,
+      "finiteTailZero": false
+    },
+    "identities": 161,
+    "ambiguities": 22,
+    "elapsedMs": 611.1973739999958
+  },
+  {
+    "id": "monoid-weighted-reversed",
+    "generators": [
+      "x_1",
+      "x_11"
+    ],
+    "modulus": 101,
+    "reversed": true,
+    "weights": "2 3",
+    "nativeEquality": true,
+    "renamingEquality": true,
+    "legacyEquality": false,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "F_101",
+      "betti": [
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 5,
+      "finiteTailZero": false,
+      "shifted": true
+    },
+    "identities": 5,
+    "ambiguities": 3,
+    "elapsedMs": 235.1948029999985
+  },
+  {
+    "id": "ocaml-mirai-renamed",
+    "generators": [
+      "gen_g",
+      "gen_f",
+      "gen_e",
+      "gen_d",
+      "gen_c",
+      "gen_b",
+      "gen_a"
+    ],
+    "modulus": 0,
+    "reversed": false,
+    "weights": null,
+    "nativeEquality": true,
+    "renamingEquality": true,
+    "legacyEquality": false,
+    "homology": {
+      "kind": "ungraded",
+      "coefficientField": "Q",
+      "betti": [
+        1,
+        3,
+        0
+      ],
+      "chainDimensions": [
+        1,
+        7,
+        4
+      ],
+      "differentialRanks": [
+        0,
+        0,
+        4
+      ],
+      "checkedSquareZero": true,
+      "highestCertifiedDegree": 2,
+      "finiteTailZero": true,
+      "shifted": true
+    },
+    "identities": 4,
+    "ambiguities": 8,
+    "elapsedMs": 211.29380800000217
+  }
+]

@@ -1,0 +1,124 @@
+[
+  {
+    "id": "simple_c",
+    "task": "gb",
+    "outputs": [
+      "gb"
+    ],
+    "elapsedMs": 41.18869799999993
+  },
+  {
+    "id": "simple_nc",
+    "task": "gb",
+    "outputs": [
+      "gb"
+    ],
+    "elapsedMs": 26.697190999999748
+  },
+  {
+    "id": "char5",
+    "task": "gb",
+    "outputs": [
+      "gb"
+    ],
+    "elapsedMs": 127.89970200000016
+  },
+  {
+    "id": "char2",
+    "task": "gb",
+    "outputs": [
+      "gb"
+    ],
+    "elapsedMs": 62.337167000000136
+  },
+  {
+    "id": "simp_weight_nc",
+    "task": "gb",
+    "outputs": [
+      "gb"
+    ],
+    "elapsedMs": 66.66602899999998
+  },
+  {
+    "id": "matrix",
+    "task": "gb",
+    "outputs": [
+      "gb"
+    ],
+    "elapsedMs": 204.6492389999994
+  },
+  {
+    "id": "hilb",
+    "task": "hilbert",
+    "outputs": [
+      "gb",
+      "hs"
+    ],
+    "elapsedMs": 146.37255600000026
+  },
+  {
+    "id": "ncpbhg",
+    "task": "ncpbh",
+    "outputs": [
+      "gb",
+      "pb",
+      "hs"
+    ],
+    "elapsedMs": 137.52280900000005
+  },
+  {
+    "id": "anick_tm",
+    "task": "anick",
+    "outputs": [
+      "gb",
+      "anick",
+      "resolution"
+    ],
+    "elapsedMs": 180.55619900000056
+  },
+  {
+    "id": "modbtn",
+    "task": "rmodule",
+    "outputs": [
+      "gb",
+      "anick"
+    ],
+    "elapsedMs": 153.5097110000006
+  },
+  {
+    "id": "leftmodbtn",
+    "task": "lmodule",
+    "outputs": [
+      "gb",
+      "anick"
+    ],
+    "elapsedMs": 287.60827600000084
+  },
+  {
+    "id": "two",
+    "task": "twomod",
+    "outputs": [
+      "gb",
+      "anick"
+    ],
+    "elapsedMs": 194.35400300000038
+  },
+  {
+    "id": "fact",
+    "task": "factalg",
+    "outputs": [
+      "gb",
+      "anick"
+    ],
+    "elapsedMs": 1315.2070759999988
+  },
+  {
+    "id": "hoch1",
+    "task": "hochschild",
+    "outputs": [
+      "gb",
+      "anick"
+    ],
+    "elapsedMs": 390.6414049999985
+  }
+]
