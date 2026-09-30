@@ -1,0 +1,10 @@
+George: Copyright 2026 the George contributors. BGPL or GPL-2.0-or-later.
+Bergman 1.001: Copyright 1992-2006 Joergen Backelin and others. BGPL.
+ECL 26.5.5 and its bundled GMP 4.2.1: LGPL-2.1-or-later.
+Boehm-Demers-Weiser GC: permissive; see GC-NOTICE.txt for copyright holders.
+Emscripten runtime: MIT or University of Illinois/NCSA.
+
+Full notices and license texts accompany this file.
+Corresponding sources: ../sources/george-source.tar.gz and ecl-source.tar.gz.
+Build/relink instructions: README.md and ports/ecl/build.sh in George source.
+No OCaml or Singular implementation is included in the browser engine.
