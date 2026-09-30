@@ -13,6 +13,7 @@ cp "$toolchain/ecl-src/src/bdwgc/README.md" "$root/web/licenses/GC-NOTICE.txt"
 cp "$toolchain/emsdk/upstream/emscripten/LICENSE" "$root/web/licenses/EMSCRIPTEN-LICENSE.txt"
 cat >"$root/web/licenses/NOTICE.txt" <<'EOF'
 George: Copyright 2026 the George contributors. BGPL or GPL-2.0-or-later.
+bergman-1.001-fix: patched Bergman 1.001; original behavior via legacy mode.
 Bergman 1.001: Copyright 1992-2006 Joergen Backelin and others. BGPL.
 ECL 26.5.5 and its bundled GMP 4.2.1: LGPL-2.1-or-later.
 Boehm-Demers-Weiser GC: permissive; see GC-NOTICE.txt for copyright holders.

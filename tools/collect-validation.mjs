@@ -16,11 +16,18 @@ const sources={
  'ocaml-references.json':`${root}/ocaml/references.json`,
  'ui.json':`${root}/${latest('ui-')}/report.json`,
  'resolution-names.json':`${root}/${latest('resolution-names-')}/report.json`,
+ 'upstream.json':`${root}/${latest('upstream-')}/report.json`,
  'braid.json':`${root}/${latest('braid-')}/report.json`,
  'resolution-limits.json':`${root}/anick-braid-diagnostic/record.json`,
 };
 // The native-browser report has the same prefix as the UI report.
 sources['browser-ui.json']=`${root}/${fs.readdirSync(root).filter(n=>/^browser-\d+$/.test(n)&&fs.existsSync(`${root}/${n}/report.json`)).sort().at(-1)}/report.json`;
+// An isolated release can select its exact reports when other workspace
+// sessions are validating a different, unfinished interface concurrently.
+if(process.argv[2]){
+ const selected=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+ for(const [name,src]of Object.entries(selected)){assert.ok(Object.hasOwn(sources,name),name);sources[name]=src;}
+}
 const data={};for(const [name,src] of Object.entries(sources))data[name]=JSON.parse(fs.readFileSync(src,'utf8'));
 const engineTime=Math.max(...['ecl.js','ecl.wasm','ecl.data'].map(n=>fs.statSync(`web/engine/${n}`).mtimeMs));
 for(const [name,src] of Object.entries(sources))if(!['engine.json','ocaml-references.json'].includes(name))assert.ok(fs.statSync(src).mtimeMs>=engineTime,`${name}: rerun validation after rebuilding the engine`);
@@ -36,16 +43,35 @@ assert.ok(data['braid.json'].every(c=>c.nativeEquality && c.augmentationModulePr
 assert.equal(data['resolution-limits.json'].status,'resolved');
 assert.ok(data['resolution-names.json'].every(c=>c.nativeEquality && c.renamingEquality));
 assert.equal(data['ui.json'].examples.length,8);
+assert.equal(data['browser-regression.json'].additional.length,6);
+assert.ok(data['browser-regression.json'].additional.every(c=>c.nativeEquality));
 assert.deepEqual(data['ui.json'].mounts.map(m=>m.mount),['/','/george/']);
 assert.deepEqual(data['ui.json'].errors,[]);
 assert.deepEqual(data['ui.json'].externalRequests,[]);
+assert.equal(data['ui.json'].debuggerDuringCalculations,false);
+assert.deepEqual(data['ui.json'].engine,data['engine.json']);
 const sha=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
+for(const [p,digest]of Object.entries(data['ui.json'].sourceHashes))assert.equal(sha(p),digest,p+': UI report sources');
+const upstream=data['upstream.json'],fixture=JSON.parse(fs.readFileSync('test/fixtures/upstream-cases.json','utf8'));
+assert.equal(upstream.cases.length,90);
+assert.equal(upstream.fixtureSha256,sha('test/fixtures/upstream-cases.json'));
+assert.deepEqual(upstream.engine,data['engine.json']);
+assert.deepEqual(upstream.sources,fixture.sources);
+assert.equal(upstream.sympyReference.passed,10);
+assert.equal(upstream.sympyReference.sourceSha256,fixture.sources.find(s=>s.repository==='sympy/sympy').sha256);
+assert.deepEqual(upstream.engineIdentity,{fixed:'bergman-1.001-fix',legacy:'Bergman 1.001'});
+assert.deepEqual(upstream.cases.map(c=>c.id),fixture.cases.flatMap(c=>c.fields.map(p=>c.id+'-F'+p)));
+assert.ok(upstream.cases.every(c=>c.nativeEquality&&c.idealEquality&&c.oracleBasisReduction));
+assert.equal(upstream.cases.filter(c=>c.sympy?.criticalPairs&&c.sympy?.idealEquality).length,39);
+assert.equal(upstream.cases.filter(c=>c.pluralIdealEquality).length,6);
+for(const [p,digest]of Object.entries(upstream.validatorHashes))assert.equal(sha(p),digest,p+': rerun upstream validation after changes');
+for(const mode of ['legacy','fixed'])assert.match(fs.readFileSync(`${root}/sbcl-${mode}.log`,'utf8'),new RegExp('37 exact outputs passed'));
 const walk=dir=>fs.readdirSync(dir,{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name)).flatMap(e=>e.isDirectory()?walk(path.join(dir,e.name)):[path.join(dir,e.name)]);
 const browserFiles=['web/src/app.js','web/src/engine.js','web/src/bergman-syntax.js','web/src/homology.js','web/src/resolution-data.js','web/src/i18n.js','web/src/guide.js','web/src/math.js','web/src/preferences.js','web/src/tutorials.js','web/engine/runner.js','web/engine/worker.js','web/index.html','web/style.css','web/vendor/mathjax/build.json'];
 const algebra=data['algebra.json'];
 const unitLog=fs.readFileSync(`${root}/unit-tests.log`,'utf8');
 const unitTests=Number(/tests (\d+)/.exec(unitLog)[1]);
-assert.ok(unitTests>=41,'The actual unit assertions, including weighted homology certification, must run, not just test-file processes.');
+assert.ok(unitTests>=43,'The actual unit assertions, including weighted homology certification, must run, not just test-file processes.');
 assert.match(unitLog,/fail 0\b/);
 const summary={date:new Date().toISOString(),sources,unitTests:Number(/tests (\d+)/.exec(fs.readFileSync(`${root}/unit-tests.log`,'utf8'))[1]),
  historicalOutputsPerMode:37,extraSessions:20,expectedInvalidBackup:1,formPresets:14,ocamlUpstreamAliases:24,
@@ -53,8 +79,14 @@ const summary={date:new Date().toISOString(),sources,unitTests:Number(/tests (\d
  resolutionCases:algebra.filter(c=>c.homology).length,differentialIdentities:algebra.reduce((s,c)=>s+(c.identities||0),0),
  longerNameCases:data['resolution-names.json'].length,longerNameDifferentialIdentities:data['resolution-names.json'].reduce((s,c)=>s+c.identities,0),
  longerNameAmbiguities:data['resolution-names.json'].reduce((s,c)=>s+c.ambiguities,0),
+ upstreamCases:upstream.cases.length,upstreamSources:upstream.sources.length,
+ upstreamCompleteCases:upstream.cases.filter(c=>c.scope==='complete').length,
+ upstreamBoundedCases:upstream.cases.filter(c=>c.scope==='degree-bound').length,
+ upstreamAmbiguities:upstream.cases.reduce((s,c)=>s+c.ambiguities,0),sympyCases:39,sympyOriginalTests:10,pluralCases:6,
+ upstreamValidatorHashes:upstream.validatorHashes,
  braidCases:data['braid.json'].length,braidDifferentialIdentities:data['braid.json'].reduce((s,c)=>s+c.identities,0),
  braidAmbiguities:data['braid.json'].reduce((s,c)=>s+c.ambiguities,0),unresolvedResolutionCases:0,
+ additionalBrowserCases:data['browser-regression.json'].additional.length,
  guidedExamples:data['ui.json'].examples.length,staticMounts:data['ui.json'].mounts.map(m=>m.mount),localMathJax:'4.1.3',
  browserSourceHashes:Object.fromEntries(browserFiles.map(p=>[p,sha(p)])),
  vendorTreeHash:crypto.createHash('sha256').update(walk('vendor/bergman-1.001').map(p=>`${p} ${sha(p)}\n`).join('')).digest('hex')};

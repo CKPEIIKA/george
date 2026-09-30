@@ -1,0 +1,1080 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "id": "singular-1",
+      "repository": "Singular/Singular",
+      "project": "Singular 4.4.1",
+      "revision": "fc93f43aefd9c6fa6a606ce46eb9f34864d8baee",
+      "path": "Tst/Letterplace/gb_simple.tst",
+      "sha256": "f39a41d1dbe7383010235dbfe8e2d88297fe74db9a93aa69ddd0b5a136699d6c",
+      "license": "GPL-2.0-only OR GPL-3.0-only",
+      "url": "https://github.com/Singular/Singular/blob/fc93f43aefd9c6fa6a606ce46eb9f34864d8baee/Tst/Letterplace/gb_simple.tst",
+      "downloadUrl": "https://raw.githubusercontent.com/Singular/Singular/fc93f43aefd9c6fa6a606ce46eb9f34864d8baee/Tst/Letterplace/gb_simple.tst"
+    },
+    {
+      "id": "singular-2",
+      "repository": "Singular/Singular",
+      "project": "Singular 4.4.1",
+      "revision": "fc93f43aefd9c6fa6a606ce46eb9f34864d8baee",
+      "path": "Tst/Letterplace/gb_mon1.tst",
+      "sha256": "d8a62c4eaae66886f06897b2f78c838633dd86fec06a0b69cbc07f1506447de0",
+      "license": "GPL-2.0-only OR GPL-3.0-only",
+      "url": "https://github.com/Singular/Singular/blob/fc93f43aefd9c6fa6a606ce46eb9f34864d8baee/Tst/Letterplace/gb_mon1.tst",
+      "downloadUrl": "https://raw.githubusercontent.com/Singular/Singular/fc93f43aefd9c6fa6a606ce46eb9f34864d8baee/Tst/Letterplace/gb_mon1.tst"
+    },
+    {
+      "id": "singular-3",
+      "repository": "Singular/Singular",
+      "project": "Singular 4.4.1",
+      "revision": "fc93f43aefd9c6fa6a606ce46eb9f34864d8baee",
+      "path": "Tst/Letterplace/gb_mon2.tst",
+      "sha256": "3cc45090751096f3a108b438e7c10ac2185488dc54d0db23c5ebd7a7e9843c92",
+      "license": "GPL-2.0-only OR GPL-3.0-only",
+      "url": "https://github.com/Singular/Singular/blob/fc93f43aefd9c6fa6a606ce46eb9f34864d8baee/Tst/Letterplace/gb_mon2.tst",
+      "downloadUrl": "https://raw.githubusercontent.com/Singular/Singular/fc93f43aefd9c6fa6a606ce46eb9f34864d8baee/Tst/Letterplace/gb_mon2.tst"
+    },
+    {
+      "id": "singular-4",
+      "repository": "Singular/Singular",
+      "project": "Singular 4.4.1",
+      "revision": "fc93f43aefd9c6fa6a606ce46eb9f34864d8baee",
+      "path": "Tst/Letterplace/gb_mon3.tst",
+      "sha256": "aacf720fecc79cedbe7855c291fc1b27dd33015b94046399ddab828fa700a811",
+      "license": "GPL-2.0-only OR GPL-3.0-only",
+      "url": "https://github.com/Singular/Singular/blob/fc93f43aefd9c6fa6a606ce46eb9f34864d8baee/Tst/Letterplace/gb_mon3.tst",
+      "downloadUrl": "https://raw.githubusercontent.com/Singular/Singular/fc93f43aefd9c6fa6a606ce46eb9f34864d8baee/Tst/Letterplace/gb_mon3.tst"
+    },
+    {
+      "id": "singular-5",
+      "repository": "Singular/Singular",
+      "project": "Singular 4.4.1",
+      "revision": "fc93f43aefd9c6fa6a606ce46eb9f34864d8baee",
+      "path": "Tst/Letterplace/gb_exterior2.tst",
+      "sha256": "b7b7256e79c6cd826a9a518597a184e7f1e80ad4e5cb6dbef5113a15a3e6569c",
+      "license": "GPL-2.0-only OR GPL-3.0-only",
+      "url": "https://github.com/Singular/Singular/blob/fc93f43aefd9c6fa6a606ce46eb9f34864d8baee/Tst/Letterplace/gb_exterior2.tst",
+      "downloadUrl": "https://raw.githubusercontent.com/Singular/Singular/fc93f43aefd9c6fa6a606ce46eb9f34864d8baee/Tst/Letterplace/gb_exterior2.tst"
+    },
+    {
+      "id": "singular-6",
+      "repository": "Singular/Singular",
+      "project": "Singular 4.4.1",
+      "revision": "fc93f43aefd9c6fa6a606ce46eb9f34864d8baee",
+      "path": "Tst/Letterplace/gb_shift1.tst",
+      "sha256": "f4a86c81954f371830b2abc02a1a8d1b36b8573ede19834fd355cbb8c25e398a",
+      "license": "GPL-2.0-only OR GPL-3.0-only",
+      "url": "https://github.com/Singular/Singular/blob/fc93f43aefd9c6fa6a606ce46eb9f34864d8baee/Tst/Letterplace/gb_shift1.tst",
+      "downloadUrl": "https://raw.githubusercontent.com/Singular/Singular/fc93f43aefd9c6fa6a606ce46eb9f34864d8baee/Tst/Letterplace/gb_shift1.tst"
+    },
+    {
+      "id": "singular-7",
+      "repository": "Singular/Singular",
+      "project": "Singular 4.4.1",
+      "revision": "fc93f43aefd9c6fa6a606ce46eb9f34864d8baee",
+      "path": "Tst/Letterplace/gb_shift1inverse.tst",
+      "sha256": "91b43c4840483e7da7d6847be2987f21c1d6ee203b165b81acb71a11e84c4ab0",
+      "license": "GPL-2.0-only OR GPL-3.0-only",
+      "url": "https://github.com/Singular/Singular/blob/fc93f43aefd9c6fa6a606ce46eb9f34864d8baee/Tst/Letterplace/gb_shift1inverse.tst",
+      "downloadUrl": "https://raw.githubusercontent.com/Singular/Singular/fc93f43aefd9c6fa6a606ce46eb9f34864d8baee/Tst/Letterplace/gb_shift1inverse.tst"
+    },
+    {
+      "id": "singular-8",
+      "repository": "Singular/Singular",
+      "project": "Singular 4.4.1",
+      "revision": "fc93f43aefd9c6fa6a606ce46eb9f34864d8baee",
+      "path": "Tst/Letterplace/gb_braid3-11.tst",
+      "sha256": "836d369a4cbd4c3d08eb483477100d6f07e0c42175b517c88bd86052ea2a4adb",
+      "license": "GPL-2.0-only OR GPL-3.0-only",
+      "url": "https://github.com/Singular/Singular/blob/fc93f43aefd9c6fa6a606ce46eb9f34864d8baee/Tst/Letterplace/gb_braid3-11.tst",
+      "downloadUrl": "https://raw.githubusercontent.com/Singular/Singular/fc93f43aefd9c6fa6a606ce46eb9f34864d8baee/Tst/Letterplace/gb_braid3-11.tst"
+    },
+    {
+      "id": "singular-9",
+      "repository": "Singular/Singular",
+      "project": "Singular 4.4.1",
+      "revision": "fc93f43aefd9c6fa6a606ce46eb9f34864d8baee",
+      "path": "Tst/Letterplace/gb_braidXY.tst",
+      "sha256": "be94cc900519fa5f7b813206ec7de923ca6a0622d5a4b3d1027a63b3174091c6",
+      "license": "GPL-2.0-only OR GPL-3.0-only",
+      "url": "https://github.com/Singular/Singular/blob/fc93f43aefd9c6fa6a606ce46eb9f34864d8baee/Tst/Letterplace/gb_braidXY.tst",
+      "downloadUrl": "https://raw.githubusercontent.com/Singular/Singular/fc93f43aefd9c6fa6a606ce46eb9f34864d8baee/Tst/Letterplace/gb_braidXY.tst"
+    },
+    {
+      "id": "singular-10",
+      "repository": "Singular/Singular",
+      "project": "Singular 4.4.1",
+      "revision": "fc93f43aefd9c6fa6a606ce46eb9f34864d8baee",
+      "path": "Tst/Plural/doc-twostd.tst",
+      "sha256": "c46e5c679bed986880b46f34f959da34d13d66de94a0da3b2afb1af3cade488c",
+      "license": "GPL-2.0-only OR GPL-3.0-only",
+      "url": "https://github.com/Singular/Singular/blob/fc93f43aefd9c6fa6a606ce46eb9f34864d8baee/Tst/Plural/doc-twostd.tst",
+      "downloadUrl": "https://raw.githubusercontent.com/Singular/Singular/fc93f43aefd9c6fa6a606ce46eb9f34864d8baee/Tst/Plural/doc-twostd.tst"
+    },
+    {
+      "id": "singular-11",
+      "repository": "Singular/Singular",
+      "project": "Singular 4.4.1",
+      "revision": "fc93f43aefd9c6fa6a606ce46eb9f34864d8baee",
+      "path": "Tst/Plural/doc-std.tst",
+      "sha256": "71128cc85e118cf98fc462d11e7ca9cb3539a805dec207ef4be1216d064ada4b",
+      "license": "GPL-2.0-only OR GPL-3.0-only",
+      "url": "https://github.com/Singular/Singular/blob/fc93f43aefd9c6fa6a606ce46eb9f34864d8baee/Tst/Plural/doc-std.tst",
+      "downloadUrl": "https://raw.githubusercontent.com/Singular/Singular/fc93f43aefd9c6fa6a606ce46eb9f34864d8baee/Tst/Plural/doc-std.tst"
+    },
+    {
+      "id": "sympy-12",
+      "repository": "sympy/sympy",
+      "project": "SymPy 1.14.0",
+      "revision": "16fa855354eb7bcabd3fe10993841e03b1382692",
+      "path": "sympy/polys/tests/test_groebnertools.py",
+      "sha256": "6561c170208e54dc03c6e25683558fa3492b4c7c759b5c133e2d9c3983ec013e",
+      "license": "BSD-3-Clause",
+      "url": "https://github.com/sympy/sympy/blob/16fa855354eb7bcabd3fe10993841e03b1382692/sympy/polys/tests/test_groebnertools.py",
+      "downloadUrl": "https://raw.githubusercontent.com/sympy/sympy/16fa855354eb7bcabd3fe10993841e03b1382692/sympy/polys/tests/test_groebnertools.py"
+    },
+    {
+      "id": "gap-packages-13",
+      "repository": "gap-packages/gbnp",
+      "project": "GBNP 1.1.0",
+      "revision": "6e7171d90aa1ea803029ae0d290b688899965785",
+      "path": "doc/examples/example01.g",
+      "sha256": "587defe8285198d9c4806f7e692b1d837be022aef3bd0b34aa835aded903ccd0",
+      "license": "LGPL-2.1-or-later",
+      "url": "https://github.com/gap-packages/gbnp/blob/6e7171d90aa1ea803029ae0d290b688899965785/doc/examples/example01.g",
+      "downloadUrl": "https://raw.githubusercontent.com/gap-packages/gbnp/6e7171d90aa1ea803029ae0d290b688899965785/doc/examples/example01.g"
+    },
+    {
+      "id": "gap-packages-14",
+      "repository": "gap-packages/gbnp",
+      "project": "GBNP 1.1.0",
+      "revision": "6e7171d90aa1ea803029ae0d290b688899965785",
+      "path": "doc/examples/example05.g",
+      "sha256": "aa5ad7be119266e29ff1178a2d142fd2573a83beebe2a950583751fba112b333",
+      "license": "LGPL-2.1-or-later",
+      "url": "https://github.com/gap-packages/gbnp/blob/6e7171d90aa1ea803029ae0d290b688899965785/doc/examples/example05.g",
+      "downloadUrl": "https://raw.githubusercontent.com/gap-packages/gbnp/6e7171d90aa1ea803029ae0d290b688899965785/doc/examples/example05.g"
+    },
+    {
+      "id": "gap-packages-15",
+      "repository": "gap-packages/gbnp",
+      "project": "GBNP 1.1.0",
+      "revision": "6e7171d90aa1ea803029ae0d290b688899965785",
+      "path": "doc/examples/example09.g",
+      "sha256": "c56e33dacaada794bd873ce6ccdaa0d16aabc4a50bf55aaf9fe9db30a14a46de",
+      "license": "LGPL-2.1-or-later",
+      "url": "https://github.com/gap-packages/gbnp/blob/6e7171d90aa1ea803029ae0d290b688899965785/doc/examples/example09.g",
+      "downloadUrl": "https://raw.githubusercontent.com/gap-packages/gbnp/6e7171d90aa1ea803029ae0d290b688899965785/doc/examples/example09.g"
+    },
+    {
+      "id": "gap-packages-16",
+      "repository": "gap-packages/gbnp",
+      "project": "GBNP 1.1.0",
+      "revision": "6e7171d90aa1ea803029ae0d290b688899965785",
+      "path": "tst/test11.tst",
+      "sha256": "23e12c9967eb9d90b6f13273b578adf71a8fbbca1de6c1de470422939d1910bc",
+      "license": "LGPL-2.1-or-later",
+      "url": "https://github.com/gap-packages/gbnp/blob/6e7171d90aa1ea803029ae0d290b688899965785/tst/test11.tst",
+      "downloadUrl": "https://raw.githubusercontent.com/gap-packages/gbnp/6e7171d90aa1ea803029ae0d290b688899965785/tst/test11.tst"
+    },
+    {
+      "id": "gap-packages-17",
+      "repository": "gap-packages/gbnp",
+      "project": "GBNP 1.1.0",
+      "revision": "6e7171d90aa1ea803029ae0d290b688899965785",
+      "path": "tst/test12.tst",
+      "sha256": "5e85c4875593531dbcf90d68599969a337e7576671f4e2393063d79641275dd2",
+      "license": "LGPL-2.1-or-later",
+      "url": "https://github.com/gap-packages/gbnp/blob/6e7171d90aa1ea803029ae0d290b688899965785/tst/test12.tst",
+      "downloadUrl": "https://raw.githubusercontent.com/gap-packages/gbnp/6e7171d90aa1ea803029ae0d290b688899965785/tst/test12.tst"
+    }
+  ],
+  "cases": [
+    {
+      "id": "singular-gb_simple",
+      "source": "singular-1",
+      "vars": [
+        "y",
+        "x"
+      ],
+      "rels": [
+        "x*y+y*x"
+      ],
+      "comm": false,
+      "maxdeg": 4,
+      "scope": "complete",
+      "fields": [
+        0,
+        2,
+        5
+      ],
+      "adaptation": "Reverse the generator list to match Singular Dp word order.",
+      "expectedFields": [
+        0
+      ]
+    },
+    {
+      "id": "singular-gb_mon1",
+      "source": "singular-2",
+      "vars": [
+        "y",
+        "x"
+      ],
+      "rels": [
+        "x*y*x",
+        "y*x*y"
+      ],
+      "comm": false,
+      "maxdeg": 4,
+      "scope": "complete",
+      "fields": [
+        0,
+        2,
+        5
+      ],
+      "adaptation": "Reverse the generator list to match Singular Dp word order.",
+      "expectedFields": [
+        0
+      ]
+    },
+    {
+      "id": "singular-gb_mon2",
+      "source": "singular-3",
+      "vars": [
+        "y",
+        "x"
+      ],
+      "rels": [
+        "x*x",
+        "x*y*x",
+        "y*x*y"
+      ],
+      "comm": false,
+      "maxdeg": 4,
+      "scope": "complete",
+      "fields": [
+        0,
+        2,
+        5
+      ],
+      "adaptation": "Reverse the generator list to match Singular Dp word order.",
+      "expectedFields": [
+        0
+      ]
+    },
+    {
+      "id": "singular-gb_mon3",
+      "source": "singular-4",
+      "vars": [
+        "y",
+        "x"
+      ],
+      "rels": [
+        "x*x",
+        "y*y",
+        "x*y*x",
+        "y*x*y"
+      ],
+      "comm": false,
+      "maxdeg": 4,
+      "scope": "complete",
+      "fields": [
+        0,
+        2,
+        5
+      ],
+      "adaptation": "Reverse the generator list to match Singular Dp word order.",
+      "expectedFields": [
+        0
+      ]
+    },
+    {
+      "id": "singular-gb_exterior2",
+      "source": "singular-5",
+      "vars": [
+        "x",
+        "y"
+      ],
+      "rels": [
+        "y*x+x*y",
+        "x*x",
+        "y*y"
+      ],
+      "comm": false,
+      "maxdeg": 4,
+      "scope": "complete",
+      "fields": [
+        0,
+        2,
+        5
+      ],
+      "adaptation": "Reverse the generator list to match Singular Dp word order.",
+      "expectedFields": [
+        0
+      ]
+    },
+    {
+      "id": "singular-gb_shift1",
+      "source": "singular-6",
+      "vars": [
+        "x",
+        "s"
+      ],
+      "rels": [
+        "s*x-x*s-s"
+      ],
+      "comm": false,
+      "maxdeg": 4,
+      "scope": "complete",
+      "fields": [
+        0,
+        2,
+        5
+      ],
+      "adaptation": "Reverse the generator list to match Singular Dp word order.",
+      "expectedFields": [
+        0
+      ]
+    },
+    {
+      "id": "singular-gb_shift1inverse",
+      "source": "singular-7",
+      "vars": [
+        "t",
+        "x",
+        "d"
+      ],
+      "rels": [
+        "d*x-x*d-d",
+        "t*x-1",
+        "x*t-1"
+      ],
+      "comm": false,
+      "maxdeg": 4,
+      "scope": "degree-bound",
+      "fields": [
+        0,
+        2,
+        5
+      ],
+      "adaptation": "Reverse the generator list to match Singular Dp word order.",
+      "expectedFields": [
+        0
+      ]
+    },
+    {
+      "id": "singular-gb_braid3-11",
+      "source": "singular-8",
+      "vars": [
+        "z",
+        "y",
+        "x"
+      ],
+      "rels": [
+        "y*x*y-z*y*z",
+        "x*y*x-z*x*y",
+        "z*x*z-y*z*x",
+        "x*x*x+y*y*y+z*z*z+x*y*z"
+      ],
+      "comm": false,
+      "maxdeg": 6,
+      "scope": "degree-bound",
+      "fields": [
+        0,
+        2,
+        5
+      ],
+      "adaptation": "Reverse the generator list to match Singular Dp word order. Use degree 6 instead of upstream degree 11.",
+      "expectedFields": [
+        0
+      ]
+    },
+    {
+      "id": "singular-gb_braidXY",
+      "source": "singular-9",
+      "vars": [
+        "z",
+        "y",
+        "x"
+      ],
+      "rels": [
+        "y*x*y-z*y*z",
+        "x*y*x-z*x*y",
+        "z*x*z-y*z*x",
+        "x*x*x-2*y*y*y+3*z*z*z-4*x*y*z+5*x*z*z-6*x*y*y+7*x*x*z-8*x*x*y"
+      ],
+      "comm": false,
+      "maxdeg": 6,
+      "scope": "degree-bound",
+      "fields": [
+        0,
+        2,
+        5
+      ],
+      "adaptation": "Reverse the generator list to match Singular Dp word order. Use degree 6 instead of upstream degree 11.",
+      "expectedFields": [
+        0
+      ]
+    },
+    {
+      "id": "plural-sl2-N3",
+      "source": "singular-10",
+      "vars": [
+        "x",
+        "y",
+        "z"
+      ],
+      "rels": [
+        "y*x-x*y+z",
+        "z*x-x*z-2*x",
+        "z*y-y*z+2*y",
+        "x^4",
+        "y^4",
+        "z^4-10*z^2+9"
+      ],
+      "comm": false,
+      "maxdeg": 8,
+      "scope": "complete",
+      "fields": [
+        0,
+        2,
+        5
+      ],
+      "plural": {
+        "vars": [
+          "x",
+          "y",
+          "z"
+        ],
+        "d": [
+          "-z",
+          "2*x",
+          "-2*y"
+        ],
+        "ideal": [
+          "x^4",
+          "y^4",
+          "z^4-10*z^2+9"
+        ]
+      },
+      "adaptation": "Expand the upstream N=3 product (z+3)(z+1)(z-1)(z-3); present U(sl2) by its three defining relations in the free algebra.",
+      "expectedFields": [
+        0
+      ]
+    },
+    {
+      "id": "plural-so3-two-sided",
+      "source": "singular-11",
+      "vars": [
+        "x",
+        "y",
+        "z"
+      ],
+      "rels": [
+        "y*x-x*y+z",
+        "z*x-x*z-y",
+        "z*y-y*z+x",
+        "x^3+4*x",
+        "y^2-z^2",
+        "z^3+z"
+      ],
+      "comm": false,
+      "maxdeg": 8,
+      "scope": "complete",
+      "fields": [
+        0,
+        2,
+        5
+      ],
+      "plural": {
+        "vars": [
+          "x",
+          "y",
+          "z"
+        ],
+        "d": [
+          "-z",
+          "y",
+          "-x"
+        ],
+        "ideal": [
+          "x^3+4*x",
+          "y^2-z^2",
+          "z^3+z"
+        ]
+      },
+      "adaptation": "Use the rational U(so3) block and its presentation. Compare the two-sided ideal via twostd rather than upstream left-ideal std; the algebraic-number block is outside the supported coefficient fields.",
+      "expectedFields": [
+        0
+      ]
+    },
+    {
+      "id": "sympy-rational-elimination",
+      "source": "sympy-12",
+      "vars": [
+        "x",
+        "y"
+      ],
+      "rels": [
+        "x^2+2*x*y^2",
+        "x*y+2*y^3-1"
+      ],
+      "comm": true,
+      "maxdeg": 12,
+      "scope": "complete",
+      "fields": [
+        0,
+        2,
+        5
+      ],
+      "locator": "_do_test_groebner: first system",
+      "adaptation": "Expand products; use Q and degree-lex for the shared ideal; prime-field variants supplement the upstream rational/integer test.",
+      "expectedFields": [
+        0
+      ]
+    },
+    {
+      "id": "sympy-graded-cubic",
+      "source": "sympy-12",
+      "vars": [
+        "x",
+        "y"
+      ],
+      "rels": [
+        "x^3-2*x*y",
+        "x^2*y+x-2*y^2"
+      ],
+      "comm": true,
+      "maxdeg": 12,
+      "scope": "complete",
+      "fields": [
+        0,
+        2,
+        5
+      ],
+      "locator": "_do_test_groebner: first grlex system",
+      "adaptation": "Expand products; use Q and degree-lex for the shared ideal; prime-field variants supplement the upstream rational/integer test.",
+      "expectedFields": [
+        0
+      ]
+    },
+    {
+      "id": "sympy-cusp-yz",
+      "source": "sympy-12",
+      "vars": [
+        "x",
+        "y",
+        "z"
+      ],
+      "rels": [
+        "-x^2+y",
+        "-x^3+z"
+      ],
+      "comm": true,
+      "maxdeg": 12,
+      "scope": "complete",
+      "fields": [
+        0,
+        2,
+        5
+      ],
+      "locator": "_do_test_groebner: grlex cusp",
+      "adaptation": "Expand products; use Q and degree-lex for the shared ideal; prime-field variants supplement the upstream rational/integer test.",
+      "expectedFields": [
+        0
+      ]
+    },
+    {
+      "id": "sympy-cusp-zy",
+      "source": "sympy-12",
+      "vars": [
+        "x",
+        "y",
+        "z"
+      ],
+      "rels": [
+        "-x^2+z",
+        "-x^3+y"
+      ],
+      "comm": true,
+      "maxdeg": 12,
+      "scope": "complete",
+      "fields": [
+        0,
+        2,
+        5
+      ],
+      "locator": "_do_test_groebner: permuted grlex cusp",
+      "adaptation": "Expand products; use Q and degree-lex for the shared ideal; prime-field variants supplement the upstream rational/integer test.",
+      "expectedFields": [
+        0
+      ]
+    },
+    {
+      "id": "sympy-curve-y",
+      "source": "sympy-12",
+      "vars": [
+        "x",
+        "y",
+        "z"
+      ],
+      "rels": [
+        "x-y^2",
+        "-y^3+z"
+      ],
+      "comm": true,
+      "maxdeg": 12,
+      "scope": "complete",
+      "fields": [
+        0,
+        2,
+        5
+      ],
+      "locator": "_do_test_groebner: grlex y-curve",
+      "adaptation": "Expand products; use Q and degree-lex for the shared ideal; prime-field variants supplement the upstream rational/integer test.",
+      "expectedFields": [
+        0
+      ]
+    },
+    {
+      "id": "sympy-curve-z",
+      "source": "sympy-12",
+      "vars": [
+        "x",
+        "y",
+        "z"
+      ],
+      "rels": [
+        "x-z^2",
+        "y-z^3"
+      ],
+      "comm": true,
+      "maxdeg": 12,
+      "scope": "complete",
+      "fields": [
+        0,
+        2,
+        5
+      ],
+      "locator": "_do_test_groebner: grlex z-curve",
+      "adaptation": "Expand products; use Q and degree-lex for the shared ideal; prime-field variants supplement the upstream rational/integer test.",
+      "expectedFields": [
+        0
+      ]
+    },
+    {
+      "id": "sympy-curve-yz",
+      "source": "sympy-12",
+      "vars": [
+        "x",
+        "y",
+        "z"
+      ],
+      "rels": [
+        "-y^2+z",
+        "x-y^3"
+      ],
+      "comm": true,
+      "maxdeg": 12,
+      "scope": "complete",
+      "fields": [
+        0,
+        2,
+        5
+      ],
+      "locator": "_do_test_groebner: grlex y,z curve",
+      "adaptation": "Expand products; use Q and degree-lex for the shared ideal; prime-field variants supplement the upstream rational/integer test.",
+      "expectedFields": [
+        0
+      ]
+    },
+    {
+      "id": "sympy-curve-zy",
+      "source": "sympy-12",
+      "vars": [
+        "x",
+        "y",
+        "z"
+      ],
+      "rels": [
+        "y-z^2",
+        "x-z^3"
+      ],
+      "comm": true,
+      "maxdeg": 12,
+      "scope": "complete",
+      "fields": [
+        0,
+        2,
+        5
+      ],
+      "locator": "_do_test_groebner: permuted y,z curve",
+      "adaptation": "Expand products; use Q and degree-lex for the shared ideal; prime-field variants supplement the upstream rational/integer test.",
+      "expectedFields": [
+        0
+      ]
+    },
+    {
+      "id": "sympy-quartic-circle",
+      "source": "sympy-12",
+      "vars": [
+        "x",
+        "y"
+      ],
+      "rels": [
+        "4*x^2*y^2+4*x*y+1",
+        "x^2+y^2-1"
+      ],
+      "comm": true,
+      "maxdeg": 12,
+      "scope": "complete",
+      "fields": [
+        0,
+        2,
+        5
+      ],
+      "locator": "_do_test_groebner: final system",
+      "adaptation": "Expand products; use Q and degree-lex for the shared ideal; prime-field variants supplement the upstream rational/integer test.",
+      "expectedFields": [
+        0
+      ]
+    },
+    {
+      "id": "sympy-minpoly",
+      "source": "sympy-12",
+      "vars": [
+        "x",
+        "y",
+        "z"
+      ],
+      "rels": [
+        "x^3+x+1",
+        "y^2+y+1",
+        "x*z+y*z-x^2-y"
+      ],
+      "comm": true,
+      "maxdeg": 12,
+      "scope": "complete",
+      "fields": [
+        0,
+        2,
+        5
+      ],
+      "locator": "_do_test_benchmark_minpoly",
+      "adaptation": "Expand products; use Q and degree-lex for the shared ideal; prime-field variants supplement the upstream rational/integer test.",
+      "expectedFields": [
+        0
+      ]
+    },
+    {
+      "id": "sympy-katsura3",
+      "source": "sympy-12",
+      "vars": [
+        "x0",
+        "x1",
+        "x2"
+      ],
+      "rels": [
+        "x0+2*x1+2*x2-1",
+        "x0^2+2*x1^2+2*x2^2-x0",
+        "2*x0*x1+2*x1*x2-x1"
+      ],
+      "comm": true,
+      "maxdeg": 12,
+      "scope": "complete",
+      "fields": [
+        0,
+        2,
+        5
+      ],
+      "locator": "_do_test_benchmark_katsura_3",
+      "adaptation": "Expand products; use Q and degree-lex for the shared ideal; prime-field variants supplement the upstream rational/integer test.",
+      "expectedFields": [
+        0
+      ]
+    },
+    {
+      "id": "sympy-katsura4",
+      "source": "sympy-12",
+      "vars": [
+        "x0",
+        "x1",
+        "x2",
+        "x3"
+      ],
+      "rels": [
+        "x0+2*x1+2*x2+2*x3-1",
+        "x0^2+2*x1^2+2*x2^2+2*x3^2-x0",
+        "2*x0*x1+2*x1*x2+2*x2*x3-x1",
+        "x1^2+2*x0*x2+2*x1*x3-x2"
+      ],
+      "comm": true,
+      "maxdeg": 12,
+      "scope": "complete",
+      "fields": [
+        0,
+        2,
+        5
+      ],
+      "locator": "_do_test_benchmark_katsura_4",
+      "adaptation": "Expand products; use Q and degree-lex for the shared ideal; prime-field variants supplement the upstream rational/integer test.",
+      "expectedFields": [
+        0
+      ]
+    },
+    {
+      "id": "sympy-cyclic4",
+      "source": "sympy-12",
+      "vars": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ],
+      "rels": [
+        "a+b+c+d",
+        "a*b+a*d+b*c+b*d",
+        "a*b*c+a*b*d+a*c*d+b*c*d",
+        "a*b*c*d-1"
+      ],
+      "comm": true,
+      "maxdeg": 12,
+      "scope": "complete",
+      "fields": [
+        0,
+        2,
+        5
+      ],
+      "locator": "_do_test_benchmark_cyclic_4",
+      "adaptation": "Expand products; use Q and degree-lex for the shared ideal; prime-field variants supplement the upstream rational/integer test.",
+      "expectedFields": [
+        0
+      ]
+    },
+    {
+      "id": "gbnp-commutative-presentation",
+      "source": "gap-packages-13",
+      "vars": [
+        "x",
+        "y"
+      ],
+      "rels": [
+        "x*y-y*x",
+        "x^2*y-1",
+        "x*y^2-1"
+      ],
+      "comm": false,
+      "maxdeg": 8,
+      "scope": "complete",
+      "fields": [
+        0,
+        2,
+        5
+      ],
+      "expectedBasis": [
+        "y-x",
+        "x^3-1"
+      ],
+      "expectedDimension": 3,
+      "expectedFields": [
+        0
+      ]
+    },
+    {
+      "id": "gbnp-univariate-gcd",
+      "source": "gap-packages-14",
+      "vars": [
+        "x"
+      ],
+      "rels": [
+        "x^3+2*x^2+2*x+1",
+        "x^4+x^2+1"
+      ],
+      "comm": false,
+      "maxdeg": 8,
+      "scope": "complete",
+      "fields": [
+        0,
+        2,
+        5
+      ],
+      "expectedBasis": [
+        "x^2+x+1"
+      ],
+      "expectedDimension": 2,
+      "adaptation": "Use the two seed polynomials; the remaining upstream recurrence generates combinations of them.",
+      "expectedFields": [
+        0
+      ]
+    },
+    {
+      "id": "gbnp-mora",
+      "source": "gap-packages-15",
+      "vars": [
+        "x",
+        "y"
+      ],
+      "rels": [
+        "x*y*x-y",
+        "y*x*y-y"
+      ],
+      "comm": false,
+      "maxdeg": 8,
+      "scope": "complete",
+      "fields": [
+        0,
+        2,
+        5
+      ],
+      "expectedBasis": [
+        "y^2-x*y",
+        "y*x-x*y",
+        "x^2*y-y"
+      ],
+      "expectedFields": [
+        0
+      ]
+    },
+    {
+      "id": "gbnp-weighted",
+      "source": "gap-packages-16",
+      "vars": [
+        "x",
+        "y"
+      ],
+      "rels": [
+        "x^3*y^2-x^6+y^4",
+        "y^2*x^3+x*y*x*y*x+x^2*y*x*y"
+      ],
+      "comm": false,
+      "maxdeg": 16,
+      "scope": "degree-bound",
+      "fields": [
+        0,
+        2,
+        5
+      ],
+      "weights": [
+        2,
+        3
+      ],
+      "expectedBasis": [
+        "y^2*x^3+x*y*x*y*x+x^2*y*x*y",
+        "x^6-x^3*y^2-y^4",
+        "x^3*y^2*x-x^4*y^2+y^4*x-x*y^4"
+      ],
+      "expectedDimensions": [
+        1,
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        3,
+        4,
+        5,
+        7,
+        9,
+        10,
+        16,
+        17,
+        24,
+        31
+      ],
+      "referenceOrder": "degree-lex",
+      "adaptation": "GBNP uses ordinary degree-lex order with weighted truncation; Bergman uses weighted degree-lex. Certify both bases in their own orders, compare mutual reductions and weighted dimensions through 16. Use the actual regression output, including +y^4*x in the third polynomial; the explanatory comment in example11.g omits this term.",
+      "expectedFields": [
+        0
+      ]
+    },
+    {
+      "id": "gbnp-sl2",
+      "source": "gap-packages-17",
+      "vars": [
+        "e",
+        "f",
+        "h"
+      ],
+      "rels": [
+        "f*e-e*f+h",
+        "h*e-e*h-2*e",
+        "h*f-f*h+2*f"
+      ],
+      "comm": false,
+      "maxdeg": 8,
+      "scope": "complete",
+      "fields": [
+        0,
+        2,
+        5
+      ],
+      "expectedBasis": [
+        "f*e-e*f+h",
+        "h*e-e*h-2*e",
+        "h*f-f*h+2*f"
+      ],
+      "normalForms": [
+        {
+          "input": "h^3",
+          "result": "h^3"
+        }
+      ],
+      "expectedFields": [
+        0
+      ]
+    },
+    {
+      "id": "gbnp-sl2-quotient",
+      "source": "gap-packages-17",
+      "vars": [
+        "e",
+        "f",
+        "h"
+      ],
+      "rels": [
+        "f*e-e*f+h",
+        "h*e-e*h-2*e",
+        "h*f-f*h+2*f",
+        "e^2"
+      ],
+      "comm": false,
+      "maxdeg": 8,
+      "scope": "complete",
+      "fields": [
+        0,
+        2,
+        5
+      ],
+      "expectedBasis": [
+        "e^2",
+        "e*h+e",
+        "f*e-e*f+h",
+        "f^2",
+        "f*h-f",
+        "h*e-e",
+        "h*f+f",
+        "h^2-2*e*f+h"
+      ],
+      "expectedDimension": 5,
+      "normalForms": [
+        {
+          "input": "f^2",
+          "result": "0"
+        },
+        {
+          "input": "f^4*e^4",
+          "result": "0"
+        },
+        {
+          "input": "h^3",
+          "result": "h"
+        }
+      ],
+      "expectedFields": [
+        0,
+        5
+      ]
+    }
+  ]
+}

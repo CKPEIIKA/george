@@ -1,13 +1,15 @@
 # Validation and verification
 
 Release audit: **2026-09-30**. This is a working Bergman → ECL → Wasm → HTML
-application. The reports below describe executed checks, with their scope.
+application running **bergman-1.001-fix**. Fixed behavior is the default;
+legacy mode retains the original Bergman 1.001 behavior and version identity.
+The reports below describe executed checks, with their scope.
 
 ## Results
 
 | Layer | Executed result |
 |---|---|
-| JavaScript unit tests | 41 passed: parsing, validation, exact arithmetic, structural export, complete incoming-chain bounds, worker lifecycle, preferences, guide and locale coverage |
+| JavaScript unit tests | 43 passed: parsing, validation, exact arithmetic, structural export, complete incoming-chain bounds, worker lifecycle, preferences, guide and locale coverage |
 | Original 2007 CLISP regression | All 37 files match byte for byte in legacy mode, in native SBCL, Node/Wasm and Chromium/Wasm |
 | Default-mode regression | All 37 expected files pass on the same engines; the PB file uses the corrected pre-2004 reference |
 | Additional original sources | 20 sessions: 18 calculations, one mode-only smoke test, one expected rejection of a malformed backup; 23 output files match native Bergman |
@@ -15,11 +17,12 @@ application. The reports below describe executed checks, with their scope.
 | OCaml upstream | All 24 dune test aliases pass at the pinned revision |
 | Shared OCaml cases | All five relevant active examples pass; Betti numbers and the aaa-chain words are compared with freshly executed native OCaml results |
 | Independent basis checks | 42 cases pass: input reduction, 597 critical ambiguities, Singular mutual ideal membership, and known Hilbert dimensions where specified |
+| Imported upstream cases | 90 native/Wasm cases over Q/F₂/F₅ from 17 pinned Singular/Plural, SymPy and GBNP source files; 3,379 exact critical ambiguities and three Singular reductions per case; 39 SymPy Buchberger/F5B comparisons, six independent Plural quotients and ten original SymPy test functions |
 | Independent resolution checks | Nine cases pass 560 identities d²=0 over the quotient algebra, before augmentation; exact augmented ranks and d²=0 also pass |
 | Longer generator names | 20 cases: native SBCL equality, all-term renaming equality, 258 full d² identities, 91 critical ambiguities, exact homology, overlapping names, Q/F₂/F₅/F₁₀₁, weights, reversed order and large rational coefficients |
 | Idempotent braid | 20 native/Wasm cases: 860 full d² identities, 220 critical ambiguities, dimension 6 and independent projectivity certificates over Q/F₂/F₃/F₅/F₁₀₁; direct degreewise and two-stage runs, monoid augmentation, overlapping names, weights and reversed order |
 | Browser behavior | Both historical suites, responsive main thread, stop/restart, exact 3⁴⁰, memory growth, form execution and monoid augmentation pass; no page errors |
-| Guide and project-site UI | Root and `/george/` pass: all eight guided examples, braid and weighted homology cutoff, EN/RU, state/file preservation, theme/system preference, persistence, blocked storage, 38 MathJax SVG expressions, mobile and downloads; no external requests or asset errors |
+| Guide and project-site UI | Root and `/george/` pass: all eight guided examples, braid and weighted homology cutoff, EN/RU, state/file preservation, theme/system preference, persistence, blocked storage, 38 MathJax SVG expressions, imported braid/Katsura/weighted/Lie cases, mobile and downloads; no external requests or asset errors |
 
 Small machine-readable evidence is retained in [validation/](validation/).
 [summary.json](validation/summary.json) links the full local logs and records
@@ -104,13 +107,36 @@ larger than 2⁵³, known symmetric/exterior Hilbert dimensions, and additional
 prime-field resolutions. Singular process errors, timeouts, error diagnostics
 and nonzero remainders fail the runner.
 
+The [additional upstream suite](UPSTREAM-TESTS.md) records all adaptations
+and source digests. Of its 90 field cases, 78 certify every final critical
+ambiguity and 12 certify a stated degree bound. The weighted GBNP example
+uses a different reference monomial order, so each basis is certified in its
+own order, with mutual reductions and weighted dimensions through degree 16.
+An inverse-shift example demonstrates that higher-degree nonhomogeneous
+critical pairs can generate lower-degree relations; its original cutoff is
+matched explicitly rather than treated as a complete-basis certificate.
+These tests exposed the inclusion, stale-signature, redirected-pointer and
+commutative mode defects documented in [SOURCE-REVIEW.md](SOURCE-REVIEW.md).
+Original legacy branches and vendored sources remain unchanged.
+
 ## Browser and performance
 
 Verified using Chromium 153.0.8010.52 on this Linux x86_64 workspace. The
-complete historical suites took **5.03–5.06 seconds of computation** each
-in the current run (6.03–6.13 seconds including startup). Measurements are in
+complete historical suites took **28.49–33.60 seconds of computation** each
+in the current run (37.13–39.53 seconds including startup). Measurements are in
 [browser-regression.json](validation/browser-regression.json); timing varies
-with machine load. These are entire-suite timings, not per-polynomial claims.
+with machine load. These are entire-suite timings, not per-polynomial claims. This
+run was on a heavily loaded workspace; the six additional normal-browser cases
+took 0.23–3.40 seconds of computation each, matching native outputs exactly.
+They cover Katsura 4, Singular braid, weighted GBNP, the sl₂ quotient and
+two braid resolutions. The instrumented form timed out at two and five
+minutes, while the exact
+form payload passed Node/Wasm and the normal-browser form completed in
+2.3 seconds. The final UI runner therefore drives actual DOM input/change/
+click events without a debugger, then attaches Playwright after
+computations finish
+for screenshots. The instrumented failures are retained as development
+diagnostics and are not release results.
 
 The Wasm heap starts at **64 MiB**. An explicit 100 MB Lisp array forced
 memory growth to **123,011,072 bytes**, followed by GC and another exact
@@ -120,7 +146,10 @@ thread timer continues firing. No isolation headers are used. Desktop and
 horizontal scrolling when needed.
 
 Performance measurements use Chromium **without a DevTools connection**.
-The separate Playwright run checks functionality and takes screenshots.
+The UI runner drives the real form without a debugger and uses Playwright
+only for screenshots after all computations finish. Mobile testing sets a
+390px CSS viewport through the CDP Emulation domain without enabling the
+Runtime, Debugger or Profiler domains; mobile calculations run normally.
 Debugger attachment can change Wasm compilation/tiering and distort timings;
 see [V8's compilation documentation](https://v8.dev/docs/wasm-compilation-pipeline).
 The link uses O2 and the required spill-pointers pass; the ECL Wasm library
@@ -141,6 +170,9 @@ The pinned ECL/SDK build and link were executed locally, reusing the native
 and cross toolchains after their initial builds. All builds and checks run
 locally. Repository CI/Actions workflows were removed. Pages publication uses
 the prebuilt `web/` tree on a `gh-pages` branch, as described in the README.
+The user deferred concurrent console changes; browser checks and source
+packaging use the isolated release checkout `/tmp/george-release-20260930`.
+The shared workspace retains those edits for a later release.
 Project-site compatibility was
 verified locally at `/george/`, including worker/Wasm paths and MIME types.
 
@@ -153,7 +185,8 @@ reload; a pre-existing restoration defect was fixed. Desktop/Russian/dark and
 mobile/English/light screenshots were inspected under the report's local
 artifact directory. MathJax's required v4 worker assets are bundled locally;
 failed development runs with missing worker assets are not release evidence.
-Both mount paths also compute the idempotent braid with overlapping names
+Both mount paths also compute imported Singular braid, SymPy Katsura,
+weighted GBNP and Lie quotient cases, and the idempotent braid with overlapping names
 and a weighted monoid case. The latter verifies that only H₀…H₂ are reported
 and that the interface explains the cutoff.
 

@@ -1,4 +1,4 @@
-run time: 5.395s
+run time: 10.511s
 anick_tm.out       CLISP-ref: DIFF  CLISP-2007-run: same  PSL-ref: same
 anick_tm.res       CLISP-ref: same  CLISP-2007-run: same  PSL-ref: same
 char2.gb           CLISP-ref: same  CLISP-2007-run: same  PSL-ref: same

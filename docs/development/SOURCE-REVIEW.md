@@ -1,7 +1,9 @@
 # Source review: Bergman and OCaml Bergman
 
 Reviewed 2026-09-30. Paths below refer to the unmodified upstream sources,
-not generated engine files.
+not generated engine files. The patched distribution is **bergman-1.001-fix**;
+fixed behavior is the default, and `(SETLEGACYMODE T)` selects the original
+behavior and restores the original version identity.
 
 ## Sources and scope
 
@@ -65,13 +67,55 @@ Relevant details found in the sources:
    loaded before setting additional-relation callbacks. The old sequential
    suite already loaded it in earlier cases; isolated form-preset checks
    exposed the missing initialization, now explicit in the session builder.
-6. The historical Betti routine groups chains by internal degree. For a
+8. The additional Singular/Plural tests exposed defects in itemwise
+   nonhomogeneous inclusion processing. `instableitemFixNGbe` only subtracts
+   exact tail terms, missing old leading words divisible by a new one.
+   Default mode records and schedules these inclusions, invalidates stale
+   `LRReduced` markers and handles the saved `GbFactors` before overlap work.
+   The formerly unused `instableMaybeReduceRedor` path also had a malformed
+   property call and an undefined `GETAUGMONPROP` call. Its default path uses
+   direct property assignment, the real leading monomial and the pure
+   polynomial representation required by `SubtractRedor1`.
+9. `NewReductSignature` splices a degree block into the signature instead
+   of wrapping it as a list element. `MaybeFindGroebF` then traverses the
+   generation marker as a list of degrees and misreads degree blocks.
+   Default signatures preserve the list shape; a stale generation triggers
+   a scan of the complete current basis. The generation marker still avoids
+   scanning when the basis has not changed. Refresh returns the reductor or
+   signature itself, not `PutMpt`'s property-header return value, which the
+   caller would otherwise install as a self-referential pointer. The original
+   eight-loop traversal remains in legacy mode.
+10. `PutExtraNGroeb` receives its factor and target in reverse order in the
+    noncommutative caller, relies on the undefined return value of an
+    in-place conversion, and nests redirected pointer lists. Default mode
+    keeps the reductand, passes the factor first, stores a flat pointer list
+    directly, and guards self reduction. Critical pairs must also preserve
+    their original overlap occurrence when a pointer redirects to a shorter
+    leading word. `GEORGECRITQUOTIENT` adjusts that occurrence by the shorter
+    factor's position in the old word; choosing the first occurrence would
+    incorrectly erase self-overlaps.
+11. Safe noncommutative multiplication needs structural unit detection in
+    every empty/nonempty context, not pointer equality with one canonical
+    unit. The lexicographic comparator needs an equal-word guard; otherwise
+    it walks past both terminators forever. The guards preserve original
+    behavior in legacy mode. Commutative comparison also
+    follows process changes dynamically: original `SETITEMWISE` does not
+    refresh the comparator selected by the preceding `COMMIFY`, so a
+    nonhomogeneous graded-lexicographic form job could actually use pure lex.
+    Empty commutative pair and cone lists are handled explicitly.
+    The unstable commutative path processes all saved pairs: its original
+    component pruning assumes stable leading words, an assumption lost after
+    redirecting reductors. The minimum-polynomial example over F₂ exposed
+    a missing degree-3 S-polynomial. Legacy keeps the
+    original pruning. The imported Lie quotients and braid cases exercise
+    these paths; see [UPSTREAM-TESTS.md](UPSTREAM-TESTS.md).
+12. The historical Betti routine groups chains by internal degree. For a
    nonhomogeneous differential this misses degree-lowering scalar terms.
    For example, after shifting the monoid relation x²−1, the differential
    contains 2x. George calculates ungraded homology by exact matrix ranks,
    checks that successive augmented differentials compose to zero, and
    saves those results separately in `homology.json`.
-7. The header of `MINRESOLUTION` itself warns that it gives incorrect results
+13. The header of `MINRESOLUTION` itself warns that it gives incorrect results
    or errors. This is distinct from `MINR`, which is included in the
    historical regression list. Passing that list does not validate every
    experimental routine in the distribution.

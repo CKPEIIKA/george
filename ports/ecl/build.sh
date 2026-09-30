@@ -58,7 +58,7 @@ python3 - "$root" "$runtime" <<'PY'
 from pathlib import Path
 import hashlib,json,sys
 root=Path(sys.argv[1]); engine=root/'web/engine'
-data={'bergman':'1.001','ecl':'59f60e09102961bf5872c672fdd9d200b2e83d6b','emscripten':'4.0.12','runtime':sys.argv[2], 'files':{p.name:{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in engine.glob('ecl.*')}}
+data={'bergman':'bergman-1.001-fix','upstreamBergman':'1.001','defaultBehavior':'fixed','legacyBehavior':'original','ecl':'59f60e09102961bf5872c672fdd9d200b2e83d6b','emscripten':'4.0.12','runtime':sys.argv[2], 'files':{p.name:{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in engine.glob('ecl.*')}}
 (root/'build/engine-build.json').write_text(json.dumps(data,indent=2))
 del data['runtime']
 (engine/'build.json').write_text(json.dumps(data,indent=2))

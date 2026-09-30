@@ -7,6 +7,8 @@ This is the maintainers' reading of the licenses involved, not legal advice.
 Everything written for George is Copyright © 2026 the George contributors.
 That covers George's code in `web/`, `tools/`, `test/`, `ports/` and `docs/`.
 Third-party engine components and `web/vendor/mathjax/` retain their own licenses.
+Adapted upstream validation fixtures retain the source licenses recorded in
+`test/fixtures/upstream-cases.json` and `licenses/UPSTREAM-TESTS.txt`.
 You may use, modify and redistribute it under **either** of:
 
 - the **Bergman General Public License** (`licenses/BGPL.txt`), or
@@ -19,7 +21,8 @@ Why both:
   contains bergman or a derivative of it be licensed "on terms identical to
   those contained in this License Agreement". The George site and its engine
   contain bergman. George is therefore offered under the BGPL, and anyone may
-  redistribute the whole under the BGPL.
+  redistribute the application under the BGPL. Imported validation fixtures
+  retain their separate upstream licenses.
 - The GPL-2.0-or-later option keeps George's own code reusable in
   GPL-licensed projects. In particular, that includes Samuel Mimram's
   ocaml-alg and Bergman 2, which are declared GPL-2.0.

@@ -1,16 +1,57 @@
 {
+  "debuggerDuringCalculations": false,
+  "mobileViewportControl": "CDP Emulation only; no Runtime, Debugger or Profiler domains",
+  "engine": {
+    "bergman": "bergman-1.001-fix",
+    "upstreamBergman": "1.001",
+    "defaultBehavior": "fixed",
+    "legacyBehavior": "original",
+    "ecl": "59f60e09102961bf5872c672fdd9d200b2e83d6b",
+    "emscripten": "4.0.12",
+    "files": {
+      "ecl.data": {
+        "bytes": 3018772,
+        "sha256": "b5544505f6306d0e7f4deb6a6e2a57583228ed3e5e8636819520a276d178917f"
+      },
+      "ecl.js": {
+        "bytes": 108260,
+        "sha256": "b6d0dcb4727e77e132878f420521c58e3322bf9b009e528b7bfd999f68495cda"
+      },
+      "ecl.wasm": {
+        "bytes": 4617578,
+        "sha256": "700f9515f64fdc645425df08b12b5b0a753be6f39a60347e86e7b0d3f8d88ffa"
+      }
+    }
+  },
+  "sourceHashes": {
+    "web/index.html": "820a5af8c0d06d0e345522df0364051d13b615beb2b30b87692ed255ef5fbbf4",
+    "web/style.css": "71ec7f9f3dadf01dda70ce0fca3d6f1e8fa85bbc59e7539f74594c9aafc4182b",
+    "web/src/app.js": "d584c1210ed6f52a734fb6c859807a1858b375f2d43f5507be3f6be36ce4edc2",
+    "web/src/bergman-syntax.js": "2bebed3bcc91a4bd6aaf96ee8f88a7285384199e1160ed6fc0b6897f3b189d09",
+    "web/src/engine.js": "92fa68e6f4ce780365bd5129721aa4c8b1996268d4f4cb34b32b36720e817baf",
+    "web/src/examples.js": "50c4294ada3efb095386ce57df9b54efd560612e8487dd15b741a05acd053bc0",
+    "web/src/guide.js": "dc25e7e0a2e54174adeca6331ab678eb0feb7f49f382ffff67116fdb78f55462",
+    "web/src/homology.js": "ad72c6d5792f90e08c15768c0c1725e6b71d0077b041518fef21f376cccecdca",
+    "web/src/i18n.js": "f006d588f6c0e55f3f802fbc773d28b97b3cb74a9d46598a83ec1c140e87d1b4",
+    "web/src/math.js": "daf8b75527b72938995b7e83d75dffcf86e12f79e0b534f7d70251a8da3a1655",
+    "web/src/preferences.js": "d686c5621c36648104e5a2d3d981bba4222ba3e2951a1c77bcfed51c907007dc",
+    "web/src/resolution-data.js": "e9bf9e7cec5738346f4b32a4c7c265ae82a6843e848938ccdf85bd6a71076ec4",
+    "web/src/tutorials.js": "5c473b8d4974eaa64d0f0a3a6006b49d1e910bc8f6e7e821342bde70c36fb1e9",
+    "web/engine/worker.js": "906117578c279da535cac2c9d6787a6688de7355c0b326577f7a7255caa79b7e",
+    "web/engine/runner.js": "c59439287dc9daaf6c3fe8e98a82bb63bbb8151fd4f8c7788e2a38f5ebaebf8b"
+  },
   "browser": "153.0.8010.52",
   "mounts": [
     {
       "mount": "/",
-      "requests": 76,
+      "requests": 142,
       "mathjaxSVGs": 38,
       "badResponses": [],
       "diagnostics": []
     },
     {
       "mount": "/george/",
-      "requests": 174,
+      "requests": 219,
       "mathjaxSVGs": 38,
       "badResponses": [],
       "diagnostics": []
@@ -129,14 +170,15 @@
     }
   ],
   "checks": [
-    "/: explicit light/dark override OS; automatic follows OS",
-    "/: EN/RU controls, status, guide; state/files preserved; preferences persist; MathJax retypesets",
-    "/: overlapping/underscore names; two colliding compact chains retained; braid resolution; weighted cutoff certification; exact homology and whole-token rendering",
-    "/george/: explicit light/dark override OS; automatic follows OS",
-    "/george/: EN/RU controls, status, guide; state/files preserved; preferences persist; MathJax retypesets",
-    "/george/: overlapping/underscore names; two colliding compact chains retained; braid resolution; weighted cutoff certification; exact homology and whole-token rendering",
-    "project path: all eight guide buttons compute; reference equality and ungraded ranks; MIME/downloads; mobile; edited preset persists",
-    "blocked storage: browser language detected; preferences and computation work"
+    "/: EN/RU wording, controls, status and guide; state/files preserved; reload persistence; themes; MathJax",
+    "/: overlapping/underscore names, colliding chains, braid and weighted cutoff; exact homology; whole-token rendering",
+    "/: four imported algebra cases in the real form; edited preset persistence",
+    "/george/: EN/RU wording, controls, status and guide; state/files preserved; reload persistence; themes; MathJax",
+    "/george/: overlapping/underscore names, colliding chains, braid and weighted cutoff; exact homology; whole-token rendering",
+    "/george/: four imported algebra cases in the real form; edited preset persistence",
+    "project path: eight guide buttons compute; reference equality; MIME and source downloads",
+    "390px guide and computed monoid result have no page overflow",
+    "blocked storage: browser language and computation work"
   ],
   "errors": [],
   "externalRequests": []

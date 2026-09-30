@@ -5,7 +5,7 @@ GEORGE(1)                      George Manual                      GEORGE(1)
 ## NAME
 
 **george** — Gröbner bases, Hilbert series and Anick resolutions in the
-browser, *based on bergman*
+browser, *an interface to bergman*
 
 ## TRY IT
 
@@ -25,7 +25,8 @@ npm run sources                refresh the source archives beside the site
 
 ## DESCRIPTION
 
-**George** runs the original **bergman 1.001** in the browser. It computes
+**George** runs **bergman-1.001-fix** in the browser: the original bergman 1.001
+with documented fixes enabled by default and original behavior in legacy mode. It computes
 Gröbner bases in free associative and commutative algebras over ℚ, 𝔽₂ and
 𝔽ₚ, Hilbert and Poincaré–Betti series, Anick resolutions, Betti numbers of
 algebras and modules, and Hochschild homology. Arithmetic is exact.
@@ -53,8 +54,7 @@ static site (GitHub Pages)       web/ → gh-pages
 
 ## DISCLAIMER
 
-George was written largely by an LLM (Claude, Anthropic): it is vibe coded.
-The mathematics is bergman's own, and the glue is tested against the
+The mathematics is bergman's own, and the interface is tested against the
 original: in legacy mode all 37 stored bergman outputs match byte for byte,
 and results are compared with a native SBCL build, Bergman 2 and Singular
 (*docs/development/VALIDATION.md*). Check results that matter.
@@ -74,10 +74,11 @@ and results are compared with a native SBCL build, Bergman 2 and Singular
   files and the bergman session.
 
 **Legacy mode**
-: `(SETLEGACYMODE T)` or the checkbox reproduces bergman 1.001 exactly. The
+: `(SETLEGACYMODE T)` or the checkbox retains original bergman 1.001 behavior. The
   default mode applies documented fixes: the Poincaré–Betti file,
-  nonhomogeneous reduction, the item-wise degree limit and safe-mode Anick
-  tensor ordering.
+  nonhomogeneous reduction, critical-pair and inclusion handling, the
+  itemwise degree limit, mode-sensitive monomial comparison and safe-mode
+  Anick tensor ordering. `(SETLEGACYMODE NIL)` restores fixed mode.
 
 **Anick**
 : Augmentation *graded* (x ↦ 0) or *monoid* (x ↦ 1). Ungraded Betti numbers
@@ -99,6 +100,7 @@ and results are compared with a native SBCL build, Bergman 2 and Singular
 | `npm run test:extra` | remaining original sessions |
 | `npm run test:ocaml` | Bergman 2 aliases and references |
 | `npm run test:algebra` | Singular, critical pairs, Hilbert dimensions |
+| `npm run test:upstream` | 90 adapted Singular/Plural, SymPy and GBNP field cases; independent oracles |
 | `npm run test:resolution:names` | long generator names, differentials |
 | `npm run test:braid` | native/Wasm braid resolutions, full differentials, projectivity and weighted bounds |
 | `npm run test:browser`, `test:browser:regression` | Chromium suites |
@@ -112,6 +114,20 @@ git subtree push --prefix=web origin gh-pages
 ```
 
 Then *Settings → Pages → Deploy from a branch → gh-pages, /(root)*.
+
+For the one-time contributor-history cleanup, after committing the release:
+
+```sh
+node tools/prepare-publication.mjs
+cat build/publication/plan.json
+sh build/publication/publish.sh
+```
+
+The helper creates `publish/main` and `publish/gh-pages` with Claude co-author
+trailers removed, preserving authors and file trees. The Pages branch contains
+the committed `web/` tree. Original local branches remain available. The last
+command replaces both remote histories atomically with explicit force leases;
+preparation alone does not change GitHub or its contributors graph.
 
 ## FILES
 
@@ -130,9 +146,13 @@ Then *Settings → Pages → Deploy from a branch → gh-pages, /(root)*.
 
 Node.js 22.8 or later. Engine build: Git, Python 3, a C toolchain and make;
 the toolchain goes to `build/toolchain/` (`GEORGE_TOOLCHAIN`, `JOBS`).
-Reference build: SBCL. Oracle tests: Singular, OCaml 5.3 and dune 3.17.2
+Reference build: SBCL. Oracle tests: Singular 4.4.1, SymPy 1.14.0,
+OCaml 5.3 and dune 3.17.2
 (`python3 tools/setup-oracles.py` fetches pinned copies). `CHROMIUM` selects
 the browser.
+
+Imported fixture sources: `python3 tools/setup-upstream-tests.py`.
+See [upstream test reproduction](docs/development/UPSTREAM-TESTS.md).
 
 ## BUGS
 
@@ -166,7 +186,7 @@ contributors, with GMP and the Boehm–Demers–Weiser GC.
 
 **Emscripten**, **MathJax**, **SBCL**.
 
-**George**: written with Claude (Anthropic).
+**George**: the George contributors.
 
 ## LICENSE
 

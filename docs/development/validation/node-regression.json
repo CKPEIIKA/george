@@ -2,15 +2,15 @@
   {
     "legacy": true,
     "outputs": 37,
-    "startupMs": 2701.5570159999997,
-    "elapsedMs": 14428.158341999999,
+    "startupMs": 6000.763926,
+    "elapsedMs": 26404.149823,
     "memoryBytes": 67108864
   },
   {
     "legacy": false,
     "outputs": 37,
-    "startupMs": 2305.892684000002,
-    "elapsedMs": 15221.689593999996,
+    "startupMs": 4941.820655000003,
+    "elapsedMs": 39867.207048000004,
     "memoryBytes": 67108864
   }
 ]

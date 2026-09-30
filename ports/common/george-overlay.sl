@@ -1,5 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% George overlay for bergman 1.001
+%% bergman-1.001-fix overlay for the original bergman 1.001
 %% Copyright (C) 2026 the George contributors.
 %%
 %% This file changes the behaviour of bergman 1.001 (Copyright (C)
@@ -24,6 +24,15 @@
 %%      The safe-mode Anick tensor routines also compare complete words and
 %%      restore their order after multiplication and addition, preventing
 %%      a later selection of an unprolongable constant coefficient term.
+%%  2026-09-30  Companion behavior-patches.py repairs the itemwise cached
+%%      reduction signature's degree-list construction and generation refresh.
+%%      Singular's Lie quotients exposed the original malformed-list crash,
+%%      missing inclusions and stale critical-pair quotients. Default mode
+%%      schedules inclusions, preserves overlap occurrences after redirecting
+%%      reductors, keeps converted reductands and flat redirected-pointer lists,
+%%      and handles structural units and equal-word comparisons. Commutative
+%%      comparison follows subsequent process changes in fixed mode. Legacy
+%%      retains the original routines and their behavior.
 %%  2026-09-30  NCPBHGROEBNER and NCPBH write the Poincare-Betti
 %%      series to their PB file.  Since 2004-04-24 bergman only
 %%      writes it when IMMEDIATEASSOCRINGPBDISPLAY is on, which is
@@ -35,7 +44,11 @@
 
 (OFF RAISE)
 
-(GLOBAL '(GEORGELEGACYMODE))
+(GLOBAL '(GEORGELEGACYMODE BMVERSIONSTRING GEORGEORIGINALVERSION GEORGEORIGINALBMVERSION !*BMVersion!*))
+(SETQ GEORGEORIGINALVERSION BMVERSIONSTRING)
+(SETQ GEORGEORIGINALBMVERSION !*BMVersion!*)
+(SETQ !*BMVersion!* "1.001-fix")
+(SETQ BMVERSIONSTRING "bergman-1.001-fix")
 (SETQ GEORGELEGACYMODE NIL)
 
 %# SETLEGACYMODE (bool) : bool ;  returns the previous setting
@@ -43,6 +56,10 @@
  (PROG (old)
        (SETQ old GEORGELEGACYMODE)
        (SETQ GEORGELEGACYMODE (COND (flag T) (T NIL)))
+       (SETQ BMVERSIONSTRING (COND (GEORGELEGACYMODE GEORGEORIGINALVERSION)
+                                 (T "bergman-1.001-fix")))
+       (SETQ !*BMVersion!* (COND (GEORGELEGACYMODE GEORGEORIGINALBMVERSION)
+                                 (T "1.001-fix")))
        (RETURN old)))
 
 %# GETLEGACYMODE () : bool ;

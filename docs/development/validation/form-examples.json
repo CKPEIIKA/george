@@ -5,7 +5,7 @@
     "outputs": [
       "gb"
     ],
-    "elapsedMs": 107.53042000000005
+    "elapsedMs": 204.81574199999886
   },
   {
     "id": "simple_nc",
@@ -13,7 +13,7 @@
     "outputs": [
       "gb"
     ],
-    "elapsedMs": 81.5529319999996
+    "elapsedMs": 343.844599
   },
   {
     "id": "char5",
@@ -21,7 +21,7 @@
     "outputs": [
       "gb"
     ],
-    "elapsedMs": 382.96939999999995
+    "elapsedMs": 1297.4115730000049
   },
   {
     "id": "char2",
@@ -29,7 +29,7 @@
     "outputs": [
       "gb"
     ],
-    "elapsedMs": 162.58102300000064
+    "elapsedMs": 486.32116600000154
   },
   {
     "id": "simp_weight_nc",
@@ -37,7 +37,7 @@
     "outputs": [
       "gb"
     ],
-    "elapsedMs": 192.56977899999947
+    "elapsedMs": 507.88250400000106
   },
   {
     "id": "matrix",
@@ -45,7 +45,7 @@
     "outputs": [
       "gb"
     ],
-    "elapsedMs": 426.6828260000002
+    "elapsedMs": 515.8955739999947
   },
   {
     "id": "hilb",
@@ -54,7 +54,7 @@
       "gb",
       "hs"
     ],
-    "elapsedMs": 423.01669400000173
+    "elapsedMs": 666.4258810000028
   },
   {
     "id": "ncpbhg",
@@ -64,7 +64,7 @@
       "pb",
       "hs"
     ],
-    "elapsedMs": 499.4735529999998
+    "elapsedMs": 626.7908029999962
   },
   {
     "id": "anick_tm",
@@ -74,7 +74,7 @@
       "anick",
       "resolution"
     ],
-    "elapsedMs": 466.5413000000008
+    "elapsedMs": 1832.4583339999954
   },
   {
     "id": "modbtn",
@@ -83,7 +83,7 @@
       "gb",
       "anick"
     ],
-    "elapsedMs": 362.9678520000016
+    "elapsedMs": 741.0327649999963
   },
   {
     "id": "leftmodbtn",
@@ -92,7 +92,7 @@
       "gb",
       "anick"
     ],
-    "elapsedMs": 558.990300999998
+    "elapsedMs": 1589.297848999995
   },
   {
     "id": "two",
@@ -101,7 +101,7 @@
       "gb",
       "anick"
     ],
-    "elapsedMs": 125.76748100000259
+    "elapsedMs": 881.6310410000006
   },
   {
     "id": "fact",
@@ -110,7 +110,7 @@
       "gb",
       "anick"
     ],
-    "elapsedMs": 1184.1400920000015
+    "elapsedMs": 5632.720243000003
   },
   {
     "id": "hoch1",
@@ -119,6 +119,6 @@
       "gb",
       "anick"
     ],
-    "elapsedMs": 372.5832969999974
+    "elapsedMs": 5014.9439589999965
   }
 ]

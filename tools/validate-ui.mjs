@@ -1,194 +1,162 @@
-// Local UI and GitHub Pages project-path checks. No remote deployment.
-import { chromium } from 'playwright-core';
+// Drive the real UI without a debugger during Wasm calculations. Attach only
+// after all calculations finish, for screenshots; debugger attachment can
+// tier down Wasm and invalidate both runtime limits and performance evidence.
 import fs from 'node:fs';
-import assert from 'node:assert/strict';
+import path from 'node:path';
+import os from 'node:os';
 import crypto from 'node:crypto';
-import { staticServer } from './serve.mjs';
-import { TUTORIALS, tutorialForm } from '../web/src/tutorials.js';
-import { EXAMPLES } from '../web/src/examples.js';
-const out = `build/validation/ui-${Date.now()}`;
-fs.mkdirSync(out, { recursive: true });
-const browser = await chromium.launch({ executablePath: process.env.CHROMIUM || '/usr/bin/chromium', headless: true, args: ['--no-sandbox'] });
-const servers = [];
-const report = { browser: browser.version(), mounts: [], examples: [], checks: [], errors: [], externalRequests: [] };
-let activePage;
-const rawFiles = page => page.locator('#filesOut .file').evaluateAll(files => Object.fromEntries(files.map(el => [el.querySelector('.name').textContent, el.querySelector('pre').textContent])));
-const formState = page => page.locator('#presentation').evaluate(el => [...el.querySelectorAll('input,select,textarea')].map(n => ({ id: n.id || n.name + ':' + n.value, value: n.value, checked: n.checked ?? null })));
-// The theme button cycles automatic, light, dark; the language switch is two buttons.
-const setTheme = async (page, value) => {
-  for (let i = 0; i < 3 && await page.locator('#theme').getAttribute('data-pref') !== value; i++) await page.locator('#theme').click();
-  assert.equal(await page.locator('#theme').getAttribute('data-pref'), value);
-};
-const setLang = (page, value) => page.locator(`[data-lang="${value}"]`).click();
-const currentLang = page => page.locator('[data-lang][aria-pressed="true"]').getAttribute('data-lang');
-const ready = page => page.waitForFunction(() => document.querySelector('#engineNote').classList.contains('live'), null, { timeout: 60000 });
-const mathReady = page => page.waitForFunction(() => document.querySelectorAll('#guideContent mjx-container[jax="SVG"] svg').length >= 20, null, { timeout: 60000 });
-const compute = async page => {
-  await page.locator('#go').click();
-  await page.waitForFunction(() => !document.querySelector('#stop').hidden, null, { timeout: 10000 });
-  await page.waitForFunction(() => document.querySelector('#stop').hidden, null, { timeout: 120000 });
-  assert.match(await page.locator('#runStatus').textContent(), /^(Computed|Вычислено)/);
-};
-try {
-  for (const mount of ['/', '/george/']) {
-    const server = staticServer('web', mount); servers.push(server);
-    await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
-    const origin = `http://127.0.0.1:${server.address().port}`;
-    const url = origin + mount;
-    const context = await browser.newContext({ locale: 'en-US', colorScheme: 'dark', viewport: { width: 1280, height: 900 } });
-    await context.route('**/*', route => {
-      const requested = new URL(route.request().url());
-      if (requested.origin !== origin) { report.externalRequests.push(requested.href); return route.abort(); }
-      return route.continue();
-    });
-    const page = await context.newPage(); activePage = page;
-    page.on('pageerror', error => report.errors.push(error.message));
-    const badResponses = [], requests = [], diagnostics = [];
-    page.on('request', request => requests.push(request.url()));
-    page.on('response', response => { if (response.status() >= 400) badResponses.push([response.url(), response.status()]); });
-    page.on('console', message => { if (message.type() === 'error' || /Invalid option|MathJax\(/.test(message.text())) diagnostics.push(message.text()); });
-    console.log('Checking', mount);
-    await page.goto(url);
-    await ready(page);
-    await setTheme(page, 'light');
-    assert.equal(await page.evaluate(() => getComputedStyle(document.body).backgroundColor), 'rgb(238, 242, 243)');
-    await setTheme(page, 'dark');
-    await page.emulateMedia({ colorScheme: 'light' });
-    assert.equal(await page.evaluate(() => getComputedStyle(document.body).backgroundColor), 'rgb(17, 26, 39)');
-    await setTheme(page, 'auto');
-    assert.equal(await page.evaluate(() => getComputedStyle(document.body).backgroundColor), 'rgb(238, 242, 243)');
-    assert.equal(await page.locator('html').getAttribute('data-theme'), null);
-    report.checks.push(`${mount}: explicit light/dark override OS; automatic follows OS`);
-    await page.locator('#preset').selectOption('tutorial:weights');
-    await compute(page);
-    const before = await formState(page), files = await rawFiles(page);
-    await setLang(page, 'ru');
-    assert.equal(await page.locator('html').getAttribute('lang'), 'ru');
-    assert.match(await page.locator('#go').textContent(), /Вычислить/);
-    assert.match(await page.locator('#runStatus').textContent(), /Вычислено/);
-    assert.deepEqual(await formState(page), before);
-    assert.deepEqual(await rawFiles(page), files);
-    await page.locator('a[data-view="guide"]').click();
-    await page.waitForFunction(() => document.querySelector('#guideTitle')?.textContent === 'Руководство пользователя' && document.querySelector('#guideContent').getAttribute('aria-busy') === 'false');
-    await mathReady(page);
-    assert.equal(await page.locator('#guideTitle').textContent(), 'Руководство пользователя');
-    assert.equal(await page.locator('#guideContent [data-mjx-error], #guideContent mjx-merror').count(), 0);
-    assert.equal(await page.locator('#mathNotice').isVisible(), false);
-    await setTheme(page, 'dark');
-    await page.screenshot({ path: `${out}/${mount === '/' ? 'root' : 'project'}-guide-ru-dark.png`, fullPage: true });
-    await page.reload();
-    await ready(page); await mathReady(page);
-    assert.equal(await currentLang(page), 'ru');
-    assert.equal(await page.locator('#theme').getAttribute('data-pref'), 'dark');
-    assert.deepEqual(await formState(page), before);
-    // Exercise queued retypesetting, including a rapid language round trip.
-    await setLang(page, 'en');
-    await setLang(page, 'ru');
-    await setLang(page, 'en');
-    await page.waitForFunction(() => document.querySelector('#guideTitle')?.textContent === 'User guide' && document.querySelector('#guideContent').getAttribute('aria-busy') === 'false');
-    await mathReady(page);
-    assert.equal(await page.locator('#guideContent [data-mjx-error]').count(), 0);
-    report.checks.push(`${mount}: EN/RU controls, status, guide; state/files preserved; preferences persist; MathJax retypesets`);
-    await page.locator('#guideContent a[href="#guide-options"]').click();
-    assert.equal(await page.locator('#view-guide').isVisible(), true);
-    assert.equal(new URL(page.url()).hash, '#guide-options');
-    for (const item of [
-      { vars: 'a, ab, bc, c', rels: 'a*bc-a, ab*c-ab', augmentation: 'graded', betti: [1, 2, 0], names: ['ab', 'bc'], collision: true },
-      { vars: 'x_1, x_11', rels: 'x_1^2-1', augmentation: 'monoid', betti: [1, 1, 0], names: ['x_1', 'x_11'] },
-      { vars: 'a, aa', rels: 'a^2-a,aa^2-aa,aa*a*aa-a*aa*a', augmentation: 'graded', betti: [1, 0, 0], names: ['a', 'aa'] },
-      { vars: 'x_1, x_11', rels: 'x_1^2-x_1,x_11^2-x_11,x_11*x_1*x_11-x_1*x_11*x_1', augmentation: 'monoid', betti: [1, 0, 0], names: ['x_1', 'x_11'], weights: '2 3', maxdeg: 18 }
-    ]) {
-      await page.goto(url + '#compute');
-      await page.locator('#preset').selectOption('tutorial:nonhomogeneous');
-      await page.locator('#vars').fill(item.vars);
-      await page.locator('#rels').fill(item.rels);
-      await page.locator('#maxdeg').fill(String(item.maxdeg || 8));
-      await page.locator('details.advanced').evaluate(el => el.open = true);
-      await page.locator('#weights').fill(item.weights || '');
-      await page.locator('#augmentation').selectOption(item.augmentation);
-      await compute(page);
-      const files = await rawFiles(page);
-      assert.ok(files['resolution.jsonl']);
-      const homology = JSON.parse(files['homology.json']);
-      assert.deepEqual(homology.betti.slice(0, 3), item.betti);
-      if (item.weights) {
-        assert.equal(homology.highestCertifiedDegree, 2);
-        assert.ok(homology.truncatedBetti);
-        assert.match(await page.locator('#bettiOut').innerText(), /only through degree 2|только до степени 2/);
-      }
-      const renderedNames = await page.locator('#resolutionOut var').allTextContents();
-      for (const name of item.names) assert.ok(renderedNames.includes(name), `whole generator token ${name}`);
-      if (item.collision) assert.equal(await page.locator('#resolutionOut section').nth(1).locator('.tensor-line').count(), 2);
-    }
-    report.checks.push(`${mount}: overlapping/underscore names; two colliding compact chains retained; braid resolution; weighted cutoff certification; exact homology and whole-token rendering`);
-    if (mount === '/george/') {
-      for (const item of TUTORIALS) {
-        await page.goto(url + '#guide-examples'); await ready(page); await mathReady(page);
-        await page.locator(`[data-tutorial="${item.id}"]`).click();
-        assert.equal(await page.locator('#view-compute').isVisible(), true);
-        assert.equal(await page.locator('#preset').inputValue(), 'tutorial:' + item.id);
-        const expected = tutorialForm(item.id);
-        assert.equal(await page.locator('#vars').inputValue(), expected.vars.join(', '));
-        assert.equal(await page.locator('input[name="task"]:checked').inputValue(), expected.task);
-        assert.equal(await page.locator('#augmentation').inputValue(), expected.augmentation);
-        await compute(page);
-        const result = await rawFiles(page);
-        if (item.example) {
-          const example = EXAMPLES.find(e => e.id === item.example);
-          for (const [kind, content] of Object.entries(example.out)) assert.equal(result['result.' + kind], content, item.id + '/' + kind);
-        } else {
-          const homology = JSON.parse(result['homology.json']);
-          assert.deepEqual(homology.betti.slice(0, 5), [1, 1, 0, 0, 0], item.id);
-          assert.ok(await page.locator('#resolutionOut .tensor-line').count() > 0);
-        }
-        report.examples.push({ id: item.id, task: expected.task, outputs: Object.keys(result),
-          hashes: Object.fromEntries(Object.entries(result).map(([n, s]) => [n, crypto.createHash('sha256').update(s).digest('hex')])) });
-        console.log(item.id, 'PASS');
-      }
-      // Downloads and the actual MIME type needed for streaming Wasm.
-      for (const file of ['engine/ecl.wasm', 'sources/george-source.tar.gz', 'sources/ecl-source.tar.gz', 'licenses/NOTICE.txt', '.nojekyll']) {
-        const response = await context.request.get(url + file); assert.equal(response.status(), 200, file);
-        if (file.endsWith('.wasm')) assert.match(response.headers()['content-type'], /application\/wasm/);
-      }
-      await page.setViewportSize({ width: 390, height: 844 });
-      await setTheme(page, 'light');
-      await page.locator('a[data-view="guide"]').click(); await mathReady(page);
-      await page.screenshot({ path: `${out}/project-guide-en-light-mobile.png`, fullPage: true });
-      assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'no page overflow');
-      await page.locator('[data-tutorial="monoid"]').click(); await compute(page);
-      await page.screenshot({ path: `${out}/project-result-mobile.png`, fullPage: true });
-      // Stored edits to a historical preset must survive reloading too.
-      await page.locator('#switchInput').click();
-      await page.locator('#preset').selectOption('example:char2');
-      await page.locator('#maxdeg').fill('4');
-      await page.reload(); await ready(page);
-      assert.equal(await page.locator('#maxdeg').inputValue(), '4');
-      report.checks.push('project path: all eight guide buttons compute; reference equality and ungraded ranks; MIME/downloads; mobile; edited preset persists');
-    }
-    assert.deepEqual(badResponses, []); assert.deepEqual(diagnostics, []);
-    assert.ok(requests.every(r => new URL(r).pathname.startsWith(mount)), 'all assets use the project prefix');
-    assert.ok(requests.every(r => !new URL(r).pathname.includes('//')), 'asset paths contain no double slashes');
-    report.mounts.push({ mount, requests: requests.length, mathjaxSVGs: await page.locator('#guideContent mjx-container[jax="SVG"] svg').count(), badResponses, diagnostics });
-    await context.close();
+import assert from 'node:assert/strict';
+import {spawn} from 'node:child_process';
+import {chromium} from 'playwright-core';
+import {staticServer} from './serve.mjs';
+import {TUTORIALS,tutorialForm} from '../web/src/tutorials.js';
+import {EXAMPLES} from '../web/src/examples.js';
+import {algebra} from '../test/support/algebra.mjs';
+const upstream=JSON.parse(fs.readFileSync('test/fixtures/upstream-cases.json','utf8'));
+const out=`build/validation/ui-${Date.now()}`;fs.mkdirSync(out,{recursive:true});
+const sha=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
+const browserFiles=['web/index.html','web/style.css',...fs.readdirSync('web/src').filter(n=>n.endsWith('.js')).map(n=>'web/src/'+n),'web/engine/worker.js','web/engine/runner.js'];
+const report={debuggerDuringCalculations:false,mobileViewportControl:'CDP Emulation only; no Runtime, Debugger or Profiler domains',engine:JSON.parse(fs.readFileSync('web/engine/build.json','utf8')),sourceHashes:Object.fromEntries(browserFiles.map(p=>[p,sha(p)])),browser:null,mounts:[],examples:[],checks:[],errors:[],externalRequests:[]};
+const data={tutorials:TUTORIALS.map(t=>({...t,form:tutorialForm(t.id)})),examples:EXAMPLES,
+ upstream:upstream.cases.filter(c=>['sympy-katsura3','singular-gb_braid3-11','gbnp-weighted','gbnp-sl2-quotient'].includes(c.id))};
+
+// Runs in the page, dispatching the same input/change/click events as users.
+async function checkUI(){
+ const $=s=>document.querySelector(s),all=s=>[...document.querySelectorAll(s)];
+ const ok=(x,msg)=>{if(!x)throw Error(msg)},eq=(a,b,msg)=>ok(JSON.stringify(a)===JSON.stringify(b),msg+': '+JSON.stringify(a)+' != '+JSON.stringify(b));
+ const wait=async(fn,label,timeout=120000)=>{const start=performance.now();while(!fn()){if(performance.now()-start>timeout)throw Error(label+' timed out; '+$('#runStatus')?.textContent);await new Promise(r=>setTimeout(r,40));}};
+ const data=await(await fetch(new URL('__validation/data',location.href))).json();
+ const errors=window.validationErrors;
+ const phase=sessionStorage.getItem('validation.phase')||'start';
+ const mode=new URL(location.href).searchParams.get('validation')||'desktop';
+ const files=()=>Object.fromEntries(all('#filesOut .file').map(e=>[e.querySelector('.name').textContent,e.querySelector('pre').textContent]));
+ const form=()=>all('#presentation input,#presentation select,#presentation textarea').map(n=>({id:n.id||n.name+':'+n.value,value:n.value,checked:n.checked??null}));
+ const set=(id,value)=>{const el=$('#'+id);el.value=String(value);el.dispatchEvent(new Event(el.tagName==='SELECT'?'change':'input',{bubbles:true}));};
+ const radio=(name,value)=>{const el=$(`input[name="${name}"][value="${value}"]`);el.checked=true;el.dispatchEvent(new Event('change',{bubbles:true}));};
+ const language=value=>$(`[data-lang="${value}"]`).click();
+ const theme=async value=>{for(let i=0;i<3&&$('#theme').dataset.pref!==value;i++)$('#theme').click();eq($('#theme').dataset.pref,value,'theme selection');};
+ const math=()=>wait(()=>all('#guideContent mjx-container[jax="SVG"] svg').length>=20&&$('#guideContent').getAttribute('aria-busy')==='false','MathJax');
+ const compute=async()=>{$('#go').click();await wait(()=>$('#stop').hidden,'computation');ok(/^(Computed|Вычислено)/.test($('#runStatus').textContent),'successful form: '+$('#runStatus').textContent);};
+ const post=async(kind,value)=>{const r=await fetch(new URL('__validation/'+kind,location.href),{method:'POST',body:JSON.stringify(value)});ok(r.ok,kind+': '+await r.text());};
+ const next=value=>{sessionStorage.setItem('validation.phase',value);location.reload();};
+ const checkMath=()=>{eq(all('#guideContent [data-mjx-error],#guideContent mjx-merror').length,0,'MathJax errors');ok($('#mathNotice').hidden,'math notice hidden');};
+ try{
+  await wait(()=>$('#engineNote')?.classList.contains('live'),'engine ready',90000);
+  ok($('#engineNote').textContent.includes('bergman-1.001-fix'),'engine version');
+  if(mode==='blocked'){
+   eq($('[data-lang][aria-pressed="true"]').dataset.lang,'ru','blocked storage browser language');set('preset','tutorial:char2');await compute();await post('done',{mode,errors,checks:['blocked storage: browser language and computation work']});return;
   }
-  const context = await browser.newContext({ locale: 'ru-RU' });
-  await context.addInitScript(() => Object.defineProperty(window, 'localStorage', { get() { throw new DOMException('Blocked', 'SecurityError'); } }));
-  const page = await context.newPage(); activePage = page;
-  page.on('pageerror', e => report.errors.push(e.message));
-  await page.goto(`http://127.0.0.1:${servers[0].address().port}/`); await ready(page);
-  assert.equal(await currentLang(page), 'ru');
-  await page.locator('#preset').selectOption('tutorial:char2'); await compute(page);
-  report.checks.push('blocked storage: browser language detected; preferences and computation work');
-  await context.close();
-  assert.deepEqual(report.errors, []); assert.deepEqual(report.externalRequests, []);
-  fs.writeFileSync(`${out}/report.json`, JSON.stringify(report, null, 2) + '\n');
-  console.log(out, 'PASS');
-} catch (error) {
-  if (activePage && !activePage.isClosed()) await activePage.screenshot({ path: `${out}/failure.png`, fullPage: true }).catch(() => {});
-  if (activePage && !activePage.isClosed()) report.lastState = await activePage.evaluate(() => ({
-    language: document.documentElement.lang, title: document.querySelector('#guideTitle')?.textContent,
-    mathBusy: document.querySelector('#guideContent')?.getAttribute('aria-busy'), mathNotice: document.querySelector('#mathNotice')?.textContent,
-  })).catch(() => null);
-  fs.writeFileSync(`${out}/failure.json`, JSON.stringify({ ...report, failure: error.stack }, null, 2));
-  throw error;
-} finally { await browser.close(); for (const server of servers) server.close(); }
+  if(mode==='mobile'){
+   eq(innerWidth,390,'mobile CSS viewport');
+   language('en');await theme('light');location.hash='#guide';await math();checkMath();ok(document.documentElement.scrollWidth<=innerWidth+1,'mobile guide overflow');
+   $('[data-tutorial="monoid"]').click();await compute();ok(!$('#view-compute').hidden,'mobile computed result visible');ok($('#bettiOut').textContent.includes('Ungraded Betti numbers'),'mobile Betti result');ok(document.documentElement.scrollWidth<=innerWidth+1,'mobile result overflow');await post('done',{mode,errors,checks:['390px guide and computed monoid result have no page overflow']});return;
+  }
+  if(phase==='start'){
+   language('en');eq($('.brand-sub').textContent,'an interface to bergman','English interface wording');await theme('light');eq(getComputedStyle(document.body).backgroundColor,'rgb(238, 242, 243)','light theme');await theme('dark');eq(getComputedStyle(document.body).backgroundColor,'rgb(17, 26, 39)','dark theme');await theme('auto');eq(document.documentElement.getAttribute('data-theme'),null,'automatic theme');eq(getComputedStyle(document.body).backgroundColor,matchMedia('(prefers-color-scheme: dark)').matches?'rgb(17, 26, 39)':'rgb(238, 242, 243)','automatic follows OS');
+   set('preset','tutorial:weights');await compute();const before=form(),raw=files();language('ru');eq($('.brand-sub').textContent,'интерфейс к bergman','Russian interface wording');eq(document.documentElement.lang,'ru','Russian lang');ok(/Вычислить/.test($('#go').textContent),'Russian controls');ok(/Вычислено/.test($('#runStatus').textContent),'Russian status');eq(form(),before,'language preserves form');eq(files(),raw,'language preserves files');
+   location.hash='#guide';await math();eq($('#guideTitle').textContent,'Руководство пользователя','Russian guide');checkMath();await theme('dark');sessionStorage.setItem('validation.savedForm',JSON.stringify(before));next('persist');return;
+  }
+  if(phase==='persist'){
+   eq($('[data-lang][aria-pressed="true"]').dataset.lang,'ru','language persists');eq($('#theme').dataset.pref,'dark','theme persists');eq(form(),JSON.parse(sessionStorage.getItem('validation.savedForm')),'form persists');await math();language('en');await math();language('ru');language('en');await math();checkMath();eq($('#guideTitle').textContent,'User guide','English guide');
+   $('#guideContent a[href="#guide-options"]').click();eq(location.hash,'#guide-options','guide link');ok(!$('#view-guide').hidden,'guide visible');
+   for(const item of [
+    {vars:'a, ab, bc, c',rels:'a*bc-a, ab*c-ab',augmentation:'graded',betti:[1,2,0],names:['ab','bc'],collision:true},
+    {vars:'x_1, x_11',rels:'x_1^2-1',augmentation:'monoid',betti:[1,1,0],names:['x_1','x_11']},
+    {vars:'a, aa',rels:'a^2-a,aa^2-aa,aa*a*aa-a*aa*a',augmentation:'graded',betti:[1,0,0],names:['a','aa']},
+    {vars:'x_1, x_11',rels:'x_1^2-x_1,x_11^2-x_11,x_11*x_1*x_11-x_1*x_11*x_1',augmentation:'monoid',betti:[1,0,0],names:['x_1','x_11'],weights:'2 3',maxdeg:18}
+   ]){
+    location.hash='#compute';set('preset','tutorial:nonhomogeneous');set('vars',item.vars);set('rels',item.rels);set('maxdeg',item.maxdeg||8);$('details.advanced').open=true;set('weights',item.weights||'');set('augmentation',item.augmentation);await compute();const f=files();ok(f['resolution.jsonl'],'structural export');const h=JSON.parse(f['homology.json']);eq(h.betti.slice(0,3),item.betti,'name/braid Betti');if(item.weights){eq(h.highestCertifiedDegree,2,'weighted certificate');ok(h.truncatedBetti,'partial ranks retained');ok(/only through degree 2/.test($('#bettiOut').textContent),'weighted cutoff notice');}
+    const names=all('#resolutionOut var').map(n=>n.textContent);for(const n of item.names)ok(names.includes(n),'whole name '+n);if(item.collision)eq(all('#resolutionOut section')[1].querySelectorAll('.tensor-line').length,2,'colliding compact chains remain separate');
+   }
+   for(const c of data.upstream){
+    location.hash='#compute';set('preset','tutorial:nonhomogeneous');radio('task','gb');radio('ring',c.comm?'comm':'noncomm');radio('field','0');set('order',c.comm?'deglex':'degleftlex');set('vars',c.vars.join(', '));set('rels',c.rels.join(', '));set('maxdeg',c.maxdeg);$('details.advanced').open=true;set('weights',c.weights?.join(' ')||'');await compute();await post('upstream',{id:c.id,files:files()});
+   }
+   if(data.mount==='/george/'){
+    for(const item of data.tutorials){location.hash='#guide-examples';await math();$(`[data-tutorial="${item.id}"]`).click();ok(!$('#view-compute').hidden,'example opens form');eq($('#preset').value,'tutorial:'+item.id,'example preset');eq($('#vars').value,item.form.vars.join(', '),'example generators');eq($('input[name="task"]:checked').value,item.form.task,'example task');eq($('#augmentation').value,item.form.augmentation,'example augmentation');await compute();await post('example',{id:item.id,files:files(),resolutionLines:all('#resolutionOut .tensor-line').length});}
+    for(const file of ['engine/ecl.wasm','sources/george-source.tar.gz','sources/ecl-source.tar.gz','licenses/NOTICE.txt','.nojekyll']){const r=await fetch(new URL(file,location.href));eq(r.status,200,'download '+file);if(file.endsWith('.wasm'))ok(r.headers.get('content-type').includes('application/wasm'),'Wasm MIME');}
+   }
+   location.hash='#compute';set('preset','example:char2');set('maxdeg','4');next('edited');return;
+  }
+  if(phase==='edited'){
+   eq($('#maxdeg').value,'4','edited original preset survives reload');
+   const external=performance.getEntriesByType('resource').map(r=>r.name).filter(u=>new URL(u).origin!==location.origin);eq(external,[],'no external assets');
+   await post('done',{mode,errors,externalRequests:external,mathjaxSVGs:all('#guideContent mjx-container[jax="SVG"] svg').length,checks:[data.mount+': EN/RU wording, controls, status and guide; state/files preserved; reload persistence; themes; MathJax',data.mount+': overlapping/underscore names, colliding chains, braid and weighted cutoff; exact homology; whole-token rendering',data.mount+': four imported algebra cases in the real form; edited preset persistence',...(data.mount==='/george/'?['project path: eight guide buttons compute; reference equality; MIME and source downloads']:[])]});
+  }
+ }catch(e){await fetch(new URL('__validation/failure',location.href),{method:'POST',body:JSON.stringify({error:String(e.stack||e),phase,mode,errors,status:$('#runStatus')?.textContent,log:$('#logOut')?.textContent})});}
+}
+
+// Configure a 390px viewport without Playwright's automatic debugger/worker
+// attachment. Chrome's headless native window has a 500px minimum. Only the
+// Emulation and Page domains are used; no debugger or profiler is enabled.
+async function mobileViewport(profile,url){
+ const portFile=path.join(profile,'DevToolsActivePort'),start=Date.now();
+ while(!fs.existsSync(portFile)){assert.ok(Date.now()-start<30000,'Chrome debugging port');await new Promise(r=>setTimeout(r,50));}
+ const [port,endpoint]=fs.readFileSync(portFile,'utf8').trim().split('\n');
+ const socket=new WebSocket(`ws://127.0.0.1:${port}${endpoint}`);
+ await new Promise((r,j)=>{socket.addEventListener('open',r,{once:true});socket.addEventListener('error',j,{once:true});});
+ let id=0;const pending=new Map();socket.addEventListener('message',e=>{const m=JSON.parse(e.data),p=pending.get(m.id);if(p){pending.delete(m.id);m.error?p.reject(Error(JSON.stringify(m.error))):p.resolve(m.result);}});
+ const call=(method,params={},sessionId)=>new Promise((resolve,reject)=>{const n=++id;pending.set(n,{resolve,reject});socket.send(JSON.stringify({id:n,method,params,...(sessionId?{sessionId}:{})}));});
+ const targets=await call('Target.getTargets'),page=targets.targetInfos.find(t=>t.type==='page');assert.ok(page);
+ const {sessionId}=await call('Target.attachToTarget',{targetId:page.targetId,flatten:true});
+ await call('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:false},sessionId);
+ await call('Page.navigate',{url},sessionId);return socket;
+}
+
+async function run(mount,mode='desktop'){
+ const server=staticServer('web',mount),serve=server.listeners('request')[0];server.removeAllListeners('request');
+ const requests=[],badResponses=[],failures=[];let resolve,reject;const done=new Promise((a,b)=>{resolve=a;reject=b});
+ server.on('request',async(req,res)=>{
+  try{
+   const url=new URL(req.url,'http://localhost'),endpoint=mount+'__validation/';requests.push(url.pathname);
+   res.on('finish',()=>{if(res.statusCode>=400)badResponses.push([url.pathname,res.statusCode]);});
+   if(url.pathname===endpoint+'data'){res.setHeader('Content-Type','application/json');res.end(JSON.stringify({...data,mount}));return;}
+   if(url.pathname.startsWith(endpoint)&&req.method==='POST'){
+    let body='';for await(const b of req)body+=b;const v=JSON.parse(body),kind=url.pathname.slice(endpoint.length);
+    if(kind==='failure'){failures.push(v);throw Error(v.error);}
+    if(kind==='upstream'){
+     const c=data.upstream.find(c=>c.id===v.id);assert.ok(c);const a=algebra(c.vars,c.comm,0,c.weights),gb=a.basis(v.files['result.gb']);a.certify(c.rels.map(a.parse),gb,c.scope==='complete'?Infinity:c.maxdeg);
+     if(c.expectedDimensions)assert.deepEqual(a.hilbert(gb,c.maxdeg),c.expectedDimensions);if(c.expectedDimension!==undefined)assert.equal(a.hilbert(gb,10).reduce((s,n)=>s+n,0),c.expectedDimension);
+    }else if(kind==='example'){
+     const item=TUTORIALS.find(t=>t.id===v.id);assert.ok(item);
+     if(item.example){const e=EXAMPLES.find(e=>e.id===item.example);for(const [k,text]of Object.entries(e.out))assert.equal(v.files['result.'+k],text,v.id+'/'+k);}
+     else{assert.deepEqual(JSON.parse(v.files['homology.json']).betti.slice(0,5),[1,1,0,0,0]);assert.ok(v.resolutionLines>0);}
+     report.examples.push({id:item.id,task:tutorialForm(item.id).task,outputs:Object.keys(v.files),hashes:Object.fromEntries(Object.entries(v.files).map(([n,s])=>[n,crypto.createHash('sha256').update(s).digest('hex')]))});console.log(item.id,'PASS');
+    }else if(kind==='done'){
+     assert.deepEqual(v.errors,[]);assert.deepEqual(v.externalRequests||[],[]);report.checks.push(...v.checks);res.end('ok');resolve(v);return;
+    }else throw Error('Unknown validation endpoint');
+    res.end('ok');return;
+   }
+   if(url.pathname===mount){
+    const init=`<script>window.validationErrors=[];addEventListener('error',e=>validationErrors.push(e.message));addEventListener('unhandledrejection',e=>validationErrors.push(String(e.reason)));${mode==='blocked'?`Object.defineProperty(window,'localStorage',{get(){throw new DOMException('Blocked','SecurityError')}});Object.defineProperty(navigator,'language',{get(){return 'ru-RU'}});Object.defineProperty(navigator,'languages',{get(){return ['ru-RU','ru']}});`:''}</script>`;
+    const html=fs.readFileSync('web/index.html','utf8').replace('<head>','<head>'+init).replace('</body>',`<script type="module">(${checkUI.toString()})();</script></body>`);res.setHeader('Content-Type','text/html');res.end(html);return;
+   }
+   serve(req,res);
+  }catch(e){res.writeHead(500).end(String(e));reject(e);}
+ });
+ await new Promise(r=>server.listen(0,'127.0.0.1',r));
+ const profile=fs.mkdtempSync(path.join(os.tmpdir(),'george-ui-'));
+ const url=`http://127.0.0.1:${server.address().port}${mount}?validation=${mode}`;
+ const browser=spawn(process.env.CHROMIUM||'/usr/bin/chromium',['--headless','--no-sandbox','--no-first-run','--remote-debugging-port=0',...(mode==='desktop'&&mount==='/'?['--force-dark-mode']:[]),'--lang='+ (mode==='blocked'?'ru-RU':'en-US'),`--window-size=${mode==='mobile'?'390,844':'1280,900'}`,`--user-data-dir=${profile}`,mode==='mobile'?'about:blank':url],{stdio:['ignore','ignore','pipe']});
+ let stderr='';browser.stderr.on('data',b=>stderr+=b);browser.on('error',reject);
+ const timer=setTimeout(()=>reject(Error('UI validation timed out')),600000);
+ let attached,viewport;
+ try{
+  if(mode==='mobile')viewport=await mobileViewport(profile,url);
+  const result=await done;assert.deepEqual(badResponses,[]);assert.ok(requests.every(p=>p.startsWith(mount)));assert.ok(requests.every(p=>!p.includes('//')));
+  if(mode==='desktop')report.mounts.push({mount,requests:requests.length,mathjaxSVGs:result.mathjaxSVGs,badResponses,diagnostics:[]});
+  // No calculations remain. Attaching here cannot affect their execution.
+  const port=Number(fs.readFileSync(path.join(profile,'DevToolsActivePort'),'utf8').split('\n')[0]);attached=await chromium.connectOverCDP('http://127.0.0.1:'+port);report.browser=attached.version();
+  const page=attached.contexts()[0].pages().find(p=>p.url().startsWith(`http://127.0.0.1:${server.address().port}`));assert.ok(page);
+  if(mode==='desktop'){
+   await page.locator('[data-lang="ru"]').click();await page.locator('a[data-view="guide"]').click();await page.waitForFunction(()=>document.querySelector('#guideContent').getAttribute('aria-busy')==='false'&&document.querySelectorAll('#guideContent mjx-container[jax="SVG"] svg').length>=20);
+   await page.screenshot({path:`${out}/${mount==='/'?'root':'project'}-guide-ru-dark.png`,fullPage:true});
+  }else if(mode==='mobile'){
+   await page.screenshot({path:`${out}/project-result-mobile.png`,fullPage:true});await page.locator('a[data-view="guide"]').click();await page.waitForFunction(()=>document.querySelector('#guideContent').getAttribute('aria-busy')==='false');await page.screenshot({path:`${out}/project-guide-en-light-mobile.png`,fullPage:true});
+  }
+ }catch(e){fs.writeFileSync(`${out}/failure-${mode}-${mount==='/'?'root':'project'}.json`,JSON.stringify({error:String(e.stack||e),failures,requests,badResponses},null,2));throw e;}
+ finally{clearTimeout(timer);await attached?.close().catch(()=>{});viewport?.close();browser.kill('SIGTERM');server.close();fs.writeFileSync(`${out}/browser-${mode}-${mount==='/'?'root':'project'}.log`,stderr);}
+}
+try{for(const mount of ['/','/george/']){console.log('Checking',mount);await run(mount);}await run('/george/','mobile');await run('/','blocked');
+ assert.equal(report.examples.length,8);assert.equal(report.mounts.length,2);assert.deepEqual(report.errors,[]);assert.deepEqual(report.externalRequests,[]);for(const [p,h]of Object.entries(report.sourceHashes))assert.equal(sha(p),h,p+': sources changed during validation');
+ fs.writeFileSync(`${out}/report.json`,JSON.stringify(report,null,2)+'\n');console.log(out,'PASS');
+}catch(e){console.error(e);process.exitCode=1;}

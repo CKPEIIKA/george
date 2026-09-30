@@ -1,7 +1,7 @@
 {
   "name": "george",
   "version": "0.1.0",
-  "description": "Gröbner bases, Hilbert series and Anick resolutions in the browser, based on bergman",
+  "description": "Gröbner bases, Hilbert series and Anick resolutions in the browser, an interface to bergman",
   "private": true,
   "type": "module",
   "scripts": {
@@ -15,6 +15,7 @@
     "test:algebra": "node tools/validate-algebra.mjs",
     "test:resolution:names": "node tools/validate-resolution-names.mjs",
     "test:braid": "node tools/validate-braid.mjs",
+    "test:upstream": "node tools/validate-upstream.mjs",
     "test:extra": "node tools/validate-extra.mjs",
     "test:examples": "node tools/validate-examples.mjs",
     "test:browser": "node tools/validate-browser.mjs",

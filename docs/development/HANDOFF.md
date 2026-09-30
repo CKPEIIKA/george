@@ -1,7 +1,9 @@
 # George handoff
 
 Updated 2026-09-30. The **Bergman → ECL → Wasm → HTML** MVP computes with the
-real engine and has the completed validation runs listed below. The former
+real **bergman-1.001-fix** engine with fixed behavior by default and original
+Bergman 1.001 behavior in legacy mode. It has the validation runs listed below. The
+former
 single-letter adapter restriction is removed. The native idempotent-braid
 resolution stall is fixed in default mode. Earlier prototype/demo-only
 notes are superseded by this document.
@@ -12,6 +14,8 @@ notes are superseded by this document.
 - [Source review](SOURCE-REVIEW.md): original and OCaml source findings,
   portability decisions and default-mode fixes.
 - [Validation](VALIDATION.md): executed results, timings and limits.
+- [Additional upstream tests](UPSTREAM-TESTS.md): pinned Singular/Plural,
+  SymPy and GBNP presentations, oracle checks and adaptations.
 - [Braid fix](BRAID-FIX.md): both native causes, independent algebraic
   certificate and conservative weighted homology reporting.
 - [Capability map](CAPABILITIES.md): original / OCaml / Singular / George.
@@ -23,12 +27,17 @@ notes are superseded by this document.
 
 - All 37 historical outputs match in legacy mode; all 37 corrected references
   pass in default mode, on native SBCL, Node/Wasm and real Chromium.
-- 41 unit tests; 20 extra original sessions, including one intentionally
+- 43 unit tests; 20 extra original sessions, including one intentionally
   invalid backup; all 14 form presets.
 - All 24 upstream OCaml aliases; all five relevant active examples compared.
 - 42 independent basis cases, 597 critical ambiguities, nine resolution cases
   and 560 identities d²=0 before augmentation. Singular/Plural, Hilbert
   dimensions and exact augmented matrix ranks provide additional checks.
+- Ninety imported Q/F₂/F₅ cases from 17 pinned source files: native/Wasm
+  equality, 3,379 exact critical ambiguities and three Singular reductions each.
+  Thirty-nine commutative cases also pass SymPy Buchberger/F5B, and six
+  Plural cases pass independent two-sided ideal and dimension checks.
+  Ten original SymPy test functions execute separately.
 - Browser stop/restart, responsiveness, 100 MB allocation / memory growth,
   exact integers, monoid augmentation and desktop/mobile rendering verified.
 - Guide, eight guided examples, EN/RU, automatic/light/dark, local MathJax
@@ -40,7 +49,8 @@ notes are superseded by this document.
 - Twenty braid cases compare native and Wasm over Q/F₂/F₃/F₅/F₁₀₁,
   checking 860 full identities d²=0 and 220 critical ambiguities. An independent
   projectivity certificate proves the expected higher Tor groups vanish.
-  Both browser paths verify the braid and the weighted cutoff notice.
+  Both browser paths verify the braid and the weighted cutoff notice,
+  plus imported braid, Katsura, weighted and Lie-quotient presentations.
 
 ## Implementation map
 
@@ -55,6 +65,10 @@ current generated engine.
 with legacy branches. `anick-tensor.sl` supplies full-word comparison,
 chain-identity merging and stable sorting for default safe-mode tensors.
 The degreewise safe monomial comparator follows legacy switches dynamically.
+The imported tests additionally repaired stale reduction signatures, inclusion
+scheduling, redirected critical-pair contexts, structural units and
+commutative process changes. All retain original branches in legacy mode.
+See the source review for exact original defects and their reproducing cases.
 `web/src/homology.js` reports only certified complete incoming-chain degrees;
 unreported partial dimensions are retained as `truncatedBetti`.
 `web/src/engine.js` manages session lifetimes;
@@ -88,11 +102,11 @@ GMP and GC. Component notices are under `web/licenses/`; MathJax's notices and
 asset hashes are under `web/vendor/mathjax/`.
 
 The final engine runtime build is identified by `build/engine-build.json`.
-The braid fix compiled the patched Bergman runtime in
-`/tmp/george-braid-final-runtime-20260930` and relinked it with the previously
+This release compiled the patched Bergman runtime in
+`/tmp/george-upstream-final-runtime-20260930` and relinked it with the previously
 validated ECL Wasm library under `build/toolchain/ecl-wasm`. The Wasm code
 hash is unchanged; the bytecode/data contains the fixes. Its native reference
-is `build/sbcl-braid-final-20260930/bin/clisp/unix/bergman`.
+is `build/sbcl-upstream-final-20260930/bin/clisp/unix/bergman`.
 The user previously chose the validated toolchain after a neutral-path ECL
 rebuild terminated before linking. That library rebuild was not resumed.
 `ports/ecl/build.sh` and `link-wasm.sh` now contain the neutral-path changes;
@@ -102,7 +116,7 @@ Native reference builds, pinned oracle checkouts and detailed logs are under
 `build/`, which is ignored. Small result reports are retained under
 `docs/development/validation/`. The source-package setup script was exercised locally.
 The earlier release was published by the user: live HTML and the engine
-manifest matched local `gh-pages` commit `6bd9020`. The braid fix has not
+manifest matched local `gh-pages` commit `6bd9020`. The current fixes have not
 been published; that Pages branch still holds the earlier release.
 
 ## Practical limits and future work
@@ -145,11 +159,27 @@ engine/source packages. Local toolchains, dependencies, detailed run logs,
 archives and agent configuration are excluded.
 
 The earlier interface and structural-export release is committed and published.
-The current braid fix is on `fix/anick-braid`. Review it, merge into `main`,
-then publish the committed `web/` tree using the README's subtree command.
-The unrelated untracked `web/src/console-commands.js` and `web/src/lisp.js`
-drafts are preserved outside this fix and its source package.
-No remote publication was performed during the braid work.
-`npm test` uses `--experimental-test-isolation=none` (Node >=22.8): in this restricted
-workspace the isolated Node 24 runner only reported successful file processes,
-while the nonisolated run actually executes and reports all 41 assertions.
+The current release is on `fix/anick-braid`. The user requested contributor
+cleanup: `tools/prepare-publication.mjs` creates clean `publish/main` and
+`publish/gh-pages` histories, removes Claude co-author trailers and preserves
+human authors and all original file trees. Its Pages tip contains the exact
+committed `web/` tree. Original local refs remain available. See the README
+and ignored `build/publication/plan.json` / `publish.sh` for the concrete
+atomic force-with-lease publication. Remote history and the GitHub contributor
+graph are unchanged until those clean refs are pushed; do not publish an old
+history afterward and reintroduce the trailers.
+
+The user explicitly deferred the concurrent console edits. They remain in
+the shared workspace, including changes to app.js, style.css, index.html,
+i18n.js, guide.js, LICENSE.md, VENDORED.md and new console/help files and tests.
+The release was validated and packaged in the isolated checkout `/tmp/george-release-20260930`;
+only the branding/version changes from the shared HTML and locale files enter
+this commit. All console files, their tests and help additions are excluded from the release
+and source archive. Preserve them for the user's later console work.
+
+No remote publication was performed during this work. `npm test` uses
+`--experimental-test-isolation=none` (Node >=22.8): the nonisolated run
+executes and reports all 43 assertions. Reports and browser source hashes
+refer to the isolated release, not the newer uncommitted console interface.
+The collector was run with `build/validation/upstream-release-reports.json`
+to select these exact runs instead of concurrent console-validation reports.

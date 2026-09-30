@@ -8,10 +8,10 @@ installed Singular `freegb.lib`, `homolog.lib`, `nchomolog.lib` / Plural interfa
 
 | Capability | Original Bergman 1.001 | OCaml Bergman browser | Singular / Plural | George and verification |
 |---|---|---|---|---|
-| Commutative Gröbner bases | Yes | Not its browser presentation model | `std` | Original suite + exact checker + Singular |
-| Free associative Gröbner bases | Yes | Yes | Letterplace `twostd`, with explicit degree bound; Plural also handles solvable polynomial algebras | Original suite + all six families + Singular |
+| Commutative Gröbner bases | Yes | Not its browser presentation model | `std` | Original suite + exact checker + Singular + SymPy Buchberger/F5B |
+| Free associative Gröbner bases | Yes | Yes | Letterplace `twostd`, with explicit degree bound; Plural also handles solvable polynomial algebras | Original suite + all six families + imported Letterplace/GBNP presentations + Singular |
 | Exact characteristic-zero coefficients | Exact integer/rational routines | `Field.Float`; native examples use restricted `Field.Int` | Q | ECL/GMP; >2⁵³ coefficient and exact independent checks |
-| Prime fields | Characteristic 2 and odd-prime domains | Not exposed by the reviewed browser | F₂, F₅ | Original field cases; independent bases and resolutions |
+| Prime fields | Characteristic 2 and odd-prime domains | Not exposed by the reviewed browser | F₂, F₅ | Original field cases; independent bases/resolutions and 90 upstream Q/F₂/F₅ cases |
 | Weights and matrix/elimination orders | Yes | Degree orders in reviewed browser | Matched degree order in this audit | Historical weighted/matrix/elimination cases; no claim that every order was independently certified |
 | Hilbert / Poincaré–Betti series | Yes | Not the original PB interface | Commutative `hilb` and `vdim`; no original PB-interface comparison | Historical files, known exterior/symmetric dimensions and corrected PB output |
 | Anick resolution | Yes | Yes | Commutative free resolutions via `res`; not used as an Anick oracle | Five shared OCaml cases, exact d² and field tests, braid projectivity certificates |

@@ -9,6 +9,8 @@ import { TASKS, ORDERS, FAMILIES, buildJob } from '../web/src/bergman-syntax.js'
 import { EXAMPLES } from '../web/src/examples.js';
 
 test('every static and dynamic interface key has an EN/RU translation', () => {
+  assert.equal(STRINGS.en['brand.sub'], 'an interface to bergman');
+  assert.equal(STRINGS.ru['brand.sub'], 'интерфейс к bergman');
   assert.deepEqual(Object.keys(STRINGS.en).sort(), Object.keys(STRINGS.ru).sort());
   const html = fs.readFileSync('web/index.html', 'utf8');
   const keys = [...html.matchAll(/data-i18n(?:-html)?="([^"]+)"/g)].map(m => m[1]);

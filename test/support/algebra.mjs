@@ -2,7 +2,11 @@
 import assert from 'node:assert/strict';
 import { parseRelation, parseBasis } from '../../web/src/bergman-syntax.js';
 const gcd = (a,b) => { a=a<0n?-a:a; b=b<0n?-b:b; while(b) [a,b]=[b,a%b]; return a; };
-export function algebra(vars, comm=false, modulus=0) {
+export function algebra(vars, comm=false, modulus=0, weights=vars.map(()=>1), orderWeights=weights) {
+  assert.equal(weights.length,vars.length);
+  assert.ok(weights.every(w=>Number.isSafeInteger(w)&&w>0));
+  assert.equal(orderWeights.length,vars.length);
+  assert.ok(orderWeights.every(w=>Number.isSafeInteger(w)&&w>0));
   const p=BigInt(modulus);
   const q=(a,b=1n)=>{a=BigInt(a);b=BigInt(b); if(p){a=(a%p+p)%p;b=(b%p+p)%p;assert.notEqual(b,0n);let x=b,k=p-2n,v=1n;while(k){if(k&1n)v=v*x%p;x=x*x%p;k>>=1n;}return [a*v%p,1n];}assert.notEqual(b,0n);const d=gcd(a,b)*(b<0n?-1n:1n);return [a/d,b/d];};
   const add=(a,b)=>q(a[0]*b[1]+b[0]*a[1],a[1]*b[1]);
@@ -11,7 +15,11 @@ export function algebra(vars, comm=false, modulus=0) {
   const neg=a=>q(-a[0],a[1]);
   const word=w=>comm?[...w].sort().join(''):w;
   const mon=(v)=>String.fromCharCode(65+vars.indexOf(v));
-  const cmp=(a,b)=>a.length-b.length || (comm?-1:1)*(a>b?1:a<b?-1:0);
+  const degree=w=>[...w].reduce((s,c)=>s+weights[c.charCodeAt(0)-65],0);
+  // GBNP's weighted truncation uses ordinary degree-lex for its order.
+  // Keep certificate degrees separate from ordering degrees for that oracle.
+  const orderDegree=w=>[...w].reduce((s,c)=>s+orderWeights[c.charCodeAt(0)-65],0);
+  const cmp=(a,b)=>orderDegree(a)-orderDegree(b) || (comm?-1:1)*(a>b?1:a<b?-1:0);
   const lead=f=>[...f.keys()].sort(cmp).at(-1);
   const put=(f,w,c)=>{const v=add(f.get(w)||q(0),c);if(v[0])f.set(w,v);else f.delete(w);};
   const parse=s=>{const f=new Map();for(const t of parseRelation(s,vars)){put(f,word(t.factors.map(a=>mon(a.v).repeat(a.e)).join('')),q(BigInt(t.sign)*BigInt(t.coef)));}return f;};
@@ -27,14 +35,22 @@ export function algebra(vars, comm=false, modulus=0) {
   function certify(input,gb,bound=Infinity){
     for(const f of input)assert.equal(nf(f,gb).size,0,'input reduces to zero');
     let ambiguities=0;
-    const check=(f,g,left1,right1,left2,right2,w)=>{if(w.length>bound)return;ambiguities++;assert.equal(nf(sub(scale(f,q(1),left1,right1),scale(g,q(1),left2,right2)),gb).size,0,`critical ambiguity ${w}`);};
+    const check=(f,g,left1,right1,left2,right2,w)=>{if(degree(w)>bound)return;ambiguities++;assert.equal(nf(sub(scale(f,q(1),left1,right1),scale(g,q(1),left2,right2)),gb).size,0,`critical ambiguity ${w}`);};
     for(const f of gb)for(const g of gb){const a=lead(f),b=lead(g);if(comm){let w=a;for(const c of new Set(b)){const want=[...b].filter(x=>x===c).length-[...a].filter(x=>x===c).length;if(want>0)w+=c.repeat(want);}w=word(w);check(f,g,...quotient(w,a),...quotient(w,b),w);}else{
       for(let k=1;k<=Math.min(a.length,b.length);k++)if(a.slice(-k)===b.slice(0,k)){const w=a+b.slice(k);check(f,g,'',b.slice(k),a.slice(0,-k),'',w);}
       for(let i=0;i<=a.length-b.length;i++)if(a.slice(i,i+b.length)===b)check(f,g,'','',a.slice(0,i),a.slice(i+b.length),a);
     }}
     return ambiguities;
   }
-  function hilbert(gb,max){const leading=gb.map(lead);let layer=[''];const dims=[];for(let d=0;d<=max;d++){dims.push(layer.length);layer=layer.flatMap(w=>vars.map((_,i)=>w+String.fromCharCode(65+i))).filter(w=>(!comm||w===word(w))&&!leading.some(v=>quotient(w,v)));}return dims;}
+  function hilbert(gb,max){
+    const leading=gb.map(lead),layers=Array.from({length:max+1},()=>[]);
+    if(!leading.includes(''))layers[0]=[''];
+    for(let d=0;d<=max;d++)for(const w of layers[d])for(let i=0;i<vars.length;i++){
+      const next=w+String.fromCharCode(65+i),target=d+weights[i];
+      if(target<=max&&(!comm||next===word(next))&&!leading.some(v=>quotient(next,v)))layers[target].push(next);
+    }
+    return layers.map(words=>words.length);
+  }
   const multiply=(f,g)=>{const r=new Map();for(const [u,a] of f)for(const [v,b] of g)put(r,word(u+v),mul(a,b));return r;};
-  return {parse,basis,certify,nf,hilbert,lead,monic,q,put,scale,multiply};
+  return {parse,basis,certify,nf,hilbert,lead,monic,q,put,scale,multiply,degree};
 }
