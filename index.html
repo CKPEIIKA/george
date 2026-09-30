@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>George</title>
+<title>George 0.2</title>
 <meta name="description" content="George computes Gröbner bases, Hilbert series, Anick resolutions and Betti numbers for noncommutative and commutative algebras, by running the original bergman in your browser.">
 <meta name="theme-color" content="#eef2f3" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#111a27" media="(prefers-color-scheme: dark)">
@@ -17,7 +17,7 @@
 <header class="top">
   <a class="brand" href="#compute" aria-label="George, an interface to bergman">
     <svg class="logo" viewBox="0 0 28 28" aria-hidden="true"><path class="logo-face" d="M14 3 25 14 14 25 3 14Z"/><path class="logo-edge" d="M14 3 25 14 14 25 3 14Z"/><circle cx="14" cy="3.6" r="2"/><circle cx="24.4" cy="14" r="2"/><circle cx="14" cy="24.4" r="2"/><circle cx="3.6" cy="14" r="2"/></svg>
-    <span class="brand-name">George</span>
+    <span class="brand-name">George <small class="brand-version">0.2</small></span>
     <span class="brand-sub" data-i18n="brand.sub">an interface to bergman</span>
   </a>
   <nav class="views" aria-label="Views" data-i18n-attr="aria-label:nav.views">
@@ -245,11 +245,16 @@
       <p class="hint" data-i18n-html="console.hint">Evaluate Lisp forms such as <code>(noncommify)</code> or <code>(setmaxdeg 5)</code>. Use the presentation form for algebraic input, or run a command with explicit input and output files.</p>
     </div>
     <div class="terminal" id="terminal" role="log" aria-live="polite" tabindex="0"></div>
+    <div class="chips" id="consoleChips" aria-label="Common commands" data-i18n-attr="aria-label:console.chips"></div>
     <form class="prompt" id="promptForm">
-      <label for="promptInput" class="prompt-label">1 lisp&gt;</label>
-      <input id="promptInput" class="code" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="send">
+      <label for="promptInput" class="prompt-label" id="promptLabel">1 lisp&gt;</label>
+      <div class="editor">
+        <pre class="editor-hl" id="promptHl" aria-hidden="true"></pre>
+        <textarea id="promptInput" rows="1" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="send" aria-describedby="promptStatus" data-i18n-attr="placeholder:console.placeholder" placeholder="(help)   or   ?setmaxdeg"></textarea>
+      </div>
       <button type="submit" class="primary small" data-i18n="console.run">Run</button>
     </form>
+    <div class="prompt-status" id="promptStatus"><span class="sig" id="promptSig"></span><span class="bal" id="promptBal" aria-live="polite"></span></div>
     <div class="console-actions">
       <button type="button" class="quiet" id="pasteJob" data-i18n="console.current">Run the current computation</button>
       <button type="button" class="quiet" id="stopConsole" hidden data-i18n="stop">Stop</button>

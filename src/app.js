@@ -10,6 +10,7 @@ import { TUTORIALS, tutorialForm } from './tutorials.js';
 import { guideHTML } from './guide.js';
 import { renderMath } from './math.js';
 import { structuralResolutionDisplay } from './resolution-data.js';
+import { initConsole } from './console.js';
 
 const $ = (id) => document.getElementById(id);
 const engine = new EclEngine();
@@ -532,59 +533,16 @@ document.addEventListener('click', (e) => {
 
 // ------------------------------------------------------------ console
 
-const term = $('terminal');
-const history = [];
-let histPos = 0;
-
-function termWrite(text, cls) {
-  const span = document.createElement('span');
-  if (cls) span.className = cls;
-  span.textContent = text;
-  term.append(span);
-  term.scrollTop = term.scrollHeight;
-}
-
-async function runLine(line) {
-  termWrite(`1 lisp> ${line}\n`, 'in');
-  consoleBusy(true);
-  try { await engine.eval(line, (e) => termWrite(e.text, 'note')); }
-  catch (error) { termWrite(`${error.name === 'AbortError' ? t('status.stopped') : translateMessage(error.message)}\n`, 'note'); }
-  finally { consoleBusy(false); }
-}
-
-function consoleBusy(busy) {
-  $('promptForm').querySelector('button').disabled = busy;
-  $('promptInput').disabled = busy;
-  $('pasteJob').disabled = busy;
-  $('stopConsole').hidden = !busy;
-}
-$('stopConsole').addEventListener('click', () => engine.cancel());
-
-$('promptForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const inp = $('promptInput');
-  const line = inp.value.trim();
-  if (!line) return;
-  history.push(line); histPos = history.length;
-  inp.value = '';
-  await runLine(line);
-});
-$('promptInput').addEventListener('keydown', (e) => {
-  if (e.key === 'ArrowUp' && histPos > 0) { histPos--; e.target.value = history[histPos]; e.preventDefault(); }
-  if (e.key === 'ArrowDown') { histPos = Math.min(history.length, histPos + 1); e.target.value = history[histPos] ?? ''; e.preventDefault(); }
-});
-$('clearTerm').addEventListener('click', () => { term.textContent = ''; });
-$('pasteJob').addEventListener('click', async () => {
-  try {
-    const { ok, form: f, anyNonhomog } = validate();
-    if (!ok) throw new Error(t('console.fix'));
-    const job = buildJob({ ...f, nonhomog: f.nonhomog === 'auto' ? (anyNonhomog ? 'itemwise' : 'degreewise') : f.nonhomog });
-    termWrite(`% input.bg\n${job.files['input.bg']}\n${job.script}`, 'in');
-    consoleBusy(true);
-    const result = await engine.run(job, (e) => termWrite(e.text, 'note'));
-    renderFiles(job, result.files);
-  } catch (error) { termWrite(`${error.message}\n`, 'note'); }
-  finally { consoleBusy(false); }
+const consoleView = initConsole({
+  $, engine, storage,
+  runCurrent: {
+    build() {
+      const { ok, form: f, anyNonhomog } = validate();
+      if (!ok) throw new Error(t('console.fix'));
+      return buildJob({ ...f, nonhomog: f.nonhomog === 'auto' ? (anyNonhomog ? 'itemwise' : 'degreewise') : f.nonhomog });
+    },
+    done: (job, files) => renderFiles(job, files),
+  },
 });
 
 // ------------------------------------------------------------ views
@@ -661,6 +619,7 @@ function updateLanguage() {
   setStatus(statusState.key, statusState.params, statusState.busy);
   updateEngineNote();
   updateGuide();
+  consoleView.updateLanguage();
   if (lastRendered) renderResults(lastRendered.job, lastRendered.res);
   if (lastJob) renderLog(lastJob, fileContents.get('terminal.txt') || '');
 }
