@@ -21,7 +21,7 @@ export function runJob(runtime, job) {
     Object.assign(files,execute(next),next.files);
     files['resolution-session.lsp']=next.script;
     const f=job.resolution.form;
-    homology=augmentedHomology(files[next.outputs.anick],f.vars,f.field==='2'?2:f.field==='p'?Number(f.modulus):0,{completeBasis:true,basis:files[next.outputs.gb],degreeBound:next.degreeBound,weights:f.weights});
+    homology=augmentedHomology(files[next.outputs.resolution],f.vars,f.field==='2'?2:f.field==='p'?Number(f.modulus):0,{completeBasis:true,basis:files[next.outputs.gb],degreeBound:next.degreeBound,weights:f.weights});
     homology.shifted=f.augmentation==='monoid';
     files['homology.json']=JSON.stringify(homology,null,2);
   }

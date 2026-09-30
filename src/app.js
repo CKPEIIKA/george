@@ -4,11 +4,27 @@ import {
   parseBasis, parseAnick, typesetTensor, typesetWord, readInputFile, buildJob, validateSettings, exampleForm, ORDERS, TASKS, TASK_BY_ID, FAMILIES,
 } from './bergman-syntax.js';
 import { EclEngine } from './engine.js';
+import { t, tn, setLanguage, getLanguage, applyTranslations, translateMessage } from './i18n.js';
+import { readPreferences, savePreferences, applyTheme } from './preferences.js';
+import { TUTORIALS, tutorialForm } from './tutorials.js';
+import { guideHTML } from './guide.js';
+import { renderMath } from './math.js';
+import { structuralResolutionDisplay } from './resolution-data.js';
 
 const $ = (id) => document.getElementById(id);
 const engine = new EclEngine();
 const EX_BY_ID = new Map(EXAMPLES.map((e) => [e.id, e]));
 const STORE_KEY = 'george.form.v1';
+let storage;
+try { storage = window.localStorage; } catch { /* storage unavailable */ }
+const preferences = readPreferences(storage, navigator.language);
+setLanguage(preferences.language);
+applyTheme(preferences.theme);
+let engineInfo = null;
+let engineError = null;
+let lastRendered = null;
+let statusState = { key: 'status.idle', params: {}, busy: false };
+let guideGeneration = 0;
 
 const els = {
   form: $('presentation'), preset: $('preset'), presetN: $('presetN'), presetNField: $('presetNField'),
@@ -101,22 +117,27 @@ function save() {
 // ------------------------------------------------------------ setup of controls
 
 function fillPresets() {
-  let html = '<option value="">Blank presentation</option><optgroup label="Families, as in Bergman 2">';
-  for (const [id, f] of Object.entries(FAMILIES)) html += `<option value="family:${id}">${esc(f.label)}</option>`;
-  html += '</optgroup><optgroup label="Examples from bergman’s test suite">';
-  for (const e of EXAMPLES) html += `<option value="example:${e.id}">${esc(e.title)}</option>`;
+  const selected = els.preset.value;
+  let html = `<option value="">${t('start.blank')}</option><optgroup label="${t('start.tutorials')}">`;
+  for (const item of TUTORIALS) html += `<option value="tutorial:${item.id}">${esc(item.title[getLanguage()])}</option>`;
+  html += `</optgroup><optgroup label="${t('start.families')}">`;
+  for (const id of Object.keys(FAMILIES)) html += `<option value="family:${id}">${esc(t('fam.' + id))}</option>`;
+  html += `</optgroup><optgroup label="${t('start.examples')}">`;
+  for (const e of EXAMPLES) html += `<option value="example:${e.id}">${esc(t('ex.' + e.id))}</option>`;
   html += '</optgroup>';
   els.preset.innerHTML = html;
+  els.preset.value = selected;
 }
 
 function fillOrders() {
   const ring = radio('ring');
   const cur = els.order.value;
-  els.order.innerHTML = ORDERS[ring].map((o) => `<option value="${o.id}">${esc(o.label)}</option>`).join('');
+  els.order.innerHTML = ORDERS[ring].map((o) => `<option value="${o.id}">${esc(t('order.' + o.id))}</option>`).join('');
   if (ORDERS[ring].some((o) => o.id === cur)) els.order.value = cur;
 }
 
 function fillTasks() {
+  const selected = document.querySelector('input[name="task"]:checked')?.value || 'gb';
   const groups = new Map();
   for (const t of TASKS) {
     if (!groups.has(t.group)) groups.set(t.group, []);
@@ -124,14 +145,16 @@ function fillTasks() {
   }
   let html = '';
   for (const [g, ts] of groups) {
-    html += `<div class="task-group" role="radiogroup" aria-label="${esc(g)}"><h3>${esc(g)}</h3>`;
+    const group = t(g === 'Resolutions' ? 'group.res' : 'group.bases');
+    html += `<div class="task-group" role="radiogroup" aria-label="${esc(group)}"><h3>${esc(group)}</h3>`;
     for (const t of ts) {
-      html += `<label class="task" data-task="${t.id}"><input type="radio" name="task" value="${t.id}"${t.id === 'gb' ? ' checked' : ''}>` +
-        `<span class="t-label">${esc(t.label)}</span><span class="t-desc">${esc(t.desc)}</span><span class="t-note" hidden></span></label>`;
+      html += `<label class="task" data-task="${t.id}"><input type="radio" name="task" value="${t.id}"${t.id === selected ? ' checked' : ''}>` +
+        `<span class="t-label" data-i18n="task.${t.id}"></span><span class="t-desc" data-i18n="task.${t.id}.d"></span><span class="t-note" hidden></span></label>`;
     }
     html += '</div>';
   }
   els.taskList.innerHTML = html;
+  applyTranslations(els.taskList);
 }
 
 // ------------------------------------------------------------ presets
@@ -140,7 +163,10 @@ function applyPreset() {
   const v = els.preset.value;
   els.presetNField.hidden = !v.startsWith('family:');
   if (!v) { loadedExample = null; refresh(); return; }
-  if (v.startsWith('family:')) {
+  if (v.startsWith('tutorial:')) {
+    writeForm(tutorialForm(v.slice(9)));
+    loadedExample = null;
+  } else if (v.startsWith('family:')) {
     const fam = FAMILIES[v.slice(7)];
     const n = Math.max(2, Math.min(7, Number(els.presetN.value) || 3));
     const { vars, rels } = fam.build(n);
@@ -171,7 +197,7 @@ function validate() {
   problems.push(...settingsErrors);
   const vv = parseVars(els.vars.value);
   els.varsErr.hidden = vv.errors.length === 0 && vv.names.length > 0;
-  els.varsErr.textContent = vv.names.length === 0 ? 'Enter at least one generator.' : vv.errors.join(' ');
+  els.varsErr.textContent = vv.names.length === 0 ? t('err.noVars') : vv.errors.map(translateMessage).join(' ');
   els.vars.setAttribute('aria-invalid', String(!els.varsErr.hidden));
   if (!els.varsErr.hidden) problems.push('generators');
 
@@ -188,9 +214,9 @@ function validate() {
       const terms = parseRelation(r, vv.names);
       const hom = isHomogeneous(terms, weights);
       if (!hom) anyNonhomog = true;
-      html += `<li><span class="rel">${typesetTerms(terms)}${hom ? '' : '<span class="nh">not homogeneous</span>'}</span></li>`;
+      html += `<li><span class="rel">${typesetTerms(terms)}${hom ? '' : `<span class="nh">${t('nonhomog')}</span>`}</span></li>`;
     } catch (e) {
-      html += `<li class="bad"><span class="rel"><code>${esc(r)}</code>: ${esc(e.message)}</span></li>`;
+      html += `<li class="bad"><span class="rel"><code>${esc(r)}</code>: ${esc(translateMessage(e.message))}</span></li>`;
       problems.push('relations');
     }
   }
@@ -201,14 +227,14 @@ function validate() {
   els.pField.hidden = f.field !== 'p';
   const p = Number(f.modulus);
   els.pErr.hidden = f.field !== 'p' || isPrime(p);
-  els.pErr.textContent = `${f.modulus} is not a prime; bergman works over prime fields.`;
+  els.pErr.textContent = t('err.prime', { p: f.modulus });
   if (!els.pErr.hidden) problems.push('p');
 
   let warn = '';
-  if (settingsErrors.length) warn = settingsErrors.join(' ');
-  else if (wl.length && wl.length !== vv.names.length) warn = `Give one weight per generator: there are ${vv.names.length} generators and ${wl.length} weights.`;
-  else if (anyNonhomog && f.nonhomog === 'degreewise') warn = 'Some relations are not homogeneous. Degree-by-degree processing needs homogeneous relations; choose item-by-item processing under More settings.';
-  else if (anyNonhomog) warn = 'Some relations are not homogeneous, so bergman will process them item by item. A maximal degree keeps the computation finite.';
+  if (settingsErrors.length) warn = settingsErrors.map(translateMessage).join(' ');
+  else if (wl.length && wl.length !== vv.names.length) warn = t('warn.weights', { v: vv.names.length, w: wl.length });
+  else if (anyNonhomog && f.nonhomog === 'degreewise') warn = t('warn.degreewise');
+  else if (anyNonhomog) warn = t('warn.nonhomog');
   els.homogWarn.hidden = !warn;
   els.homogWarn.textContent = warn;
   return { ok: problems.length === 0, anyNonhomog, form: f };
@@ -224,27 +250,30 @@ function refresh() {
   els.nmodgenField.hidden = task.module === 'two';
   els.twoModFields.hidden = task.module !== 'two';
   for (const lbl of els.taskList.querySelectorAll('.task')) {
-    const t = TASK_BY_ID.get(lbl.dataset.task);
+    const availableTask = TASK_BY_ID.get(lbl.dataset.task);
     const input = lbl.querySelector('input');
     const note = lbl.querySelector('.t-note');
-    const unavailable = t.ring && t.ring !== f.ring;
+    const unavailable = availableTask.ring && availableTask.ring !== f.ring;
     lbl.classList.toggle('unavailable', !!unavailable);
     input.disabled = !!unavailable;
     note.hidden = !unavailable;
-    note.textContent = unavailable ? (t.ring === 'comm' ? 'For commutative algebras.' : 'For noncommutative algebras.') : '';
+    note.textContent = unavailable ? t(availableTask.ring === 'comm' ? 'task.commOnly' : 'task.noncommOnly') : '';
   }
   if (task.ring && task.ring !== f.ring) {
     document.querySelector('input[name="task"][value="gb"]').checked = true;
   }
-  els.go.textContent = TASK_BY_ID.get(readForm().task).button;
+  els.go.textContent = t('task.' + readForm().task + '.b');
+  const tutorial = TUTORIALS.find(item => els.preset.value === 'tutorial:' + item.id);
+  $('presetDescription').textContent = tutorial ? tutorial.description[getLanguage()] : t('start.hint');
   validate();
   save();
 }
 
 // ------------------------------------------------------------ running
 
-function setStatus(text, busy = false) {
-  els.runStatus.textContent = text;
+function setStatus(key, params = {}, busy = false) {
+  statusState = { key, params, busy };
+  els.runStatus.textContent = t(key, { ...params, msg: translateMessage(params.msg || '') });
   els.runStatus.classList.toggle('busy', busy);
 }
 
@@ -267,20 +296,20 @@ async function compute(ev) {
   if (running) return;
   const { ok, anyNonhomog, form } = validate();
   if (!ok) {
-    setStatus('Fix the highlighted fields first.');
+    setStatus('status.fix');
     els.form.querySelector('[aria-invalid="true"], .error:not([hidden])')?.scrollIntoView({ block: 'center', behavior: 'smooth' });
     return;
   }
   const f = { ...form, nonhomog: form.nonhomog === 'auto' ? (anyNonhomog ? 'itemwise' : 'degreewise') : form.nonhomog };
   let job;
-  try { job = buildJob(f); } catch (error) { setStatus(error.message); return; }
+  try { job = buildJob(f); } catch (error) { setStatus('status.raw', { msg: error.message }); return; }
   if (loadedExample && loadedExample.snapshot === snapshot()) job.exampleId = loadedExample.id;
   lastJob = job;
 
   running = true;
   els.go.disabled = true;
   els.stop.hidden = false;
-  setStatus('Computing…', true);
+  setStatus('status.busy', {}, true);
   if (matchMedia('(max-width: 960px)').matches) showPane('output');
   const task = TASK_BY_ID.get(job.task);
   prepareTabs(task);
@@ -291,9 +320,9 @@ async function compute(ev) {
     const res = await engine.run(job, (e) => { if (e.type === 'stdout') { stdout += e.text; renderLog(job, stdout); } });
     const ms = Math.round(performance.now() - t0);
     renderResults(job, res);
-    setStatus(`Computed in ${ms} ms. Check the basis tab for any degree limit.`);
+    setStatus('status.done', { ms });
   } catch (e) {
-    setStatus(e.name === 'AbortError' ? 'Stopped.' : `bergman stopped with an error: ${e.message}`);
+    setStatus(e.name === 'AbortError' ? 'status.stopped' : 'status.error', { msg: e.message });
   } finally {
     running = false;
     els.go.disabled = false;
@@ -312,29 +341,28 @@ function prepareTabs(task) {
 
 // ------------------------------------------------------------ rendering
 
-const badge = (res) => (res.reference ? '<span class="badge">reference output</span>' : '');
+const badge = (res) => (res.reference ? `<span class="badge">${t('reference')}</span>` : '');
 
 function notComputed(what) {
-  return `<div class="empty"><p>${esc(what)} did not produce an output file.</p>` +
-    '<p><button type="button" class="quiet small" data-goto="log">Show the bergman session</button></p></div>';
+  return `<div class="empty"><p>${esc(t('notComputed', { what }))}</p>` +
+    `<p><button type="button" class="quiet small" data-goto="log">${t('showSession')}</button></p></div>`;
 }
 
 function renderResults(job, res) {
+  lastRendered = { job, res };
   const files = res.files;
   $('basisEmpty').hidden = true;
   const gbText = files[job.outputs.gb];
-  if (gbText === undefined) $('basisOut').innerHTML = notComputed('Gröbner basis');
+  if (gbText === undefined) $('basisOut').innerHTML = notComputed(t('tab.basis'));
   else {
     const { groups, done } = parseBasis(gbText);
     const n = groups.reduce((a, g) => a + g.polys.length, 0);
     const degs = groups.map((g) => g.deg);
-    let html = `<p class="summary">${n} element${n === 1 ? '' : 's'}` +
-      (degs.length ? `, in degree${degs.length > 1 ? `s ${degs[0]} to ${degs[degs.length - 1]}` : ` ${degs[0]}`}` : '') +
-      `. Leading monomials are highlighted.${badge(res)}</p>`;
-    if (!done) html += '<p class="notice">The computation reached its degree limit. This is a partial basis; completion beyond that degree is not certified.</p>';
-    else if (job.degreeBound) html += `<p class="notice">Computed through degree ${esc(String(job.degreeBound))}. Bergman’s completion marker can describe a bounded calculation; completeness in higher degrees requires a separate check.</p>`;
+    let html = `<p class="summary">${(degs.length === 1 ? tn('basis.summary1', n, { a: degs[0] }) : t(degs.length > 1 ? 'basis.summary' : 'basis.summaryFlat', { n, a: degs[0], b: degs.at(-1) }))}${badge(res)}</p>`;
+    if (!done) html += `<p class="notice">${t('basis.partial')}</p>`;
+    else if (job.degreeBound) html += `<p class="notice">${t('basis.bounded', { d: job.degreeBound })}</p>`;
     for (const g of groups) {
-      html += `<section class="degree"><h3><span class="d">Degree ${g.deg}</span>${g.polys.length} element${g.polys.length === 1 ? '' : 's'}</h3><ol class="polys">`;
+      html += `<section class="degree"><h3><span class="d">${t('basis.degree', { d: g.deg })}</span>${tn('basis.count', g.polys.length)}</h3><ol class="polys">`;
       for (const p of g.polys) html += `<li>${typeset(p, { lead: true })}</li>`;
       html += '</ol></section>';
     }
@@ -345,14 +373,15 @@ function renderResults(job, res) {
   if (job.outputs.anick) {
     const txt = files[job.outputs.anick];
     if (txt === undefined) {
-      $('bettiOut').innerHTML = notComputed('Betti numbers');
-      $('resolutionOut').innerHTML = notComputed('Resolution');
+      $('bettiOut').innerHTML = notComputed(t('tab.betti'));
+      $('resolutionOut').innerHTML = notComputed(t('tab.resolution'));
     } else {
       const a = parseAnick(txt);
       $('bettiOut').innerHTML = res.homology
-        ? `<p>Ungraded Betti numbers. Consecutive augmented differentials were checked to compose to zero.</p><div class="table-wrap"><table class="betti"><thead><tr><th scope="col">Degree</th>${res.homology.betti.map((_,i)=>`<th scope="col">${i}</th>`).join('')}</tr></thead><tbody><tr><th scope="row">Dimension</th>${res.homology.betti.map(n=>`<td>${n}</td>`).join('')}</tr></tbody></table></div>${res.homology.finiteTailZero?'<p>The chain complex ends here; higher Betti numbers are zero.</p>':''}<p>The internal-degree Betti table in the original raw output is not valid for nonhomogeneous relations; use homology.json.</p>`
+        ? `<p>${t('betti.ungraded')}</p><div class="table-wrap"><table class="betti"><thead><tr><th scope="col">${t('degree')}</th>${res.homology.betti.map((_,i)=>`<th scope="col">${i}</th>`).join('')}</tr></thead><tbody><tr><th scope="row">${t('dimension')}</th>${res.homology.betti.map(n=>`<td>${n}</td>`).join('')}</tr></tbody></table></div>${res.homology.finiteTailZero?`<p>${t('betti.tail')}</p>`:''}<p>${t('betti.raw')}</p>`
         : renderBetti(a, res);
-      $('resolutionOut').innerHTML = (res.homology?.shifted ? '<p>The resolution uses shifted generators: each displayed generator represents the original generator minus 1.</p>' : '') + renderResolution(a, res);
+      const resolution = files['resolution.jsonl'] ? structuralResolutionDisplay(files['resolution.jsonl'], readInputFile(job.files['input.bg']).vars) : a;
+      $('resolutionOut').innerHTML = (res.homology?.shifted ? `<p>${t('res.shifted')}</p>` : '') + renderResolution(resolution, res);
     }
   }
   renderFiles(job, files);
@@ -367,8 +396,8 @@ function tidySeries(expr) {
 }
 
 function renderSeries(hs, pb, res) {
-  if (hs === undefined && pb === undefined) return notComputed('Series');
-  let html = `<p class="summary">Series computed up to the maximal degree.${badge(res)}</p>`;
+  if (hs === undefined && pb === undefined) return notComputed(t('tab.series'));
+  let html = `<p class="summary">${t('series.summary')}${badge(res)}</p>`;
   if (hs !== undefined) {
     const lines = hs.split('\n').map((l) => l.trim()).filter(Boolean);
     if (lines.some((l) => l.includes(':'))) {
@@ -377,19 +406,20 @@ function renderSeries(hs, pb, res) {
         const what = l.slice(0, i).trim();
         const expr = l.slice(i + 1).trim();
         const trailing = expr.endsWith('...');
-        html += `<p class="series-line"><span class="what">${esc(what)}</span><span class="expr">${typeset(tidySeries(expr.replace(/\.\.\.$/, '')))}${trailing ? ' <span class="op">+</span> …' : ''}</span></p>`;
+        const label = /numerator/i.test(what) ? t('series.hsNumerator') : /denominator/i.test(what) ? t('series.hsDenominator') : /power series/i.test(what) ? t('series.hsPower') : what;
+        html += `<p class="series-line"><span class="what">${esc(label)}</span><span class="expr">${typeset(tidySeries(expr.replace(/\.\.\.$/, '')))}${trailing ? ' <span class="op">+</span> …' : ''}</span></p>`;
         if (/power series/i.test(what)) html += dimsTable(expr);
       }
     } else {
       const expr = lines.join('');
-      html += `<p class="series-line"><span class="what">Hilbert series</span><span class="expr">${typeset(tidySeries(expr))}</span></p>`;
+      html += `<p class="series-line"><span class="what">${t('series.hilbert')}</span><span class="expr">${typeset(tidySeries(expr))}</span></p>`;
       html += dimsTable(expr, 'z');
     }
   }
   if (pb !== undefined) {
     const expr = pb.split('\n').map((l) => l.trim()).filter(Boolean).join('');
-    html += `<p class="series-line"><span class="what">Poincaré–Betti series</span><span class="expr">${expr ? typeset(tidySeries(expr)) : '<span class="raw">empty</span>'}</span></p>`;
-    if (!expr) html += '<p class="caption">bergman 1.001 leaves this file empty. Switch off legacy mode under More settings to get the series.</p>';
+    html += `<p class="series-line"><span class="what">${t('series.pb')}</span><span class="expr">${expr ? typeset(tidySeries(expr)) : `<span class="raw">${t('series.empty')}</span>`}</span></p>`;
+    if (!expr) html += `<p class="caption">${t('series.pbEmpty')}</p>`;
   }
   return html;
 }
@@ -409,15 +439,15 @@ function dimsTable(expr, v = 't') {
   }
   if (coef.size < 2) return '';
   const max = Math.max(...coef.keys());
-  let html = '<div class="dims" aria-label="Dimension in each degree">';
+  let html = `<div class="dims" aria-label="${t('series.dims')}">`;
   for (let d = 0; d <= max; d++) html += `<div><span class="k">${d}</span><span class="v">${coef.get(d) ?? 0}</span></div>`;
   return html + '</div>';
 }
 
 function renderBetti(a, res) {
-  if (!a.table) return '<div class="empty"><p>bergman printed no Betti table.</p></div>';
+  if (!a.table) return `<div class="empty"><p>${t('betti.none')}</p></div>`;
   const { cols, rows } = a.table;
-  let html = `<p class="summary">Betti numbers up to the maximal degree.${badge(res)}</p><div class="table-wrap"><table class="betti"><thead><tr><th scope="col"></th>`;
+  let html = `<p class="summary">${t('betti.summary')}${badge(res)}</p><div class="table-wrap"><table class="betti"><thead><tr><th scope="col"></th>`;
   for (const c of cols) html += `<th scope="col">${esc(c)}</th>`;
   html += '</tr></thead><tbody>';
   for (const r of rows) {
@@ -430,16 +460,16 @@ function renderBetti(a, res) {
     }
     html += '</tr>';
   }
-  html += '</tbody></table></div><p class="caption">Column <var>i</var> is the homological degree. The entry in row <var>r</var> is the Betti number <var>B</var>(<var>i</var>, <var>i</var> + <var>r</var>); a dash means zero.</p>';
+  html += `</tbody></table></div><p class="caption">${t('betti.caption')}</p>`;
   return html;
 }
 
 function renderResolution(a, res) {
-  if (a.diffs.size === 0) return '<div class="empty"><p>bergman printed no differentials for this computation.</p></div>';
-  let html = `<p class="summary">Anick chains and their differentials, as printed by bergman: each chain maps to a sum of chain ⊗ algebra element.${badge(res)}</p><div class="chains">`;
+  if (a.diffs.size === 0) return `<div class="empty"><p>${t('res.none')}</p></div>`;
+  let html = `<p class="summary">${t('res.summary')}${badge(res)}</p><div class="chains">`;
   for (const [i, list] of [...a.diffs.entries()].sort((x, y) => x[0] - y[0])) {
-    html += `<section><h3><span class="d"><var>D</var>(${i}, ·)</span> on ${list.length} chain${list.length === 1 ? '' : 's'}</h3>`;
-    for (const d of list) html += `<p class="tensor-line"><span class="chain">${typesetWord(d.chain)}</span><span class="arrow">↦</span>${typesetTensor(d.image)}</p>`;
+    html += `<section><h3><span class="d"><var>D</var>(${i}, ·)</span> ${tn('res.on', list.length)}</h3>`;
+    for (const d of list) html += `<p class="tensor-line"><span class="chain">${d.chainHTML ?? typesetWord(d.chain)}</span><span class="arrow">↦</span>${d.imageHTML ?? typesetTensor(d.image)}</p>`;
     html += '</section>';
   }
   return html + '</div>';
@@ -447,8 +477,8 @@ function renderResolution(a, res) {
 
 function codeBlock(name, text, { download = true } = {}) {
   return `<div class="file"><div class="file-head"><span class="name">${esc(name)}</span>` +
-    `<button type="button" class="quiet small" data-copy="${esc(name)}">Copy</button>` +
-    (download ? `<button type="button" class="quiet small" data-download="${esc(name)}">Download</button>` : '') +
+    `<button type="button" class="quiet small" data-copy="${esc(name)}">${t('copy')}</button>` +
+    (download ? `<button type="button" class="quiet small" data-download="${esc(name)}">${t('download')}</button>` : '') +
     `</div><pre class="code-block">${esc(text)}</pre></div>`;
 }
 
@@ -459,7 +489,7 @@ function renderFiles(job, files) {
   for (const n of names) fileContents.set(n, files[n]);
   $('filesOut').innerHTML = names.length
     ? names.map((n) => codeBlock(n, files[n])).join('')
-    : '<div class="empty"><p>No output files yet.</p></div>';
+    : `<div class="empty"><p>${t('files.none')}</p></div>`;
 }
 
 function renderLog(job, stdout) {
@@ -481,7 +511,7 @@ async function copyText(text, btn) {
     ta.remove();
   }
   const old = btn.textContent;
-  btn.textContent = 'Copied';
+  btn.textContent = t('copied');
   setTimeout(() => { btn.textContent = old; }, 1400);
 }
 
@@ -518,7 +548,7 @@ async function runLine(line) {
   termWrite(`1 lisp> ${line}\n`, 'in');
   consoleBusy(true);
   try { await engine.eval(line, (e) => termWrite(e.text, 'note')); }
-  catch (error) { termWrite(`${error.message}\n`, 'note'); }
+  catch (error) { termWrite(`${error.name === 'AbortError' ? t('status.stopped') : translateMessage(error.message)}\n`, 'note'); }
   finally { consoleBusy(false); }
 }
 
@@ -547,7 +577,7 @@ $('clearTerm').addEventListener('click', () => { term.textContent = ''; });
 $('pasteJob').addEventListener('click', async () => {
   try {
     const { ok, form: f, anyNonhomog } = validate();
-    if (!ok) throw new Error('Fix the presentation fields first.');
+    if (!ok) throw new Error(t('console.fix'));
     const job = buildJob({ ...f, nonhomog: f.nonhomog === 'auto' ? (anyNonhomog ? 'itemwise' : 'degreewise') : f.nonhomog });
     termWrite(`% input.bg\n${job.files['input.bg']}\n${job.script}`, 'in');
     consoleBusy(true);
@@ -561,16 +591,111 @@ $('pasteJob').addEventListener('click', async () => {
 
 function route() {
   const v = (location.hash || '#compute').slice(1);
-  const view = ['compute', 'console', 'about'].includes(v) ? v : 'compute';
+  const view = v.startsWith('guide') ? 'guide' : ['compute', 'console', 'about'].includes(v) ? v : 'compute';
   for (const s of document.querySelectorAll('.view')) s.hidden = s.id !== `view-${view}`;
   for (const a of document.querySelectorAll('.views a')) {
     if (a.dataset.view === view) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
   }
+  if (view === 'guide' && v !== 'guide') $('guideContent').querySelector(`#${CSS.escape(v)}`)?.scrollIntoView();
 }
+
+function updateGuide() {
+  const generation = ++guideGeneration;
+  $('mathNotice').hidden = true;
+  $('guideContent').setAttribute('aria-busy', 'true');
+  renderMath($('guideContent'), guideHTML(getLanguage())).then(() => {
+    if (generation !== guideGeneration) return;
+    $('guideContent').setAttribute('aria-busy', 'false');
+    if (location.hash.startsWith('#guide-')) route();
+  }).catch(() => {
+    if (generation !== guideGeneration) return;
+    $('guideContent').setAttribute('aria-busy', 'false');
+    $('mathNotice').textContent = t('math.error');
+    $('mathNotice').hidden = false;
+  });
+}
+
+function updateEngineNote() {
+  $('engineNote').textContent = engineInfo ? t('engine.ready', { version: engineInfo.version })
+    : engineError ? t('engine.error', { msg: engineError }) : t('engine.loading');
+}
+
+// "?" helpers show on hover or focus (CSS); a tap toggles them, Escape or a tap elsewhere closes them.
+function closeHelps(except) {
+  for (const help of document.querySelectorAll('.help.open')) {
+    if (help === except) continue;
+    help.classList.remove('open');
+    help.querySelector('.help-btn').setAttribute('aria-expanded', 'false');
+  }
+}
+document.addEventListener('click', e => {
+  const button = e.target.closest('.help-btn');
+  if (e.target.closest('.help-pop')) return;
+  closeHelps(button?.parentElement);
+  if (!button) return;
+  const open = button.parentElement.classList.toggle('open');
+  button.setAttribute('aria-expanded', String(open));
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeHelps(); });
+
+// The theme button cycles automatic, light, dark; its label names the current theme.
+const THEMES = ['auto', 'light', 'dark'];
+function syncPreferenceControls() {
+  for (const button of document.querySelectorAll('[data-lang]')) {
+    button.setAttribute('aria-pressed', String(button.dataset.lang === preferences.language));
+  }
+  const label = `${t('theme.label')}: ${t('theme.' + preferences.theme)}`;
+  $('theme').dataset.pref = preferences.theme;
+  $('theme').setAttribute('aria-label', label);
+  $('theme').title = label;
+}
+
+function updateLanguage() {
+  applyTranslations();
+  syncPreferenceControls();
+  fillPresets();
+  fillTasks();
+  fillOrders();
+  refresh();
+  document.documentElement.lang = getLanguage();
+  setStatus(statusState.key, statusState.params, statusState.busy);
+  updateEngineNote();
+  updateGuide();
+  if (lastRendered) renderResults(lastRendered.job, lastRendered.res);
+  if (lastJob) renderLog(lastJob, fileContents.get('terminal.txt') || '');
+}
+
+document.addEventListener('click', e => {
+  const button = e.target.closest('[data-tutorial]');
+  if (!button) return;
+  els.preset.value = 'tutorial:' + button.dataset.tutorial;
+  applyPreset();
+  showPane('input');
+  location.hash = 'compute';
+});
 
 // ------------------------------------------------------------ init
 
 async function init() {
+  applyTranslations();
+  document.documentElement.lang = getLanguage();
+  syncPreferenceControls();
+  for (const button of document.querySelectorAll('[data-lang]')) {
+    button.addEventListener('click', () => {
+      if (preferences.language === button.dataset.lang) return;
+      preferences.language = button.dataset.lang;
+      setLanguage(preferences.language);
+      savePreferences(storage, preferences);
+      updateLanguage();
+    });
+  }
+  $('theme').addEventListener('click', () => {
+    preferences.theme = THEMES[(THEMES.indexOf(preferences.theme) + 1) % THEMES.length];
+    applyTheme(preferences.theme);
+    savePreferences(storage, preferences);
+    syncPreferenceControls();
+  });
+  updateGuide();
   fillPresets();
   fillTasks();
   fillOrders();
@@ -594,9 +719,10 @@ async function init() {
   if (loadedExample) {
     // keep the reference link only if the stored form equals the example
     const cur = snapshot();
+    const restoredForm = readForm();
     const prev = els.preset.value;
     applyPreset();
-    if (snapshot() !== cur) { loadedExample = null; els.preset.value = prev; }
+    if (snapshot() !== cur) { loadedExample = null; writeForm(restoredForm); els.preset.value = prev; refresh(); }
   }
 
   els.form.addEventListener('input', (e) => {
@@ -609,7 +735,7 @@ async function init() {
     refresh();
   });
   els.form.addEventListener('submit', compute);
-  els.stop.addEventListener('click', () => { engine.cancel(); running = false; els.go.disabled = false; els.stop.hidden = true; setStatus('Stopped.'); });
+  els.stop.addEventListener('click', () => { engine.cancel(); running = false; els.go.disabled = false; els.stop.hidden = true; setStatus('status.stopped'); });
   els.tabs.addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) selectTab(b.dataset.tab); });
   els.tabs.addEventListener('keydown', (e) => {
     if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
@@ -624,11 +750,12 @@ async function init() {
   window.addEventListener('hashchange', route);
   route();
   try {
-    const info = await engine.init();
-    $('engineNote').textContent = `bergman is ready (${info.version}).`;
+    engineInfo = await engine.init();
+    updateEngineNote();
     $('engineNote').classList.add('live');
   } catch (error) {
-    $('engineNote').textContent = `Engine unavailable: ${error.message}`;
+    engineError = error.message;
+    updateEngineNote();
   }
 }
 
