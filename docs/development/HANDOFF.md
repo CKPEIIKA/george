@@ -166,15 +166,15 @@ engine/source packages. Local toolchains, dependencies, detailed run logs,
 archives and agent configuration are excluded.
 
 The earlier interface and structural-export release is committed and published.
-The current release is on `fix/anick-braid`. The user requested contributor
+The current checkout is on `main`, tracking the published source branch. Contributor
 cleanup: `tools/prepare-publication.mjs` creates clean `publish/main` and
 `publish/gh-pages` histories, removes Claude co-author trailers and preserves
 human authors and all original file trees. Its Pages tip contains the exact
-committed `web/` tree. Original local refs remain available. See the README
-and ignored `build/publication/plan.json` / `publish.sh` for the concrete
-atomic force-with-lease publication. Remote history and the GitHub contributor
-graph are unchanged until those clean refs are pushed; do not publish an old
-history afterward and reintroduce the trailers.
+committed `web/` tree. Original local refs remain available. The ignored
+`build/publication/plan.json` / `publish.sh` record the guarded publication.
+The cleaned histories were pushed; the public contributors API now returns
+an empty list, although GitHub's interface may retain older cached data.
+Do not publish an old history afterward and reintroduce removed trailers.
 
 The previously deferred console work is now included in George 0.2. Its
 JavaScript guards, automatic session restart after input EOF, and first-T
@@ -194,17 +194,13 @@ collector's exact selections are in `build/validation/reader02-release-reports.j
 `--experimental-test-isolation=none`. The browser checks include the actual
 current console/form interface, rather than the earlier isolated checkout.
 
-No remote publication was performed: SSH authentication failed, and the user
-requested a single command to publish afterward. The prepared publication
-script accepts an SSH key path, starts an agent in the same shell when needed,
-and uses explicit force leases for both branches. Run from the repository:
+The user published the prepared source and Pages branches. Both remote tips
+match the release plan. A live check found that Pages still served the previous
+release and no new deployment workflow had run yet. The new version needs a
+Pages deployment before its live console checks can be completed. Existing-site
+Chromium checks passed computations, responsiveness, cancellation and memory
+growth; those checks do not certify the newly pushed version.
 
-```sh
-sh build/publication/publish.sh
-```
-
-This pushes clean source history to main and the exact web tree to gh-pages.
-The original local refs remain available; avoid publishing those old histories
-and reintroducing the removed coauthor trailers. If another party updates the
-remote tips, the lease rejects the push and the publication plan must be
-reviewed/refreshed. GitHub Pages may take time to deploy after the push.
+Machine-specific authentication instructions belong only in private local
+notes. The public README describes generic hosting; the source archive must
+contain the same sanitized documents. Original local refs remain available.

@@ -109,21 +109,8 @@ and results are compared with a native SBCL build, Bergman 2 and Singular
 
 ## PUBLISHING
 
-After committing the release, prepare source and Pages branches together:
-
-```sh
-node tools/prepare-publication.mjs --update
-cat build/publication/plan.json
-sh build/publication/publish.sh
-```
-
-Set *Settings → Pages → Deploy from a branch → gh-pages, /(root)*.
-
-The helper creates `publish/main` and `publish/gh-pages` with Claude co-author
-trailers removed, preserving authors and file trees. The Pages branch contains
-the committed `web/` tree. Original local branches remain available. The last
-command replaces both remote histories atomically with explicit force leases;
-preparation alone does not change GitHub or its contributors graph.
+Publish the committed `web/` directory to `gh-pages`. In GitHub, set
+*Settings → Pages → Deploy from a branch → gh-pages, /(root)*.
 
 George 0.2 includes the persistent Lisp console: command completion, history,
 original Bergman help, and session files. Missing files or unavailable keyboard
