@@ -1,15 +1,18 @@
 {
-  "bergman": "1.001",
+  "bergman": "bergman-1.001-fix",
+  "upstreamBergman": "1.001",
+  "defaultBehavior": "fixed",
+  "legacyBehavior": "original",
   "ecl": "59f60e09102961bf5872c672fdd9d200b2e83d6b",
   "emscripten": "4.0.12",
   "files": {
     "ecl.data": {
-      "bytes": 2994821,
-      "sha256": "579f2d1601cd2cdb6afa85a57cec6737d1f291f2aab3937efaad93ceb4a0ed44"
+      "bytes": 3018772,
+      "sha256": "b5544505f6306d0e7f4deb6a6e2a57583228ed3e5e8636819520a276d178917f"
     },
     "ecl.js": {
-      "bytes": 108367,
-      "sha256": "6faf178a983920892177f014380bfc124c964d537577fd595941129750ac9f55"
+      "bytes": 108260,
+      "sha256": "b6d0dcb4727e77e132878f420521c58e3322bf9b009e528b7bfd999f68495cda"
     },
     "ecl.wasm": {
       "bytes": 4617578,

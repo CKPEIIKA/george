@@ -44,19 +44,32 @@ export function augmentedHomology(text, vars, modulus=0, completion=null) {
       if(v[0])throw new Error(`The augmented differentials do not compose to zero at degree ${n}.`);
     }}
   }
-  const betti=chains.slice(0,top).map((c,n)=>c.length-ranks[n]-ranks[n+1]);
+  let betti=chains.slice(0,top).map((c,n)=>c.length-ranks[n]-ranks[n+1]);
   let finiteTailZero=false;
+  let truncatedBetti;
   if(completion?.completeBasis && completion.degreeBound){
     const weights=new Map(vars.map((v,i)=>[v,Number(String(completion.weights||'').trim().split(/[\s,]+/)[i])||1]));
     const degree=s=>Math.max(0,...parseRelation(s,vars).map(t=>termDegree(t,weights)));
     const maxRelation=Math.max(0,...parseBasis(completion.basis).groups.flatMap(g=>g.polys).map(degree));
     const maxChain=Math.max(0,...diffs.get(top-1).map(d=>d.chain.reduce((s,v)=>s+weights.get(v),0)));
+    const maxTail=Math.max(0,maxRelation-Math.min(...weights.values()));
+    const maxGenerator=Math.max(...weights.values());
     // Every next Anick chain extends a current chain by a proper tail of
     // a leading word. If all possible extensions fit and none exists, the
     // chain complex ends here. This also certifies its zero tail.
-    finiteTailZero=maxChain+maxRelation-Math.min(...weights.values())<=Number(completion.degreeBound);
+    finiteTailZero=maxGenerator+(top-1)*maxTail<=Number(completion.degreeBound)
+      && maxChain+maxTail<=Number(completion.degreeBound);
     if(finiteTailZero)betti.push(chains[top].length-ranks[top]);
+    else {
+      // H_n needs every chain of C_(n+1), including heavier chains whose
+      // homological degree is lower than the largest observed one. Each
+      // extension adds at most a proper leading-word tail, so this bound
+      // certifies completeness without treating a truncated rank as Tor.
+      const certified=maxTail?Math.floor((Number(completion.degreeBound)-maxGenerator)/maxTail):betti.length-1;
+      const count=Math.max(0,Math.min(betti.length,certified+1));
+      if(count<betti.length){truncatedBetti=betti;betti=betti.slice(0,count);}
+    }
   }
   if(betti.some(n=>n<0))throw new Error('Invalid homology dimensions.');
-  return { kind:'ungraded', coefficientField:modulus?`F_${modulus}`:'Q', betti, chainDimensions:chains.map(c=>c.length), differentialRanks:ranks, checkedSquareZero:true, highestCertifiedDegree:betti.length-1, finiteTailZero };
+  return { kind:'ungraded', coefficientField:modulus?`F_${modulus}`:'Q', betti, chainDimensions:chains.map(c=>c.length), differentialRanks:ranks, checkedSquareZero:true, highestCertifiedDegree:betti.length-1, finiteTailZero, ...(truncatedBetti?{truncatedBetti}:{}) };
 }

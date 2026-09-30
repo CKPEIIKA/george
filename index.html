@@ -15,10 +15,10 @@
 <a class="skip" href="#main" data-i18n="skip">Skip to content</a>
 
 <header class="top">
-  <a class="brand" href="#compute" aria-label="George, based on bergman">
+  <a class="brand" href="#compute" aria-label="George, an interface to bergman">
     <svg class="logo" viewBox="0 0 28 28" aria-hidden="true"><path class="logo-face" d="M14 3 25 14 14 25 3 14Z"/><path class="logo-edge" d="M14 3 25 14 14 25 3 14Z"/><circle cx="14" cy="3.6" r="2"/><circle cx="24.4" cy="14" r="2"/><circle cx="14" cy="24.4" r="2"/><circle cx="3.6" cy="14" r="2"/></svg>
     <span class="brand-name">George</span>
-    <span class="brand-sub" data-i18n="brand.sub">based on bergman</span>
+    <span class="brand-sub" data-i18n="brand.sub">an interface to bergman</span>
   </a>
   <nav class="views" aria-label="Views" data-i18n-attr="aria-label:nav.views">
     <a href="#compute" data-view="compute" data-i18n="nav.compute">Compute</a>
@@ -269,7 +269,7 @@
   <article class="sheet prose">
     <h1 id="aboutTitle" data-i18n="about.title">About George</h1>
     <p data-i18n-html="about.p1">George computes Gröbner bases of ideals in free associative and in commutative polynomial algebras, degree by degree, and from them Hilbert and Poincaré–Betti series, Anick resolutions and Betti numbers of algebras and modules, and Hochschild homology.</p>
-    <p data-i18n-html="about.p2">George is based on bergman, written by Jörgen Backelin with Svetlana Cojocaru, Alexander Podoplelov, Victor Ufnarovski and others, and named after George Bergman, whose diamond lemma underlies the method. George does not reimplement it: it runs the original bergman 1.001 sources on ECL, a Common Lisp compiled to WebAssembly, inside your browser. Nothing is sent to a server.</p>
+    <p data-i18n-html="about.p2">George is an interface to bergman, written by Jörgen Backelin with Svetlana Cojocaru, Alexander Podoplelov, Victor Ufnarovski and others, and named after George Bergman, whose diamond lemma underlies the method. George does not reimplement it: it runs bergman-1.001-fix, the original bergman 1.001 with documented fixes and a legacy mode, on ECL, a Common Lisp compiled to WebAssembly, inside your browser. Nothing is sent to a server.</p>
     <h2 data-i18n="about.input">Input</h2>
     <p data-i18n-html="about.inputP">Relations are sums of monomials with integer coefficients, as in bergman’s own <code>algforminput</code>: <code>5*x*y, x^2-y^2</code>. In the noncommutative case the order of the factors matters, so <code>x*y-y*x</code> is the commutator. The order of the generators decides the variable order.</p>
     <h2 data-i18n="about.what">What can be computed</h2>

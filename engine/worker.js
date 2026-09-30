@@ -34,7 +34,7 @@ onmessage = async ({ data: { id, command, job, source } }) => {
       runtime.FS.chdir('/work');
       if (runtime.ccall('george_eval', 'number', ['string', 'number'], ['(SETF CL:*DEFAULT-PATHNAME-DEFAULTS* #P"/work/")', 0])) throw new Error('Cannot set the working directory.');
       flush();
-      postMessage({ id, result: { name: 'ECL / WebAssembly', version: 'bergman 1.001', ready: true, startupMs: performance.now() - start } });
+      postMessage({ id, result: { name: 'ECL / WebAssembly', version: 'bergman-1.001-fix', ready: true, startupMs: performance.now() - start } });
       return;
     }
     if (!runtime) throw new Error('Engine has not initialized.');

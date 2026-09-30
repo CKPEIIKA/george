@@ -378,7 +378,7 @@ function renderResults(job, res) {
     } else {
       const a = parseAnick(txt);
       $('bettiOut').innerHTML = res.homology
-        ? `<p>${t('betti.ungraded')}</p><div class="table-wrap"><table class="betti"><thead><tr><th scope="col">${t('degree')}</th>${res.homology.betti.map((_,i)=>`<th scope="col">${i}</th>`).join('')}</tr></thead><tbody><tr><th scope="row">${t('dimension')}</th>${res.homology.betti.map(n=>`<td>${n}</td>`).join('')}</tr></tbody></table></div>${res.homology.finiteTailZero?`<p>${t('betti.tail')}</p>`:''}<p>${t('betti.raw')}</p>`
+        ? `<p>${t('betti.ungraded')}</p><div class="table-wrap"><table class="betti"><thead><tr><th scope="col">${t('degree')}</th>${res.homology.betti.map((_,i)=>`<th scope="col">${i}</th>`).join('')}</tr></thead><tbody><tr><th scope="row">${t('dimension')}</th>${res.homology.betti.map(n=>`<td>${n}</td>`).join('')}</tr></tbody></table></div>${res.homology.finiteTailZero?`<p>${t('betti.tail')}</p>`:''}${res.homology.truncatedBetti?`<p>${t('betti.truncated',{degree:res.homology.highestCertifiedDegree})}</p>`:''}<p>${t('betti.raw')}</p>`
         : renderBetti(a, res);
       const resolution = files['resolution.jsonl'] ? structuralResolutionDisplay(files['resolution.jsonl'], readInputFile(job.files['input.bg']).vars) : a;
       $('resolutionOut').innerHTML = (res.homology?.shifted ? `<p>${t('res.shifted')}</p>` : '') + renderResolution(resolution, res);
