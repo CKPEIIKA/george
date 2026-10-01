@@ -16,7 +16,7 @@ const upstream=JSON.parse(fs.readFileSync('test/fixtures/upstream-cases.json','u
 const out=`build/validation/ui-${Date.now()}`;fs.mkdirSync(out,{recursive:true});
 const sha=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
 const browserFiles=['web/index.html','web/style.css',...fs.readdirSync('web/src').filter(n=>n.endsWith('.js')).map(n=>'web/src/'+n),'web/engine/worker.js','web/engine/runner.js'];
-const report={debuggerDuringCalculations:false,mobileViewportControl:'CDP Emulation only; no Runtime, Debugger or Profiler domains',engine:JSON.parse(fs.readFileSync('web/engine/build.json','utf8')),sourceHashes:Object.fromEntries(browserFiles.map(p=>[p,sha(p)])),browser:null,mounts:[],console:[],examples:[],checks:[],errors:[],externalRequests:[]};
+const report={debuggerDuringCalculations:false,mobileViewportControl:'CDP Emulation only; no Runtime, Debugger or Profiler domains',engine:JSON.parse(fs.readFileSync('web/engine/compiled/build.json','utf8')),sourceHashes:Object.fromEntries(browserFiles.map(p=>[p,sha(p)])),browser:null,mounts:[],console:[],backends:[],examples:[],checks:[],errors:[],externalRequests:[]};
 const data={tutorials:TUTORIALS.map(t=>({...t,form:tutorialForm(t.id)})),examples:EXAMPLES,
  upstream:upstream.cases.filter(c=>['sympy-katsura3','singular-gb_braid3-11','gbnp-weighted','gbnp-sl2-quotient'].includes(c.id))};
 
@@ -30,7 +30,7 @@ async function checkUI(){
  const phase=sessionStorage.getItem('validation.phase')||'start';
  const mode=new URL(location.href).searchParams.get('validation')||'desktop';
  const files=()=>Object.fromEntries(all('#filesOut .file').map(e=>[e.querySelector('.name').textContent,e.querySelector('pre').textContent]));
- const form=()=>all('#presentation input,#presentation select,#presentation textarea').map(n=>({id:n.id||n.name+':'+n.value,value:n.value,checked:n.checked??null}));
+ const form=()=>all('#presentation input:not([readonly]),#presentation select,#presentation textarea').map(n=>({id:n.id||n.name+':'+n.value,value:n.value,checked:n.checked??null}));
  const set=(id,value)=>{const el=$('#'+id);el.value=String(value);el.dispatchEvent(new Event(el.tagName==='SELECT'?'change':'input',{bubbles:true}));};
  const radio=(name,value)=>{const el=$(`input[name="${name}"][value="${value}"]`);el.checked=true;el.dispatchEvent(new Event('change',{bubbles:true}));};
  const language=value=>$(`[data-lang="${value}"]`).click();
@@ -52,7 +52,9 @@ async function checkUI(){
    $('[data-tutorial="monoid"]').click();await compute();ok(!$('#view-compute').hidden,'mobile computed result visible');ok($('#bettiOut').textContent.includes('Ungraded Betti numbers'),'mobile Betti result');ok(document.documentElement.scrollWidth<=innerWidth+1,'mobile result overflow');await post('done',{mode,errors,checks:['390px guide and computed monoid result have no page overflow']});return;
   }
   if(phase==='start'){
-   language('en');eq($('.brand-sub').textContent,'an interface to bergman','English interface wording');eq($('.brand-version').textContent,'0.3','application version');
+   language('en');eq($('.brand-sub').textContent,'an interface to bergman','English interface wording');eq($('.brand-version').textContent,'0.4','application version');
+   eq($('#backend').value,'compiled','default backend');
+   eq(all('#backend option').map(o=>o.textContent),['C / ECL O3 + LTO','Lisp / ECL O3 + LTO','Lisp / ECL O2'],'explicit backend labels');
    location.hash='#console';
    const command=async(src,expected)=>{
     const term=$('#terminal'),start=term.children.length;
@@ -80,12 +82,24 @@ async function checkUI(){
    await command('(show "input.bg")',/ALGFORMINPUT/i);await command('(files)',/result/);
    ok(!/session was restarted/.test($('#terminal').textContent),'reader recovery preserves session');
    await post('console',{mount:data.mount,recoveryCases:8,settingsAndFilesRetained:true,firstValue:true,help:true,completion:true,history:true,currentComputation:true});
+   location.hash='#compute';$('details.advanced').open=true;
+   const {readShareLink}=await import(new URL('src/share.js',location.href));
+   const backendRows=[];let reference;
+   for(const backend of ['standard','optimized','compiled']){
+    set('backend',backend);set('preset','tutorial:char2');eq($('#backend').value,backend,'preset preserves backend');
+    await compute();const raw=files();if(reference)eq(raw,reference,'backend output parity');else reference=raw;
+    $('#shareLink').value='';$('#share').click();await wait(()=>$('#shareLink').value&&!$('#share').disabled,'backend share');
+    eq((await readShareLink(new URL($('#shareLink').value).hash)).backend,backend,'shared backend');
+    backendRows.push({backend,outputParity:true,shareRoundTrip:true});
+   }
+   await post('backends',{mount:data.mount,defaultBackend:'compiled',rows:backendRows});
+   set('backend','optimized');
    location.hash='#compute';await theme('light');eq(getComputedStyle(document.body).backgroundColor,'rgb(238, 242, 243)','light theme');await theme('dark');eq(getComputedStyle(document.body).backgroundColor,'rgb(17, 26, 39)','dark theme');await theme('auto');eq(document.documentElement.getAttribute('data-theme'),null,'automatic theme');eq(getComputedStyle(document.body).backgroundColor,matchMedia('(prefers-color-scheme: dark)').matches?'rgb(17, 26, 39)':'rgb(238, 242, 243)','automatic follows OS');
    set('preset','tutorial:weights');await compute();const before=form(),raw=files();language('ru');eq($('.brand-sub').textContent,'интерфейс к bergman','Russian interface wording');eq(document.documentElement.lang,'ru','Russian lang');ok(/Вычислить/.test($('#go').textContent),'Russian controls');ok(/Вычислено/.test($('#runStatus').textContent),'Russian status');eq(form(),before,'language preserves form');eq(files(),raw,'language preserves files');
    location.hash='#guide';await math();eq($('#guideTitle').textContent,'Руководство пользователя','Russian guide');checkMath();await theme('dark');sessionStorage.setItem('validation.savedForm',JSON.stringify(before));next('persist');return;
   }
   if(phase==='persist'){
-   eq($('[data-lang][aria-pressed="true"]').dataset.lang,'ru','language persists');eq($('#theme').dataset.pref,'dark','theme persists');eq(form(),JSON.parse(sessionStorage.getItem('validation.savedForm')),'form persists');await math();language('en');await math();language('ru');language('en');await math();checkMath();eq($('#guideTitle').textContent,'User guide','English guide');
+   eq($('[data-lang][aria-pressed="true"]').dataset.lang,'ru','language persists');eq($('#theme').dataset.pref,'dark','theme persists');eq(form(),JSON.parse(sessionStorage.getItem('validation.savedForm')),'form persists');eq($('#backend').value,'optimized','nondefault backend persists');set('backend','compiled');await math();language('en');await math();language('ru');language('en');await math();checkMath();eq($('#guideTitle').textContent,'User guide','English guide');
    $('#guideContent a[href="#guide-options"]').click();eq(location.hash,'#guide-options','guide link');ok(!$('#view-guide').hidden,'guide visible');
    for(const item of [
     {vars:'a, ab, bc, c',rels:'a*bc-a, ab*c-ab',augmentation:'graded',betti:[1,2,0],names:['ab','bc'],collision:true},
@@ -118,8 +132,12 @@ async function checkUI(){
 // Emulation and Page domains are used; no debugger or profiler is enabled.
 async function mobileViewport(profile,url){
  const portFile=path.join(profile,'DevToolsActivePort'),start=Date.now();
- while(!fs.existsSync(portFile)){assert.ok(Date.now()-start<30000,'Chrome debugging port');await new Promise(r=>setTimeout(r,50));}
- const [port,endpoint]=fs.readFileSync(portFile,'utf8').trim().split('\n');
+ let port,endpoint;
+ while(!endpoint){
+  if(fs.existsSync(portFile))[port,endpoint]=fs.readFileSync(portFile,'utf8').trim().split('\n');
+  assert.ok(Date.now()-start<30000,'Chrome debugging port');
+  if(!endpoint)await new Promise(r=>setTimeout(r,50));
+ }
  const socket=new WebSocket(`ws://127.0.0.1:${port}${endpoint}`);
  await new Promise((r,j)=>{socket.addEventListener('open',r,{once:true});socket.addEventListener('error',j,{once:true});});
  let id=0;const pending=new Map();socket.addEventListener('message',e=>{const m=JSON.parse(e.data),p=pending.get(m.id);if(p){pending.delete(m.id);m.error?p.reject(Error(JSON.stringify(m.error))):p.resolve(m.result);}});
@@ -149,6 +167,10 @@ async function run(mount,mode='desktop'){
      if(item.example){const e=EXAMPLES.find(e=>e.id===item.example);for(const [k,text]of Object.entries(e.out))assert.equal(v.files['result.'+k],text,v.id+'/'+k);}
      else{assert.deepEqual(JSON.parse(v.files['homology.json']).betti.slice(0,5),[1,1,0,0,0]);assert.ok(v.resolutionLines>0);}
      report.examples.push({id:item.id,task:tutorialForm(item.id).task,outputs:Object.keys(v.files),hashes:Object.fromEntries(Object.entries(v.files).map(([n,s])=>[n,crypto.createHash('sha256').update(s).digest('hex')]))});console.log(item.id,'PASS');
+    }else if(kind==='backends'){
+     assert.equal(v.defaultBackend,'compiled');assert.deepEqual(v.rows.map(r=>r.backend),['standard','optimized','compiled']);
+     for(const row of v.rows){assert.equal(row.outputParity,true);assert.equal(row.shareRoundTrip,true);}
+     report.backends.push(v);console.log(mount,'backend selection, parity and share PASS');
     }else if(kind==='console'){
      assert.equal(v.recoveryCases,8);for(const key of ['settingsAndFilesRetained','firstValue','help','completion','history','currentComputation'])assert.equal(v[key],true,key);
      report.console.push(v);console.log(mount,'console recovery PASS');
@@ -188,6 +210,6 @@ async function run(mount,mode='desktop'){
  finally{clearTimeout(timer);await attached?.close().catch(()=>{});viewport?.close();browser.kill('SIGTERM');server.close();fs.writeFileSync(`${out}/browser-${mode}-${mount==='/'?'root':'project'}.log`,stderr);}
 }
 try{for(const mount of ['/','/george/']){console.log('Checking',mount);await run(mount);}await run('/george/','mobile');await run('/','blocked');
- assert.equal(report.examples.length,8);assert.equal(report.mounts.length,2);assert.equal(report.console.length,2);assert.deepEqual(report.errors,[]);assert.deepEqual(report.externalRequests,[]);for(const [p,h]of Object.entries(report.sourceHashes))assert.equal(sha(p),h,p+': sources changed during validation');
+ assert.equal(report.examples.length,8);assert.equal(report.mounts.length,2);assert.equal(report.console.length,2);assert.equal(report.backends.length,2);assert.deepEqual(report.errors,[]);assert.deepEqual(report.externalRequests,[]);for(const [p,h]of Object.entries(report.sourceHashes))assert.equal(sha(p),h,p+': sources changed during validation');
  fs.writeFileSync(`${out}/report.json`,JSON.stringify(report,null,2)+'\n');console.log(out,'PASS');
 }catch(e){console.error(e);process.exitCode=1;}

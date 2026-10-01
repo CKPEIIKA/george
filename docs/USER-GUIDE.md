@@ -40,15 +40,16 @@ file remains Bergman's original text. See [the export format](RESOLUTION-EXPORT.
 
 These supplement the fourteen original presets and six configurable families.
 The first six reuse original inputs; the last two are algebraic sanity cases.
-Loading an example resets computational options to its documented settings.
+Loading an example sets its documented computational options and preserves
+the computation engine selection.
 Changing display language preserves the current presentation and output files.
 
-## Sharing a presentation (George 0.3)
+## Sharing a presentation
 
 Click **Share** beside Compute to copy a compact link. If clipboard access
 is unavailable, select and copy the link shown below the buttons. The link
 restores the generators, relation text, computation, field, order, weights,
-degree limits, memory allowance, all advanced and module settings, preset
+degree limits, memory allowance, computation engine, advanced and module settings, preset
 selection, language and theme. Shared settings take priority over the
 recipient's saved form. Opening a link loads the form; press Compute to run it.
 
@@ -57,6 +58,19 @@ The state is stored in the link using a compact versioned schema and
 short-link service. Larger presentations produce longer links. Times are
 displayed in seconds, with up to two decimal places; Russian uses a decimal
 comma, for example **302,49 с**.
+
+## Computation engines (George 0.4)
+
+**More settings → Computation engine** offers **Lisp / ECL O2**, **Lisp / ECL
+O3 + LTO**, and **C / ECL O3 + LTO**. The C backend is selected by default.
+It compiles Bergman's existing Lisp functions to C and then WebAssembly;
+some auxiliary functions still run as Lisp bytecode. The two Lisp options
+run the algebra routines as bytecode, with different compiler settings for
+ECL and its libraries. All three use the same algebraic algorithms.
+
+The selection is saved and included in Share links. Earlier links select
+the original O2 backend. Changing engines starts a new console session.
+Each computation submitted through the form starts in a fresh session.
 
 ## Memory
 

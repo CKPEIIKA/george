@@ -1,5 +1,45 @@
 # Validation and verification
 
+## George 0.4 — 2026-10-01
+
+The current package is **0.4.0**, with **C / ECL O3 + LTO** selected by
+default and explicit **Lisp / ECL O2** and **Lisp / ECL O3 + LTO** alternatives.
+All three use the same Bergman algorithms and bytecode data. The C backend
+compiles existing functions through ECL; auxiliary bytecode remains.
+
+| Executed check | Result |
+|---|---|
+| JavaScript unit tests | **64 tests passed** |
+| Seeded LHS and anchors | **112 cases × three backends** in Node and Chromium: 109 successful cases with exact output equality, two shared error cases and one shared timeout case |
+| Larger inputs | 16 generators/136 relations through degree 3 and 20 generators/210 relations through degree 2; backend equality and independently known quotient dimensions |
+| Original sequential sessions | 37 output files in each mode for each backend, **222 exact file comparisons** |
+| Independent parity certificates | **3,465 critical ambiguities** and **353 full differential identities** where checker order and degree bounds apply |
+| Selected C algebra audit | 42 basis cases with **597 ambiguities** and Singular reductions; nine resolutions with **560 d² identities** |
+| Selected C reader recovery | 23 consecutive failures per mode, same-session computation/GC, and eight native EOF checks |
+| Selected C memory | Node holds 3.125 GiB of live arrays across full GC; Chromium allocates 3.164 GiB and grows linear memory to 3,626,631,168 bytes; exact arithmetic, exhaustion, saved output, restart and cancellation pass |
+| UI | Root and `/george/`, all three backend choices, share round trips, nondefault persistence, eight tutorials, EN/RU, mobile, blocked storage, local MathJax and downloads; earlier share format also checked by unit tests |
+| Submitted presentation | Native equality through degrees 4, 6 and 7; 695 elements through degree 7, ordinary Chromium median **10.765 seconds** across three C runs |
+| New C degree-7 link | All shared settings restored through the actual local UI; computed output matches native; the new link requires publication of 0.4 |
+
+The seeded design has 64 basis, 16 series and 16 resolution samples, plus
+16 anchors. Every pre-discretization LHS stratum is covered. Constraints,
+parameter coordinates, outputs, engine hashes and the three shared
+limitations are retained in [backend-parity.json](validation/backend-parity.json).
+The two one-generator matrix-order Hilbert errors and the weighted
+elimination timeout are tested as known failures; they are not successful
+computations. The first browser attempt reached its overall time cap after
+286 comparisons; a verified resume completed the remaining 44. The two
+larger inputs were checked in a separate batch.
+
+See [BACKENDS.md](BACKENDS.md), [PERFORMANCE.md](PERFORMANCE.md), and
+[compilation.json](validation/compilation.json) for build scope, individual
+times, source hashes, exact backend labels, and executed checks. Timings in
+debugger-connected functional tests are excluded from performance ratios.
+No new degree-eight run was performed, and these degree bounds do not
+certify a complete unrestricted basis. Earlier sections remain historical.
+
+## Historical September audit
+
 Release audit: **2026-09-30**. This is a working Bergman → ECL → Wasm → HTML
 application running **bergman-1.001-fix**. Fixed behavior is the default;
 legacy mode retains the original Bergman 1.001 behavior and version identity.
@@ -10,7 +50,7 @@ the current memory-enabled build separately.
 
 ## George 0.3 interface changes — 2026-10-01
 
-The current interface version is **George 0.3** (package version 0.3.0).
+That interface release is **George 0.3** (package version 0.3.0).
 It adds locale-aware seconds and compressed share links restoring the full
 form, memory allowance, preset, language and theme. All 53 JavaScript unit
 assertions passed on October 1. The engine was subsequently optimized as
@@ -18,7 +58,7 @@ described below; earlier audit results retain their original engine identity.
 
 ## Runtime optimization — 2026-10-01
 
-The current release engine uses fully rebuilt **O2 ECL/GMP/GC libraries**,
+The George 0.3 release engine uses fully rebuilt **O2 ECL/GMP/GC libraries**,
 an O2 final link and the existing GC pointer spilling pass. Bergman's Lisp
 bytecode is byte for byte unchanged from the memory update. Profiling hooks
 are excluded from the release. See [PERFORMANCE.md](PERFORMANCE.md) and

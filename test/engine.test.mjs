@@ -45,3 +45,13 @@ test('memory exhaustion keeps partial output and restarts the next command',asyn
  await rejected;assert.equal(w.terminated,true);assert.equal(e.worker,null);assert.equal(e.pending.size,0);
  const next=e.eval('(+ 1 2)');await tick();assert.notEqual(e.worker,w);e.worker.reply(e.worker.messages.at(-1),{stdout:'3\n'});await next;e.cancel();
 });
+test('backend changes restart the next command and initialize the selected worker', async () => {
+ let backend='standard'; const e=new EclEngine({getBackend:()=>backend});
+ let p=e.eval('first'); await tick(); const old=e.worker;
+ assert.equal(old.messages[0].backend,'standard');
+ backend='compiled'; assert.equal(e.worker,old,'changing the setting preserves the running worker');
+ old.reply(old.messages.at(-1),{}); await p;
+ p=e.eval('second'); await tick(); assert.equal(old.terminated,true);
+ assert.equal(e.worker.messages[0].backend,'compiled'); e.worker.reply(e.worker.messages.at(-1),{}); await p;
+ assert.throws(()=>e.setBackend('__proto__'),/Unknown/); e.cancel();
+});

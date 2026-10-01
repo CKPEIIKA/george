@@ -19,7 +19,7 @@ No installation. Everything runs in your browser; nothing is sent to a server.
 npm ci && npm run serve        open http://127.0.0.1:8000/
 npm test                       unit tests
 npm run test:ui                browser checks: examples, EN/RU, themes, /george/
-npm run wasm:build             rebuild the engine
+npm run wasm:build:backends    rebuild all three engines
 npm run sources                refresh the source archives beside the site
 ```
 
@@ -40,10 +40,10 @@ bergman 1.001 (Standard Lisp)    vendor/bergman-1.001/   unmodified
 Common Lisp build                ports/common/           patches, fixes, legacy mode
         │
         ▼
-ECL bytecode                     ports/ecl/
+ECL bytecode / ECL Lisp→C       ports/ecl/
         │
         ▼
-WebAssembly (Emscripten)         web/engine/ecl.{wasm,data,js}
+WebAssembly (Emscripten)         web/engine/ (three backends)
         │
         ▼
 Web Worker ⇄ JavaScript UI       web/engine/worker.js, web/src/
@@ -113,39 +113,25 @@ and results are compared with a native SBCL build, Bergman 2 and Singular
 | `npm run test:extra` | remaining original sessions |
 | `npm run test:ocaml` | Bergman 2 aliases and references |
 | `npm run test:algebra` | Singular, critical pairs, Hilbert dimensions |
+| `npm run test:backends` | seeded Latin hypercube inputs/settings, exact parity across the three engines |
 | `npm run test:upstream` | 90 adapted Singular/Plural, SymPy and GBNP field cases; independent oracles |
 | `npm run test:resolution:names` | long generator names, differentials |
 | `npm run test:braid` | native/Wasm braid resolutions, full differentials, projectivity and weighted bounds |
 | `npm run test:reader` | same-session recovery after missing files, EOF, stream redirection and syntax errors |
 | `npm run test:browser`, `test:browser:regression` | Chromium suites |
-| `GEORGE_LARGE_MEMORY=1 npm run test:browser` | Chromium allocation above 3 GiB, heap exhaustion, saved output and restart; requires a running local server |
+| `GEORGE_LARGE_MEMORY=1 npm run test:browser` | Chromium allocation above 3 GiB, heap exhaustion, saved output and restart |
 | `npm run test:ui` | guide, EN/RU, themes, MathJax, `/george/` path |
 
-## PUBLISHING
+## VERSION
 
-The workflow `.github/workflows/pages.yml` publishes the committed, prebuilt
-`web/` directory whenever `main` is pushed. Enable it once in GitHub:
-*Settings → Pages → Build and deployment → Source → GitHub Actions*.
-Pushes then deploy automatically, without rebuilding ECL or running tests.
-To redeploy the latest `main` manually, open
-*Actions → Deploy George to GitHub Pages → Run workflow* and select `main`.
-See [GitHub's Pages configuration](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site).
+George 0.4 adds a computation engine selector in **More settings**. It keeps
+the same Bergman algorithms, with Lisp / ECL O2, Lisp / ECL O3 + LTO and
+**C / ECL O3 + LTO** selected by default. ECL compiles existing Lisp functions
+to C; some auxiliary functions still use bytecode. The selected engine is saved and shared with the
+presentation. Backend parity is checked on reproducible Latin hypercube
+samples of inputs and settings.
 
-The existing branch-based setup is also supported:
-*Settings → Pages → Deploy from a branch → gh-pages, /(root)*. In that mode,
-publish the `web/` tree to `gh-pages`; pushing only `main` does not update the
-site. The Actions source above removes that extra branch-publication step.
-
-To prepare both source and site refs for a manual release, commit the intended
-changes, then run `node tools/prepare-publication.mjs --update --fast-forward`.
-Review `build/publication/plan.json` and execute `bash build/publication/publish.sh`
-in your terminal. Its optional argument is the SSH key to load with `ssh-add`;
-any passphrase is entered in the terminal. The script pushes both prepared
-branches atomically and refuses outdated prepared refs. In fast-forward mode
-it never forces a remote branch; a newer or diverged remote requires a fresh
-preparation after fetching.
-
-George 0.3 adds compact share links, computation times in seconds and the
+George 0.3 added compact share links, computation times in seconds and the
 selectable memory allowance up to 3.5 GiB. It includes the persistent Lisp
 console introduced in 0.2: command completion, history,
 original Bergman help, and session files. Missing files or unavailable keyboard
@@ -223,5 +209,5 @@ bergman, ECL, GMP, the GC, Emscripten and MathJax keep their own licenses.
 See *LICENSE.md*.
 
 ```
-George 0.3.0                     2026-10-01                       GEORGE(1)
+George 0.4.0                     2026-10-01                       GEORGE(1)
 ```

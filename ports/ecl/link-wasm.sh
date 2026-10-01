@@ -18,9 +18,22 @@ longjmp_flags=()
 if [[ ${GEORGE_LONGJMP:-emscripten} == wasm ]]; then
   longjmp_flags=(-sSUPPORT_LONGJMP=wasm)
 fi
+lto_flags=()
+case "${GEORGE_LTO:-0}" in
+  0) ;;
+  1) lto_flags=(-flto) ;;
+  *) echo 'GEORGE_LTO must be 0 or 1' >&2; exit 2 ;;
+esac
+aot_flags=()
+if [[ -n ${GEORGE_AOT_LIBRARY:-} ]]; then
+  [[ -f "$GEORGE_AOT_LIBRARY" ]] || { echo 'Missing AOT library' >&2; exit 2; }
+  aot_flags=(-DGEORGE_AOT "$GEORGE_AOT_LIBRARY")
+fi
 emcc "$root/ports/ecl/bridge.c" -ffile-prefix-map="$root"=. -I"$prefix" \
   "${profile_flags[@]}" \
   "${longjmp_flags[@]}" \
+  "${lto_flags[@]}" \
+  "${aot_flags[@]}" \
   -L"$prefix" -lecl -leclgmp -leclgc -lm \
   "${GEORGE_LINK_OPT:--O2}" -DECL_C_COMPATIBLE_VARIADIC_DISPATCH \
   -sBINARYEN_EXTRA_PASSES=--spill-pointers -sSTACK_SIZE=8388608 \

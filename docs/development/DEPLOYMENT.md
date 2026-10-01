@@ -9,7 +9,8 @@ site branch's root; `build/publication/plan.json` records the reviewed refs.
 Run `bash build/publication/publish.sh` from the repository. The script
 checks the prepared refs, pushes both atomically without forcing, then
 waits for that site commit's Pages workflow. It verifies the served
-HTML, engine manifest and corresponding source archive against the commit.
+HTML, UI sources, all three runtime manifests and assets, and the
+corresponding source archive against the commit.
 Failure returns a nonzero exit status with the workflow URL. Verification
 uses Node and Git; it does not require GitHub CLI or an API token for this
 public repository. An existing `GH_TOKEN` or `GITHUB_TOKEN` may be used for

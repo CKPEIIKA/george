@@ -1,4 +1,4 @@
-import createGeorgeModule from './ecl.js';
+import { getBackend } from '../src/backends.js';
 import { runJob, setMemoryLimit } from './runner.js';
 
 let runtime;
@@ -16,18 +16,22 @@ function print(line) {
   if (pending.length >= 8192) flush();
 }
 
-onmessage = async ({ data: { id, command, job, source } }) => {
+onmessage = async ({ data: { id, command, job, source, backend = 'standard' } }) => {
   activeId = id;
   output = pending = '';
   const start = performance.now();
   try {
     if (command === 'init') {
+      const assets = new URL(getBackend(backend).directory, new URL('../src/backends.js', import.meta.url));
+      const {default: createGeorgeModule} = await import(new URL('ecl.js', assets).href);
       const [data, wasm] = await Promise.all(['ecl.data','ecl.wasm'].map(async name => {
-        const response=await fetch(new URL(name,import.meta.url), {signal:AbortSignal.timeout(45000)});
+        // Both engines use the identical Bergman bytecode package.
+        const url = name === 'ecl.data' ? new URL(name, import.meta.url) : new URL(name, assets);
+        const response=await fetch(url, {signal:AbortSignal.timeout(45000)});
         if (!response.ok) throw new Error(`Cannot load ${name}: HTTP ${response.status}. Run npm run wasm:build.`);
         return response.arrayBuffer();
       }));
-      runtime = await createGeorgeModule({ print, printErr: print, stdin: () => null, wasmBinary:wasm, getPreloadedPackage:()=>data, locateFile: (p) => new URL(p, import.meta.url).href });
+      runtime = await createGeorgeModule({ print, printErr: print, stdin: () => null, wasmBinary:wasm, getPreloadedPackage:()=>data, locateFile: (p) => new URL(p, assets).href });
       const status = runtime.ccall('george_init', 'number', [], []);
       if (status) throw new Error(`Bergman initialization failed (${status}). ${output}`);
       setMemoryLimit(runtime);
@@ -35,7 +39,7 @@ onmessage = async ({ data: { id, command, job, source } }) => {
       runtime.FS.chdir('/work');
       if (runtime.ccall('george_eval', 'number', ['string', 'number'], ['(SETF CL:*DEFAULT-PATHNAME-DEFAULTS* #P"/work/")', 0])) throw new Error('Cannot set the working directory.');
       flush();
-      postMessage({ id, result: { name: 'ECL / WebAssembly', version: 'bergman-1.001-fix', ready: true, startupMs: performance.now() - start } });
+      postMessage({ id, result: { name: 'ECL / WebAssembly', version: 'bergman-1.001-fix', backend, ready: true, startupMs: performance.now() - start } });
       return;
     }
     if (!runtime) throw new Error('Engine has not initialized.');

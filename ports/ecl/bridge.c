@@ -20,6 +20,10 @@
 static int initialized = 0;
 static cl_object evaluate_text_function = ECL_NIL;
 
+#ifdef GEORGE_AOT
+extern void init_george_aot(cl_object);
+#endif
+
 static void set_bergman_environment(const char *root)
 {
   char path[4096];
@@ -61,6 +65,12 @@ GEORGE_EXPORT int george_init(void)
 
   result = cl_safe_eval(ecl_read_from_cstring("(GEORGE:INITIALIZE)"), ECL_NIL, ECL_NIL);
   if (result == ECL_NIL) return 3;
+
+#ifdef GEORGE_AOT
+  /* The experimental static library replaces function bodies after Bergman
+     has created its packages, macros, globals and initial mode bindings. */
+  ecl_init_module(OBJNULL, init_george_aot);
+#endif
 
   /* Never read the bridge's function name through a user-modified readtable.
      Keep the function reachable across collections and subsequent calls. */

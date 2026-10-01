@@ -1,4 +1,5 @@
 import { ORDERS, TASKS } from './bergman-syntax.js';
+import { BACKENDS } from './backends.js';
 
 export const SHARE_PREFIX = '#s=';
 const MAX_BYTES = 1048576;
@@ -13,6 +14,8 @@ const FIELDS = [
   ['outmode', 'ALG'], ['legacy', false], ['maxserdeg', '7'],
   ['nmodgen', '1'], ['nlmodgen', '1'], ['nrmodgen', '1'], ['task', 'gb'],
   ['preset', ''], ['presetN', '3'], ['language', 'en'], ['theme', 'auto'],
+  // Old links reproduce the engine that was available when they were made.
+  ['backend', 'standard'],
 ];
 const CHOICES = {
   ring: ['noncomm', 'comm'], field: ['0', '2', 'p'],
@@ -21,6 +24,7 @@ const CHOICES = {
   nonhomog: ['auto', 'itemwise', 'degreewise'], augmentation: ['graded', 'monoid'],
   strategy: ['default', 'rabbit'], lowterms: ['quick', 'safe'], outmode: ['ALG', 'MACAULAY'],
   task: TASKS.map(task => task.id), language: ['en', 'ru'], theme: ['auto', 'light', 'dark'],
+  backend: Object.keys(BACKENDS),
 };
 
 function validateState(state) {

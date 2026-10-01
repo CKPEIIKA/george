@@ -1,5 +1,45 @@
 # Runtime performance assessment
 
+## George 0.4: Lisp O2, Lisp O3 + LTO, and C
+
+Measured on **2026-10-01**. The submitted 15-generator, 100-relation
+presentation is unchanged. Ordinary Chromium runs use fresh workers,
+exclude startup, and compare each output byte for byte with native SBCL.
+
+| Backend/build | Degree 4 median, seconds | Speed relative to Lisp O2 |
+|---|---:|---:|
+| Lisp / ECL O2 | 11.488 | 1.00× |
+| Lisp / ECL O3 + LTO | 8.188 | 1.40× |
+| C / ECL O2, experimental comparison | 0.310 | 37.06× |
+| **C / ECL O3 + LTO, selected default** | **0.223** | **51.42×** |
+
+O3 + LTO reduces elapsed time by about **29% for Lisp** and **28% for C**
+in this paired degree-four series. The earlier O3 experiment below did not
+use LTO and showed no clear benefit. The C gain comes from ECL compiling
+the existing Lisp functions; see [BACKENDS.md](BACKENDS.md) for compilation
+scope, required dynamic dispatch, and bytecode fallbacks.
+
+The selected C backend completes degree six in **2.378 seconds** (median
+of three runs), returning **497 elements**. Degree seven runs take
+**10.524, 10.765, and 28.333 seconds**, median **10.765 seconds**. Each saves
+the same **695 elements**, matches the native reference, and uses
+116,260,864 bytes of Wasm memory. No new degree-eight run was performed.
+The degree bounds do not establish completion of the unrestricted basis.
+
+The machine and browser match the earlier assessment. Each configuration
+has three serial runs with no builds, profilers, or memory stress tests
+alongside it. Other desktop CPU load varied, which limits precision and
+explains why the full time ranges are retained. There is no paired Lisp-O2
+degree-seven series in this comparison, so no degree-seven speedup ratio is
+claimed. The historical 29-minute Lisp run is separate evidence.
+
+All individual times, compiler identities, asset hashes, parity outcomes,
+and current functional checks are recorded in
+[compilation.json](validation/compilation.json). This local comparison does
+not imply the same speedup for every presentation or auxiliary module.
+
+## Historical George 0.3 assessment
+
 Measured on **2026-10-01**, for George 0.3.0. The release now uses **O2 for
 the ECL interpreter, GMP and Boehm GC libraries**, with an O2 final link.
 The previous ECL wasm configuration forced O0 library compilation despite

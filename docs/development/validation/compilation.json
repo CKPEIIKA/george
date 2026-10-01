@@ -1,0 +1,2231 @@
+{
+  "date": "2026-10-01",
+  "version": "0.4.0",
+  "defaultBackend": "compiled",
+  "sourceBaseRevision": "991929cc50eb1273282ee9a476546b70ccd0cb4d",
+  "sourceHashes": {
+    "ports/ecl/aot.lisp": "f8bcac6616ad1f2d3dce4fd169f0e9f028313a20dee88f00502f48d7da4a5813",
+    "ports/ecl/bridge.c": "16805522de023374caf5b96536dcf17d14a1291e5c0ce5f90a48e870e5dafef8",
+    "ports/ecl/configure-runtime.py": "467c0e4f9a20e004a68c20dd70bc555ed89f4f32632f3d36af7079710cf8b9b8",
+    "ports/ecl/link-wasm.sh": "239bef25cc26165ff9bc2aa453fda9f511bf00e334ec24ba789fa6effea9c96d",
+    "tools/build-aot-variant.sh": "f6a4f08f4aab4e558a816a37878de39a83835054b97f51cc643c9be3ae3aa663",
+    "tools/build-backends.sh": "e8083938bcfafbe2d4f690383604d7f401d7f8e0091ae352d130a40b9277e876",
+    "tools/build-runtime-variant.sh": "fa9b4fcb6cb4adecbc97c17e02c46052ad393593014210ceb3c2c27689bbad32",
+    "tools/install-runtime-variant.mjs": "ff5941bda041564264da8e62d1e4edbad2fee129abf8efe346d28f047a29d8cc",
+    "tools/validate-backends.mjs": "9570fbf58f23989014185205dd1870a278c62816e3dac4d5d07457f0ecfb6a8c",
+    "tools/validate-backends-browser.mjs": "acaea223ebb6b97d996d47ec27ea2e3450de41c9163d92cc72292285525ad37e",
+    "test/support/backend-lhs.mjs": "b41f222baa1ef96a6f0eaca0ce00f1ac3093bcabef8cc3dfae24c00c510b4e9a",
+    "test/fixtures/backend-limitations.json": "03884ef22cdfbdf7d0ffc4675877b030ff06eb22974a8082640deaa535c5977f"
+  },
+  "engines": {
+    "standard": {
+      "directory": "/home/uu/Projects/george/web/engine",
+      "manifest": {
+        "bergman": "bergman-1.001-fix",
+        "upstreamBergman": "1.001",
+        "defaultBehavior": "fixed",
+        "legacyBehavior": "original",
+        "ecl": "59f60e09102961bf5872c672fdd9d200b2e83d6b",
+        "emscripten": "4.0.12",
+        "files": {
+          "ecl.js": {
+            "bytes": 110375,
+            "sha256": "28fbd34f967df956371ca8c7c69909dd697e0385f9e984a7e95f731ff009a7df"
+          },
+          "ecl.wasm": {
+            "bytes": 4784709,
+            "sha256": "b90c140372df3f8857e535fd8a8de3406ba57d27a40b6cf2e62b51a123a26585"
+          },
+          "ecl.data": {
+            "bytes": 3022218,
+            "sha256": "790ba520c484eb05e9e5d4134a67ec343c4993d4847cd9b0752233bb32d51368"
+          }
+        },
+        "appVersion": "0.4.0",
+        "memory": {
+          "wasmMaximumBytes": 4294967296,
+          "defaultHeapMiB": 2048,
+          "maximumHeapMiB": 3584
+        },
+        "compiler": {
+          "libraryOptimization": "O2",
+          "linkOptimization": "O2",
+          "longjmp": "emscripten",
+          "pointerSpilling": true,
+          "profiling": false
+        },
+        "backend": "standard"
+      },
+      "hashes": {
+        "ecl.js": "28fbd34f967df956371ca8c7c69909dd697e0385f9e984a7e95f731ff009a7df",
+        "ecl.wasm": "b90c140372df3f8857e535fd8a8de3406ba57d27a40b6cf2e62b51a123a26585",
+        "ecl.data": "790ba520c484eb05e9e5d4134a67ec343c4993d4847cd9b0752233bb32d51368"
+      }
+    },
+    "optimized": {
+      "directory": "/home/uu/Projects/george/web/engine/optimized",
+      "manifest": {
+        "bergman": "bergman-1.001-fix",
+        "upstreamBergman": "1.001",
+        "defaultBehavior": "fixed",
+        "legacyBehavior": "original",
+        "ecl": "59f60e09102961bf5872c672fdd9d200b2e83d6b",
+        "emscripten": "4.0.12",
+        "files": {
+          "ecl.js": {
+            "bytes": 109173,
+            "sha256": "a6594fd75be715f4c663bbc2954d2143fadd935e99a4a1eb5564441a36c37a2d"
+          },
+          "ecl.wasm": {
+            "bytes": 5235093,
+            "sha256": "221a268e3aac9bf1a7167f1e613eb51f600437f8c65596c2b0dfbbff0677786c"
+          },
+          "ecl.data": {
+            "bytes": 3022218,
+            "sha256": "790ba520c484eb05e9e5d4134a67ec343c4993d4847cd9b0752233bb32d51368"
+          }
+        },
+        "appVersion": "0.4.0",
+        "memory": {
+          "wasmMaximumBytes": 4294967296,
+          "defaultHeapMiB": 2048,
+          "maximumHeapMiB": 3584
+        },
+        "compiler": {
+          "libraryOptimization": "O3",
+          "linkOptimization": "O3",
+          "lto": true,
+          "aot": false,
+          "longjmp": "emscripten",
+          "pointerSpilling": true,
+          "profiling": false
+        },
+        "backend": "optimized"
+      },
+      "hashes": {
+        "ecl.js": "a6594fd75be715f4c663bbc2954d2143fadd935e99a4a1eb5564441a36c37a2d",
+        "ecl.wasm": "221a268e3aac9bf1a7167f1e613eb51f600437f8c65596c2b0dfbbff0677786c",
+        "ecl.data": "790ba520c484eb05e9e5d4134a67ec343c4993d4847cd9b0752233bb32d51368"
+      }
+    },
+    "compiled": {
+      "directory": "/home/uu/Projects/george/web/engine/compiled",
+      "manifest": {
+        "bergman": "bergman-1.001-fix",
+        "upstreamBergman": "1.001",
+        "defaultBehavior": "fixed",
+        "legacyBehavior": "original",
+        "ecl": "59f60e09102961bf5872c672fdd9d200b2e83d6b",
+        "emscripten": "4.0.12",
+        "files": {
+          "ecl.js": {
+            "bytes": 109173,
+            "sha256": "e275bb91c299a0928e07f35d17192de2fe4e65cd9175116f0ab69d743debc392"
+          },
+          "ecl.wasm": {
+            "bytes": 6535103,
+            "sha256": "281af63deabd3170bcf878135e12b1177525d817622b193105de75265f35e6f8"
+          },
+          "ecl.data": {
+            "bytes": 3022218,
+            "sha256": "790ba520c484eb05e9e5d4134a67ec343c4993d4847cd9b0752233bb32d51368"
+          }
+        },
+        "appVersion": "0.4.0",
+        "memory": {
+          "wasmMaximumBytes": 4294967296,
+          "defaultHeapMiB": 2048,
+          "maximumHeapMiB": 3584
+        },
+        "compiler": {
+          "libraryOptimization": "O3",
+          "linkOptimization": "O3",
+          "lto": true,
+          "aot": true,
+          "longjmp": "emscripten",
+          "pointerSpilling": true,
+          "profiling": false
+        },
+        "backend": "compiled",
+        "compilation": {
+          "functions": 763,
+          "aliases": 163,
+          "sourceModules": 18,
+          "compilerFailure": false
+        }
+      },
+      "hashes": {
+        "ecl.js": "e275bb91c299a0928e07f35d17192de2fe4e65cd9175116f0ab69d743debc392",
+        "ecl.wasm": "281af63deabd3170bcf878135e12b1177525d817622b193105de75265f35e6f8",
+        "ecl.data": "790ba520c484eb05e9e5d4134a67ec343c4993d4847cd9b0752233bb32d51368"
+      }
+    }
+  },
+  "cCompilation": {
+    "functions": 763,
+    "aliases": 163,
+    "sourceModules": 18,
+    "bytecodeExclusions": [
+      "instableMaybeReduceRedor",
+      "stableMaybeReduceRedor"
+    ],
+    "laterAuxiliaryModulesMayUseBytecode": true,
+    "dispatchPolicies": [
+      "local ext:use-direct-C-call nil",
+      "local notinline for recovered symbols"
+    ],
+    "algebraicRoutinesChangedByCompilation": false
+  },
+  "measurements": [
+    {
+      "backend": "standard",
+      "label": "Lisp / ECL O2",
+      "degree": 4,
+      "medianElapsedMs": 11487.699999988079,
+      "browser": "Chromium 153.0.8010.52 stable",
+      "tier": "default",
+      "freshWorkerEachRun": true,
+      "debuggerDuringCalculations": false,
+      "inputSha256": "1337f8bbdf2ed27f8da93430a520364ddccb2430d423e5fc315dd550d2110903",
+      "hashes": {
+        "ecl.js": "28fbd34f967df956371ca8c7c69909dd697e0385f9e984a7e95f731ff009a7df",
+        "ecl.wasm": "b90c140372df3f8857e535fd8a8de3406ba57d27a40b6cf2e62b51a123a26585",
+        "ecl.data": "790ba520c484eb05e9e5d4134a67ec343c4993d4847cd9b0752233bb32d51368"
+      },
+      "runs": [
+        {
+          "iteration": 1,
+          "elapsedMs": 11487.699999988079,
+          "startupMs": 973.0999999940395,
+          "memoryBytes": 67108864,
+          "ticks": 575,
+          "nativeEquality": true,
+          "outputSha256": "90330a9064c82eed277c35533a9f90e79acebf681d2433c89f970abab2315f2d",
+          "basis": [
+            {
+              "degree": 2,
+              "count": 100
+            },
+            {
+              "degree": 3,
+              "count": 76
+            },
+            {
+              "degree": 4,
+              "count": 89
+            }
+          ]
+        },
+        {
+          "iteration": 2,
+          "elapsedMs": 11300.699999988079,
+          "startupMs": 696,
+          "memoryBytes": 67108864,
+          "ticks": 565,
+          "nativeEquality": true,
+          "outputSha256": "90330a9064c82eed277c35533a9f90e79acebf681d2433c89f970abab2315f2d",
+          "basis": [
+            {
+              "degree": 2,
+              "count": 100
+            },
+            {
+              "degree": 3,
+              "count": 76
+            },
+            {
+              "degree": 4,
+              "count": 89
+            }
+          ]
+        },
+        {
+          "iteration": 3,
+          "elapsedMs": 12118.300000011921,
+          "startupMs": 637.0999999940395,
+          "memoryBytes": 67108864,
+          "ticks": 606,
+          "nativeEquality": true,
+          "outputSha256": "90330a9064c82eed277c35533a9f90e79acebf681d2433c89f970abab2315f2d",
+          "basis": [
+            {
+              "degree": 2,
+              "count": 100
+            },
+            {
+              "degree": 3,
+              "count": 76
+            },
+            {
+              "degree": 4,
+              "count": 89
+            }
+          ]
+        }
+      ],
+      "startedAt": "2026-10-01T15:02:03.150Z",
+      "finishedAt": "2026-10-01T15:02:42.457Z"
+    },
+    {
+      "backend": "optimized",
+      "label": "Lisp / ECL O3 + LTO",
+      "degree": 4,
+      "medianElapsedMs": 8187.5,
+      "browser": "Chromium 153.0.8010.52 stable",
+      "tier": "default",
+      "freshWorkerEachRun": true,
+      "debuggerDuringCalculations": false,
+      "inputSha256": "1337f8bbdf2ed27f8da93430a520364ddccb2430d423e5fc315dd550d2110903",
+      "hashes": {
+        "ecl.js": "a6594fd75be715f4c663bbc2954d2143fadd935e99a4a1eb5564441a36c37a2d",
+        "ecl.wasm": "221a268e3aac9bf1a7167f1e613eb51f600437f8c65596c2b0dfbbff0677786c",
+        "ecl.data": "790ba520c484eb05e9e5d4134a67ec343c4993d4847cd9b0752233bb32d51368"
+      },
+      "runs": [
+        {
+          "iteration": 1,
+          "elapsedMs": 9411.200000017881,
+          "startupMs": 935.9000000059605,
+          "memoryBytes": 67108864,
+          "ticks": 471,
+          "nativeEquality": true,
+          "outputSha256": "90330a9064c82eed277c35533a9f90e79acebf681d2433c89f970abab2315f2d",
+          "basis": [
+            {
+              "degree": 2,
+              "count": 100
+            },
+            {
+              "degree": 3,
+              "count": 76
+            },
+            {
+              "degree": 4,
+              "count": 89
+            }
+          ]
+        },
+        {
+          "iteration": 2,
+          "elapsedMs": 8187.5,
+          "startupMs": 668.0999999940395,
+          "memoryBytes": 67108864,
+          "ticks": 409,
+          "nativeEquality": true,
+          "outputSha256": "90330a9064c82eed277c35533a9f90e79acebf681d2433c89f970abab2315f2d",
+          "basis": [
+            {
+              "degree": 2,
+              "count": 100
+            },
+            {
+              "degree": 3,
+              "count": 76
+            },
+            {
+              "degree": 4,
+              "count": 89
+            }
+          ]
+        },
+        {
+          "iteration": 3,
+          "elapsedMs": 7844.9000000059605,
+          "startupMs": 665.8000000119209,
+          "memoryBytes": 67108864,
+          "ticks": 392,
+          "nativeEquality": true,
+          "outputSha256": "90330a9064c82eed277c35533a9f90e79acebf681d2433c89f970abab2315f2d",
+          "basis": [
+            {
+              "degree": 2,
+              "count": 100
+            },
+            {
+              "degree": 3,
+              "count": 76
+            },
+            {
+              "degree": 4,
+              "count": 89
+            }
+          ]
+        }
+      ],
+      "startedAt": "2026-10-01T15:02:43.160Z",
+      "finishedAt": "2026-10-01T15:03:12.927Z"
+    },
+    {
+      "backend": "c-o2-experiment",
+      "label": "C / ECL O2 (comparison only)",
+      "degree": 4,
+      "medianElapsedMs": 310,
+      "browser": "Chromium 153.0.8010.52 stable",
+      "tier": "default",
+      "freshWorkerEachRun": true,
+      "debuggerDuringCalculations": false,
+      "inputSha256": "1337f8bbdf2ed27f8da93430a520364ddccb2430d423e5fc315dd550d2110903",
+      "hashes": {
+        "ecl.js": "34a89420a6b55c3df1b39bd94ceed35c10d77c3583a0ee82b02ce1b75d2de7c0",
+        "ecl.wasm": "c8b762f46f4de07f8b19be4790a1b7c9866eadc9daea7526ac5ed609bb3f6c6f",
+        "ecl.data": "790ba520c484eb05e9e5d4134a67ec343c4993d4847cd9b0752233bb32d51368"
+      },
+      "runs": [
+        {
+          "iteration": 1,
+          "elapsedMs": 324.69999998807907,
+          "startupMs": 805.8999999761581,
+          "memoryBytes": 67108864,
+          "ticks": 16,
+          "nativeEquality": true,
+          "outputSha256": "90330a9064c82eed277c35533a9f90e79acebf681d2433c89f970abab2315f2d",
+          "basis": [
+            {
+              "degree": 2,
+              "count": 100
+            },
+            {
+              "degree": 3,
+              "count": 76
+            },
+            {
+              "degree": 4,
+              "count": 89
+            }
+          ]
+        },
+        {
+          "iteration": 2,
+          "elapsedMs": 295.90000000596046,
+          "startupMs": 664.8000000119209,
+          "memoryBytes": 67108864,
+          "ticks": 14,
+          "nativeEquality": true,
+          "outputSha256": "90330a9064c82eed277c35533a9f90e79acebf681d2433c89f970abab2315f2d",
+          "basis": [
+            {
+              "degree": 2,
+              "count": 100
+            },
+            {
+              "degree": 3,
+              "count": 76
+            },
+            {
+              "degree": 4,
+              "count": 89
+            }
+          ]
+        },
+        {
+          "iteration": 3,
+          "elapsedMs": 310,
+          "startupMs": 728.8000000119209,
+          "memoryBytes": 67108864,
+          "ticks": 16,
+          "nativeEquality": true,
+          "outputSha256": "90330a9064c82eed277c35533a9f90e79acebf681d2433c89f970abab2315f2d",
+          "basis": [
+            {
+              "degree": 2,
+              "count": 100
+            },
+            {
+              "degree": 3,
+              "count": 76
+            },
+            {
+              "degree": 4,
+              "count": 89
+            }
+          ]
+        }
+      ],
+      "startedAt": "2026-10-01T15:03:13.408Z",
+      "finishedAt": "2026-10-01T15:03:18.230Z"
+    },
+    {
+      "backend": "compiled",
+      "label": "C / ECL O3 + LTO",
+      "degree": 4,
+      "medianElapsedMs": 223.40000000596046,
+      "browser": "Chromium 153.0.8010.52 stable",
+      "tier": "default",
+      "freshWorkerEachRun": true,
+      "debuggerDuringCalculations": false,
+      "inputSha256": "1337f8bbdf2ed27f8da93430a520364ddccb2430d423e5fc315dd550d2110903",
+      "hashes": {
+        "ecl.js": "e275bb91c299a0928e07f35d17192de2fe4e65cd9175116f0ab69d743debc392",
+        "ecl.wasm": "281af63deabd3170bcf878135e12b1177525d817622b193105de75265f35e6f8",
+        "ecl.data": "790ba520c484eb05e9e5d4134a67ec343c4993d4847cd9b0752233bb32d51368"
+      },
+      "runs": [
+        {
+          "iteration": 1,
+          "elapsedMs": 209.5,
+          "startupMs": 810.5,
+          "memoryBytes": 67108864,
+          "ticks": 11,
+          "nativeEquality": true,
+          "outputSha256": "90330a9064c82eed277c35533a9f90e79acebf681d2433c89f970abab2315f2d",
+          "basis": [
+            {
+              "degree": 2,
+              "count": 100
+            },
+            {
+              "degree": 3,
+              "count": 76
+            },
+            {
+              "degree": 4,
+              "count": 89
+            }
+          ]
+        },
+        {
+          "iteration": 2,
+          "elapsedMs": 226.19999998807907,
+          "startupMs": 735.8999999761581,
+          "memoryBytes": 67108864,
+          "ticks": 11,
+          "nativeEquality": true,
+          "outputSha256": "90330a9064c82eed277c35533a9f90e79acebf681d2433c89f970abab2315f2d",
+          "basis": [
+            {
+              "degree": 2,
+              "count": 100
+            },
+            {
+              "degree": 3,
+              "count": 76
+            },
+            {
+              "degree": 4,
+              "count": 89
+            }
+          ]
+        },
+        {
+          "iteration": 3,
+          "elapsedMs": 223.40000000596046,
+          "startupMs": 744.0999999940395,
+          "memoryBytes": 67108864,
+          "ticks": 12,
+          "nativeEquality": true,
+          "outputSha256": "90330a9064c82eed277c35533a9f90e79acebf681d2433c89f970abab2315f2d",
+          "basis": [
+            {
+              "degree": 2,
+              "count": 100
+            },
+            {
+              "degree": 3,
+              "count": 76
+            },
+            {
+              "degree": 4,
+              "count": 89
+            }
+          ]
+        }
+      ],
+      "startedAt": "2026-10-01T15:03:18.557Z",
+      "finishedAt": "2026-10-01T15:03:22.988Z"
+    },
+    {
+      "backend": "compiled",
+      "label": "C / ECL O3 + LTO",
+      "degree": 6,
+      "medianElapsedMs": 2377.5999999940395,
+      "browser": "Chromium 153.0.8010.52 stable",
+      "tier": "default",
+      "freshWorkerEachRun": true,
+      "debuggerDuringCalculations": false,
+      "inputSha256": "1337f8bbdf2ed27f8da93430a520364ddccb2430d423e5fc315dd550d2110903",
+      "hashes": {
+        "ecl.js": "e275bb91c299a0928e07f35d17192de2fe4e65cd9175116f0ab69d743debc392",
+        "ecl.wasm": "281af63deabd3170bcf878135e12b1177525d817622b193105de75265f35e6f8",
+        "ecl.data": "790ba520c484eb05e9e5d4134a67ec343c4993d4847cd9b0752233bb32d51368"
+      },
+      "runs": [
+        {
+          "iteration": 1,
+          "elapsedMs": 2377.5999999940395,
+          "startupMs": 855.4000000059605,
+          "memoryBytes": 67108864,
+          "ticks": 119,
+          "nativeEquality": true,
+          "outputSha256": "1d9ba03dcce98570066a58b7b5aee6726b1f9dbfc4056daeea7039ca0d64ba10",
+          "basis": [
+            {
+              "degree": 2,
+              "count": 100
+            },
+            {
+              "degree": 3,
+              "count": 76
+            },
+            {
+              "degree": 4,
+              "count": 89
+            },
+            {
+              "degree": 5,
+              "count": 95
+            },
+            {
+              "degree": 6,
+              "count": 137
+            }
+          ]
+        },
+        {
+          "iteration": 2,
+          "elapsedMs": 2368.5,
+          "startupMs": 718.9000000059605,
+          "memoryBytes": 67108864,
+          "ticks": 118,
+          "nativeEquality": true,
+          "outputSha256": "1d9ba03dcce98570066a58b7b5aee6726b1f9dbfc4056daeea7039ca0d64ba10",
+          "basis": [
+            {
+              "degree": 2,
+              "count": 100
+            },
+            {
+              "degree": 3,
+              "count": 76
+            },
+            {
+              "degree": 4,
+              "count": 89
+            },
+            {
+              "degree": 5,
+              "count": 95
+            },
+            {
+              "degree": 6,
+              "count": 137
+            }
+          ]
+        },
+        {
+          "iteration": 3,
+          "elapsedMs": 2441.5,
+          "startupMs": 773.5,
+          "memoryBytes": 67108864,
+          "ticks": 122,
+          "nativeEquality": true,
+          "outputSha256": "1d9ba03dcce98570066a58b7b5aee6726b1f9dbfc4056daeea7039ca0d64ba10",
+          "basis": [
+            {
+              "degree": 2,
+              "count": 100
+            },
+            {
+              "degree": 3,
+              "count": 76
+            },
+            {
+              "degree": 4,
+              "count": 89
+            },
+            {
+              "degree": 5,
+              "count": 95
+            },
+            {
+              "degree": 6,
+              "count": 137
+            }
+          ]
+        }
+      ],
+      "startedAt": "2026-10-01T15:03:23.339Z",
+      "finishedAt": "2026-10-01T15:03:34.335Z"
+    },
+    {
+      "backend": "compiled",
+      "label": "C / ECL O3 + LTO",
+      "degree": 7,
+      "medianElapsedMs": 10764.799999982119,
+      "browser": "Chromium 153.0.8010.52 stable",
+      "tier": "default",
+      "freshWorkerEachRun": true,
+      "debuggerDuringCalculations": false,
+      "inputSha256": "1337f8bbdf2ed27f8da93430a520364ddccb2430d423e5fc315dd550d2110903",
+      "hashes": {
+        "ecl.js": "e275bb91c299a0928e07f35d17192de2fe4e65cd9175116f0ab69d743debc392",
+        "ecl.wasm": "281af63deabd3170bcf878135e12b1177525d817622b193105de75265f35e6f8",
+        "ecl.data": "790ba520c484eb05e9e5d4134a67ec343c4993d4847cd9b0752233bb32d51368"
+      },
+      "runs": [
+        {
+          "iteration": 1,
+          "elapsedMs": 10524.40000000596,
+          "startupMs": 863,
+          "memoryBytes": 116260864,
+          "ticks": 526,
+          "nativeEquality": true,
+          "outputSha256": "eb1b77810dc15ad376f7039bb1063566bd187da4243783ce14b8814604a9aa23",
+          "basis": [
+            {
+              "degree": 2,
+              "count": 100
+            },
+            {
+              "degree": 3,
+              "count": 76
+            },
+            {
+              "degree": 4,
+              "count": 89
+            },
+            {
+              "degree": 5,
+              "count": 95
+            },
+            {
+              "degree": 6,
+              "count": 137
+            },
+            {
+              "degree": 7,
+              "count": 198
+            }
+          ]
+        },
+        {
+          "iteration": 2,
+          "elapsedMs": 10764.799999982119,
+          "startupMs": 798.6999999880791,
+          "memoryBytes": 116260864,
+          "ticks": 538,
+          "nativeEquality": true,
+          "outputSha256": "eb1b77810dc15ad376f7039bb1063566bd187da4243783ce14b8814604a9aa23",
+          "basis": [
+            {
+              "degree": 2,
+              "count": 100
+            },
+            {
+              "degree": 3,
+              "count": 76
+            },
+            {
+              "degree": 4,
+              "count": 89
+            },
+            {
+              "degree": 5,
+              "count": 95
+            },
+            {
+              "degree": 6,
+              "count": 137
+            },
+            {
+              "degree": 7,
+              "count": 198
+            }
+          ]
+        },
+        {
+          "iteration": 3,
+          "elapsedMs": 28332.70000001788,
+          "startupMs": 878.5,
+          "memoryBytes": 116260864,
+          "ticks": 1416,
+          "nativeEquality": true,
+          "outputSha256": "eb1b77810dc15ad376f7039bb1063566bd187da4243783ce14b8814604a9aa23",
+          "basis": [
+            {
+              "degree": 2,
+              "count": 100
+            },
+            {
+              "degree": 3,
+              "count": 76
+            },
+            {
+              "degree": 4,
+              "count": 89
+            },
+            {
+              "degree": 5,
+              "count": 95
+            },
+            {
+              "degree": 6,
+              "count": 137
+            },
+            {
+              "degree": 7,
+              "count": 198
+            }
+          ]
+        }
+      ],
+      "startedAt": "2026-10-01T15:03:34.660Z",
+      "finishedAt": "2026-10-01T15:04:28.278Z"
+    }
+  ],
+  "degree4SpeedRatios": {
+    "lispO2OverLispO3Lto": 1.403077862593964,
+    "lispO2OverCO2": 37.05709677415509,
+    "cO2OverCO3Lto": 1.3876454789244808,
+    "lispO2OverSelectedC": 51.422112800723276
+  },
+  "measurementLimits": [
+    "Three serial runs per configuration; other desktop CPU load varied.",
+    "No builds, profilers or memory stress jobs accompanied the timing series.",
+    "Degree-seven Lisp timing is historical, not a paired comparison.",
+    "Degree bounds do not certify a complete unrestricted basis.",
+    "No new degree-eight run was performed."
+  ],
+  "backendParity": {
+    "report": "backend-parity.json",
+    "cases": 112,
+    "backends": 3,
+    "successfulCases": 109,
+    "knownErrorCases": 2,
+    "knownTimeoutCases": 1,
+    "sequentialExactOutputs": 222,
+    "browserBackendRuns": 336,
+    "browserSuccessfulRuns": 327,
+    "browserKnownErrorRuns": 6,
+    "browserKnownTimeoutRuns": 3,
+    "certifiedAmbiguities": 3465,
+    "resolutionIdentities": 353
+  },
+  "selectedCValidation": {
+    "unitTests": {
+      "tests": 64,
+      "passed": 64,
+      "failed": 0
+    },
+    "independentAlgebra": {
+      "basisCases": 42,
+      "resolutionCases": 9,
+      "ambiguities": 597,
+      "resolutionIdentities": 560,
+      "results": [
+        {
+          "id": "comm-0",
+          "basisSize": 3,
+          "ambiguities": 9,
+          "elapsedMs": 86.10896299999968,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": false
+        },
+        {
+          "id": "nc-0",
+          "basisSize": 4,
+          "ambiguities": 18,
+          "elapsedMs": 63.36113000000023,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": false
+        },
+        {
+          "id": "exterior-0",
+          "basisSize": 6,
+          "ambiguities": 22,
+          "elapsedMs": 48.66935300000023,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": false
+        },
+        {
+          "id": "symmetric-0",
+          "basisSize": 3,
+          "ambiguities": 7,
+          "elapsedMs": 43.92597399999977,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": false
+        },
+        {
+          "id": "comm-2",
+          "basisSize": 3,
+          "ambiguities": 9,
+          "elapsedMs": 62.5500320000001,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": false
+        },
+        {
+          "id": "nc-2",
+          "basisSize": 4,
+          "ambiguities": 18,
+          "elapsedMs": 67.99021100000027,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": false
+        },
+        {
+          "id": "exterior-2",
+          "basisSize": 6,
+          "ambiguities": 22,
+          "elapsedMs": 57.01982500000122,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": false
+        },
+        {
+          "id": "symmetric-2",
+          "basisSize": 3,
+          "ambiguities": 7,
+          "elapsedMs": 51.455330000000686,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": false
+        },
+        {
+          "id": "comm-5",
+          "basisSize": 3,
+          "ambiguities": 9,
+          "elapsedMs": 85.94416699999965,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": false
+        },
+        {
+          "id": "nc-5",
+          "basisSize": 4,
+          "ambiguities": 18,
+          "elapsedMs": 85.73494200000096,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": false
+        },
+        {
+          "id": "exterior-5",
+          "basisSize": 6,
+          "ambiguities": 22,
+          "elapsedMs": 64.93675099999928,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": false
+        },
+        {
+          "id": "symmetric-5",
+          "basisSize": 3,
+          "ambiguities": 7,
+          "elapsedMs": 64.04241299999921,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": false
+        },
+        {
+          "id": "huge-integer",
+          "basisSize": 3,
+          "ambiguities": 10,
+          "elapsedMs": 45.77535600000192,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": false
+        },
+        {
+          "id": "truncated-cubic",
+          "basisSize": 1,
+          "ambiguities": 4,
+          "elapsedMs": 43.643458999998984,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": false
+        },
+        {
+          "id": "quantum-plane",
+          "basisSize": 3,
+          "ambiguities": 11,
+          "elapsedMs": 54.29631200000222,
+          "oracle": "Singular Letterplace + Plural",
+          "degreeBound": 6,
+          "allAmbiguities": false
+        },
+        {
+          "id": "plactic",
+          "basisSize": 11,
+          "ambiguities": 48,
+          "elapsedMs": 85.9767920000013,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": false
+        },
+        {
+          "id": "pow",
+          "basisSize": 3,
+          "ambiguities": 14,
+          "elapsedMs": 88.59944199999882,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": false
+        },
+        {
+          "id": "sklyanin",
+          "basisSize": 2,
+          "ambiguities": 7,
+          "elapsedMs": 54.87209100000109,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": false
+        },
+        {
+          "id": "symgroup",
+          "basisSize": 3,
+          "ambiguities": 11,
+          "elapsedMs": 30.830141999998887,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": true
+        },
+        {
+          "id": "singular-freegb-example",
+          "basisSize": 6,
+          "ambiguities": 31,
+          "elapsedMs": 114.76642699999866,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": false
+        },
+        {
+          "id": "original-nhom",
+          "basisSize": 10,
+          "ambiguities": 58,
+          "elapsedMs": 23.44355799999903,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": true
+        },
+        {
+          "id": "ocaml-mirai",
+          "basisSize": 8,
+          "ambiguities": 20,
+          "elapsedMs": 19.429747999998654,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": true
+        },
+        {
+          "id": "ocaml-ab-e",
+          "basisSize": 3,
+          "ambiguities": 7,
+          "elapsedMs": 17.617354999998497,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": true
+        },
+        {
+          "id": "ocaml-idempotent",
+          "basisSize": 1,
+          "ambiguities": 3,
+          "elapsedMs": 17.397744000001694,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": true
+        },
+        {
+          "id": "ocaml-idempotent-braid",
+          "basisSize": 3,
+          "ambiguities": 11,
+          "elapsedMs": 17.786890999996103,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": true
+        },
+        {
+          "id": "ocaml-ab-ee",
+          "basisSize": 4,
+          "ambiguities": 12,
+          "elapsedMs": 60.270055000000866,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": false
+        },
+        {
+          "id": "ocaml-square-sum",
+          "basisSize": 1,
+          "ambiguities": 3,
+          "elapsedMs": 39.755849000001035,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": false
+        },
+        {
+          "id": "ocaml-square-minus",
+          "basisSize": 2,
+          "ambiguities": 6,
+          "elapsedMs": 51.74425899999915,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": false
+        },
+        {
+          "id": "ocaml-square-difference",
+          "basisSize": 2,
+          "ambiguities": 6,
+          "elapsedMs": 61.78735199999937,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": false
+        },
+        {
+          "id": "ocaml-symmetric6",
+          "basisSize": 15,
+          "ambiguities": 50,
+          "elapsedMs": 62.43590699999913,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": false
+        },
+        {
+          "id": "seeded-0",
+          "basisSize": 3,
+          "ambiguities": 9,
+          "elapsedMs": 53.0749749999959,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": false
+        },
+        {
+          "id": "seeded-1",
+          "basisSize": 2,
+          "ambiguities": 6,
+          "elapsedMs": 49.9273880000037,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": false
+        },
+        {
+          "id": "seeded-2",
+          "basisSize": 3,
+          "ambiguities": 12,
+          "elapsedMs": 82.80062899999757,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": false
+        },
+        {
+          "id": "seeded-3",
+          "basisSize": 4,
+          "ambiguities": 18,
+          "elapsedMs": 53.91663999999582,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": false
+        },
+        {
+          "id": "seeded-4",
+          "basisSize": 1,
+          "ambiguities": 1,
+          "elapsedMs": 40.30750299999636,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": false
+        },
+        {
+          "id": "seeded-5",
+          "basisSize": 4,
+          "ambiguities": 18,
+          "elapsedMs": 94.58809699999983,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": false
+        },
+        {
+          "id": "seeded-6",
+          "basisSize": 4,
+          "ambiguities": 18,
+          "elapsedMs": 64.34114799999952,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": false
+        },
+        {
+          "id": "seeded-7",
+          "basisSize": 1,
+          "ambiguities": 2,
+          "elapsedMs": 39.4033350000027,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": false
+        },
+        {
+          "id": "seeded-8",
+          "basisSize": 3,
+          "ambiguities": 9,
+          "elapsedMs": 77.21323200000188,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": false
+        },
+        {
+          "id": "seeded-9",
+          "basisSize": 3,
+          "ambiguities": 12,
+          "elapsedMs": 75.47576200000185,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": false
+        },
+        {
+          "id": "seeded-10",
+          "basisSize": 2,
+          "ambiguities": 6,
+          "elapsedMs": 73.45185499999934,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": false
+        },
+        {
+          "id": "seeded-11",
+          "basisSize": 2,
+          "ambiguities": 6,
+          "elapsedMs": 64.6157050000038,
+          "oracle": "Singular",
+          "degreeBound": 6,
+          "allAmbiguities": false
+        },
+        {
+          "id": "anick0",
+          "homology": {
+            "kind": "ungraded",
+            "coefficientField": "Q",
+            "betti": [
+              1,
+              3,
+              6,
+              10,
+              15,
+              21,
+              28,
+              36,
+              45,
+              55
+            ],
+            "chainDimensions": [
+              1,
+              3,
+              6,
+              10,
+              15,
+              21,
+              28,
+              36,
+              45,
+              55,
+              66
+            ],
+            "differentialRanks": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "checkedSquareZero": true,
+            "highestCertifiedDegree": 9,
+            "finiteTailZero": false
+          },
+          "identities": 282,
+          "comparedBetti": 10,
+          "elapsedMs": 624.3603010000006
+        },
+        {
+          "id": "anick1",
+          "homology": {
+            "kind": "ungraded",
+            "coefficientField": "Q",
+            "betti": [
+              1,
+              2,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "chainDimensions": [
+              1,
+              2,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "differentialRanks": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "checkedSquareZero": true,
+            "highestCertifiedDegree": 7,
+            "finiteTailZero": false
+          },
+          "identities": 7,
+          "comparedBetti": 0,
+          "elapsedMs": 169.62090600000374
+        },
+        {
+          "id": "anick2",
+          "homology": {
+            "kind": "ungraded",
+            "coefficientField": "Q",
+            "betti": [
+              1,
+              3,
+              1,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "chainDimensions": [
+              1,
+              3,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              1
+            ],
+            "differentialRanks": [
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "checkedSquareZero": true,
+            "highestCertifiedDegree": 7,
+            "finiteTailZero": false
+          },
+          "identities": 13,
+          "comparedBetti": 6,
+          "elapsedMs": 194.08662999999797
+        },
+        {
+          "id": "anick3",
+          "homology": {
+            "kind": "ungraded",
+            "coefficientField": "Q",
+            "betti": [
+              1,
+              1,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "chainDimensions": [
+              1,
+              2,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "differentialRanks": [
+              0,
+              0,
+              1,
+              0,
+              1,
+              0,
+              1,
+              0,
+              1,
+              0,
+              1,
+              0
+            ],
+            "checkedSquareZero": true,
+            "highestCertifiedDegree": 10,
+            "finiteTailZero": false,
+            "shifted": true
+          },
+          "identities": 10,
+          "comparedBetti": 11,
+          "elapsedMs": 255.91616000000067
+        },
+        {
+          "id": "mirai",
+          "homology": {
+            "kind": "ungraded",
+            "coefficientField": "Q",
+            "betti": [
+              1,
+              3,
+              0
+            ],
+            "chainDimensions": [
+              1,
+              7,
+              4
+            ],
+            "differentialRanks": [
+              0,
+              0,
+              4
+            ],
+            "checkedSquareZero": true,
+            "highestCertifiedDegree": 2,
+            "finiteTailZero": true,
+            "shifted": true
+          },
+          "identities": 4,
+          "comparedBetti": 4,
+          "elapsedMs": 226.3024130000049
+        },
+        {
+          "id": "exterior-resolution-F2",
+          "homology": {
+            "kind": "ungraded",
+            "coefficientField": "F_2",
+            "betti": [
+              1,
+              3,
+              6,
+              10,
+              15,
+              21,
+              28
+            ],
+            "chainDimensions": [
+              1,
+              3,
+              6,
+              10,
+              15,
+              21,
+              28,
+              36
+            ],
+            "differentialRanks": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "checkedSquareZero": true,
+            "highestCertifiedDegree": 6,
+            "finiteTailZero": false
+          },
+          "identities": 116,
+          "elapsedMs": 323.97151800000574
+        },
+        {
+          "id": "monoid-resolution-F2",
+          "homology": {
+            "kind": "ungraded",
+            "coefficientField": "F_2",
+            "betti": [
+              1,
+              2,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "chainDimensions": [
+              1,
+              2,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "differentialRanks": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "checkedSquareZero": true,
+            "highestCertifiedDegree": 6,
+            "finiteTailZero": false,
+            "shifted": true
+          },
+          "identities": 6,
+          "elapsedMs": 228.33347100000537
+        },
+        {
+          "id": "exterior-resolution-F5",
+          "homology": {
+            "kind": "ungraded",
+            "coefficientField": "F_5",
+            "betti": [
+              1,
+              3,
+              6,
+              10,
+              15,
+              21,
+              28
+            ],
+            "chainDimensions": [
+              1,
+              3,
+              6,
+              10,
+              15,
+              21,
+              28,
+              36
+            ],
+            "differentialRanks": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "checkedSquareZero": true,
+            "highestCertifiedDegree": 6,
+            "finiteTailZero": false
+          },
+          "identities": 116,
+          "elapsedMs": 365.17192700000305
+        },
+        {
+          "id": "monoid-resolution-F5",
+          "homology": {
+            "kind": "ungraded",
+            "coefficientField": "F_5",
+            "betti": [
+              1,
+              1,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "chainDimensions": [
+              1,
+              2,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "differentialRanks": [
+              0,
+              0,
+              1,
+              0,
+              1,
+              0,
+              1,
+              0
+            ],
+            "checkedSquareZero": true,
+            "highestCertifiedDegree": 6,
+            "finiteTailZero": false,
+            "shifted": true
+          },
+          "identities": 6,
+          "elapsedMs": 260.2504760000011
+        }
+      ]
+    },
+    "reader": {
+      "engine": {
+        "bergman": "bergman-1.001-fix",
+        "upstreamBergman": "1.001",
+        "defaultBehavior": "fixed",
+        "legacyBehavior": "original",
+        "ecl": "59f60e09102961bf5872c672fdd9d200b2e83d6b",
+        "emscripten": "4.0.12",
+        "files": {
+          "ecl.js": {
+            "bytes": 109173,
+            "sha256": "e275bb91c299a0928e07f35d17192de2fe4e65cd9175116f0ab69d743debc392"
+          },
+          "ecl.wasm": {
+            "bytes": 6535103,
+            "sha256": "281af63deabd3170bcf878135e12b1177525d817622b193105de75265f35e6f8"
+          },
+          "ecl.data": {
+            "bytes": 3022218,
+            "sha256": "790ba520c484eb05e9e5d4134a67ec343c4993d4847cd9b0752233bb32d51368"
+          }
+        },
+        "appVersion": "0.4.0",
+        "memory": {
+          "wasmMaximumBytes": 4294967296,
+          "defaultHeapMiB": 2048,
+          "maximumHeapMiB": 3584
+        },
+        "compiler": {
+          "libraryOptimization": "O3",
+          "linkOptimization": "O3",
+          "lto": true,
+          "aot": true,
+          "longjmp": "emscripten",
+          "pointerSpilling": true,
+          "profiling": false
+        },
+        "backend": "compiled",
+        "compilation": {
+          "functions": 763,
+          "aliases": 163,
+          "sourceModules": 18,
+          "compilerFailure": false
+        }
+      },
+      "nativeCases": 8,
+      "modes": [
+        {
+          "legacy": false,
+          "cases": [
+            {
+              "source": "(simple)",
+              "recovered": true
+            },
+            {
+              "source": "(simple \"missing.bg\" \"out.gb\")",
+              "recovered": true
+            },
+            {
+              "source": "(progn (simple \"missing.bg\" \"out.gb\"))",
+              "recovered": true
+            },
+            {
+              "source": "(eval '(simple))",
+              "recovered": true
+            },
+            {
+              "source": "(anick)",
+              "recovered": true
+            },
+            {
+              "source": "(anick \"missing.bg\" \"out.gb\")",
+              "recovered": true
+            },
+            {
+              "source": "(hilbert)",
+              "recovered": true
+            },
+            {
+              "source": "(hilbert \"missing.bg\" \"out.gb\" \"out.hs\")",
+              "recovered": true
+            },
+            {
+              "source": "(rabbit \"missing.bg\" \"out.gb\")",
+              "recovered": true
+            },
+            {
+              "source": "(modulebettinumbers \"missing.bg\" \"out.gb\")",
+              "recovered": true
+            },
+            {
+              "source": "(ncpbhgroebner \"missing.bg\" \"out.gb\" \"out.pb\" \"out.hs\")",
+              "recovered": true
+            },
+            {
+              "source": "(read)",
+              "recovered": true
+            },
+            {
+              "source": "(ratom)",
+              "recovered": true
+            },
+            {
+              "source": "(algforminput)",
+              "recovered": true
+            },
+            {
+              "source": "(addalgforminput)",
+              "recovered": true
+            },
+            {
+              "source": "(redandalgin)",
+              "recovered": true
+            },
+            {
+              "source": "(progn (rds nil) (ratom))",
+              "recovered": true
+            },
+            {
+              "source": "(with-open-file (s \"empty.txt\") (rds s) (ratom))",
+              "recovered": true
+            },
+            {
+              "source": "(with-open-file (s \"redirected.txt\" :direction :output :if-exists :supersede) (wrs s) (cl:error \"redirect recovery\"))",
+              "recovered": true
+            },
+            {
+              "source": "(with-input-from-string (s \"\") (let ((cl:*standard-input* s)) (ratom)))",
+              "recovered": true
+            },
+            {
+              "source": "(simple \"broken.bg\" \"out.gb\")",
+              "recovered": true
+            },
+            {
+              "source": "(+ 1",
+              "recovered": true
+            },
+            {
+              "source": "(progn (off raise) (cl:error \"raise recovery\"))",
+              "recovered": true
+            }
+          ],
+          "successfulComputationAfterErrors": true,
+          "gcRecovery": true
+        },
+        {
+          "legacy": true,
+          "cases": [
+            {
+              "source": "(simple)",
+              "recovered": true
+            },
+            {
+              "source": "(simple \"missing.bg\" \"out.gb\")",
+              "recovered": true
+            },
+            {
+              "source": "(progn (simple \"missing.bg\" \"out.gb\"))",
+              "recovered": true
+            },
+            {
+              "source": "(eval '(simple))",
+              "recovered": true
+            },
+            {
+              "source": "(anick)",
+              "recovered": true
+            },
+            {
+              "source": "(anick \"missing.bg\" \"out.gb\")",
+              "recovered": true
+            },
+            {
+              "source": "(hilbert)",
+              "recovered": true
+            },
+            {
+              "source": "(hilbert \"missing.bg\" \"out.gb\" \"out.hs\")",
+              "recovered": true
+            },
+            {
+              "source": "(rabbit \"missing.bg\" \"out.gb\")",
+              "recovered": true
+            },
+            {
+              "source": "(modulebettinumbers \"missing.bg\" \"out.gb\")",
+              "recovered": true
+            },
+            {
+              "source": "(ncpbhgroebner \"missing.bg\" \"out.gb\" \"out.pb\" \"out.hs\")",
+              "recovered": true
+            },
+            {
+              "source": "(read)",
+              "recovered": true
+            },
+            {
+              "source": "(ratom)",
+              "recovered": true
+            },
+            {
+              "source": "(algforminput)",
+              "recovered": true
+            },
+            {
+              "source": "(addalgforminput)",
+              "recovered": true
+            },
+            {
+              "source": "(redandalgin)",
+              "recovered": true
+            },
+            {
+              "source": "(progn (rds nil) (ratom))",
+              "recovered": true
+            },
+            {
+              "source": "(with-open-file (s \"empty.txt\") (rds s) (ratom))",
+              "recovered": true
+            },
+            {
+              "source": "(with-open-file (s \"redirected.txt\" :direction :output :if-exists :supersede) (wrs s) (cl:error \"redirect recovery\"))",
+              "recovered": true
+            },
+            {
+              "source": "(with-input-from-string (s \"\") (let ((cl:*standard-input* s)) (ratom)))",
+              "recovered": true
+            },
+            {
+              "source": "(simple \"broken.bg\" \"out.gb\")",
+              "recovered": true
+            },
+            {
+              "source": "(+ 1",
+              "recovered": true
+            },
+            {
+              "source": "(progn (off raise) (cl:error \"raise recovery\"))",
+              "recovered": true
+            }
+          ],
+          "successfulComputationAfterErrors": true,
+          "gcRecovery": true
+        }
+      ],
+      "sourceHashes": {
+        "ports/common/reader-patches.py": "b691f0e2a59fdfeaed9d76198b59ad3f8ffccab9a8cd840deb50b2e2217eb893",
+        "ports/ecl/boot.lisp": "722cd041f730a1ded009ea9e84bb29322dd8b1846699b7b49d86fbdde96f707c",
+        "ports/ecl/bridge.c": "16805522de023374caf5b96536dcf17d14a1291e5c0ce5f90a48e870e5dafef8",
+        "tools/validate-reader.mjs": "274af64a50de8a1f2a60b5a5ab11c936eba371d2e83d2de264c77bbc5e450d6b"
+      }
+    },
+    "nodeHighMemory": {
+      "caseId": "gc-high",
+      "cpuProfile": false,
+      "engine": "/home/uu/Projects/george/web/engine/compiled",
+      "hashes": {
+        "ecl.js": "e275bb91c299a0928e07f35d17192de2fe4e65cd9175116f0ab69d743debc392",
+        "ecl.wasm": "281af63deabd3170bcf878135e12b1177525d817622b193105de75265f35e6f8",
+        "ecl.data": "790ba520c484eb05e9e5d4134a67ec343c4993d4847cd9b0752233bb32d51368"
+      },
+      "node": "v24.18.1",
+      "v8": "13.6.233.17-node.50",
+      "flags": [],
+      "startupMs": 2189.339989,
+      "profileCounters": false,
+      "runs": [
+        {
+          "iteration": 1,
+          "elapsedMs": 6332.372073999999,
+          "memoryBytes": 3485597696,
+          "processMemory": {
+            "rss": 3486560256,
+            "heapTotal": 7843840,
+            "heapUsed": 5850872,
+            "external": 3491071035,
+            "arrayBuffers": 3166873
+          },
+          "outputHashes": {}
+        }
+      ],
+      "liveArrayBytes": 3355443200,
+      "state": "complete"
+    },
+    "nodeHeapExhaustion": {
+      "caseId": "gc-limit",
+      "cpuProfile": false,
+      "engine": "/home/uu/Projects/george/web/engine/compiled",
+      "hashes": {
+        "ecl.js": "e275bb91c299a0928e07f35d17192de2fe4e65cd9175116f0ab69d743debc392",
+        "ecl.wasm": "281af63deabd3170bcf878135e12b1177525d817622b193105de75265f35e6f8",
+        "ecl.data": "790ba520c484eb05e9e5d4134a67ec343c4993d4847cd9b0752233bb32d51368"
+      },
+      "node": "v24.18.1",
+      "v8": "13.6.233.17-node.50",
+      "flags": [],
+      "startupMs": 2019.3712590000002,
+      "profileCounters": false,
+      "runs": [
+        {
+          "iteration": 1,
+          "elapsedMs": 350.53135999999995,
+          "memoryBytes": 125370368,
+          "processMemory": {
+            "rss": 250269696,
+            "heapTotal": 13086720,
+            "heapUsed": 7055800,
+            "external": 130848668,
+            "arrayBuffers": 3167183
+          },
+          "outputHashes": {},
+          "heapLimitMiB": 128,
+          "returnedMemoryError": true,
+          "savedBasisPreserved": true,
+          "sameRuntimeRecovered": true
+        }
+      ],
+      "state": "complete"
+    },
+    "browserMemoryAndRecovery": {
+      "backend": "compiled",
+      "debuggerDuringCalculations": true,
+      "report": [
+        {
+          "legacy": true,
+          "totalMs": 1479.199999988079,
+          "computationMs": 103.19999998807907,
+          "memoryBytes": 67108864,
+          "ticks": 74
+        },
+        {
+          "legacy": false,
+          "totalMs": 1336.7999999821186,
+          "computationMs": 71.7000000178814,
+          "memoryBytes": 67108864,
+          "ticks": 66
+        }
+      ],
+      "cancellation": "AbortError",
+      "exactInteger": "12157665459056928801",
+      "memoryGrowthBytes": 124715008,
+      "largeMemoryBytes": 3626631168,
+      "memoryFailure": {
+        "code": "memory-limit",
+        "files": {
+          "result.gb": "% 2\nx^2,\n   \nDone\n"
+        },
+        "interrupted": true,
+        "released": true
+      },
+      "errors": [],
+      "browser": "153.0.8010.52"
+    },
+    "ui": {
+      "debuggerDuringCalculations": false,
+      "mobileViewportControl": "CDP Emulation only; no Runtime, Debugger or Profiler domains",
+      "engine": {
+        "bergman": "bergman-1.001-fix",
+        "upstreamBergman": "1.001",
+        "defaultBehavior": "fixed",
+        "legacyBehavior": "original",
+        "ecl": "59f60e09102961bf5872c672fdd9d200b2e83d6b",
+        "emscripten": "4.0.12",
+        "files": {
+          "ecl.js": {
+            "bytes": 109173,
+            "sha256": "e275bb91c299a0928e07f35d17192de2fe4e65cd9175116f0ab69d743debc392"
+          },
+          "ecl.wasm": {
+            "bytes": 6535103,
+            "sha256": "281af63deabd3170bcf878135e12b1177525d817622b193105de75265f35e6f8"
+          },
+          "ecl.data": {
+            "bytes": 3022218,
+            "sha256": "790ba520c484eb05e9e5d4134a67ec343c4993d4847cd9b0752233bb32d51368"
+          }
+        },
+        "appVersion": "0.4.0",
+        "memory": {
+          "wasmMaximumBytes": 4294967296,
+          "defaultHeapMiB": 2048,
+          "maximumHeapMiB": 3584
+        },
+        "compiler": {
+          "libraryOptimization": "O3",
+          "linkOptimization": "O3",
+          "lto": true,
+          "aot": true,
+          "longjmp": "emscripten",
+          "pointerSpilling": true,
+          "profiling": false
+        },
+        "backend": "compiled",
+        "compilation": {
+          "functions": 763,
+          "aliases": 163,
+          "sourceModules": 18,
+          "compilerFailure": false
+        }
+      },
+      "sourceHashes": {
+        "web/index.html": "7b7b1078cf3903bde233bddd39d6c8cc3cbab091bec1cd7194918e5bba3c012a",
+        "web/style.css": "ee9b020a62e15ea6ac1ead82923cff25ff91a8a1e3d1de4dc2a922022138c27e",
+        "web/src/app.js": "ea62ca641ad03e20c904610773726053709c41c78558d86fe5e26229bcc74c64",
+        "web/src/backends.js": "0d0032b2392072990c6603025f802f99b96e255ac94737d9e1aeceebca0c5911",
+        "web/src/bergman-syntax.js": "6fb86c29d7accd6948d3dcd1aec7ea4f2c9b24c14670cc66963c7b88b6cdf0ff",
+        "web/src/console-commands.js": "19632c1257b8d9469d30921ddbf4a6ccee4a5151eb709f3f1e56add2ed4c59fa",
+        "web/src/console.js": "45eddad526c9372bc6ab83a5e7040bd0b48a9cbc94b569b48fbb1e49d7a6970a",
+        "web/src/engine.js": "46c06ef2416b24ec0c9057a962145882d55fabe4d36cae10d427c761b82b07a6",
+        "web/src/examples.js": "50c4294ada3efb095386ce57df9b54efd560612e8487dd15b741a05acd053bc0",
+        "web/src/guide.js": "e1737030826d7702c60091f41779ac809c475d040ad6ecd815d2ec059e077c88",
+        "web/src/homology.js": "ad72c6d5792f90e08c15768c0c1725e6b71d0077b041518fef21f376cccecdca",
+        "web/src/i18n.js": "46406b8f655fc564c9b4ce696b8f822a4fa78b9e23cebf3c3ca905427dd9369f",
+        "web/src/lisp.js": "acc71cb91bdcd091b7299403c6a05b75c7a97890008877944781cc5d95dd817c",
+        "web/src/math.js": "daf8b75527b72938995b7e83d75dffcf86e12f79e0b534f7d70251a8da3a1655",
+        "web/src/preferences.js": "d686c5621c36648104e5a2d3d981bba4222ba3e2951a1c77bcfed51c907007dc",
+        "web/src/resolution-data.js": "e9bf9e7cec5738346f4b32a4c7c265ae82a6843e848938ccdf85bd6a71076ec4",
+        "web/src/share.js": "4ba399f00a6cabea38e9620134c10af39ce5c8108fce5c2760805bcad60b6ee5",
+        "web/src/tutorials.js": "5c473b8d4974eaa64d0f0a3a6006b49d1e910bc8f6e7e821342bde70c36fb1e9",
+        "web/engine/worker.js": "ba9894ef3238c407aa60792c834f9ba0c9dc8fc93d84f7e764e26772937cecda",
+        "web/engine/runner.js": "6c0f80152e2863922f28f348fe15c8680bfee277895f92bb8bce5d5010f6377c"
+      },
+      "browser": "153.0.8010.52",
+      "mounts": [
+        {
+          "mount": "/",
+          "requests": 226,
+          "mathjaxSVGs": 38,
+          "badResponses": [],
+          "diagnostics": []
+        },
+        {
+          "mount": "/george/",
+          "requests": 311,
+          "mathjaxSVGs": 38,
+          "badResponses": [],
+          "diagnostics": []
+        }
+      ],
+      "console": [
+        {
+          "mount": "/",
+          "recoveryCases": 8,
+          "settingsAndFilesRetained": true,
+          "firstValue": true,
+          "help": true,
+          "completion": true,
+          "history": true,
+          "currentComputation": true
+        },
+        {
+          "mount": "/george/",
+          "recoveryCases": 8,
+          "settingsAndFilesRetained": true,
+          "firstValue": true,
+          "help": true,
+          "completion": true,
+          "history": true,
+          "currentComputation": true
+        }
+      ],
+      "backends": [
+        {
+          "mount": "/",
+          "defaultBackend": "compiled",
+          "rows": [
+            {
+              "backend": "standard",
+              "outputParity": true,
+              "shareRoundTrip": true
+            },
+            {
+              "backend": "optimized",
+              "outputParity": true,
+              "shareRoundTrip": true
+            },
+            {
+              "backend": "compiled",
+              "outputParity": true,
+              "shareRoundTrip": true
+            }
+          ]
+        },
+        {
+          "mount": "/george/",
+          "defaultBackend": "compiled",
+          "rows": [
+            {
+              "backend": "standard",
+              "outputParity": true,
+              "shareRoundTrip": true
+            },
+            {
+              "backend": "optimized",
+              "outputParity": true,
+              "shareRoundTrip": true
+            },
+            {
+              "backend": "compiled",
+              "outputParity": true,
+              "shareRoundTrip": true
+            }
+          ]
+        }
+      ],
+      "examples": [
+        {
+          "id": "hilbert",
+          "task": "hilbert",
+          "outputs": [
+            "result.gb",
+            "result.hs"
+          ],
+          "hashes": {
+            "result.gb": "41cb7269c7d2c8a685755d80bee8b8b49db698de5b1c11eea616928c8897772a",
+            "result.hs": "9ce77fd053abd1309b0b56dbd888a910048574a887e46d54e866bea9aca53880"
+          }
+        },
+        {
+          "id": "char2",
+          "task": "gb",
+          "outputs": [
+            "result.gb"
+          ],
+          "hashes": {
+            "result.gb": "ca14382d6f49dce6993c7e7f03ece18aa0be5e9c8a4f0fa330344b77666e4a48"
+          }
+        },
+        {
+          "id": "char5",
+          "task": "gb",
+          "outputs": [
+            "result.gb"
+          ],
+          "hashes": {
+            "result.gb": "e53da70693e8a9da36a06259149c4fcd48051047bab6865beb6af6901a79ed5c"
+          }
+        },
+        {
+          "id": "weights",
+          "task": "gb",
+          "outputs": [
+            "result.gb"
+          ],
+          "hashes": {
+            "result.gb": "256339af116f75c5129715a04783e627cbf1f3ba2fa9ece1cd49c23d2d6f81f5"
+          }
+        },
+        {
+          "id": "matrix",
+          "task": "gb",
+          "outputs": [
+            "result.gb"
+          ],
+          "hashes": {
+            "result.gb": "17d8df0358e5396efcaeb4f58e6bf998c07e240fd6c27c19aae0c4b40ed54c98"
+          }
+        },
+        {
+          "id": "anick",
+          "task": "anick",
+          "outputs": [
+            "result.gb",
+            "result.anick",
+            "resolution.jsonl"
+          ],
+          "hashes": {
+            "result.gb": "b912b67fcb3d1dc2cf7d85445a1cdde214b3b70dacf57d5a09fc3944d25f07ce",
+            "result.anick": "7e3ef9f59a4fa137ebe5285693d93b3d4b3ba8ecc2093b1588ddce0947d610aa",
+            "resolution.jsonl": "006a788a2c68252e1099f5e4c41febea300908b15d07b711d03b776792d80b9c"
+          }
+        },
+        {
+          "id": "monoid",
+          "task": "anick",
+          "outputs": [
+            "result.gb",
+            "resolution.gb",
+            "result.anick",
+            "resolution.jsonl",
+            "resolution-input.bg",
+            "resolution-session.lsp",
+            "homology.json"
+          ],
+          "hashes": {
+            "result.gb": "1e524dd93edc853b53a678f4a4579ef02bf6657a4511bbb591e68e595729c4c7",
+            "resolution.gb": "e77c6f4942c119e2e2debd60bd1517ad5c14a26b307dcde14eb78b980f918e5d",
+            "result.anick": "53bfc1a3424b6cf9a31a2b3bffc046e19e2e948a8e9917d96b832fcc291512a0",
+            "resolution.jsonl": "848ac76d03b4e51e4749f147b0118c0d44ad69f2b63f40e9f441f11087586092",
+            "resolution-input.bg": "3168a5fcf0369b19917d5cd02ecb53242684c22f29b89a7835b63ed77118c677",
+            "resolution-session.lsp": "63af37ab885266701f4ef298e27d41067c6b3ef880bba9e6698c40d625931545",
+            "homology.json": "4e412b05d15bd63ea9bc7db46faeb70aae5da8b2397469750c9911885f367f3f"
+          }
+        },
+        {
+          "id": "nonhomogeneous",
+          "task": "anick",
+          "outputs": [
+            "result.gb",
+            "resolution.gb",
+            "result.anick",
+            "resolution.jsonl",
+            "resolution-input.bg",
+            "resolution-session.lsp",
+            "homology.json"
+          ],
+          "hashes": {
+            "result.gb": "e3d5f84c6c12edde87aeac16bf3008272bd3ffe9247c9ed55d262a0f55301720",
+            "resolution.gb": "e90c14afd4ff9c25863050c929691b81848997ab2b3d711349c20d362754a851",
+            "result.anick": "52838f1825e4adc3d24d381d0b86a7928dfdf3ece1c7a9e0c3f93748e9b58019",
+            "resolution.jsonl": "fac468db09a0e5156bb49621419c9dfb9995512780ef8d81d7f3a6083b8d4d3c",
+            "resolution-input.bg": "63b3b17585ccad3f93ba0339b424a76b2a12fc6bea225019d5c08cc819898820",
+            "resolution-session.lsp": "63af37ab885266701f4ef298e27d41067c6b3ef880bba9e6698c40d625931545",
+            "homology.json": "bbebbf032e4d1f3340002a49cb363861e7a4c54eecb19ea960867cfc04ee8ed2"
+          }
+        }
+      ],
+      "checks": [
+        "/: EN/RU wording, controls, status and guide; state/files preserved; reload persistence; themes; MathJax",
+        "/: overlapping/underscore names, colliding chains, braid and weighted cutoff; exact homology; whole-token rendering",
+        "/: four imported algebra cases in the real form; edited preset persistence",
+        "/george/: EN/RU wording, controls, status and guide; state/files preserved; reload persistence; themes; MathJax",
+        "/george/: overlapping/underscore names, colliding chains, braid and weighted cutoff; exact homology; whole-token rendering",
+        "/george/: four imported algebra cases in the real form; edited preset persistence",
+        "project path: eight guide buttons compute; reference equality; MIME and source downloads",
+        "390px guide and computed monoid result have no page overflow",
+        "blocked storage: browser language and computation work"
+      ],
+      "errors": [],
+      "externalRequests": []
+    },
+    "newDegree7Share": {
+      "date": "2026-10-01T16:11:53.892Z",
+      "publicUrl": "https://ckpeiika.github.io/george/#s=1zeJwtlEuOHiEQg-_Sy1-wmSSauUseEm9GBALdi7l-bMOm9AlTxgWt_nm9vX_dY13mcsabYKJJJptiqmmmm2GmWeY2D_U_b-bX8KpBNaom1axaVKtqU-2qQ3WqLtVb9VF1r2DDy4mijYeSTYeabYduex967CPy6vAidmzKNh-qth4adhyiCymoI4jYsanYcogdm6adoqh9UcR9m7rth5iKlHRuElHdtOwSZU2URXTeRJVU1FtE3LeJLpuYilSlVhFdNjEBqcmviTgvqWtfF1HdRJU0tDZEXNtEP9LU2hRxjbRESy5MxTzbqYMGEu9TnXUvb700B81jpesFumbl63el76AKLUjjXfOErvvpoAzt0UychJ5NiRpo4kwvjV8EPZvepIEitCCNL07PphdpoATt0XfB-dnnNZsHLfgGaXxt9nm9gQcVaI--Dt4MNe684fBgJUgbysn59x0O0MRNOWnMyfmHcg5QhFalMSfnH8o5QAla1g0yJ_uccjrQgm-Vxpzsc8rpQAVa1u0yJ7WqnBV0ozcrGT2ZZ7_rBC0kj9LoyTxTnhNUoCWlpie1KM8IutGb5EKNvUvaAt04peBf8n6Zbz8-vpsr_Ovz82-K1-__WAVliA",
+      "requiresVersion": "0.4.0",
+      "published": false,
+      "debuggerDuringCalculation": false,
+      "restoredAllSettings": true,
+      "calculationStartedAutomatically": false,
+      "nativeOutputEquality": true,
+      "outputSha256": "eb1b77810dc15ad376f7039bb1063566bd187da4243783ce14b8814604a9aa23",
+      "status": "Computed in 28.77 s. Check the basis tab for any degree limit."
+    }
+  }
+}

@@ -7,12 +7,12 @@
   "emscripten": "4.0.12",
   "files": {
     "ecl.js": {
-      "bytes": 110375,
-      "sha256": "28fbd34f967df956371ca8c7c69909dd697e0385f9e984a7e95f731ff009a7df"
+      "bytes": 109173,
+      "sha256": "a6594fd75be715f4c663bbc2954d2143fadd935e99a4a1eb5564441a36c37a2d"
     },
     "ecl.wasm": {
-      "bytes": 4784709,
-      "sha256": "b90c140372df3f8857e535fd8a8de3406ba57d27a40b6cf2e62b51a123a26585"
+      "bytes": 5235093,
+      "sha256": "221a268e3aac9bf1a7167f1e613eb51f600437f8c65596c2b0dfbbff0677786c"
     },
     "ecl.data": {
       "bytes": 3022218,
@@ -26,11 +26,13 @@
     "maximumHeapMiB": 3584
   },
   "compiler": {
-    "libraryOptimization": "O2",
-    "linkOptimization": "O2",
+    "libraryOptimization": "O3",
+    "linkOptimization": "O3",
+    "lto": true,
+    "aot": false,
     "longjmp": "emscripten",
     "pointerSpilling": true,
     "profiling": false
   },
-  "backend": "standard"
+  "backend": "optimized"
 }

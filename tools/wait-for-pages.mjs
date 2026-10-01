@@ -1,6 +1,7 @@
 // Confirm the pushed commit's workflow and the served release, without gh.
 import {execFileSync} from 'node:child_process';
 import crypto from 'node:crypto';
+import {publicationAssets} from './publication-assets.mjs';
 
 const commit=process.argv[2];
 if(!/^[0-9a-f]{40}$/.test(commit||''))throw Error('Supply the prepared gh-pages commit.');
@@ -11,7 +12,7 @@ if(!match)throw Error('Deployment verification requires a github.com origin.');
 const [,owner,repo]=match;
 const site=`https://${owner.toLowerCase()}.github.io/${repo}/`;
 const sha=data=>crypto.createHash('sha256').update(data).digest('hex');
-const files=['index.html','engine/build.json','sources/george-source.tar.gz'];
+const files=publicationAssets(git(['ls-tree','-r','--name-only',commit]).split('\n'));
 const expected=Object.fromEntries(files.map(file=>[file,sha(execFileSync('git',['show',`${commit}:${file}`],{maxBuffer:32e6}))]));
 const token=process.env.GH_TOKEN||process.env.GITHUB_TOKEN;
 const headers={Accept:'application/vnd.github+json',...(token?{Authorization:`Bearer ${token}`}:{})};

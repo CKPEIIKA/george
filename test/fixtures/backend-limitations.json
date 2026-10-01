@@ -1,0 +1,33 @@
+{
+  "samplingSeed": 1195724596,
+  "basisSamples": 64,
+  "limitations": [
+    {
+      "id": "lhs-gb-021",
+      "jobSha256": "14722d221152c23ee0a8042e9d14a1407290067d95ce31c14a80463646dcd6ae",
+      "outcome": {
+        "kind": "timeout",
+        "timeoutMs": 5000,
+        "reason": "Weighted noncommutative elimination does not return on this input in any backend."
+      }
+    },
+    {
+      "id": "lhs-series-002",
+      "jobSha256": "1f3e2cb6b3c788ce4c6f21cd4ce755b657cf6d25eb81f88c9c177851dca8df02",
+      "outcome": {
+        "kind": "error",
+        "messageIncludes": "In function +, the value of the second argument is\n  NIL",
+        "reason": "One-generator matrix-order Hilbert series fails in the existing Bergman path."
+      }
+    },
+    {
+      "id": "lhs-series-014",
+      "jobSha256": "51f1a8b947f607df381ddad784784448051476a77eaa9ef3c1ca041740fd9be1",
+      "outcome": {
+        "kind": "error",
+        "messageIncludes": "In function +, the value of the second argument is\n  NIL",
+        "reason": "One-generator matrix-order Hilbert series fails in the existing Bergman path."
+      }
+    }
+  ]
+}

@@ -2,17 +2,24 @@ import { chromium } from 'playwright-core';
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import { buildJob } from '../web/src/bergman-syntax.js';
+import {staticServer} from './serve.mjs';
 const out = `build/validation/browser-${Date.now()}`;
 fs.mkdirSync(out, { recursive: true });
+let server;
+if (!process.env.GEORGE_URL) {
+  server = staticServer('web'); await new Promise(r => server.listen(0, '127.0.0.1', r));
+}
+const siteURL = process.env.GEORGE_URL || `http://127.0.0.1:${server.address().port}/`;
 // Normal-browser full-suite checks and timings are in the uninstrumented tool.
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM || '/usr/bin/chromium', headless: true, args: ['--no-sandbox'] });
 try {
   const page = await browser.newPage();
   const errors = [];
   page.on('pageerror', e => errors.push(e.message));
-  await page.goto(process.env.GEORGE_URL || 'http://127.0.0.1:8000/');
+  await page.goto(siteURL);
   await page.waitForFunction(() => document.querySelector('#engineNote').textContent.includes('is ready'), null, { timeout: 60000 });
-  await page.evaluate(async () => { const { EclEngine } = await import('./src/engine.js'); window.testEngine = new EclEngine(); window.ticks = 0; window.tickTimer = setInterval(() => window.ticks++, 20); });
+  const backend = await page.locator('#backend').inputValue();
+  await page.evaluate(async () => { const { EclEngine } = await import('./src/engine.js'); window.testEngine = new EclEngine({getBackend: () => document.querySelector('#backend').value}); window.ticks = 0; window.tickTimer = setInterval(() => window.ticks++, 20); });
   console.log('Browser ready');
   const report = [];
   for (const legacy of [true, false]) {
@@ -98,7 +105,7 @@ try {
   await page.waitForFunction(()=>document.querySelector('#runStatus').textContent.startsWith('Computed'),null,{timeout:60000});
   assert.match(await page.locator('#bettiOut').textContent(),/Ungraded Betti numbers/);
   assert.match(await page.locator('#resolutionOut').textContent(),/shift/i);
-  await page.goto((process.env.GEORGE_URL||'http://127.0.0.1:8000/')+'#console');
+  await page.goto(siteURL+'#console');
   await page.locator('#promptInput').fill('(LOOP)');
   await page.locator('#promptInput').press('Enter');
   await page.locator('#stopConsole').waitFor({state:'visible'});
@@ -108,12 +115,12 @@ try {
   await page.locator('#promptInput').fill('(EXPT 3 40)');
   await page.locator('#promptInput').press('Enter');
   await page.waitForFunction(()=>document.querySelector('#terminal').textContent.includes('12157665459056928801'));
-  await page.goto((process.env.GEORGE_URL||'http://127.0.0.1:8000/')+'#compute');
+  await page.goto(siteURL+'#compute');
   await page.screenshot({ path: `${out}/desktop.png`, fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.locator('#switchOutput').click();
   await page.screenshot({ path: `${out}/mobile.png`, fullPage: true });
   assert.deepEqual(errors, []);
-  fs.writeFileSync(`${out}/report.json`, JSON.stringify({ report, cancellation: cancelled.name, exactInteger: cancelled.stdout.trim(), memoryGrowthBytes:growth.memoryBytes, largeMemoryBytes:largeMemory?.memoryBytes, memoryFailure, errors, browser: browser.version() }, null, 2));
+  fs.writeFileSync(`${out}/report.json`, JSON.stringify({ backend, debuggerDuringCalculations: true, report, cancellation: cancelled.name, exactInteger: cancelled.stdout.trim(), memoryGrowthBytes:growth.memoryBytes, largeMemoryBytes:largeMemory?.memoryBytes, memoryFailure, errors, browser: browser.version() }, null, 2));
   console.log(JSON.stringify({ out, report, cancellation: cancelled.name, errors }, null, 2));
-} finally { await browser.close(); }
+} finally { await browser.close(); server?.close(); }

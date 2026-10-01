@@ -15,6 +15,7 @@ const engine=path.resolve(engineArgument),out=path.resolve(outputArgument),degre
 assert.ok([4,6,7,8].includes(degree)); assert.ok(Number.isInteger(repeats)&&repeats>0&&repeats<=20);
 const timeoutMs=timeoutArgument===undefined?repeats*240000+60000:Number(timeoutArgument)*1000;
 assert.ok(Number.isFinite(timeoutMs)&&timeoutMs>0&&timeoutMs<=7200000);
+const snapshots=process.env.GEORGE_BROWSER_SNAPSHOTS==='1';
 fs.mkdirSync(out,{recursive:true});
 const sha=bytes=>crypto.createHash('sha256').update(bytes).digest('hex');
 const inputText=JSON.parse(fs.readFileSync('docs/development/validation/memory.json','utf8')).presentationAssessment.inputText;
@@ -27,7 +28,7 @@ const expectedHash=expected===null?JSON.parse(fs.readFileSync('docs/development/
 const browserExecutable=process.env.CHROMIUM||'/usr/bin/chromium';
 const version=spawnSync(browserExecutable,['--version'],{encoding:'utf8'});assert.ifError(version.error);assert.equal(version.status,0);
 const tier=process.env.GEORGE_BROWSER_TIER||'default';assert.ok(['default','turbofan'].includes(tier));
-const report={state:'running',startedAt:new Date().toISOString(),timeoutMs,devtools:false,degree,freshWorkerEachRun:true,engine,browser:version.stdout.trim(),tier,inputSha256:sha(inputText),
+const report={state:'running',startedAt:new Date().toISOString(),timeoutMs,savedBasisSnapshots:snapshots,devtools:false,degree,freshWorkerEachRun:true,engine,browser:version.stdout.trim(),tier,inputSha256:sha(inputText),
   hashes:Object.fromEntries(['ecl.js','ecl.wasm','ecl.data'].map(n=>[n,sha(fs.readFileSync(path.join(engine,n)))])),runs:[]};
 let resolveDone,rejectDone;
 const done=new Promise((resolve,reject)=>{resolveDone=resolve;rejectDone=reject;});
@@ -37,7 +38,7 @@ try {
   const job=await (await fetch('/job.json')).json();let ticks=0;setInterval(()=>ticks++,20);
   for(let i=0;i<${repeats};i++) {
     const e=new EclEngine(),start=performance.now();await e.init();const startupMs=performance.now()-start,tick=ticks;
-    const r=await e.run(job);e.cancel();
+    const r=await e.run(job,event=>{if(event.type==='saved-basis')fetch('/progress',{method:'POST',body:JSON.stringify(event)});});e.cancel();
     const response=await fetch('/result',{method:'POST',body:JSON.stringify({...r,iteration:i+1,startupMs,ticks:ticks-tick})});
     if(!response.ok)throw Error(await response.text());
   }
@@ -45,6 +46,21 @@ try {
 }catch(e){await fetch('/error',{method:'POST',body:String(e.stack||e)});}
 </script>`;
 let worker=fs.readFileSync('web/engine/worker.js','utf8');
+if(snapshots){
+  const initialize="      runtime.FS.chdir('/work');";
+  assert.ok(worker.includes(initialize));
+  worker=worker.replace(initialize,initialize+`
+      const write=runtime.FS.write;let lastSnapshot=0;
+      runtime.FS.write=function(stream,...args){
+        const count=write.call(this,stream,...args);
+        if(stream.path==='/work/result.gb'&&performance.now()-lastSnapshot>1000){
+          lastSnapshot=performance.now();
+          const text=runtime.FS.readFile('/work/result.gb',{encoding:'utf8'});
+          postMessage({id:activeId,event:{type:'saved-basis',text,memoryBytes:runtime.HEAPU8.length}});
+        }
+        return count;
+      };`);
+}
 assert.ok(worker.includes('    let result;'));
 worker=worker.replace('    let result;',`    let result;
     const profiling=typeof runtime._george_profile_start==='function';
@@ -66,6 +82,16 @@ const server=http.createServer(async(req,res)=>{
       let body='';for await(const chunk of req)body+=chunk;
       if(req.url==='/error')throw Error(body);
       if(req.url==='/done'){res.end('ok');resolveDone();return;}
+      if(req.url==='/progress'){
+        const event=JSON.parse(body);
+        assert.ok(expected!==null&&expected.startsWith(event.text),'Saved output must be an exact native prefix.');
+        const groups=parseBasis(event.text).groups;
+        report.savedBasis={receivedAt:new Date().toISOString(),bytes:Buffer.byteLength(event.text),memoryBytes:event.memoryBytes,
+          nativePrefixEquality:true,completedGroups:groups.slice(0,-1).map(g=>({degree:g.deg,count:g.polys.length}))};
+        fs.writeFileSync(path.join(out,'partial.gb'),event.text);
+        fs.writeFileSync(path.join(out,'report.json'),JSON.stringify(report,null,2)+'\n');
+        console.log(JSON.stringify({savedBasis:report.savedBasis}));res.end('ok');return;
+      }
       assert.equal(req.url,'/result');const r=JSON.parse(body);
       if(expected!==null)assert.equal(r.files['result.gb'],expected);
       assert.equal(sha(r.files['result.gb']),expectedHash);assert.ok(r.ticks>0);

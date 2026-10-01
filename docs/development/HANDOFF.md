@@ -1,5 +1,45 @@
 # George handoff
 
+## George 0.4 backends and LHS parity — 2026-10-01
+
+The current package/interface are **0.4.0 / 0.4**. The default is
+**C / ECL O3 + LTO**. More settings also offer **Lisp / ECL O3 + LTO** and
+**Lisp / ECL O2**; labels state the actual compilation choices. Backend
+selection is persisted and shared. Version-1 share field order/defaults
+are preserved; the appended backend field defaults to standard for old links.
+
+ECL compiles 763 existing functions and installs 163 aliases. Local
+`ext:use-direct-C-call nil` and `notinline` declarations retain Bergman's
+runtime `COPYD` changes. Two malformed legacy routines and later auxiliary
+loads remain bytecode. The original mathematical routines were not rewritten.
+All variants retain pointer spilling and identical `ecl.data`; the C/O3
+assets are under `web/engine/compiled` and the Lisp/O3 assets under
+`web/engine/optimized`. `npm run wasm:build:backends` rebuilds all three.
+
+The paired ordinary-browser degree-four medians are 11.488 s (Lisp O2),
+8.188 s (Lisp O3 + LTO), 0.310 s (C O2 comparison), and 0.223 s (C O3 + LTO).
+The selected C backend returns the exact native 695-element degree-seven
+output with median 10.765 s; one of three runs took 28.333 s under varying
+desktop load. No paired degree-seven Lisp speed ratio is claimed.
+**Degree eight was cancelled by the user; do not restart it.**
+
+The expanded seeded LHS suite and anchors cover 112 cases on each backend
+in Node and ordinary Chromium, with 109 exact successful cases and three
+pinned shared limitations. It includes 16/136 and 20/210 generator/relation
+inputs. All 64 unit tests, 222 historical file checks, independent algebra
+and differential certificates, reader recovery, high memory, exhaustion,
+UI and C degree-seven share checks pass in their documented scope.
+The browser suite resumed after a ten-minute cap with 286 results already
+verified; all 336 comparisons completed. Full evidence is in
+[compilation.json](validation/compilation.json) and
+[backend-parity.json](validation/backend-parity.json).
+
+Prepare the committed release for the user's manual publisher. Deployment
+continues from the permitted `gh-pages` branch. Pages verification now
+checks UI sources and every backend asset. Publishing instructions belong
+in [DEPLOYMENT.md](DEPLOYMENT.md), not README. No remote write is authorized
+by the user's current preference to publish personally.
+
 ## Runtime profiling and O2 release — 2026-10-01
 
 The current engine uses freshly compiled O2 ECL/GMP/GC libraries and an O2
