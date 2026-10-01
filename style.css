@@ -445,6 +445,7 @@ input[aria-invalid="true"], textarea[aria-invalid="true"] { border-color: var(--
   display: flex;
   gap: 8px;
   margin: 0 -16px;
+  flex-wrap: wrap;
   padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
   background: var(--sheet);
   border-top: 1px solid var(--rule);
@@ -472,6 +473,11 @@ button { font: inherit; cursor: pointer; }
 }
 .quiet:hover { border-color: var(--ink-3); }
 .small { padding: 5px 10px; font-size: 0.88rem; flex: 0 0 auto; }
+.share-button { display: inline-flex; align-items: center; gap: 5px; margin-left: auto; }
+.share-button .icon { flex: 0 0 auto; }
+.share-panel { margin-top: 8px; }
+.share-panel input { width: 100%; font-size: 0.8rem; }
+.share-status { margin: 6px 0 0; }
 
 /* ------------------------------------------------------------ results */
 
