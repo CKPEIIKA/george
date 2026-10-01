@@ -12,9 +12,15 @@ import { renderMath } from './math.js';
 import { structuralResolutionDisplay } from './resolution-data.js';
 import { initConsole } from './console.js';
 import { createShareLink, readShareLink, SHARE_PREFIX } from './share.js';
+import { BACKENDS, DEFAULT_BACKEND } from './backends.js';
 
 const $ = (id) => document.getElementById(id);
-const engine = new EclEngine();
+const engine = new EclEngine({getBackend: () => $('backend').value, onReady: info => {
+  engineInfo = info;
+  engineError = null;
+  updateEngineNote();
+  $('engineNote').classList.add('live');
+}});
 const EX_BY_ID = new Map(EXAMPLES.map((e) => [e.id, e]));
 const STORE_KEY = 'george.form.v1';
 let storage;
@@ -35,7 +41,7 @@ const els = {
   modulus: $('modulus'), pField: $('pField'), pErr: $('pErr'),
   order: $('order'), reverseVars: $('reverseVars'), matrix: $('matrix'), matrixField: $('matrixField'),
   maxdeg: $('maxdeg'), weights: $('weights'), homogWarn: $('homogWarn'),
-  memoryMiB: $('memoryMiB'),
+  memoryMiB: $('memoryMiB'), backend: $('backend'),
   nonhomog: $('nonhomog'), strategy: $('strategy'), rabbit: $('rabbit'), rabbitField: $('rabbitField'),
   augmentation: $('augmentation'),
   lowterms: $('lowterms'), outmode: $('outmode'), legacy: $('legacy'), maxserdeg: $('maxserdeg'), maxserdegField: $('maxserdegField'),
@@ -70,6 +76,7 @@ function readForm() {
     matrix: els.matrix.value,
     maxdeg: els.maxdeg.value,
     memoryMiB: Number(els.memoryMiB.value),
+    backend: els.backend.value,
     weights: els.weights.value,
     nonhomog: els.nonhomog.value,
     augmentation: els.augmentation.value,
@@ -99,6 +106,7 @@ function writeForm(s) {
   if (s.matrix !== undefined) els.matrix.value = s.matrix;
   els.maxdeg.value = s.maxdeg || '';
   els.memoryMiB.value = String(s.memoryMiB ?? els.memoryMiB.value ?? 2048);
+  if (s.backend !== undefined) els.backend.value = Object.hasOwn(BACKENDS, s.backend) ? s.backend : DEFAULT_BACKEND;
   els.weights.value = s.weights || '';
   els.nonhomog.value = s.nonhomog || 'auto';
   els.augmentation.value = s.augmentation || 'graded';
@@ -787,6 +795,7 @@ async function init() {
     updateEngineNote();
     $('engineNote').classList.add('live');
   } catch (error) {
+    if (error.name === 'AbortError') return;
     engineError = error.message;
     updateEngineNote();
   }

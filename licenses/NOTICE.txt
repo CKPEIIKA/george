@@ -8,5 +8,5 @@ MathJax 4.1.3 and New Computer Modern SVG data: Apache-2.0; see ../vendor/mathja
 
 Full notices and license texts accompany this file.
 Corresponding sources: ../sources/george-source.tar.gz and ecl-source.tar.gz.
-Build/relink instructions: README.md and ports/ecl/build.sh in George source.
+Build/relink instructions: ports/ecl/build.sh and tools/build-backends.sh in George source.
 No OCaml or Singular implementation is included in the browser engine.

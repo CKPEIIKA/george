@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>George 0.3</title>
+<title>George 0.4</title>
 <meta name="description" content="George computes Gröbner bases, Hilbert series, Anick resolutions and Betti numbers for noncommutative and commutative algebras, by running the original bergman in your browser.">
 <meta name="theme-color" content="#eef2f3" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#111a27" media="(prefers-color-scheme: dark)">
@@ -17,7 +17,7 @@
 <header class="top">
   <a class="brand" href="#compute" aria-label="George, an interface to bergman">
     <svg class="logo" viewBox="0 0 28 28" aria-hidden="true"><path class="logo-face" d="M14 3 25 14 14 25 3 14Z"/><path class="logo-edge" d="M14 3 25 14 14 25 3 14Z"/><circle cx="14" cy="3.6" r="2"/><circle cx="24.4" cy="14" r="2"/><circle cx="14" cy="24.4" r="2"/><circle cx="3.6" cy="14" r="2"/></svg>
-    <span class="brand-name">George <small class="brand-version">0.3</small></span>
+    <span class="brand-name">George <small class="brand-version">0.4</small></span>
     <span class="brand-sub" data-i18n="brand.sub">an interface to bergman</span>
   </a>
   <nav class="views" aria-label="Views" data-i18n-attr="aria-label:nav.views">
@@ -142,6 +142,15 @@
 
     <details class="block advanced">
       <summary data-i18n="advanced">More settings</summary>
+      <label class="field">
+        <span class="label" data-i18n="backend.label">Computation engine</span>
+        <select id="backend">
+          <option value="compiled" selected data-i18n="backend.compiled">C / ECL O3 + LTO</option>
+          <option value="optimized" data-i18n="backend.optimized">Lisp / ECL O3 + LTO</option>
+          <option value="standard" data-i18n="backend.standard">Lisp / ECL O2</option>
+        </select>
+        <span class="hint" data-i18n="backend.hint">The engine selection is saved with your settings and share link.</span>
+      </label>
       <label class="field">
         <span class="label" data-i18n="memory.label">Memory limit</span>
         <select id="memoryMiB" aria-describedby="memoryHint">

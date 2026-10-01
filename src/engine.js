@@ -1,7 +1,13 @@
+import { getBackend } from './backends.js';
+
 // Form computations start in independent Bergman sessions. Console commands
 // share the current session. Stop terminates Wasm; the next call restarts it.
 export class EclEngine {
-  constructor() {
+  constructor({backend = 'standard', getBackend: readBackend, onReady} = {}) {
+    getBackend(backend);
+    this.backend = backend;
+    this.readBackend = readBackend;
+    this.onReady = onReady;
     this.nextId = 0;
     this.pending = new Map();
     this.generation = 0;
@@ -10,6 +16,7 @@ export class EclEngine {
   }
 
   init() {
+    if (!this.busy) this.setBackend(this.readBackend?.() ?? this.backend);
     if (this.initializing) return this.initializing;
     const worker = this.worker = new Worker(new URL('../engine/worker.js', import.meta.url), { type: 'module' });
     worker.onmessage = ({ data }) => {
@@ -27,7 +34,10 @@ export class EclEngine {
       event.preventDefault();
       if (worker === this.worker) this.cancel(new Error(event.message || 'Cannot load the WebAssembly engine. Run npm run wasm:build.'));
     };
-    this.initializing = this.request('init').catch((error) => {
+    this.initializing = this.request('init', {backend: this.backend}).then((info) => {
+      if (worker === this.worker) this.onReady?.(info);
+      return info;
+    }).catch((error) => {
       if (worker === this.worker) this.cancel(error);
       throw error;
     });
@@ -44,6 +54,7 @@ export class EclEngine {
 
   async execute(command, payload, onEvent, fresh) {
     if (this.busy) throw new Error('A computation is already running.');
+    this.setBackend(this.readBackend?.() ?? payload.job?.backend ?? this.backend);
     if (fresh && this.used) this.cancel();
     this.busy = true;
     const generation = this.generation;
@@ -59,6 +70,14 @@ export class EclEngine {
 
   run(job, onEvent) { return this.execute('run', { job }, onEvent, true); }
   eval(source, onEvent) { return this.execute('eval', { source }, onEvent, false); }
+
+  setBackend(id) {
+    getBackend(id);
+    if (id === this.backend) return;
+    if (this.busy) throw new Error('A computation is already running.');
+    this.cancel();
+    this.backend = id;
+  }
 
   cancel(error = new DOMException('Stopped.', 'AbortError')) {
     this.generation++;
