@@ -201,6 +201,7 @@ export function initConsole({ $, engine, storage, runCurrent }) {
       await engine.eval(src, onEvent);
     } catch (error) {
       if (error.name === 'AbortError') write(`${t('status.stopped')}\n`, 'o-warn');
+      else if (error.code === 'timeout') write(`${t('status.timeout')}\n`, 'o-warn');
       else {
         // The worker's message is a summary followed by the last output lines,
         // which have been shown already when they streamed.
@@ -382,6 +383,7 @@ export function initConsole({ $, engine, storage, runCurrent }) {
       writeHTML(t('console.current.done', { files: cmd('(files)') }), 'o-tip');
     } catch (error) {
       if (error.name === 'AbortError') write(`${t('status.stopped')}\n`, 'o-warn');
+      else if (error.code === 'timeout') write(`${t('status.timeout')}\n`, 'o-warn');
       else write(`${translateMessage(error.message.split('\n')[0])}\n`, 'o-err');
     } finally { setBusy(false); }
   });

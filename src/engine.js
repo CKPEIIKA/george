@@ -1,12 +1,14 @@
 import { getBackend } from './backends.js';
+import { deadline, validateTimeoutMs } from './time-limit.js';
 
 // Form computations start in independent Bergman sessions. Console commands
 // share the current session. Stop terminates Wasm; the next call restarts it.
 export class EclEngine {
-  constructor({backend = 'standard', getBackend: readBackend, onReady} = {}) {
+  constructor({backend = 'standard', getBackend: readBackend, getTimeoutMs, onReady} = {}) {
     getBackend(backend);
     this.backend = backend;
     this.readBackend = readBackend;
+    this.readTimeoutMs = getTimeoutMs;
     this.onReady = onReady;
     this.nextId = 0;
     this.pending = new Map();
@@ -54,6 +56,7 @@ export class EclEngine {
 
   async execute(command, payload, onEvent, fresh) {
     if (this.busy) throw new Error('A computation is already running.');
+    const timeoutMs = validateTimeoutMs(payload.job?.timeoutMs ?? this.readTimeoutMs?.() ?? 0);
     this.setBackend(this.readBackend?.() ?? payload.job?.backend ?? this.backend);
     if (fresh && this.used) this.cancel();
     this.busy = true;
@@ -62,9 +65,20 @@ export class EclEngine {
       await this.init();
       if (generation !== this.generation) throw new DOMException('Stopped.', 'AbortError');
       this.used = true;
-      return await this.request(command, payload, onEvent);
+      const result = this.request(command, payload, onEvent);
+      const clearDeadline = deadline(timeoutMs, () => {
+        if (generation === this.generation) this.cancel(Object.assign(
+          new Error('Computation time limit reached.'), {code: 'timeout', timeoutMs}));
+      });
+      if (generation === this.generation) this.clearDeadline = clearDeadline;
+      else clearDeadline();
+      return await result;
     } finally {
-      if (generation === this.generation) this.busy = false;
+      if (generation === this.generation) {
+        this.clearDeadline?.();
+        this.clearDeadline = null;
+        this.busy = false;
+      }
     }
   }
 
@@ -80,6 +94,8 @@ export class EclEngine {
   }
 
   cancel(error = new DOMException('Stopped.', 'AbortError')) {
+    this.clearDeadline?.();
+    this.clearDeadline = null;
     this.generation++;
     this.worker?.terminate();
     this.worker = null;
