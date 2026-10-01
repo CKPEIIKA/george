@@ -364,6 +364,8 @@ export const TASKS = [
 ];
 
 export const TASK_BY_ID = new Map(TASKS.map((t) => [t.id, t]));
+export const DEFAULT_MEMORY_MIB = 2048;
+export const MAX_MEMORY_MIB = 3584; // Leave 512 MiB for files and host allocations below Wasm's 4 GiB ceiling.
 
 export function exampleForm(ex) {
   const st=readInputFile(ex.input),s=st.settings,extra=ex.session||{};
@@ -387,6 +389,7 @@ export function validateSettings(form) {
     if (form[key] !== undefined && form[key] !== '' && !integer(form[key], 1, 10000)) errors.push(`${label} must be an integer from 1 to 10000.`);
   }
   if (!['0', '2', 'p'].includes(form.field)) errors.push('Choose a coefficient field.');
+  if (form.memoryMiB !== undefined && !integer(form.memoryMiB, 128, MAX_MEMORY_MIB)) errors.push(`Memory limit must be an integer from 128 to ${MAX_MEMORY_MIB} MiB.`);
   if (form.field === 'p') {
     const p = Number(form.modulus);
     let prime = integer(form.modulus, 2);
@@ -507,7 +510,7 @@ export function buildJob(form) {
   for (const k of extended ? ['gb'] : task.out) outputs[k] = outs[k];
   if (task.id === 'anick' && !form.legacy && !extended) outputs.resolution = 'resolution.jsonl';
   if (form.outmode === 'MACAULAY') outputs.macaulay = 'result.macaulay';
-  const job = { task: task.id, files, script: session.join('\n') + '\n', outputs, legacy: !!form.legacy, degreeBound: form.maxdeg || (task.group === 'Resolutions' ? 6 : null) };
+  const job = { task: task.id, files, script: session.join('\n') + '\n', outputs, legacy: !!form.legacy, degreeBound: form.maxdeg || (task.group === 'Resolutions' ? 6 : null), memoryMiB: Number(form.memoryMiB ?? DEFAULT_MEMORY_MIB) };
   if (extended) {
     job.resolution = { form: { ...form, augmentation }, nonhomogeneous };
     job.outputs.anick = outs.anick; // produced by the second stage

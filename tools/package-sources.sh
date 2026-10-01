@@ -29,7 +29,7 @@ git -C "$toolchain/ecl-src" archive --format=tar --prefix=ecl/ 59f60e09102961bf5
 # Only tracked or staged files belong to the release. Concurrent untracked
 # work stays in the workspace and cannot enter the downloadable archive.
 git -C "$root" ls-files -z -- \
-  README.md LICENSE.md package.json package-lock.json .gitignore .gitattributes \
+  README.md LICENSE.md package.json package-lock.json .gitignore .gitattributes .github \
   licenses ports tools test docs vendor web | \
   tar -C "$root" --exclude='web/sources/*' --exclude='web/engine/ecl.*' \
     --null -czf "$root/web/sources/george-source.tar.gz" --files-from=-

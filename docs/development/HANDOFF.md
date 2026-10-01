@@ -1,5 +1,72 @@
 # George handoff
 
+## Pages publication setup — 2026-10-01
+
+`.github/workflows/pages.yml` deploys the prebuilt `web/` tree on each push
+to `main`, with `workflow_dispatch` for a manual redeploy. It uses GitHub's
+official checkout, configure-pages, upload-pages-artifact and deploy-pages
+actions, Pages/OIDC permissions and the `github-pages` environment. It does
+not build ECL or run tests. Select GitHub Actions as the Pages source once
+in repository settings. Existing branch-based publication remains possible
+through `gh-pages`; `web/.nojekyll` accompanies the static tree.
+
+The source archive includes the workflow. Publication must use fresh refs;
+the preserved local `gh-pages` branch is historical. The user chose manual
+publication after the initial SSH authentication failure. Prepare with
+`node tools/prepare-publication.mjs --update --fast-forward`; the generated
+script publishes the reviewed refs atomically without forcing remote branches.
+The user runs it in their terminal and selects the Pages source in GitHub.
+Keep credential details in private local notes. No remote write was performed
+while preparing this release.
+
+## George 0.3 interface update — 2026-10-01
+
+The current package and visible interface version are 0.3.0 / 0.3.
+Completion times now display locale-aware seconds with up to two decimal
+places; internal durations remain milliseconds. The small Share button
+copies a link and exposes a selectable fallback when clipboard access fails.
+
+`web/src/share.js` encodes every form control plus preset, language and theme
+using a versioned positional schema, omitted defaults, deflate compression
+and URL-safe base64 in `#s=1z…` (or uncompressed `#s=1u…` when shorter or
+compression is unavailable). Keep version-1 field order/defaults stable.
+Decoded state is bounded to 1 MiB and checked before restoration. The link
+overrides local saved settings, supports root and project paths, and does
+not launch a calculation. It also restores links navigated to in the same
+page. No external shortener or persistence service is required.
+
+Existing locale/version assertions were updated; no additional test runs
+were requested or executed for these interface edits. The memory report
+below remains the evidence from the earlier 0.2.0-labelled memory build;
+the engine binaries are unchanged by the interface update. These changes
+have not been published.
+
+## Memory update — 2026-10-01
+
+The current local engine supports a 4 GiB Wasm address space and a selectable
+Lisp heap under **More settings → Memory limit**: 512 MiB, 1 GiB, 2 GiB
+(default), 3 GiB and 3.5 GiB. `buildJob` carries `memoryMiB`; the shared runner
+sets ECL's heap limit without changing the portable Bergman session script.
+Memory grows on demand. There is no fixed generator or relation count limit.
+
+ECL's `EXT:STORAGE-EXHAUSTED` inherits from `SERIOUS-CONDITION`, so the old
+`ERROR` handler missed it. The host now catches it and returns bridge status
+2. The worker returns saved basis output as explicitly interrupted, and the
+client releases that worker before the next command. Ordinary Lisp reader
+errors still preserve their session. Interrupted series/resolutions are not
+presented as completed results.
+
+The bytecode runtime is `/tmp/george-memory-v2-runtime-20261001`; it was rebuilt
+with the current sources and relinked with the existing validated ECL Wasm
+library. The previous reader runtime was restored after an initial link, and
+old engine assets remain under `build/engine-before-memory-20261001/`.
+`web/engine/build.json` identifies the new assets and memory settings.
+
+The latest measurements and scope are in `validation/memory.json` and
+the memory section of VALIDATION.md. Earlier sections below describe the
+September release and its retained evidence. These local memory changes have
+not been published.
+
 Updated 2026-09-30. The **Bergman → ECL → Wasm → HTML** MVP computes with the
 real **bergman-1.001-fix** engine with fixed behavior by default and original
 Bergman 1.001 behavior in legacy mode. George 0.2 includes the persistent console

@@ -132,6 +132,15 @@ older PSL files retained as additional historical evidence.
 
 ## ECL portability findings
 
+The 2026-10-01 memory update adds a host-level heap setting and catches
+`EXT:STORAGE-EXHAUSTED`, which is a `STORAGE-CONDITION` and therefore does
+not inherit from `ERROR`. ECL's heap is configured with `EXT:SET-LIMIT`;
+the Emscripten link sets `MAXIMUM_MEMORY` to 4 GiB. The UI offers at most
+3.5 GiB for Lisp, leaving 512 MiB for other Wasm allocations. This does not
+change Bergman's algebraic routines. Saved basis output survives a handled
+heap failure, while the affected worker is released. See the dated memory
+evidence in [VALIDATION.md](VALIDATION.md).
+
 The original build cannot simply compile native `.fas` files and put them in
 Wasm: those files contain host machine code. George uses ECL portable
 bytecode, retaining Bergman's filenames. Its loader reads serialization with

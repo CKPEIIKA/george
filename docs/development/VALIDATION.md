@@ -3,10 +3,66 @@
 Release audit: **2026-09-30**. This is a working Bergman → ECL → Wasm → HTML
 application running **bergman-1.001-fix**. Fixed behavior is the default;
 legacy mode retains the original Bergman 1.001 behavior and version identity.
-The current interface release is **George 0.2** (package version 0.2.0).
-The reports below describe executed checks, with their scope.
+That audit used **George 0.2** (package version 0.2.0).
+The reports below describe executed checks, with their scope. The September
+audit describes the previous engine; the October update identifies and checks
+the current memory-enabled build separately.
 
-## Results
+## George 0.3 interface changes — 2026-10-01
+
+The current interface version is **George 0.3** (package version 0.3.0).
+It adds locale-aware seconds and compressed share links restoring the full
+form, memory allowance, preset, language and theme. Existing locale/version
+assertions were updated. Tests were not run for these interface edits;
+the executed results below retain their original source/version identity.
+The Wasm engine binaries are unchanged from the memory assessment.
+
+## Memory update — 2026-10-01
+
+The engine now links with a **4 GiB Wasm maximum** and offers a Lisp heap
+allowance of **512 MiB to 3.5 GiB**, with **2 GiB** selected by default.
+Memory still starts at 64 MiB and grows on demand. The previous build used
+ECL's 1 GiB heap default and Emscripten's 2 GiB maximum; 3 GiB was not a hard
+limit. See the [Emscripten memory setting](https://emscripten.org/docs/tools_reference/settings_reference.html#maximum-memory)
+and the explicit setting in `ports/ecl/link-wasm.sh`.
+
+| Check on the rebuilt engine | Executed result |
+|---|---|
+| JavaScript unit tests | 53 assertions passed |
+| Historical Node/Wasm suites | All 37 outputs match in each mode, 74 total |
+| Reader recovery | Eight native EOF checks and 23 failures in each Wasm mode, followed by same-session computation and GC |
+| Chromium large allocation | 27 live arrays hold 3,397,386,240 bytes (3.164 GiB); actual Wasm memory grows to 3,624,861,696 bytes; access, GC and exact arithmetic pass |
+| Heap exhaustion | A real 128 MiB limit failure returns saved basis output, releases the worker and permits the next command |
+| Form and language handling | The actual form displays the interrupted basis and memory status in EN/RU, retains the setting and computes successfully after restart |
+
+The submitted presentation contains **15 generators and 100 quadratic
+relations** over Q. In Chromium without a debugger, its degree-4 run takes
+**50.093 seconds** and matches the native output: 100, 76 and 89 basis
+elements in degrees 2, 3 and 4 (265 total).
+Its degree-6 browser run is stopped by the assessment's ten-minute time
+limit while the interface still displays Computing; no memory failure is
+reported. A separate commuting square-zero presentation with **16 generators
+and 136 relations** completes through degree 3 in **20.505 seconds**, with
+136 degree-2 basis elements. Both successful browser runs use the actual
+form and persist the 3.5 GiB setting.
+
+Native SBCL completes through degree 8 in **94.873 seconds**, with **990**
+basis elements: 100, 76, 89, 95, 137, 198 and 295 in degrees 2–8. Its peak
+resident memory is **1,151,536 KiB**, about 1.10 GiB. This is a measurement of
+the 64-bit native process, not an ECL/Wasm memory prediction. A native run
+with a 512 MiB heap exhausts it while processing degree 8. An unrestricted
+native run with a 3.5 GiB allowance is stopped externally after 300 seconds,
+having saved degrees through 8. **The complete unrestricted basis is not
+certified.** The input counts alone do not determine the resource requirement.
+
+The current engine hashes, source hashes, measurements and local report
+paths are recorded in [memory.json](validation/memory.json). Instrumented
+degree-4 and degree-6 browser runs timed out after ten minutes; they are
+retained as diagnostics and excluded from normal-browser timing claims.
+The wider September algebra, upstream, resolution and UI audit below has
+not been rerun in full against these new engine hashes.
+
+## September release results
 
 | Layer | Executed result |
 |---|---|
@@ -29,8 +85,8 @@ The reports below describe executed checks, with their scope.
 
 Small machine-readable evidence is retained in [validation/](validation/).
 [summary.json](validation/summary.json) links the full local logs and records
-source hashes; [engine.json](validation/engine.json) identifies the exact
-three shipped engine files. Failed development runs are not release results.
+source hashes; [engine.json](validation/engine.json) identifies the September
+engine files. Failed development runs are not release results.
 
 Before the initial commit, repository cleanup archived 43 unused prototype
 and disposable upstream files locally. All 29 unit tests and both 37-output

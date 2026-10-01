@@ -52,7 +52,7 @@ async function checkUI(){
    $('[data-tutorial="monoid"]').click();await compute();ok(!$('#view-compute').hidden,'mobile computed result visible');ok($('#bettiOut').textContent.includes('Ungraded Betti numbers'),'mobile Betti result');ok(document.documentElement.scrollWidth<=innerWidth+1,'mobile result overflow');await post('done',{mode,errors,checks:['390px guide and computed monoid result have no page overflow']});return;
   }
   if(phase==='start'){
-   language('en');eq($('.brand-sub').textContent,'an interface to bergman','English interface wording');eq($('.brand-version').textContent,'0.2','application version');
+   language('en');eq($('.brand-sub').textContent,'an interface to bergman','English interface wording');eq($('.brand-version').textContent,'0.3','application version');
    location.hash='#console';
    const command=async(src,expected)=>{
     const term=$('#terminal'),start=term.children.length;

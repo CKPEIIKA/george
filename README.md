@@ -54,7 +54,7 @@ static site (GitHub Pages)       web/ → gh-pages
 
 ## DISCLAIMER
 
-The mathematics is bergman's own, and the interface is tested against the
+THIS SOFTWARE IS VIBE-CODED! The mathematics is bergman's own, and the interface is tested against the
 original: in legacy mode all 37 stored bergman outputs match byte for byte,
 and results are compared with a native SBCL build, Bergman 2 and Singular
 (*docs/development/VALIDATION.md*). Check results that matter.
@@ -69,9 +69,22 @@ and results are compared with a native SBCL build, Bergman 2 and Singular
 : Field, monomial order, weights and degree limit. Every bergman mode is
   under *More settings*.
 
+**Memory**
+: *More settings → Memory limit* allows 512 MiB to 3.5 GiB of Lisp heap,
+  with 2 GiB selected by default. Memory grows as needed. The engine has a
+  4 GiB Wasm ceiling; the remaining space serves files and host allocations.
+  An exhausted heap returns saved basis output as partial and releases the
+  worker. A larger limit does not guarantee completion of an unbounded basis.
+
 **Output**
 : The basis by degree, series, Betti tables, Anick differentials, the raw
   files and the bergman session.
+
+**Share**
+: The small *Share* button copies a compact link containing the presentation
+  and all form settings, including the memory limit, language and theme.
+  Opening the link restores them; press Compute to run the calculation.
+  Computation times are displayed in seconds, with up to two decimal places.
 
 **Legacy mode**
 : `(SETLEGACYMODE T)` or the checkbox retains original bergman 1.001 behavior. The
@@ -105,14 +118,36 @@ and results are compared with a native SBCL build, Bergman 2 and Singular
 | `npm run test:braid` | native/Wasm braid resolutions, full differentials, projectivity and weighted bounds |
 | `npm run test:reader` | same-session recovery after missing files, EOF, stream redirection and syntax errors |
 | `npm run test:browser`, `test:browser:regression` | Chromium suites |
+| `GEORGE_LARGE_MEMORY=1 npm run test:browser` | Chromium allocation above 3 GiB, heap exhaustion, saved output and restart; requires a running local server |
 | `npm run test:ui` | guide, EN/RU, themes, MathJax, `/george/` path |
 
 ## PUBLISHING
 
-Publish the committed `web/` directory to `gh-pages`. In GitHub, set
-*Settings → Pages → Deploy from a branch → gh-pages, /(root)*.
+The workflow `.github/workflows/pages.yml` publishes the committed, prebuilt
+`web/` directory whenever `main` is pushed. Enable it once in GitHub:
+*Settings → Pages → Build and deployment → Source → GitHub Actions*.
+Pushes then deploy automatically, without rebuilding ECL or running tests.
+To redeploy the latest `main` manually, open
+*Actions → Deploy George to GitHub Pages → Run workflow* and select `main`.
+See [GitHub's Pages configuration](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site).
 
-George 0.2 includes the persistent Lisp console: command completion, history,
+The existing branch-based setup is also supported:
+*Settings → Pages → Deploy from a branch → gh-pages, /(root)*. In that mode,
+publish the `web/` tree to `gh-pages`; pushing only `main` does not update the
+site. The Actions source above removes that extra branch-publication step.
+
+To prepare both source and site refs for a manual release, commit the intended
+changes, then run `node tools/prepare-publication.mjs --update --fast-forward`.
+Review `build/publication/plan.json` and execute `bash build/publication/publish.sh`
+in your terminal. Its optional argument is the SSH key to load with `ssh-add`;
+any passphrase is entered in the terminal. The script pushes both prepared
+branches atomically and refuses outdated prepared refs. In fast-forward mode
+it never forces a remote branch; a newer or diverged remote requires a fresh
+preparation after fetching.
+
+George 0.3 adds compact share links, computation times in seconds and the
+selectable memory allowance up to 3.5 GiB. It includes the persistent Lisp
+console introduced in 0.2: command completion, history,
 original Bergman help, and session files. Missing files or unavailable keyboard
 input now report errors in the engine without restarting the session. The
 reader and streams recover after errors; variables and files remain available.
@@ -183,5 +218,5 @@ bergman, ECL, GMP, the GC, Emscripten and MathJax keep their own licenses.
 See *LICENSE.md*.
 
 ```
-George 0.2.0                     2026-09-30                       GEORGE(1)
+George 0.3.0                     2026-10-01                       GEORGE(1)
 ```

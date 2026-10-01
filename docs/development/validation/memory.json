@@ -1,0 +1,237 @@
+{
+  "date": "2026-10-01",
+  "engine": {
+    "bergman": "bergman-1.001-fix",
+    "upstreamBergman": "1.001",
+    "defaultBehavior": "fixed",
+    "legacyBehavior": "original",
+    "ecl": "59f60e09102961bf5872c672fdd9d200b2e83d6b",
+    "emscripten": "4.0.12",
+    "files": {
+      "ecl.data": {
+        "bytes": 3022218,
+        "sha256": "790ba520c484eb05e9e5d4134a67ec343c4993d4847cd9b0752233bb32d51368"
+      },
+      "ecl.js": {
+        "bytes": 110176,
+        "sha256": "befbdaa074c024417291a43185a286ab5ed3f588820ede6cfd0665fa4abeb9ae"
+      },
+      "ecl.wasm": {
+        "bytes": 4617817,
+        "sha256": "c96fa125c12681a3bcfbd4b563237d38fb75e10f5ca85ac942b9149ec4c81935"
+      }
+    },
+    "appVersion": "0.2.0",
+    "memory": {
+      "wasmMaximumBytes": 4294967296,
+      "defaultHeapMiB": 2048,
+      "maximumHeapMiB": 3584
+    }
+  },
+  "memory": {
+    "defaultHeapMiB": 2048,
+    "maximumHeapMiB": 3584,
+    "wasmMaximumBytes": 4294967296,
+    "chromiumLiveArrayBytes": 3397386240,
+    "chromiumWasmBytes": 3624861696,
+    "allocationAndAccessAbove3GiB": true,
+    "heapFailurePreservesSavedBasis": true,
+    "failedWorkerReleased": true,
+    "nextCommandSucceeds": true,
+    "formMemoryErrorENRU": true
+  },
+  "checks": {
+    "unitAssertions": 53,
+    "historicalOutputs": 74,
+    "nativeReaderEOFChecks": 8,
+    "wasmReaderErrors": 46,
+    "browserErrors": []
+  },
+  "presentationAssessment": {
+    "generators": 15,
+    "relations": 100,
+    "field": "Q",
+    "order": "degree-left-lexicographic",
+    "fullBasisCertified": false,
+    "inputText": "vars a,b,c,d,e,f,g,h,k,m,n,p,q,r,s;\na^2,b^2,c^2,d^2,e^2,f^2,g^2,h^2,k^2,m^2,n^2,p^2,q^2,r^2,s^2,a*c-c*a,a*d-d*a,a*e-e*a,a*k-k*a,a*r-r*a,a*s-s*a,b*d-d*b,b*e-e*b,b*f-f*b,b*h-h*b,b*n-n*b,b*r-r*b,c*e-e*c,c*f-f*c,c*g-g*c,c*n-n*c,c*p-p*c,d*f-f*d,d*g-g*d,d*m-m*d,d*s-s*d,e*h-h*e,e*m-m*e,e*q-q*e,f*k-k*f,f*p-p*f,f*q-q*f,g*h-h*g,g*k-k*g,g*m-m*g,g*n-n*g,h*k-k*h,h*p-p*h,h*s-s*h,k*q-q*k,k*r-r*k,m*p-p*m,m*q-q*m,m*r-r*m,n*q-q*n,n*r-r*n,n*s-s*n,p*r-r*p,p*s-s*p,q*s-s*q,m*n-n*k-k*m,n*m-k*n-m*k,m*a-a*b-b*m,a*m-b*a-m*b,m*h-h*c-c*m,h*m-c*h-m*c,m*f-f*s-s*m,f*m-s*f-m*s,k*p-p*b-b*k,p*k-b*p-k*b,k*d-d*c-c*k,d*k-c*d-k*c,k*e-e*s-s*k,e*k-s*e-k*s,b*q-q*c-c*b,q*b-c*q-b*c,b*g-g*s-s*b,g*b-s*g-b*s,c*r-r*s-s*c,r*c-s*r-c*s,n*p-p*a-a*n,p*n-a*p-n*a,n*d-d*h-h*n,d*n-h*d-n*h,n*e-e*f-f*n,e*n-f*e-n*f,a*q-q*h-h*a,q*a-h*q-a*h,a*g-g*f-f*a,g*a-f*g-a*f,h*r-r*f-f*h,r*h-f*r-h*f,p*q-q*d-d*p,q*p-d*q-p*d,p*g-g*e-e*p,g*p-e*g-p*e,d*r-r*e-e*d,r*d-e*r-d*e,q*r-r*g-g*q,r*q-g*r-q*g;\n",
+    "inputSha256": "1337f8bbdf2ed27f8da93430a520364ddccb2430d423e5fc315dd550d2110903",
+    "nativeBounded": {
+      "degree": 8,
+      "elements": 990,
+      "byDegree": {
+        "2": 100,
+        "3": 76,
+        "4": 89,
+        "5": 95,
+        "6": 137,
+        "7": 198,
+        "8": 295
+      },
+      "heapAllowanceMiB": 3072,
+      "wallMs": 94873.422169,
+      "maxResidentKiB": 1151536,
+      "basisFile": "build/diagnosis-15-generators/native-gb8/result.gb"
+    },
+    "nativeUnbounded": {
+      "heapAllowanceMiB": 3584,
+      "stoppedAfterSeconds": 300,
+      "savedThroughDegree": 8,
+      "completed": false,
+      "reason": "External time limit; no memory exhaustion diagnosis for this run."
+    },
+    "nativeLowerMemory": {
+      "heapAllowanceMiB": 512,
+      "outcome": "Heap exhausted while processing degree 8."
+    },
+    "browser": {
+      "devtools": false,
+      "engine": {
+        "bergman": "bergman-1.001-fix",
+        "upstreamBergman": "1.001",
+        "defaultBehavior": "fixed",
+        "legacyBehavior": "original",
+        "ecl": "59f60e09102961bf5872c672fdd9d200b2e83d6b",
+        "emscripten": "4.0.12",
+        "files": {
+          "ecl.data": {
+            "bytes": 3022218,
+            "sha256": "790ba520c484eb05e9e5d4134a67ec343c4993d4847cd9b0752233bb32d51368"
+          },
+          "ecl.js": {
+            "bytes": 110176,
+            "sha256": "befbdaa074c024417291a43185a286ab5ed3f588820ede6cfd0665fa4abeb9ae"
+          },
+          "ecl.wasm": {
+            "bytes": 4617817,
+            "sha256": "c96fa125c12681a3bcfbd4b563237d38fb75e10f5ca85ac942b9149ec4c81935"
+          }
+        },
+        "appVersion": "0.2.0",
+        "memory": {
+          "wasmMaximumBytes": 4294967296,
+          "defaultHeapMiB": 2048,
+          "maximumHeapMiB": 3584
+        }
+      },
+      "cases": [
+        {
+          "id": "user-degree4",
+          "generators": 15,
+          "relations": 100,
+          "degree": 4,
+          "memoryMiB": 3584,
+          "elapsedMs": 50093,
+          "nativeEquality": true,
+          "basis": [
+            {
+              "degree": 2,
+              "count": 100
+            },
+            {
+              "degree": 3,
+              "count": 76
+            },
+            {
+              "degree": 4,
+              "count": 89
+            }
+          ],
+          "settingPersisted": true
+        }
+      ],
+      "errors": [
+        "Error: Error: user-degree6 timed out: Computing\u2026\n    at wait (http://127.0.0.1:43251/:311:121)\n    at async http://127.0.0.1:43251/:316:65",
+        "Error: Error: user-degree6 timed out: Computing\u2026\n    at wait (http://127.0.0.1:43251/:311:121)\n    at async http://127.0.0.1:43251/:316:65"
+      ],
+      "incompleteCases": [
+        {
+          "id": "user-degree6",
+          "degree": 6,
+          "memoryMiB": 3584,
+          "completed": false,
+          "stoppedAfterSeconds": 600,
+          "reason": "External assessment time limit while the UI still displayed Computing; no memory failure was reported."
+        }
+      ]
+    },
+    "measurementNotes": [
+      "Native resident memory is from 64-bit SBCL, not a prediction of ECL/Wasm memory.",
+      "Instrumented browser degree-4 and degree-6 runs timed out after ten minutes. They are excluded from normal-browser timing results because DevTools can disable Wasm optimization."
+    ]
+  },
+  "largerPresentationBrowser": {
+    "devtools": false,
+    "engine": {
+      "bergman": "bergman-1.001-fix",
+      "upstreamBergman": "1.001",
+      "defaultBehavior": "fixed",
+      "legacyBehavior": "original",
+      "ecl": "59f60e09102961bf5872c672fdd9d200b2e83d6b",
+      "emscripten": "4.0.12",
+      "files": {
+        "ecl.data": {
+          "bytes": 3022218,
+          "sha256": "790ba520c484eb05e9e5d4134a67ec343c4993d4847cd9b0752233bb32d51368"
+        },
+        "ecl.js": {
+          "bytes": 110176,
+          "sha256": "befbdaa074c024417291a43185a286ab5ed3f588820ede6cfd0665fa4abeb9ae"
+        },
+        "ecl.wasm": {
+          "bytes": 4617817,
+          "sha256": "c96fa125c12681a3bcfbd4b563237d38fb75e10f5ca85ac942b9149ec4c81935"
+        }
+      },
+      "appVersion": "0.2.0",
+      "memory": {
+        "wasmMaximumBytes": 4294967296,
+        "defaultHeapMiB": 2048,
+        "maximumHeapMiB": 3584
+      }
+    },
+    "cases": [
+      {
+        "id": "16-generators-136-relations",
+        "generators": 16,
+        "relations": 136,
+        "degree": 3,
+        "memoryMiB": 3584,
+        "elapsedMs": 20505.29999999702,
+        "nativeEquality": false,
+        "basis": [
+          {
+            "degree": 2,
+            "count": 136
+          }
+        ],
+        "settingPersisted": true
+      }
+    ],
+    "errors": []
+  },
+  "reports": {
+    "units": "build/memory-unit-tests.log",
+    "wasm": "build/validation/memory-wasm-20261001/report.json",
+    "reader": "build/validation/memory-reader-20261001/report.json",
+    "browserMemory": "build/validation/browser-1790845940214/report.json",
+    "browserFormENRU": "build/validation/browser-1790846660049/report.json",
+    "normalBrowserPresentation": "build/diagnosis-15-generators/browser-no-debugger-report.json",
+    "largerPresentationBrowser": "build/diagnosis-15-generators/browser-16-report.json"
+  },
+  "sourceHashes": {
+    "ports/ecl/boot.lisp": "722cd041f730a1ded009ea9e84bb29322dd8b1846699b7b49d86fbdde96f707c",
+    "ports/ecl/bridge.c": "3d82ec197c6ca9b936bcb5902da304d7136bbb5bb4d06940b69d45568ba264db",
+    "ports/ecl/link-wasm.sh": "d848cab6ae4ba3801d9cea9e5a9e27386c44e6cf2c64dc12b870db406f17dfec",
+    "web/engine/runner.js": "6c0f80152e2863922f28f348fe15c8680bfee277895f92bb8bce5d5010f6377c",
+    "web/engine/worker.js": "83b009d982da9716d42b1357086b1f207e072a2ed81b385a33c5b08da64427d4",
+    "web/src/engine.js": "8373f203f7424f08bd1a1767e4a17aaef87b0191c1d927d60edc65e00c628274",
+    "web/src/bergman-syntax.js": "cfa57b87e094574ecab2618c7ba1f38cdac9552a7b1eddd2e82fe01a680ea020",
+    "web/src/app.js": "4666ea58fcb7d625b06f19f715949ec12a37e65ce5428d9a68230ef4ff2b8efa",
+    "web/src/i18n.js": "39731a55fb665bcb3fa31c7b2249a176607d63efa1a6780740cd4f17c9bf89df",
+    "web/src/guide.js": "b06355dd22e66d01790e508860d817706c7d77d1a820afd171f120544ab420ee",
+    "web/index.html": "d26e6433512fe1dbb0a648449cdc5014eb3e5459e0f3475c109c31270482bcee",
+    "tools/validate-browser.mjs": "9db73162982ee22bf005cb778ec02d135581f010100207922fac2de42446947e",
+    "test/engine.test.mjs": "e31bdd6bf9dfe53877a1c5b494f63367f5e08c3a30ac8f0c52010fc416bdf410",
+    "test/validation.test.mjs": "e57a2e68031b0e18fe86e134c18fe8aaf81a7a16336c90faff06b5bb6a4a07e0"
+  }
+}

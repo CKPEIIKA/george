@@ -1,5 +1,5 @@
 import createGeorgeModule from './ecl.js';
-import { runJob } from './runner.js';
+import { runJob, setMemoryLimit } from './runner.js';
 
 let runtime;
 let output = '';
@@ -30,6 +30,7 @@ onmessage = async ({ data: { id, command, job, source } }) => {
       runtime = await createGeorgeModule({ print, printErr: print, stdin: () => null, wasmBinary:wasm, getPreloadedPackage:()=>data, locateFile: (p) => new URL(p, import.meta.url).href });
       const status = runtime.ccall('george_init', 'number', [], []);
       if (status) throw new Error(`Bergman initialization failed (${status}). ${output}`);
+      setMemoryLimit(runtime);
       runtime.FS.mkdirTree('/work');
       runtime.FS.chdir('/work');
       if (runtime.ccall('george_eval', 'number', ['string', 'number'], ['(SETF CL:*DEFAULT-PATHNAME-DEFAULTS* #P"/work/")', 0])) throw new Error('Cannot set the working directory.');
@@ -41,14 +42,19 @@ onmessage = async ({ data: { id, command, job, source } }) => {
     let result;
     if (job) result = runJob(runtime,job);
     else {
-      if (runtime.ccall('george_eval','number',['string','number'],[source,1])) throw new Error('Bergman evaluation failed.');
+      const status = runtime.ccall('george_eval','number',['string','number'],[source,1]);
+      if (status) {
+        const error = new Error(status === 2 ? 'The computation exhausted its memory limit. Increase Memory limit under More settings or set a maximal degree.' : 'Bergman evaluation failed.');
+        if (status === 2) error.code = 'memory-limit';
+        throw error;
+      }
       result={files:{}};
     }
     flush();
     postMessage({ id, result: { ...result, stdout: output, connected: true, elapsedMs: performance.now() - start, memoryBytes: runtime.HEAPU8.length } });
   } catch (error) {
     flush();
-    postMessage({ id, error: `${error.message || String(error)}\n${output.trim().split('\n').slice(-8).join('\n')}` });
+    postMessage({ id, error: `${error.message || String(error)}\n${output.trim().split('\n').slice(-8).join('\n')}`, code: error.code, partialResult: error.partialResult });
   } finally {
     activeId = undefined;
   }

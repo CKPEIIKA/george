@@ -7,17 +7,22 @@
   "emscripten": "4.0.12",
   "files": {
     "ecl.data": {
-      "bytes": 3022020,
-      "sha256": "0acbdaa4f0add5cd05ac44a1d216776fc3200f01e7da170df49bff8816d6ca1e"
+      "bytes": 3022218,
+      "sha256": "790ba520c484eb05e9e5d4134a67ec343c4993d4847cd9b0752233bb32d51368"
     },
     "ecl.js": {
-      "bytes": 108260,
-      "sha256": "10a9e7995b3d562c7d3f37317ed9dd2ed8c3fb64b3b7c2c130af42f63bed7e02"
+      "bytes": 110176,
+      "sha256": "befbdaa074c024417291a43185a286ab5ed3f588820ede6cfd0665fa4abeb9ae"
     },
     "ecl.wasm": {
-      "bytes": 4617809,
-      "sha256": "b8a73edd93cbb5974155ee0f26fc40930035ed0794c1d965e3a57f78005788c2"
+      "bytes": 4617817,
+      "sha256": "c96fa125c12681a3bcfbd4b563237d38fb75e10f5ca85ac942b9149ec4c81935"
     }
   },
-  "appVersion": "0.2.0"
+  "appVersion": "0.3.0",
+  "memory": {
+    "wasmMaximumBytes": 4294967296,
+    "defaultHeapMiB": 2048,
+    "maximumHeapMiB": 3584
+  }
 }

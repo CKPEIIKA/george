@@ -13,7 +13,7 @@ emcc "$root/ports/ecl/bridge.c" -ffile-prefix-map="$root"=. -I"$prefix" \
   -L"$prefix" -lecl -leclgmp -leclgc -lm \
   "${GEORGE_LINK_OPT:--O2}" -DECL_C_COMPATIBLE_VARIADIC_DISPATCH \
   -sBINARYEN_EXTRA_PASSES=--spill-pointers -sSTACK_SIZE=8388608 \
-  -sINITIAL_MEMORY=67108864 -sALLOW_MEMORY_GROWTH=1 \
+  -sINITIAL_MEMORY=67108864 -sALLOW_MEMORY_GROWTH=1 -sMAXIMUM_MEMORY=4294967296 \
   -sMODULARIZE=1 -sEXPORT_ES6=1 -sEXPORT_NAME=createGeorgeModule \
   -sENVIRONMENT=web,worker,node -sFORCE_FILESYSTEM=1 \
   -sEXPORTED_RUNTIME_METHODS='["ccall","FS","HEAPU8"]' \

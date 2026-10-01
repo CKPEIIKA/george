@@ -38,6 +38,53 @@ try {
   assert.match(cancelled.stdout, /12157665459056928801/);
   const growth=await page.evaluate(async()=>window.testEngine.eval('(PROGN (SETQ GEORGESTRESS (MAKE-ARRAY 100000000 :ELEMENT-TYPE \'(UNSIGNED-BYTE 8) :INITIAL-ELEMENT 7)) (PRINT (AREF GEORGESTRESS 99999999)) (SETQ GEORGESTRESS NIL) (GC) (EXPT 3 40))'));
   assert.match(growth.stdout,/12157665459056928801/);assert.ok(growth.memoryBytes>67108864);
+  const limit=await page.evaluate(async()=>window.testEngine.eval("(EXT:GET-LIMIT 'EXT:HEAP-SIZE)"));
+  assert.match(limit.stdout,/2147483648/,'default Lisp heap allows 2 GiB');
+  let largeMemory=null;
+  if(process.env.GEORGE_LARGE_MEMORY==='1'){
+    largeMemory=await page.evaluate(async()=>window.testEngine.eval(`(PROGN
+      (EXT:SET-LIMIT 'EXT:HEAP-SIZE 3758096384)
+      (SETQ GEORGESTRESS NIL)
+      (DOTIMES (I 27) (PUSH (MAKE-ARRAY 125829120 :ELEMENT-TYPE '(UNSIGNED-BYTE 8) :INITIAL-ELEMENT 7) GEORGESTRESS))
+      (PRINT (LIST (LENGTH GEORGESTRESS) (AREF (FIRST GEORGESTRESS) 125829119)))
+      (SETQ GEORGESTRESS NIL) (EXT:GC) (EXPT 3 40))`));
+    assert.match(largeMemory.stdout,/\(27 7\)/);assert.match(largeMemory.stdout,/12157665459056928801/);
+    assert.ok(largeMemory.memoryBytes>3221225472,'allocation and access work beyond 3 GiB');
+    console.log('Large memory passed',largeMemory.memoryBytes);
+  }
+  const memoryFailure=await page.evaluate(async()=>{
+    const {buildJob}=await import('./src/bergman-syntax.js');
+    const job=buildJob({task:'gb',vars:['x'],rels:['x^2'],ring:'noncomm',order:'degleftlex',field:'0',memoryMiB:128});
+    job.script=job.script.replace('(CLEARRING)',`(SETQ GEORGESTRESS (LIST
+      (MAKE-ARRAY 80000000 :ELEMENT-TYPE '(UNSIGNED-BYTE 8) :INITIAL-ELEMENT 1)
+      (MAKE-ARRAY 80000000 :ELEMENT-TYPE '(UNSIGNED-BYTE 8) :INITIAL-ELEMENT 2)))`);
+    try {await window.testEngine.run(job);throw new Error('expected exhaustion');}
+    catch(error){return {code:error.code,files:error.partialResult?.files,interrupted:error.partialResult?.interrupted,released:!window.testEngine.worker};}
+  });
+  assert.equal(memoryFailure.code,'memory-limit');assert.match(memoryFailure.files['result.gb'],/x\^2/);
+  assert.equal(memoryFailure.interrupted,true);assert.equal(memoryFailure.released,true);
+  assert.match((await page.evaluate(async()=>window.testEngine.eval('(+ 1 2)'))).stdout,/3/);
+  await page.locator('details').evaluate(el=>el.open=true);
+  await page.locator('#memoryMiB').selectOption('3584');
+  // Drive the form's actual memory-failure path with a small, reproducible heap.
+  await page.evaluate(async()=>{
+    const {EclEngine}=await import('./src/engine.js');const run=EclEngine.prototype.run;
+    EclEngine.prototype.run=function(job,onEvent){
+      EclEngine.prototype.run=run;job.memoryMiB=128;
+      job.script=job.script.replace('(CLEARRING)',`(SETQ GEORGESTRESS (LIST
+        (MAKE-ARRAY 80000000 :ELEMENT-TYPE '(UNSIGNED-BYTE 8) :INITIAL-ELEMENT 1)
+        (MAKE-ARRAY 80000000 :ELEMENT-TYPE '(UNSIGNED-BYTE 8) :INITIAL-ELEMENT 2)))`);
+      return run.call(this,job,onEvent);
+    };
+  });
+  await page.locator('#go').click();
+  await page.waitForFunction(()=>document.querySelector('#runStatus').textContent.startsWith('Stopped after reaching'),null,{timeout:60000});
+  assert.match(await page.locator('#basisOut .notice').textContent(),/saved partial basis/);
+  assert.ok(await page.locator('#basisOut .polys li').count()>0);
+  await page.locator('[data-lang="ru"]').click();
+  assert.match(await page.locator('#runStatus').textContent(),/предел памяти 128/);
+  assert.match(await page.locator('#basisOut .notice').textContent(),/частичный/);
+  await page.locator('[data-lang="en"]').click();
   await page.locator('#go').click();
   await page.waitForFunction(() => document.querySelector('#runStatus').textContent.startsWith('Computed'), null, { timeout: 60000 });
   assert.ok(await page.locator('#basisOut .polys li').count() > 0);
@@ -67,6 +114,6 @@ try {
   await page.locator('#switchOutput').click();
   await page.screenshot({ path: `${out}/mobile.png`, fullPage: true });
   assert.deepEqual(errors, []);
-  fs.writeFileSync(`${out}/report.json`, JSON.stringify({ report, cancellation: cancelled.name, exactInteger: cancelled.stdout.trim(), memoryGrowthBytes:growth.memoryBytes, errors, browser: browser.version() }, null, 2));
+  fs.writeFileSync(`${out}/report.json`, JSON.stringify({ report, cancellation: cancelled.name, exactInteger: cancelled.stdout.trim(), memoryGrowthBytes:growth.memoryBytes, largeMemoryBytes:largeMemory?.memoryBytes, memoryFailure, errors, browser: browser.version() }, null, 2));
   console.log(JSON.stringify({ out, report, cancellation: cancelled.name, errors }, null, 2));
 } finally { await browser.close(); }

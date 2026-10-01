@@ -26,7 +26,7 @@ test('every static and dynamic interface key has an EN/RU translation', () => {
 
 test('localization interpolates errors without changing parser input', () => {
   setLanguage('ru');
-  assert.match(t('status.done', { ms: 12 }), /12 мс/);
+  assert.match(t('status.done', { seconds: '0,01' }), /0,01 с/);
   assert.match(translateMessage('“hello” is not one of the generators'), /hello.*образующ/);
   assert.match(translateMessage('The modulus must be a prime at most 2147483647.'), /простым/);
   assert.equal(translateMessage('***** original Lisp diagnostic'), '***** original Lisp diagnostic');

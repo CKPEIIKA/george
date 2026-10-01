@@ -81,6 +81,15 @@
                 when echo-values do (format t "~&~S~%" value)))
         (finish-output)
         t)
+    (ext:storage-exhausted (condition)
+      ;; STORAGE-EXHAUSTED inherits from SERIOUS-CONDITION, not ERROR.
+      ;; Return a distinct status while ECL's safety area is still available.
+      (setf *readtable* saved-readtable
+            (readtable-case saved-readtable) saved-case
+            (symbol-value raise) saved-raise)
+      (format *error-output* "Memory exhausted: ~A~%" condition)
+      (finish-output *error-output*)
+      2)
     (error (condition)
       (setf *readtable* saved-readtable
             (readtable-case saved-readtable) saved-case

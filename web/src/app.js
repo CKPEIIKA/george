@@ -11,6 +11,7 @@ import { guideHTML } from './guide.js';
 import { renderMath } from './math.js';
 import { structuralResolutionDisplay } from './resolution-data.js';
 import { initConsole } from './console.js';
+import { createShareLink, readShareLink, SHARE_PREFIX } from './share.js';
 
 const $ = (id) => document.getElementById(id);
 const engine = new EclEngine();
@@ -26,6 +27,7 @@ let engineError = null;
 let lastRendered = null;
 let statusState = { key: 'status.idle', params: {}, busy: false };
 let guideGeneration = 0;
+let shareGeneration = 0;
 
 const els = {
   form: $('presentation'), preset: $('preset'), presetN: $('presetN'), presetNField: $('presetNField'),
@@ -33,12 +35,14 @@ const els = {
   modulus: $('modulus'), pField: $('pField'), pErr: $('pErr'),
   order: $('order'), reverseVars: $('reverseVars'), matrix: $('matrix'), matrixField: $('matrixField'),
   maxdeg: $('maxdeg'), weights: $('weights'), homogWarn: $('homogWarn'),
+  memoryMiB: $('memoryMiB'),
   nonhomog: $('nonhomog'), strategy: $('strategy'), rabbit: $('rabbit'), rabbitField: $('rabbitField'),
   augmentation: $('augmentation'),
   lowterms: $('lowterms'), outmode: $('outmode'), legacy: $('legacy'), maxserdeg: $('maxserdeg'), maxserdegField: $('maxserdegField'),
   moduleFields: $('moduleFields'), nmodgen: $('nmodgen'), nmodgenField: $('nmodgenField'),
   twoModFields: $('twoModFields'), nlmodgen: $('nlmodgen'), nrmodgen: $('nrmodgen'),
   taskList: $('taskList'), go: $('go'), stop: $('stop'), runStatus: $('runStatus'),
+  share: $('share'), sharePanel: $('sharePanel'), shareLink: $('shareLink'), shareStatus: $('shareStatus'),
   tabs: $('tabs'), view: $('view-compute'), resultsDot: $('resultsDot'),
 };
 
@@ -65,6 +69,7 @@ function readForm() {
     reverseVars: els.reverseVars.checked,
     matrix: els.matrix.value,
     maxdeg: els.maxdeg.value,
+    memoryMiB: Number(els.memoryMiB.value),
     weights: els.weights.value,
     nonhomog: els.nonhomog.value,
     augmentation: els.augmentation.value,
@@ -84,27 +89,28 @@ function readForm() {
 function writeForm(s) {
   setRadio('ring', s.ring || 'noncomm');
   fillOrders();
-  els.vars.value = (s.vars || []).join(', ');
+  els.vars.value = s.varsText ?? (s.vars || []).join(', ');
   els.rels.value = s.relsText ?? (s.rels || []).join(',\n');
   setRadio('field', s.field || '0');
-  els.modulus.value = s.modulus || 5;
+  els.modulus.value = s.modulus ?? 5;
   if (s.order) els.order.value = s.order;
   if (!els.order.value) els.order.selectedIndex = 0;
   els.reverseVars.checked = !!s.reverseVars;
   if (s.matrix !== undefined) els.matrix.value = s.matrix;
   els.maxdeg.value = s.maxdeg || '';
+  els.memoryMiB.value = String(s.memoryMiB ?? els.memoryMiB.value ?? 2048);
   els.weights.value = s.weights || '';
   els.nonhomog.value = s.nonhomog || 'auto';
   els.augmentation.value = s.augmentation || 'graded';
   els.strategy.value = s.strategy || 'default';
-  if (s.rabbit) els.rabbit.value = s.rabbit;
+  if (s.rabbit !== undefined) els.rabbit.value = s.rabbit;
   els.lowterms.value = s.lowterms || 'quick';
   els.outmode.value = s.outmode || 'ALG';
   els.legacy.checked = !!s.legacy;
-  if (s.maxserdeg) els.maxserdeg.value = s.maxserdeg;
-  els.nmodgen.value = s.nmodgen || 1;
-  els.nlmodgen.value = s.nlmodgen || 1;
-  els.nrmodgen.value = s.nrmodgen || 1;
+  if (s.maxserdeg !== undefined) els.maxserdeg.value = s.maxserdeg;
+  els.nmodgen.value = s.nmodgen ?? 1;
+  els.nlmodgen.value = s.nlmodgen ?? 1;
+  els.nrmodgen.value = s.nrmodgen ?? 1;
   const t = document.querySelector(`input[name="task"][value="${s.task || 'gb'}"]`);
   if (t) t.checked = true;
 }
@@ -242,6 +248,9 @@ function validate() {
 }
 
 function refresh() {
+  shareGeneration++;
+  els.sharePanel.hidden = true;
+  els.shareStatus.hidden = true;
   const f = readForm();
   const task = TASK_BY_ID.get(f.task);
   els.matrixField.hidden = f.order !== 'matrix';
@@ -274,7 +283,8 @@ function refresh() {
 
 function setStatus(key, params = {}, busy = false) {
   statusState = { key, params, busy };
-  els.runStatus.textContent = t(key, { ...params, msg: translateMessage(params.msg || '') });
+  const seconds = key === 'status.done' ? new Intl.NumberFormat(getLanguage(), { maximumFractionDigits: 2, useGrouping: false }).format(params.ms / 1000) : undefined;
+  els.runStatus.textContent = t(key, { ...params, seconds, msg: translateMessage(params.msg || '') });
   els.runStatus.classList.toggle('busy', busy);
 }
 
@@ -323,7 +333,9 @@ async function compute(ev) {
     renderResults(job, res);
     setStatus('status.done', { ms });
   } catch (e) {
-    setStatus(e.name === 'AbortError' ? 'status.stopped' : 'status.error', { msg: e.message });
+    if (e.partialResult) renderResults(job, e.partialResult);
+    if (e.code === 'memory-limit') setStatus('status.memory', {mib: job.memoryMiB});
+    else setStatus(e.name === 'AbortError' ? 'status.stopped' : 'status.error', { msg: e.message });
   } finally {
     running = false;
     els.go.disabled = false;
@@ -360,7 +372,8 @@ function renderResults(job, res) {
     const n = groups.reduce((a, g) => a + g.polys.length, 0);
     const degs = groups.map((g) => g.deg);
     let html = `<p class="summary">${(degs.length === 1 ? tn('basis.summary1', n, { a: degs[0] }) : t(degs.length > 1 ? 'basis.summary' : 'basis.summaryFlat', { n, a: degs[0], b: degs.at(-1) }))}${badge(res)}</p>`;
-    if (!done) html += `<p class="notice">${t('basis.partial')}</p>`;
+    if (res.interrupted) html += `<p class="notice">${t('basis.interrupted')}</p>`;
+    else if (!done) html += `<p class="notice">${t('basis.partial')}</p>`;
     else if (job.degreeBound) html += `<p class="notice">${t('basis.bounded', { d: job.degreeBound })}</p>`;
     for (const g of groups) {
       html += `<section class="degree"><h3><span class="d">${t('basis.degree', { d: g.deg })}</span>${tn('basis.count', g.polys.length)}</h3><ol class="polys">`;
@@ -502,6 +515,53 @@ function renderLog(job, stdout) {
 }
 
 // ------------------------------------------------------------ copy and download
+
+function shareMessage(key) {
+  els.shareStatus.textContent = t(key);
+  els.shareStatus.hidden = false;
+}
+
+async function sharePresentation() {
+  const generation = ++shareGeneration;
+  const state = { ...readForm(), varsText: els.vars.value, preset: els.preset.value, presetN: els.presetN.value, ...preferences };
+  els.share.disabled = true;
+  try {
+    const link = await createShareLink(state, location.href);
+    if (generation !== shareGeneration) return;
+    els.shareLink.value = link;
+    els.sharePanel.hidden = false;
+    let copied = false;
+    try { await navigator.clipboard.writeText(link); copied = true; } catch { /* manual copy below */ }
+    if (generation !== shareGeneration) return;
+    if (!copied) { els.shareLink.focus(); els.shareLink.select(); }
+    shareMessage(copied ? 'share.copied' : 'share.ready');
+  } catch (error) {
+    if (generation === shareGeneration) shareMessage(error.message === 'share.tooLarge' ? 'share.tooLarge' : 'share.failed');
+  } finally { els.share.disabled = false; }
+}
+
+async function restoreSharedPresentation(hash) {
+  const state = await readShareLink(hash);
+  if (!state || location.hash !== hash) return false;
+  writeForm(state);
+  els.preset.value = state.preset;
+  els.presetN.value = state.presetN;
+  els.presetNField.hidden = !state.preset.startsWith('family:');
+  loadedExample = null;
+  preferences.language = state.language;
+  preferences.theme = state.theme;
+  setLanguage(preferences.language);
+  applyTheme(preferences.theme);
+  savePreferences(storage, preferences);
+  updateLanguage();
+  showPane('input');
+  shareMessage('share.loaded');
+  return true;
+}
+
+function shareLoadError(error) {
+  shareMessage(error.message === 'share.unsupported' ? 'share.unsupported' : error.message === 'share.tooLarge' ? 'share.tooLarge' : 'share.invalid');
+}
 
 async function copyText(text, btn) {
   try { await navigator.clipboard.writeText(text); }
@@ -653,15 +713,21 @@ async function init() {
     applyTheme(preferences.theme);
     savePreferences(storage, preferences);
     syncPreferenceControls();
+    shareGeneration++;
+    els.sharePanel.hidden = true;
+    els.shareStatus.hidden = true;
   });
   updateGuide();
   fillPresets();
   fillTasks();
   fillOrders();
   let restored = false;
+  let shareError;
+  try { restored = await restoreSharedPresentation(location.hash); }
+  catch (error) { shareError = error; }
   try {
     const saved = JSON.parse(localStorage.getItem(STORE_KEY) || 'null');
-    if (saved && saved.form) {
+    if (!restored && saved && saved.form) {
       writeForm(saved.form);
       els.preset.value = saved.preset || '';
       els.presetN.value = saved.n || 3;
@@ -683,6 +749,8 @@ async function init() {
     applyPreset();
     if (snapshot() !== cur) { loadedExample = null; writeForm(restoredForm); els.preset.value = prev; refresh(); }
   }
+  if (location.hash.startsWith(SHARE_PREFIX) && restored && !shareError) shareMessage('share.loaded');
+  if (shareError) shareLoadError(shareError);
 
   els.form.addEventListener('input', (e) => {
     if (e.target === els.preset || e.target === els.presetN) return;
@@ -694,6 +762,8 @@ async function init() {
     refresh();
   });
   els.form.addEventListener('submit', compute);
+  els.share.addEventListener('click', sharePresentation);
+  els.shareLink.addEventListener('click', () => els.shareLink.select());
   els.stop.addEventListener('click', () => { engine.cancel(); running = false; els.go.disabled = false; els.stop.hidden = true; setStatus('status.stopped'); });
   els.tabs.addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) selectTab(b.dataset.tab); });
   els.tabs.addEventListener('keydown', (e) => {
@@ -706,7 +776,11 @@ async function init() {
   $('switchInput').addEventListener('click', () => showPane('input'));
   $('switchOutput').addEventListener('click', () => showPane('output'));
   showPane('input');
-  window.addEventListener('hashchange', route);
+  window.addEventListener('hashchange', async () => {
+    route();
+    try { await restoreSharedPresentation(location.hash); }
+    catch (error) { shareLoadError(error); }
+  });
   route();
   try {
     engineInfo = await engine.init();

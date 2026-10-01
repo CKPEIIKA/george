@@ -36,3 +36,12 @@ test('a Lisp command error retains the worker and permits the next console comma
 test('worker startup failures reject pending commands',async()=>{
  const e=new EclEngine(),p=e.eval('one'),rejected=assert.rejects(p,/missing engine/);e.worker.onerror({message:'missing engine',preventDefault(){}});await rejected;assert.equal(e.worker,null);assert.equal(e.pending.size,0);
 });
+test('memory exhaustion keeps partial output and restarts the next command',async()=>{
+ const e=new EclEngine(),failed=e.run({}),rejected=assert.rejects(failed,error=>{
+  assert.equal(error.code,'memory-limit');assert.equal(error.partialResult.files['result.gb'],'% 2\nx^2,\n');return true;
+ });
+ await tick();const w=e.worker,request=w.messages.at(-1);
+ w.onmessage({data:{id:request.id,error:'memory exhausted',code:'memory-limit',partialResult:{files:{'result.gb':'% 2\nx^2,\n'},interrupted:true}}});
+ await rejected;assert.equal(w.terminated,true);assert.equal(e.worker,null);assert.equal(e.pending.size,0);
+ const next=e.eval('(+ 1 2)');await tick();assert.notEqual(e.worker,w);e.worker.reply(e.worker.messages.at(-1),{stdout:'3\n'});await next;e.cancel();
+});

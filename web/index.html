@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>George 0.2</title>
+<title>George 0.3</title>
 <meta name="description" content="George computes Gröbner bases, Hilbert series, Anick resolutions and Betti numbers for noncommutative and commutative algebras, by running the original bergman in your browser.">
 <meta name="theme-color" content="#eef2f3" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#111a27" media="(prefers-color-scheme: dark)">
@@ -17,7 +17,7 @@
 <header class="top">
   <a class="brand" href="#compute" aria-label="George, an interface to bergman">
     <svg class="logo" viewBox="0 0 28 28" aria-hidden="true"><path class="logo-face" d="M14 3 25 14 14 25 3 14Z"/><path class="logo-edge" d="M14 3 25 14 14 25 3 14Z"/><circle cx="14" cy="3.6" r="2"/><circle cx="24.4" cy="14" r="2"/><circle cx="14" cy="24.4" r="2"/><circle cx="3.6" cy="14" r="2"/></svg>
-    <span class="brand-name">George <small class="brand-version">0.2</small></span>
+    <span class="brand-name">George <small class="brand-version">0.3</small></span>
     <span class="brand-sub" data-i18n="brand.sub">an interface to bergman</span>
   </a>
   <nav class="views" aria-label="Views" data-i18n-attr="aria-label:nav.views">
@@ -143,6 +143,17 @@
     <details class="block advanced">
       <summary data-i18n="advanced">More settings</summary>
       <label class="field">
+        <span class="label" data-i18n="memory.label">Memory limit</span>
+        <select id="memoryMiB" aria-describedby="memoryHint">
+          <option value="512">512 MiB</option>
+          <option value="1024">1 GiB</option>
+          <option value="2048" selected>2 GiB</option>
+          <option value="3072">3 GiB</option>
+          <option value="3584">3.5 GiB</option>
+        </select>
+        <span class="hint" id="memoryHint" data-i18n="memory.hint">Memory grows as needed. Larger limits help large presentations; the browser also needs memory for files and results.</span>
+      </label>
+      <label class="field">
         <span class="label" data-i18n="augmentation.label">Augmentation for the Anick resolution</span>
         <select id="augmentation">
           <option value="graded" data-i18n="augmentation.graded">Generators map to 0</option>
@@ -203,7 +214,13 @@
     <div class="actions">
       <button type="submit" class="primary" id="go">Compute Gröbner basis</button>
       <button type="button" class="quiet" id="stop" hidden data-i18n="stop">Stop</button>
+      <button type="button" class="quiet small share-button" id="share" title="Copy a link to this presentation and all settings" data-i18n-attr="title:share.hint">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m10 13 4-4m-6 5-1 1a4 4 0 0 1-6-6l4-4a4 4 0 0 1 6 0m2 5 1-1a4 4 0 0 1 6 6l-4 4a4 4 0 0 1-6 0" transform="translate(1 1)" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span data-i18n="share.button">Share</span>
+      </button>
     </div>
+    <div class="share-panel" id="sharePanel" hidden><input type="url" id="shareLink" class="code" readonly aria-label="Share link" data-i18n-attr="aria-label:share.link"></div>
+    <p class="hint share-status" id="shareStatus" role="status" aria-live="polite" hidden></p>
   </form>
 
   <section class="sheet results" id="results" aria-labelledby="resultsTitle">

@@ -78,7 +78,7 @@ GEORGE_EXPORT int george_eval(const char *source, int echo_values)
   cl_object echo = echo_values ? ECL_T : ECL_NIL;
   cl_object result = cl_funcall(3, evaluate_text_function, text, echo);
   fflush(NULL);
-  return result == ECL_NIL ? 1 : 0;
+  return result == ecl_make_fixnum(2) ? 2 : result == ECL_NIL ? 1 : 0;
 }
 
 #ifndef __EMSCRIPTEN__

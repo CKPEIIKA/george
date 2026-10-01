@@ -43,7 +43,36 @@ The first six reuse original inputs; the last two are algebraic sanity cases.
 Loading an example resets computational options to its documented settings.
 Changing display language preserves the current presentation and output files.
 
-## Console (George 0.2)
+## Sharing a presentation (George 0.3)
+
+Click **Share** beside Compute to copy a compact link. If clipboard access
+is unavailable, select and copy the link shown below the buttons. The link
+restores the generators, relation text, computation, field, order, weights,
+degree limits, memory allowance, all advanced and module settings, preset
+selection, language and theme. Shared settings take priority over the
+recipient's saved form. Opening a link loads the form; press Compute to run it.
+
+The state is stored in the link using a compact versioned schema and
+[browser compression](https://compression.spec.whatwg.org/), without a
+short-link service. Larger presentations produce longer links. Times are
+displayed in seconds, with up to two decimal places; Russian uses a decimal
+comma, for example **302,49 с**.
+
+## Memory
+
+Large presentations can use **More settings → Memory limit**. The default
+Lisp heap limit is 2 GiB, and the largest choice is 3.5 GiB. Allocations grow
+on demand; the 4 GiB Wasm ceiling also includes engine and file storage.
+If the Lisp heap is exhausted, George displays saved basis output as partial
+and releases the worker. A larger allowance can advance the calculation
+further, but an unbounded basis can still exceed memory or take a long time.
+
+The console starts with a 2 GiB allowance. To enlarge that console session,
+evaluate `(ext:set-limit 'ext:heap-size 3758096384)` for 3.5 GiB. A memory
+failure resets the session; download files you want to retain before a large
+console calculation.
+
+## Console
 
 The **Console** tab evaluates Lisp in the current Bergman session. Enter
 runs a complete form, Shift+Enter inserts a line, Ctrl+Enter submits incomplete

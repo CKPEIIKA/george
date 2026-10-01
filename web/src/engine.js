@@ -17,7 +17,11 @@ export class EclEngine {
       if (!p) return;
       if (data.event) { p.onEvent?.(data.event); return; }
       this.pending.delete(data.id);
-      if (data.error) p.reject(new Error(data.error)); else p.resolve(data.result);
+      if (data.error) {
+        const error = Object.assign(new Error(data.error), {code: data.code, partialResult: data.partialResult});
+        if (data.code === 'memory-limit') this.cancel(error);
+        p.reject(error);
+      } else p.resolve(data.result);
     };
     worker.onerror = (event) => {
       event.preventDefault();

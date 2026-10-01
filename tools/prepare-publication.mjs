@@ -10,7 +10,7 @@ const original=git(['rev-parse','HEAD']);
 const oldPages=git(['rev-parse','refs/heads/gh-pages']);
 const tree=git(['rev-parse',original+':web']);
 const refs=['refs/heads/publish/main','refs/heads/publish/gh-pages'];
-const update=process.argv.includes('--update'),previous=new Map();
+const update=process.argv.includes('--update'),fastForward=process.argv.includes('--fast-forward'),previous=new Map();
 for(const ref of refs){
   let existing;try{existing=git(['rev-parse','--verify',ref]);}catch{}
   assert.ok(!existing||update,ref+' already exists; use --update to advance the prepared release.');
@@ -47,9 +47,15 @@ for(const ref of refs){
 assert.equal(git(['rev-parse',refs[0]+'^{tree}']),git(['rev-parse',original+'^{tree}']));
 assert.equal(git(['rev-parse',refs[1]+'^{tree}']),tree);
 const leases=Object.fromEntries(['main','gh-pages'].map(branch=>[branch,git(['rev-parse','refs/remotes/origin/'+branch])]));
-const command=`git push --atomic --force-with-lease=refs/heads/main:${leases.main} --force-with-lease=refs/heads/gh-pages:${leases['gh-pages']} origin publish/main:main publish/gh-pages:gh-pages`;
+if(fastForward){
+  git(['merge-base','--is-ancestor',leases.main,main]);
+  git(['merge-base','--is-ancestor',leases['gh-pages'],pages]);
+}
+const command=fastForward
+  ? 'git push --atomic origin publish/main:main publish/gh-pages:gh-pages'
+  : `git push --atomic --force-with-lease=refs/heads/main:${leases.main} --force-with-lease=refs/heads/gh-pages:${leases['gh-pages']} origin publish/main:main publish/gh-pages:gh-pages`;
 const plan={date:new Date().toISOString(),original,oldPages,main,pages,pagesParent,webTree:tree,
-  rewritten,leases,command,remotePublication:false,originalRefsPreserved:true};
+  rewritten,leases,command,fastForwardOnly:fastForward,remotePublication:false,originalRefsPreserved:true};
 fs.writeFileSync(path.join(out,'plan.json'),JSON.stringify(plan,null,2)+'\n');
 fs.writeFileSync(path.join(out,'publish.sh'),`#!/bin/sh
 set -eu
