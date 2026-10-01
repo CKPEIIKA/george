@@ -54,6 +54,7 @@ async function checkUI(){
   if(phase==='start'){
    language('en');eq($('.brand-sub').textContent,'an interface to bergman','English interface wording');eq($('.brand-version').textContent,'0.4','application version');
    eq($('#backend').value,'compiled','default backend');
+   eq($('#timeoutMinutes').value,'0','default time limit is unlimited');
    eq(all('#backend option').map(o=>o.textContent),['C / ECL O3 + LTO','Lisp / ECL O3 + LTO','Lisp / ECL O2'],'explicit backend labels');
    location.hash='#console';
    const command=async(src,expected)=>{
@@ -82,15 +83,30 @@ async function checkUI(){
    await command('(show "input.bg")',/ALGFORMINPUT/i);await command('(files)',/result/);
    ok(!/session was restarted/.test($('#terminal').textContent),'reader recovery preserves session');
    await post('console',{mount:data.mount,recoveryCases:8,settingsAndFilesRetained:true,firstValue:true,help:true,completion:true,history:true,currentComputation:true});
+   set('timeoutMinutes',0.001);
+   await command('(loop)',/configured time limit/);
+   set('timeoutMinutes',0);
+   await command('(+ 1 2)',/3/);
+   language('ru');set('timeoutMinutes',0.001);
+   await command('(loop)',/предел времени/);
+   set('timeoutMinutes',0);await command('(+ 2 2)',/4/);language('en');
+   location.hash='#compute';set('preset','tutorial:char2');set('timeoutMinutes',0.000000001);
+   $('#presentation').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));
+   await wait(()=>!$('#go').disabled,'form time limit');
+   ok(/configured time limit/.test($('#runStatus').textContent),'form computation time limit');
+   set('timeoutMinutes',30);
    location.hash='#compute';$('details.advanced').open=true;
    const {readShareLink}=await import(new URL('src/share.js',location.href));
    const backendRows=[];let reference;
    for(const backend of ['standard','optimized','compiled']){
-    set('backend',backend);set('preset','tutorial:char2');eq($('#backend').value,backend,'preset preserves backend');
+    set('backend',backend);set('preset','tutorial:char2');eq($('#backend').value,backend,'preset preserves backend');eq($('#timeoutMinutes').value,'30','preset preserves time limit');
     await compute();const raw=files();if(reference)eq(raw,reference,'backend output parity');else reference=raw;
     $('#shareLink').value='';$('#share').click();await wait(()=>$('#shareLink').value&&!$('#share').disabled,'backend share');
     eq((await readShareLink(new URL($('#shareLink').value).hash)).backend,backend,'shared backend');
-    backendRows.push({backend,outputParity:true,shareRoundTrip:true});
+    eq((await readShareLink(new URL($('#shareLink').value).hash)).timeoutMinutes,30,'shared time limit');
+    location.hash='#console';set('timeoutMinutes',0.001);await command('(loop)',/configured time limit/);
+    set('timeoutMinutes',30);await command('(+ 1 2)',/3/);location.hash='#compute';
+    backendRows.push({backend,outputParity:true,shareRoundTrip:true,timeoutMinutes:30,timeoutAndRestart:true});
    }
    await post('backends',{mount:data.mount,defaultBackend:'compiled',rows:backendRows});
    set('backend','optimized');
@@ -169,7 +185,7 @@ async function run(mount,mode='desktop'){
      report.examples.push({id:item.id,task:tutorialForm(item.id).task,outputs:Object.keys(v.files),hashes:Object.fromEntries(Object.entries(v.files).map(([n,s])=>[n,crypto.createHash('sha256').update(s).digest('hex')]))});console.log(item.id,'PASS');
     }else if(kind==='backends'){
      assert.equal(v.defaultBackend,'compiled');assert.deepEqual(v.rows.map(r=>r.backend),['standard','optimized','compiled']);
-     for(const row of v.rows){assert.equal(row.outputParity,true);assert.equal(row.shareRoundTrip,true);}
+     for(const row of v.rows){assert.equal(row.outputParity,true);assert.equal(row.shareRoundTrip,true);assert.equal(row.timeoutMinutes,30);assert.equal(row.timeoutAndRestart,true);}
      report.backends.push(v);console.log(mount,'backend selection, parity and share PASS');
     }else if(kind==='console'){
      assert.equal(v.recoveryCases,8);for(const key of ['settingsAndFilesRetained','firstValue','help','completion','history','currentComputation'])assert.equal(v[key],true,key);

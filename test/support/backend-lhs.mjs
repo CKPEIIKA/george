@@ -116,3 +116,26 @@ export function largeBackendAnchors() {
     }, expectedDimensions: [1, n, n * (n - 1) / 2, ...(degree === 3 ? [n * (n - 1) * (n - 2) / 6] : [])]};
   });
 }
+
+// Boundary cases around the shared failures discovered by the LHS design.
+// Monomial quotients make the dimensions independent of the chosen order.
+export function oracleBackendAnchors() {
+  const cases = [];
+  for (const [index, order] of ORDERS.comm.entries()) for (const modulus of [0, 2, 5]) {
+    const weight = index % 2 + 1;
+    cases.push({id: `oracle-single-${order.id}-F${modulus}`, group: 'oracle', form: {
+      task: 'hilbert', ring: 'comm', field: modulus === 0 ? '0' : modulus === 2 ? '2' : 'p', modulus,
+      vars: ['a'], rels: ['a^3'], order: order.id, matrix: '1', maxdeg: '6', maxserdeg: '6',
+      weights: weight === 1 ? '' : '2', legacy: modulus === 5, reverseVars: modulus === 2,
+      lowterms: modulus === 0 ? 'safe' : 'quick', outmode: 'ALG',
+    }, expectedDimensions: Array.from({length: 7}, (_, d) => d % weight === 0 && d / weight < 3 ? 1 : 0)});
+  }
+  for (const order of ['elim', 'invelim']) for (const legacy of [false, true]) {
+    cases.push({id: `oracle-weighted-${order}-${legacy ? 'legacy' : 'fixed'}`, group: 'oracle', form: {
+      task: 'gb', ring: 'noncomm', field: 'p', modulus: 5, vars: ['a', 'b'],
+      rels: ['a^2', 'b^2', 'a*b*a', 'b*a*b', 'a*b*a'], order, maxdeg: '6',
+      weights: '1 2', legacy, reverseVars: legacy, lowterms: 'safe', outmode: 'ALG',
+    }, expectedDimensions: [1, 1, 1, 2, 0, 0, 0]});
+  }
+  return cases;
+}

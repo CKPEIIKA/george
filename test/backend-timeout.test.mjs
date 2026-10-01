@@ -11,3 +11,8 @@ test('a hung synchronous computation is timed out and a replacement worker runs'
   try { assert.deepEqual(await replacement.run({}), {files: {test: 'ok'}}); }
   finally { await replacement.close(); }
 });
+test('the backend validation watchdog can be disabled',async()=>{
+ const runtime=new BackendClient('',{timeoutMs:0,workerURL:new URL('./support/timeout-worker.mjs',import.meta.url)});
+ try {assert.deepEqual(await runtime.run({}),{files:{test:'ok'}});}
+ finally{await runtime.close();}
+});

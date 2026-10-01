@@ -9,34 +9,53 @@ compiles existing functions through ECL; auxiliary bytecode remains.
 
 | Executed check | Result |
 |---|---|
-| JavaScript unit tests | **64 tests passed** |
-| Seeded LHS and anchors | **112 cases × three backends** in Node and Chromium: 109 successful cases with exact output equality, two shared error cases and one shared timeout case |
+| JavaScript unit tests | **74 tests passed** |
+| Seeded LHS and anchors | **128 cases × three backends** in Node and Chromium; all succeed with exact output equality, **384 browser runs** |
+| Singular LHS audit | All **96 sampled algebras**: 64 basis, 16 series and 16 resolution underlying algebras; full generating-ideal equivalence in every case, plus eight printed commutative Hilbert series |
+| Focused independent oracles | **19 cases** (three former failures + 16 boundary anchors): native SBCL agrees with all three engines (**57 comparisons**), Singular checks the ideals, and normal-word counts check dimensions and printed Hilbert coefficients |
 | Larger inputs | 16 generators/136 relations through degree 3 and 20 generators/210 relations through degree 2; backend equality and independently known quotient dimensions |
 | Original sequential sessions | 37 output files in each mode for each backend, **222 exact file comparisons** |
-| Independent parity certificates | **3,465 critical ambiguities** and **353 full differential identities** where checker order and degree bounds apply |
-| Selected C algebra audit | 42 basis cases with **597 ambiguities** and Singular reductions; nine resolutions with **560 d² identities** |
-| Selected C reader recovery | 23 consecutive failures per mode, same-session computation/GC, and eight native EOF checks |
-| Selected C memory | Node holds 3.125 GiB of live arrays across full GC; Chromium allocates 3.164 GiB and grows linear memory to 3,626,631,168 bytes; exact arithmetic, exhaustion, saved output, restart and cancellation pass |
-| UI | Root and `/george/`, all three backend choices, share round trips, nondefault persistence, eight tutorials, EN/RU, mobile, blocked storage, local MathJax and downloads; earlier share format also checked by unit tests |
-| Submitted presentation | Native equality through degrees 4, 6 and 7; 695 elements through degree 7, ordinary Chromium median **10.765 seconds** across three C runs |
-| New C degree-7 link | All shared settings restored through the actual local UI; computed output matches native; the new link requires publication of 0.4 |
+| Independent parity certificates | **3,664 critical ambiguities** and **353 full differential identities** where checker order and degree bounds apply |
+| UI and time limits | Root and `/george/`; unlimited default, timed infinite loops and restart in all three engines, EN/RU messages, fractional limits, form timeout, persistence, presets and share links; eight tutorials, mobile, blocked storage, themes, local MathJax and downloads |
+| Current C degree-7 link | All shared settings restored through the actual local UI; 695-element output matches native byte for byte; no automatic start |
+| Initial 0.4 C audit (historical assets) | 42 basis cases, 597 ambiguities and Singular reductions; nine resolutions with 560 d² identities; reader recovery, large live allocations, real exhaustion and saved-output recovery |
 
-The seeded design has 64 basis, 16 series and 16 resolution samples, plus
-16 anchors. Every pre-discretization LHS stratum is covered. Constraints,
-parameter coordinates, outputs, engine hashes and the three shared
-limitations are retained in [backend-parity.json](validation/backend-parity.json).
-The two one-generator matrix-order Hilbert errors and the weighted
-elimination timeout are tested as known failures; they are not successful
-computations. The first browser attempt reached its overall time cap after
-286 comparisons; a verified resume completed the remaining 44. The two
-larger inputs were checked in a separate batch.
+The design has 64 basis, 16 series and 16 resolution LHS samples, plus 32
+anchors. Every pre-discretization LHS stratum is covered. Coordinates,
+forms, outputs and final engine hashes are retained in
+[backend-parity.json](validation/backend-parity.json). The three former
+shared failures are fixed and now required to succeed; the previous expected
+failure fixture has been replaced with positive oracle expectations.
+Boundary corrections also repair the weighted one-generator Hilbert series.
+The original vendor tree is unchanged, and all three backends use the same
+patched package. Arithmetic/comparison boundary fixes apply in both modes.
 
-See [BACKENDS.md](BACKENDS.md), [PERFORMANCE.md](PERFORMANCE.md), and
-[compilation.json](validation/compilation.json) for build scope, individual
-times, source hashes, exact backend labels, and executed checks. Timings in
-debugger-connected functional tests are excluded from performance ratios.
-No new degree-eight run was performed, and these degree bounds do not
-certify a complete unrestricted basis. Earlier sections remain historical.
+Singular independently completes the original inputs and returned generating
+sets in its own order. It checks that inputs eligible under the requested
+bound lie in the returned ideal, and that every returned element belongs to
+the full original ideal. It also checks full equivalence, which holds for all
+96 samples. Letterplace bounds and omitted high-degree inputs are recorded
+in [lhs-singular.json](validation/lhs-singular.json). This validates the
+underlying algebra, not Anick differentials or every requested leading-term
+order. Differential and ambiguity certificates are separate checks.
+The focused native/Singular/dimension audit is in
+[backend-oracles.json](validation/backend-oracles.json).
+
+The app's time limit is in minutes and defaults to **0 (unlimited)**. It
+applies separately to each calculation and console command after startup,
+terminates the worker on expiry, and is preserved by settings and sharing.
+Tests use a separate configurable watchdog; see [BACKENDS.md](BACKENDS.md).
+The browser parity audit runs the three independent backend workers
+concurrently for each case without a debugger. Its timings are diagnostic.
+
+See [PERFORMANCE.md](PERFORMANCE.md) and
+[compilation.json](validation/compilation.json) for compiler choices, source
+hashes, current checks and historical timing evidence. The initial paired
+0.4 timings and memory audits retain their original runtime identity;
+they were not remeasured after the boundary corrections. The current
+submitted presentation still matches native through degree four in every
+backend and through degree seven in the C share-link check. **No degree-eight
+run was performed.** Degree bounds do not certify an unrestricted basis.
 
 ## Historical September audit
 

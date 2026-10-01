@@ -9,6 +9,30 @@ George 0.2 also repairs the Common Lisp reader's error recovery and the ECL
 bridge's recovery from unavailable keyboard input. The investigation and
 native/Wasm/browser evidence are in [READER-FIX.md](READER-FIX.md).
 
+## October 1 boundary corrections
+
+The 0.4 LHS audit found a weighted elimination hang and two one-generator
+matrix-order Hilbert errors in all three backends. Fresh native SBCL
+reproduced them, while Singular returned the expected ideals and dimensions.
+The corrections in `ports/common/behavior-patches.py` apply to build copies:
+
+- `PLUSNOEVAL`, aliased by commutative `TOTALDEGREE`, now accepts zero or
+  one exponent as well as the original multi-exponent case.
+- Noncommutative elimination comparators return false for equal words.
+  The elimination and inverse-elimination scans hold a shorter word's
+  terminal 0 until both scans end. Equal weighted degrees need not have
+  equal word lengths; advancing to NIL previously caused an infinite loop.
+- A proper one-generator commutative quotient has a finite Hilbert
+  polynomial. Its numerator's exponents now include the generator weight,
+  correcting the formerly unweighted printed series in this boundary case.
+
+These arithmetic/comparison boundary corrections apply in **both modes**.
+Legacy continues to select the original computational branches for the
+previously documented algorithmic defects. Unequal-word ordering and the
+historical sequential outputs are checked for compatibility. The original
+vendor tree remains unchanged. [BACKENDS.md](BACKENDS.md) documents the
+Singular, native and browser checks and their degree-bound scope.
+
 ## Sources and scope
 
 - `vendor/bergman-1.001`: Bergman 1.001, August 2007, Standard Lisp,

@@ -23,16 +23,42 @@ output with median 10.765 s; one of three runs took 28.333 s under varying
 desktop load. No paired degree-seven Lisp speed ratio is claimed.
 **Degree eight was cancelled by the user; do not restart it.**
 
-The expanded seeded LHS suite and anchors cover 112 cases on each backend
-in Node and ordinary Chromium, with 109 exact successful cases and three
-pinned shared limitations. It includes 16/136 and 20/210 generator/relation
-inputs. All 64 unit tests, 222 historical file checks, independent algebra
-and differential certificates, reader recovery, high memory, exhaustion,
-UI and C degree-seven share checks pass in their documented scope.
-The browser suite resumed after a ten-minute cap with 286 results already
-verified; all 336 comparisons completed. Full evidence is in
-[compilation.json](validation/compilation.json) and
-[backend-parity.json](validation/backend-parity.json).
+The final suite covers **128 cases** on each backend in Node and ordinary
+Chromium, all exact successes: **384 browser runs**, **222 historical output
+checks**, 3,664 critical ambiguities and 353 differential identities. Singular
+checks all **96 LHS underlying algebras** with full generating-ideal equality,
+plus eight printed commutative Hilbert series. A focused **19-case** audit
+compares the three former failures and 16 boundary anchors with fresh native
+SBCL, Singular, dimensions and printed Hilbert coefficients. The original
+three expected failures are now required successes; the old failure fixture
+was removed. All **74 unit tests** and the final UI audit pass.
+
+Boundary fixes in `ports/common/behavior-patches.py` accept zero/one exponent
+degree sums, make strict elimination comparisons return false on equal
+words, hold the shorter word's terminator during unequal-length scans, and
+scale the finite one-generator Hilbert numerator by its weight. These
+boundary corrections apply to **both legacy and fixed modes**; the previous
+algorithmic legacy branches remain. Native SBCL originally reproduced the
+failures while Singular succeeded, motivating the fixes. Build native SBCL
+in a fresh directory: saved cores contain absolute autoload paths and old
+images from the former Downloads checkout are stale. The final oracle
+launcher is `build/sbcl-oracle-fixed-v4-04-20261001/bin/clisp/unix/bergman`.
+
+**Time limit (minutes)** defaults to **0 (unlimited)**. It is stored and shared,
+works for form jobs and console commands after initialization, terminates
+and resets the worker on expiry, and chunks long deadlines. Older links
+restore unlimited time. Tests use `GEORGE_TEST_TIMEOUT_MS` (0 disables) and
+browser `GEORGE_TEST_OVERALL_TIMEOUT_MS`. Backend parity workers run
+concurrently in Chromium; their timings are not performance measurements.
+
+The current package has new runtime hashes after the boundary fixes. The
+paired timings above are retained as initial-0.4 evidence, not remeasured
+speed ratios for the new assets. The existing C degree-seven share link was
+rechecked on the final runtime and still matches the native 695-element
+output. Full current evidence is in [compilation.json](validation/compilation.json),
+[backend-parity.json](validation/backend-parity.json),
+[lhs-singular.json](validation/lhs-singular.json), and
+[backend-oracles.json](validation/backend-oracles.json).
 
 Prepare the committed release for the user's manual publisher. Deployment
 continues from the permitted `gh-pages` branch. Pages verification now

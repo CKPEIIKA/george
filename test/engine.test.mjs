@@ -55,3 +55,43 @@ test('backend changes restart the next command and initialize the selected worke
  assert.equal(e.worker.messages[0].backend,'compiled'); e.worker.reply(e.worker.messages.at(-1),{}); await p;
  assert.throws(()=>e.setBackend('__proto__'),/Unknown/); e.cancel();
 });
+
+test('time limit terminates a blocked worker and the next command restarts', async () => {
+ let timeoutMs=20; const e=new EclEngine({getTimeoutMs:()=>timeoutMs});
+ const p=e.eval('forever'); const rejected=assert.rejects(p,error=>error.code==='timeout'&&error.timeoutMs===20);
+ await tick(); const old=e.worker; await rejected;
+ assert.equal(old.terminated,true); assert.equal(e.worker,null); assert.equal(e.busy,false); assert.equal(e.pending.size,0);
+ timeoutMs=0; const next=e.eval('again'); await tick(); e.worker.reply(e.worker.messages.at(-1),{stdout:'ok'});
+ assert.equal((await next).stdout,'ok'); e.cancel();
+});
+test('unlimited is the default and a job captures its own time limit', async () => {
+ const e=new EclEngine({getTimeoutMs:()=>1}),p=e.run({timeoutMs:0}); await tick();
+ await new Promise(r=>setTimeout(r,30)); assert.equal(e.busy,true);
+ e.worker.reply(e.worker.messages.at(-1),{}); await p; e.cancel();
+ const defaultEngine=new EclEngine(),next=defaultEngine.eval('long'); await tick();
+ assert.equal(defaultEngine.clearDeadline instanceof Function,true);
+ defaultEngine.worker.reply(defaultEngine.worker.messages.at(-1),{}); await next; defaultEngine.cancel();
+});
+test('time limits exclude startup and cancellation clears an earlier deadline', async () => {
+ const e=new EclEngine({getTimeoutMs:()=>20});
+ const original=WorkerStub.prototype.postMessage;
+ WorkerStub.prototype.postMessage=function(message){this.messages.push(message);};
+ const p=e.eval('first'),rejected=assert.rejects(p,{name:'AbortError'});
+ try {
+  await new Promise(r=>setTimeout(r,40)); assert.equal(e.busy,true,'startup has no calculation deadline');
+  e.worker.reply(e.worker.messages[0],{}); await tick(); e.cancel(); await rejected;
+ } finally {WorkerStub.prototype.postMessage=original;}
+ e.readTimeoutMs=()=>0; const next=e.eval('new'); await tick(); const w=e.worker;
+ await new Promise(r=>setTimeout(r,40)); assert.equal(e.worker,w); assert.equal(w.terminated,undefined);
+ w.reply(w.messages.at(-1),{}); await next; e.cancel();
+});
+test('successful commands clear their deadlines and invalid limits are rejected', async () => {
+ const e=new EclEngine({getTimeoutMs:()=>20}),p=e.eval('quick'); await tick(); const w=e.worker;
+ w.reply(w.messages.at(-1),{}); await p; await new Promise(r=>setTimeout(r,40));
+ assert.equal(e.worker,w); assert.equal(w.terminated,undefined);
+ e.readTimeoutMs=()=>-1; await assert.rejects(e.eval('invalid'),/Time limit/); e.cancel();
+});
+test('an immediately expired fractional limit rejects with the timeout reason',async()=>{
+ const e=new EclEngine();await assert.rejects(e.run({timeoutMs:1e-12}),error=>error.code==='timeout');
+ assert.equal(e.worker,null);assert.equal(e.pending.size,0);
+});

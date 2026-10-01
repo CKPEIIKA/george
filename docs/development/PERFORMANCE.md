@@ -38,6 +38,12 @@ and current functional checks are recorded in
 [compilation.json](validation/compilation.json). This local comparison does
 not imply the same speedup for every presentation or auxiliary module.
 
+The timing series above used the initial 0.4 runtime; its asset hashes are
+retained with each measurement. The subsequent oracle corrections changed
+the bytecode package and compiled C runtime. Current functional validation
+uses the updated hashes recorded in the parity and oracle reports; these
+historical speed ratios have not been remeasured on that boundary update.
+
 ## Historical George 0.3 assessment
 
 Measured on **2026-10-01**, for George 0.3.0. The release now uses **O2 for

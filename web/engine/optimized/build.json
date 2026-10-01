@@ -8,15 +8,15 @@
   "files": {
     "ecl.js": {
       "bytes": 109173,
-      "sha256": "a6594fd75be715f4c663bbc2954d2143fadd935e99a4a1eb5564441a36c37a2d"
+      "sha256": "d4bda52e4d48ed9610f55ef882cdaf2a64639a3903f1fa27a77e4a2c72550916"
     },
     "ecl.wasm": {
       "bytes": 5235093,
       "sha256": "221a268e3aac9bf1a7167f1e613eb51f600437f8c65596c2b0dfbbff0677786c"
     },
     "ecl.data": {
-      "bytes": 3022218,
-      "sha256": "790ba520c484eb05e9e5d4134a67ec343c4993d4847cd9b0752233bb32d51368"
+      "bytes": 3024774,
+      "sha256": "dce742ded7cc24a6ace543505cad50b4699d7acdb9c51fef8dbae01905871ece"
     }
   },
   "appVersion": "0.4.0",
@@ -34,5 +34,6 @@
     "pointerSpilling": true,
     "profiling": false
   },
-  "backend": "optimized"
+  "backend": "optimized",
+  "boundaryFixes": "2026-10-01: one-generator degree sums and weighted Hilbert series; equal-word and unequal-length elimination comparisons; both modes"
 }

@@ -100,46 +100,70 @@ Eight tutorials, five module/factor/Hochschild examples, and the submitted
 Two additional commuting square-zero presentations have **16 generators and
 136 relations** through degree three, and **20 generators and 210 relations**
 through degree two. Their quotient dimensions are independently known
-binomial coefficients. The default suite therefore has **112 cases**.
+binomial coefficients. These contribute **112 cases** before the boundary
+anchors described below.
 All three backends also run both original sequential regression sessions,
 37 exact output files per session. Form samples use fresh workers, matching
 the UI; console regression sessions retain their state.
 
-The generated matrix exposed three shared limitations. They remain in the
-suite and are pinned to complete job hashes in
-`test/fixtures/backend-limitations.json`:
+The three shared failures discovered by the initial LHS run are now
+required successes. Singular confirms their ideals; native SBCL and all
+three browser backends agree after correcting one-generator degree sums
+and elimination comparisons on equal words and words of different lengths.
+`test/fixtures/backend-oracles.json` pins these jobs and their expected
+normal-word dimensions. Sixteen boundary anchors cover every commutative
+one-generator order over Q/F2/F5 and weighted elimination in both modes,
+bringing the suite to **128 cases**. The boundary audit also checks printed
+Hilbert coefficients, including weighted one-generator series.
 
-- `lhs-gb-021`: a weighted noncommutative elimination case reaches the
-  five-second watchdog in every backend. This verifies the observed timeout,
-  not a proof of nontermination.
-- `lhs-series-002` and `lhs-series-014`: one-generator matrix-order Hilbert
-  calculations return the same NIL/NUMBER error in every backend.
-
-Every other case must succeed and have byte-for-byte output equality.
-Unexpected failures, changed error messages, and unexpected success of a
-known limitation fail the suite. Normal cases have a 60-second timeout;
-workers are terminated on timeout and partial logs are retained. Independent
+Every case must succeed with byte-for-byte output equality. Unexpected
+errors and timeouts fail the suite. The default test watchdog is 60 seconds;
+set `GEORGE_TEST_TIMEOUT_MS` to change it, or to `0` to disable it. Browser
+replay also accepts `GEORGE_TEST_OVERALL_TIMEOUT_MS`; its default overall
+watchdog is disabled when the per-case watchdog is disabled. Independent
 ambiguity and differential certificates supplement parity where their
 orders and degree bounds apply. Parity does not prove unrestricted
 correctness or completion of a degree-bounded basis.
+
+The app has a separate **Time limit (minutes)** setting. Its default is
+**0 (unlimited)**, and positive limits apply after worker initialization to
+each calculation or console command. Reaching a limit terminates the worker;
+the next command starts a fresh session. This setting is persisted and
+shared. Earlier share links restore unlimited time. Long deadlines are
+scheduled in chunks to avoid the browser timer's integer overflow.
+
+Singular checks all **96 LHS underlying algebras**, including the algebras
+used in series and resolution samples. Both generating sets are completed
+in Singular's own order. Inputs within the requested weighted bound must
+lie in the returned ideal, and every returned element must lie in the full
+original ideal. Full ideal equivalence is also recorded separately. This
+avoids treating included or omitted high-degree inputs as a false mismatch.
+Every Letterplace degree bound is recorded. This check
+does not validate resolution differentials; those have separate certificates.
+The focused oracle audit compares the three former failures and sixteen
+boundary cases with freshly built native SBCL, Singular and normal-word
+counts, and checks the printed Hilbert coefficients.
 
 ```sh
 npm test
 node tools/validate-backends.mjs build/validation/backend-parity 64
 node tools/validate-backends-browser.mjs build/validation/backend-parity/report.json build/validation/backend-parity-browser
+node tools/validate-lhs-singular.mjs build/validation/backend-parity/report.json
+# Build SBCL in a fresh directory; its saved autoload paths are absolute.
+ports/sbcl/build.sh vendor/bergman-1.001 build/sbcl-oracle
+node tools/validate-backend-oracles.mjs build/validation/backend-parity/report.json build/sbcl-oracle/bin/clisp/unix/bergman
 npm run test:ui
 GEORGE_LARGE_MEMORY=1 npm run test:browser
 ```
 
 The browser replay uses ordinary Chromium workers at `/george/` and compares
-each output with the corresponding Node result. It attaches no debugger.
+each output with the corresponding Node result. Three independent workers
+run the backends concurrently for each case; timings are diagnostic only.
+It attaches no debugger.
 An interrupted replay can resume using `--resume`: it checks runtime hashes,
 the unchanged reference report, and every saved output before replaying the
-missing pairs. The executed 0.4 audit uses a 110-case batch and a two-case
-large-input batch, with **336 browser runs**, **109 successful cases**, two
-shared error cases and one shared timeout case. The first browser attempt
-hit its overall time cap after 286 completed comparisons; the verified
-resume completed the remaining 44.
+missing pairs. The final audit requires **384 successful browser runs**;
+shared failures are no longer treated as passing tests.
 The separate memory/cancellation checks use Playwright; their timings are
 functional diagnostics and are excluded from performance comparisons.
 Detailed release evidence is in [compilation.json](validation/compilation.json),

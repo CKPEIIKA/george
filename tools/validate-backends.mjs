@@ -10,9 +10,10 @@ import {BACKENDS} from '../web/src/backends.js';
 import {buildJob, exampleForm, readInputFile, parseRelation, isHomogeneous, TASK_BY_ID} from '../web/src/bergman-syntax.js';
 import {TUTORIALS, tutorialForm} from '../web/src/tutorials.js';
 import {EXAMPLES} from '../web/src/examples.js';
-import {backendSamples, largeBackendAnchors} from '../test/support/backend-lhs.mjs';
+import {backendSamples, largeBackendAnchors, oracleBackendAnchors} from '../test/support/backend-lhs.mjs';
 import {regressionJob} from '../test/support/regression.mjs';
 import {BackendClient} from '../test/support/backend-client.mjs';
+import {validateTimeoutMs} from '../web/src/time-limit.js';
 import {algebra} from '../test/support/algebra.mjs';
 import {certifyResolution} from '../test/support/resolution.mjs';
 
@@ -22,7 +23,7 @@ fs.mkdirSync(out, {recursive: true});
 const sha = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 const cases = [...design.cases, ...TUTORIALS.map(t => ({id: `tutorial-${t.id}`, group: 'anchor', form: tutorialForm(t.id)})),
   ...EXAMPLES.filter(e => TASK_BY_ID.get(e.task)?.module || ['factalg', 'hochschild'].includes(e.task))
-    .map(e => ({id: `example-${e.id}`, group: 'module', form: exampleForm(e)})), ...largeBackendAnchors()];
+    .map(e => ({id: `example-${e.id}`, group: 'module', form: exampleForm(e)})), ...largeBackendAnchors(), ...oracleBackendAnchors()];
 const input = JSON.parse(fs.readFileSync('docs/development/validation/memory.json', 'utf8')).presentationAssessment.inputText;
 const parsed = readInputFile('(ALGFORMINPUT)\n' + input);
 cases.push({id: 'submitted-15-generators-100-relations', group: 'anchor', form: {
@@ -33,19 +34,18 @@ const largeOnly = process.argv.includes('--large-only');
 if (largeOnly) cases.splice(0, cases.length, ...cases.filter(c => c.group === 'large'));
 const directories = Object.fromEntries(Object.entries(BACKENDS).map(([id, backend]) => [id,
   path.resolve('web/src', backend.directory)]));
-// Expected limitations are pinned to the complete job hash. A changed input
-// cannot accidentally inherit a known failure, and every backend must show it.
-const limitations = JSON.parse(fs.readFileSync('test/fixtures/backend-limitations.json', 'utf8')).limitations;
+// These formerly shared failures now have independent oracle expectations.
+const oracleCases = JSON.parse(fs.readFileSync('test/fixtures/backend-oracles.json', 'utf8')).cases;
 for (const c of cases) {
-  const known = limitations.find(l => l.jobSha256 === sha(JSON.stringify(buildJob(c.form))));
-  if (known) c.expectedOutcome = known.outcome;
+  const expected = oracleCases.find(o => o.jobSha256 === sha(JSON.stringify(buildJob(c.form))));
+  if (expected) c.expectedDimensions = expected.expectedDimensions;
 }
 const report = {state: 'running', startedAt: new Date().toISOString(), node: process.version,
   scope: largeOnly ? 'large anchors only' : 'full LHS and anchors',
   sampling: {method: 'Latin hypercube; stratification before discrete mapping', ...design, cases: undefined},
   cases, engines: {}, sequentialSessions: [], results: []};
 const save = () => fs.writeFileSync(path.join(out, 'report.json'), JSON.stringify(report, null, 2) + '\n');
-const runtimes = new Map(), timeoutMs = 60000;
+const runtimes = new Map(), timeoutMs = validateTimeoutMs(Number(process.env.GEORGE_TEST_TIMEOUT_MS ?? 60000));
 report.perCaseTimeoutMs = timeoutMs;
 for (const [id, directory] of Object.entries(directories)) {
   report.engines[id] = {directory, manifest: JSON.parse(fs.readFileSync(path.join(directory, 'build.json'), 'utf8')),
@@ -75,23 +75,12 @@ try {
     let reference;
     for (const [id, engineDirectory] of Object.entries(directories)) {
       report.activeCase = {id: c.id, backend: id}; save();
-      const runtime = new BackendClient(engineDirectory, {timeoutMs: c.expectedOutcome?.timeoutMs ?? timeoutMs});
+      const runtime = new BackendClient(engineDirectory, {timeoutMs});
       runtimes.set(id, runtime);
       runtime.onOutput = text => fs.appendFileSync(path.join(directory, `${id}.partial.log`), text + '\n');
       let result, failure;
       try { result = await runtime.run(job); } catch (error) { failure = error; }
       finally { await runtime.close(); runtimes.delete(id); }
-      if (c.expectedOutcome) {
-        assert.ok(failure, `${c.id}: ${id} unexpectedly succeeded; update the limitation fixture after reviewing the result`);
-        const kind = failure.message.startsWith('Computation timed out after') ? 'timeout' : 'error';
-        assert.equal(kind, c.expectedOutcome.kind, `${c.id}: ${id} failure class`);
-        if (c.expectedOutcome.messageIncludes) assert.ok(failure.message.includes(c.expectedOutcome.messageIncludes), failure.message);
-        if (reference) assert.equal(failure.message, reference.message, `${c.id}: ${id} error parity`);
-        else reference = failure;
-        fs.writeFileSync(path.join(directory, `${id}.error.txt`), failure.message + '\n');
-        row.backends[id] = {expectedFailure: true, kind, message: failure.message};
-        continue;
-      }
       if (failure) throw failure;
       fs.writeFileSync(path.join(directory, `${id}.log`), result.stdout);
       fs.writeFileSync(path.join(directory, `${id}.outputs.json`), JSON.stringify(result.files, null, 2) + '\n');
@@ -102,18 +91,13 @@ try {
         hashes: Object.fromEntries(Object.entries(result.files).map(([name, text]) => [name, sha(text)])),
         elapsedMs: result.elapsedMs, memoryBytes: result.memoryBytes};
     }
-    if (c.expectedOutcome) {
-      row.outcome = c.expectedOutcome.kind;
-      report.results.push(row); save();
-      console.log(`${c.id}: known ${row.outcome} reproduced in all 3 backends`);
-      continue;
-    }
     // Add independent certificates where this checker's order matches the
     // requested Bergman order. Parity alone cannot prove mathematical truth.
     const weights = c.form.vars.map((_, i) => Number(String(c.form.weights || '').split(/\s+/)[i] || 1));
     const weightMap = new Map(c.form.vars.map((v, i) => [v, weights[i]]));
     const homogeneous = c.form.rels.every(r => isHomogeneous(parseRelation(r, c.form.vars), weightMap));
-    if (c.form.task === 'gb' && homogeneous && ['degleftlex', 'deglex'].includes(c.form.order)) {
+    const monomial = c.form.rels.every(r => parseRelation(r, c.form.vars).length === 1);
+    if (['gb', 'hilbert'].includes(c.form.task) && homogeneous && (monomial || ['degleftlex', 'deglex'].includes(c.form.order))) {
       const vars = c.form.reverseVars ? [...c.form.vars].reverse() : c.form.vars;
       const a = algebra(vars, c.form.ring === 'comm', c.form.field === '2' ? 2 : c.form.field === 'p' ? c.form.modulus : 0,
         vars.map(v => weightMap.get(v)));
@@ -121,7 +105,7 @@ try {
       // A degree bound may omit input relations whose own degree is larger.
       if (input.every(f => [...f.keys()].every(w => a.degree(w) <= bound))) {
         row.certifiedAmbiguities = a.certify(input, a.basis(reference.files['result.gb']), bound);
-        if (c.expectedDimensions) assert.deepEqual(a.hilbert(a.basis(reference.files['result.gb']), bound), c.expectedDimensions, c.id + ': independent quotient dimensions');
+        if (c.expectedDimensions) assert.deepEqual(a.hilbert(a.basis(reference.files['result.gb']), bound), c.expectedDimensions.slice(0, bound + 1), c.id + ': independent quotient dimensions');
       }
     }
     if (reference.files['resolution.jsonl']) {
@@ -135,8 +119,7 @@ try {
   report.state = 'complete';
   report.summary = {cases: report.results.length, backends: Object.keys(directories).length,
     successfulCases: report.results.filter(r => r.outcome === 'success').length,
-    knownErrorCases: report.results.filter(r => r.outcome === 'error').length,
-    knownTimeoutCases: report.results.filter(r => r.outcome === 'timeout').length,
+    oracleDimensionCases: report.results.filter(r => cases.find(c => c.id === r.id).expectedDimensions).length,
     sequentialExactOutputs: report.sequentialSessions.reduce((s, r) => s + r.equalOutputs, 0)};
   delete report.activeCase;
 } catch (error) {

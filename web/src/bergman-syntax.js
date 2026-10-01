@@ -2,6 +2,7 @@
 // reading bergman input files, and generating the bergman session script
 // for a computation.  No DOM access here except building HTML strings.
 import { BACKENDS } from './backends.js';
+import { timeoutMilliseconds } from './time-limit.js';
 
 // ------------------------------------------------------------ tokens
 
@@ -392,6 +393,7 @@ export function validateSettings(form) {
   if (!['0', '2', 'p'].includes(form.field)) errors.push('Choose a coefficient field.');
   if (form.memoryMiB !== undefined && !integer(form.memoryMiB, 128, MAX_MEMORY_MIB)) errors.push(`Memory limit must be an integer from 128 to ${MAX_MEMORY_MIB} MiB.`);
   if (form.backend !== undefined && !Object.hasOwn(BACKENDS, form.backend)) errors.push('Unknown computation engine.');
+  try { timeoutMilliseconds(form.timeoutMinutes); } catch (error) { errors.push(error.message); }
   if (form.field === 'p') {
     const p = Number(form.modulus);
     let prime = integer(form.modulus, 2);
@@ -513,6 +515,7 @@ export function buildJob(form) {
   if (task.id === 'anick' && !form.legacy && !extended) outputs.resolution = 'resolution.jsonl';
   if (form.outmode === 'MACAULAY') outputs.macaulay = 'result.macaulay';
   const job = { task: task.id, files, script: session.join('\n') + '\n', outputs, legacy: !!form.legacy, degreeBound: form.maxdeg || (task.group === 'Resolutions' ? 6 : null), memoryMiB: Number(form.memoryMiB ?? DEFAULT_MEMORY_MIB), backend: form.backend ?? 'standard' };
+  job.timeoutMs = timeoutMilliseconds(form.timeoutMinutes);
   if (extended) {
     job.resolution = { form: { ...form, augmentation }, nonhomogeneous };
     job.outputs.anick = outs.anick; // produced by the second stage

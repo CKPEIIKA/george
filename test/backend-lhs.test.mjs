@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
-import {latinHypercube, backendSamples, largeBackendAnchors, BASIS_DIMENSIONS} from './support/backend-lhs.mjs';
+import {latinHypercube, backendSamples, largeBackendAnchors, oracleBackendAnchors, BASIS_DIMENSIONS} from './support/backend-lhs.mjs';
 import {buildJob, ORDERS, parseRelation, isHomogeneous} from '../web/src/bergman-syntax.js';
 
 test('LHS visits each stratum once in every dimension and reproduces its seed', () => {
@@ -16,16 +16,24 @@ test('LHS visits each stratum once in every dimension and reproduces its seed', 
   }
 });
 
-test('known backend limitations are pinned to complete sampled jobs', () => {
-  const fixture = JSON.parse(fs.readFileSync(new URL('fixtures/backend-limitations.json', import.meta.url)));
+test('oracle regressions are pinned to complete sampled jobs and expected dimensions', () => {
+  const fixture = JSON.parse(fs.readFileSync(new URL('fixtures/backend-oracles.json', import.meta.url)));
   const {cases} = backendSamples(fixture.basisSamples, fixture.samplingSeed);
-  for (const limitation of fixture.limitations) {
-    const sample = cases.find(c => c.id === limitation.id);
-    assert.ok(sample, limitation.id);
+  for (const regression of fixture.cases) {
+    const sample = cases.find(c => c.id === regression.id);
+    assert.ok(sample, regression.id);
     const hash = crypto.createHash('sha256').update(JSON.stringify(buildJob(sample.form))).digest('hex');
-    assert.equal(hash, limitation.jobSha256, limitation.id);
-    assert.ok(['error', 'timeout'].includes(limitation.outcome.kind));
+    assert.equal(hash, regression.jobSha256, regression.id);
+    assert.ok(regression.expectedDimensions.length > 0);
   }
+});
+test('oracle anchors cover one-generator orders/fields and weighted elimination in both modes', () => {
+  const anchors=oracleBackendAnchors(); assert.equal(anchors.length,16);
+  for(const c of anchors)assert.ok(buildJob(c.form).script,c.id);
+  for(const order of ORDERS.comm)for(const field of ['0','2','p'])
+    assert.ok(anchors.some(c=>c.form.order===order.id&&c.form.field===field));
+  for(const order of ['elim','invelim'])for(const legacy of [false,true])
+    assert.ok(anchors.some(c=>c.form.order===order&&c.form.legacy===legacy));
 });
 test('LHS samples build valid jobs across supported fields, orders and modes', () => {
   const {cases} = backendSamples();

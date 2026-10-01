@@ -1,0 +1,45 @@
+{
+  "samplingSeed": 1195724596,
+  "basisSamples": 64,
+  "cases": [
+    {
+      "id": "lhs-gb-021",
+      "jobSha256": "d1f1389f83689d75677ab966c506b0d242e62f5847ce8ad68e761ff6978da9d0",
+      "expectedDimensions": [
+        1,
+        1,
+        1,
+        2,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "lhs-series-002",
+      "jobSha256": "a97f99f5e1e60c474278c8adca7135b88adf09078567dec96a63b7a3f345f6a9",
+      "expectedDimensions": [
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "lhs-series-014",
+      "jobSha256": "b5c3ddb2bf115689d973c05ff90fb51fc983e81216fd5a3335b5bc1fe599c8b5",
+      "expectedDimensions": [
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ]
+}

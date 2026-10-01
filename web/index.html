@@ -152,6 +152,11 @@
         <span class="hint" data-i18n="backend.hint">The engine selection is saved with your settings and share link.</span>
       </label>
       <label class="field">
+        <span class="label" data-i18n="timeout.label">Time limit (minutes)</span>
+        <input id="timeoutMinutes" type="number" min="0" step="any" value="0" aria-describedby="timeoutHint">
+        <span class="hint" id="timeoutHint" data-i18n="timeout.hint">0 means unlimited. Applies to computations and console commands. Stop is always available.</span>
+      </label>
+      <label class="field">
         <span class="label" data-i18n="memory.label">Memory limit</span>
         <select id="memoryMiB" aria-describedby="memoryHint">
           <option value="512">512 MiB</option>

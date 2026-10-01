@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Dated fixes in build copies. Each branch preserves legacy behavior."""
+"""Dated fixes in build copies, retaining legacy algorithm branches."""
 from pathlib import Path
 import sys
 root = Path(sys.argv[1])
@@ -144,6 +144,12 @@ p.write_text('% Modified by George on 2026-09-30: preserve degree lists, process
 
 p = root / 'src/monom.sl'
 s = p.read_text()
+# TOTALDEGREE aliases PLUSNOEVAL. A one-generator commutative monomial
+# has only one exponent, despite the original helper's two-item precondition.
+# These boundary cases have the same mathematical meaning in legacy mode.
+old = '(DE PLUSNOEVAL (lints)\n (PROG\t(AA BB)'
+assert s.count(old) == 1
+s = s.replace(old, old + '\n        (COND ((NOT lints) (RETURN 0))\n              ((NOT (CDR lints)) (RETURN (CAR lints))))')
 for name in ['commstableMONLESSP', 'LexMONLESSP']:
     old = '(DE ' + name + ' (pmon1 pmon2)\n (PROG\t(AA BB)'
     assert s.count(old) == 1
@@ -173,6 +179,32 @@ p.write_text('% Modified by George on 2026-09-30: follow current commutative pro
 
 p = root / 'src/ncmonom.sl'
 s = p.read_text()
+# Sorting duplicate input words can call these strict comparators with
+# equal arguments. Their prefix loops otherwise continue forever on NIL.
+# Returning false on equality is required by every strict monomial order,
+# including the legacy order; no unequal-word ordering is changed.
+for signature, locals in [
+    ('noncommElimLeftLexMONLESSP (pmon1 pmon2)', 'AA BB P1 P2 K I'),
+    ('noncommInvElimLeftLexMONLESSP (pmon1 pmon2)', 'AA BB P1 P2 K I N'),
+    ('noncommHomElimMONLESSP (pmon1 pmon2)', 'AA BB P1 P2 K I N'),
+    ('noncommInvWElimLeftLexMONLESSP (pmon1 pmon2 )', 'lendiff tt'),
+    ('orderednoncommInvWElimLeftLexMONLESSP (pmon1 pmon2 lendiff)', 'AA BB P1 P2 K I N WW l'),
+]:
+    old = '(DE ' + signature + '\n (PROG\t(' + locals + ')'
+    assert s.count(old) == 1
+    s = s.replace(old, old + '\n        (COND ((EQUAL pmon1 pmon2) (RETURN NIL)))')
+# Equal weighted degrees can contain different word lengths. The elimination
+# counters used to advance past the shorter word's terminal 0 and then loop
+# on NIL forever. Hold each terminal in place until both scans have ended.
+for name in ['noncommElimLeftLexMONLESSP', 'noncommInvElimLeftLexMONLESSP']:
+    start = s.index('(DE ' + name + ' ')
+    end = s.index('(DE ', start + 4)
+    part = s[start:end]
+    for var in ['P1', 'P2']:
+        old = '(SETQ ' + var + ' (CDR ' + var + '))'
+        assert part.count(old) == 1
+        part = part.replace(old, '(COND ((NOT (EQ (CAR ' + var + ') 0)) ' + old + '))')
+    s = s[:start] + part + s[end:]
 old = '(DE safenoncommMonTimes (pmon dppmon)\n (COND\t'
 assert s.count(old) == 1
 s = s.replace(old, old + """((AND (NOT GEORGELEGACYMODE)
@@ -206,6 +238,29 @@ s = s.replace(old, """(DE GEORGEDEGREEWISESAFEMONLESSP (pmon1 pmon2)
 
 """ + old)
 p.write_text('% Modified by George on 2026-09-30: correctly multiply units with empty or nonempty context words and use the full term order for mixed degrees in safe noncommutative mode; preserve original branches in legacy mode.\n(GLOBAL \'(GEORGELEGACYMODE))\n' + s)
+
+# A one-variable proper quotient has a polynomial Hilbert series. The
+# commutative Hilbert helper counts exponent degrees, so rescale its finite
+# numerator to the generator's weight before printing or reading coefficients.
+p = root / 'src/hseries.sl'
+s = p.read_text()
+start = s.index('(DE commCALCRATHILBERTSERIES ()')
+end = s.index('%  Return one Hilbert polynomial value', start)
+part = s[start:end]
+old = '(GO Ml))) ))'
+assert part.count(old) == 1
+part = part.replace(old, '''(GO Ml)))
+        (COND ((AND (GETWEIGHTS) (EQ (GETVARNO) 1)
+                    (ZEROP HILBERTDENOMINATOR))
+               (SETQ tmpcff (CAR (GETWEIGHTS)))
+               (SETQ denpos HILBERTNUMERATOR))
+              (T (RETURN NIL)))
+  Scale (COND (denpos
+               (RPLACA (CAR denpos) (TIMES2 tmpcff (CAAR denpos)))
+               (SETQ denpos (CDR denpos))
+               (GO Scale))) ))''')
+s = s[:start] + part + s[end:]
+p.write_text('% Modified by George on 2026-10-01: preserve generator weights in one-variable finite commutative Hilbert series in both modes.\n' + s)
 
 # Anick's homogeneous shortcut also orders tensor terms by the chain alone.
 # Safe-mode coefficients have mixed degrees: multiplication/reduction and

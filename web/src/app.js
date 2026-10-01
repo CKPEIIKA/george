@@ -13,9 +13,11 @@ import { structuralResolutionDisplay } from './resolution-data.js';
 import { initConsole } from './console.js';
 import { createShareLink, readShareLink, SHARE_PREFIX } from './share.js';
 import { BACKENDS, DEFAULT_BACKEND } from './backends.js';
+import { timeoutMilliseconds } from './time-limit.js';
 
 const $ = (id) => document.getElementById(id);
-const engine = new EclEngine({getBackend: () => $('backend').value, onReady: info => {
+const engine = new EclEngine({getBackend: () => $('backend').value,
+  getTimeoutMs: () => timeoutMilliseconds($('timeoutMinutes').value), onReady: info => {
   engineInfo = info;
   engineError = null;
   updateEngineNote();
@@ -41,7 +43,7 @@ const els = {
   modulus: $('modulus'), pField: $('pField'), pErr: $('pErr'),
   order: $('order'), reverseVars: $('reverseVars'), matrix: $('matrix'), matrixField: $('matrixField'),
   maxdeg: $('maxdeg'), weights: $('weights'), homogWarn: $('homogWarn'),
-  memoryMiB: $('memoryMiB'), backend: $('backend'),
+  memoryMiB: $('memoryMiB'), backend: $('backend'), timeoutMinutes: $('timeoutMinutes'),
   nonhomog: $('nonhomog'), strategy: $('strategy'), rabbit: $('rabbit'), rabbitField: $('rabbitField'),
   augmentation: $('augmentation'),
   lowterms: $('lowterms'), outmode: $('outmode'), legacy: $('legacy'), maxserdeg: $('maxserdeg'), maxserdegField: $('maxserdegField'),
@@ -77,6 +79,7 @@ function readForm() {
     maxdeg: els.maxdeg.value,
     memoryMiB: Number(els.memoryMiB.value),
     backend: els.backend.value,
+    timeoutMinutes: Number(els.timeoutMinutes.value),
     weights: els.weights.value,
     nonhomog: els.nonhomog.value,
     augmentation: els.augmentation.value,
@@ -106,6 +109,7 @@ function writeForm(s) {
   if (s.matrix !== undefined) els.matrix.value = s.matrix;
   els.maxdeg.value = s.maxdeg || '';
   els.memoryMiB.value = String(s.memoryMiB ?? els.memoryMiB.value ?? 2048);
+  els.timeoutMinutes.value = String(s.timeoutMinutes ?? els.timeoutMinutes.value ?? 0);
   if (s.backend !== undefined) els.backend.value = Object.hasOwn(BACKENDS, s.backend) ? s.backend : DEFAULT_BACKEND;
   els.weights.value = s.weights || '';
   els.nonhomog.value = s.nonhomog || 'auto';
@@ -343,6 +347,7 @@ async function compute(ev) {
   } catch (e) {
     if (e.partialResult) renderResults(job, e.partialResult);
     if (e.code === 'memory-limit') setStatus('status.memory', {mib: job.memoryMiB});
+    else if (e.code === 'timeout') setStatus('status.timeout');
     else setStatus(e.name === 'AbortError' ? 'status.stopped' : 'status.error', { msg: e.message });
   } finally {
     running = false;

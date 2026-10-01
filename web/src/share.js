@@ -1,5 +1,6 @@
 import { ORDERS, TASKS } from './bergman-syntax.js';
 import { BACKENDS } from './backends.js';
+import { timeoutMilliseconds } from './time-limit.js';
 
 export const SHARE_PREFIX = '#s=';
 const MAX_BYTES = 1048576;
@@ -16,6 +17,7 @@ const FIELDS = [
   ['preset', ''], ['presetN', '3'], ['language', 'en'], ['theme', 'auto'],
   // Old links reproduce the engine that was available when they were made.
   ['backend', 'standard'],
+  ['timeoutMinutes', 0],
 ];
 const CHOICES = {
   ring: ['noncomm', 'comm'], field: ['0', '2', 'p'],
@@ -32,6 +34,7 @@ function validateState(state) {
     if (typeof state[key] !== typeof fallback || (CHOICES[key] && !CHOICES[key].includes(state[key]))) throw new Error('share.invalid');
   }
   if (!ORDERS[state.ring].some(order => order.id === state.order)) throw new Error('share.invalid');
+  try { timeoutMilliseconds(state.timeoutMinutes); } catch { throw new Error('share.invalid'); }
   return state;
 }
 

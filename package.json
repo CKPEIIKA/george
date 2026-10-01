@@ -16,6 +16,8 @@
     "test:algebra": "node tools/validate-algebra.mjs",
     "test:backends": "node tools/validate-backends.mjs",
     "test:backends:browser": "node tools/validate-backends-browser.mjs",
+    "test:backends:oracles": "node tools/validate-backend-oracles.mjs",
+    "test:lhs:singular": "node tools/validate-lhs-singular.mjs",
     "test:resolution:names": "node tools/validate-resolution-names.mjs",
     "test:braid": "node tools/validate-braid.mjs",
     "test:reader": "node tools/validate-reader.mjs",
