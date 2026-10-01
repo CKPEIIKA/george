@@ -28,13 +28,17 @@ for the user's manual push; no remote publication was performed.
 
 ## Pages publication setup — 2026-10-01
 
-`.github/workflows/pages.yml` deploys the prebuilt `web/` tree on each push
-to `main`, with `workflow_dispatch` for a manual redeploy. It uses GitHub's
-official checkout, configure-pages, upload-pages-artifact and deploy-pages
-actions, Pages/OIDC permissions and the `github-pages` environment. It does
-not build ECL or run tests. Select GitHub Actions as the Pages source once
-in repository settings. Existing branch-based publication remains possible
-through `gh-pages`; `web/.nojekyll` accompanies the static tree.
+Deployment now originates from **gh-pages**, matching the existing
+`github-pages` environment's allowed branch. The workflow is copied onto
+the static branch along with `web/` contents. A main-branch job updates that
+tree automatically and explicitly dispatches the gh-pages workflow after
+a token-generated push. A manual atomic push already triggers deployment
+on gh-pages, so main skips staging when the exact tree is present.
+
+The generated `publish.sh` checks prepared refs, pushes both branches and
+waits for the gh-pages workflow and exact served release files. Full details
+are in [DEPLOYMENT.md](DEPLOYMENT.md). There are no environment-setting
+instructions added to README. No repository settings are changed.
 
 The source archive includes the workflow. Publication must use fresh refs;
 the preserved local `gh-pages` branch is historical. The user chose manual

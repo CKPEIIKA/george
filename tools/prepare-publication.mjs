@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
+import {pagesTree} from './pages-tree.mjs';
 
 const git=(args,input)=>execFileSync('git',args,{input,encoding:'utf8',maxBuffer:16e6}).trimEnd();
 const original=git(['rev-parse','HEAD']);
@@ -33,11 +34,20 @@ function clean(id){
   map.set(id,next);rewritten.push({original:id,clean:next});return next;
 }
 const main=clean(original),pagesParent=clean(previous.get(refs[1])==='0'.repeat(40)?oldPages:previous.get(refs[1]));
+const workflow=git(['show',main+':.github/workflows/pages.yml']);
+assert.match(workflow,/name: github-pages\b/);
+assert.match(workflow,/if: github\.ref == 'refs\/heads\/gh-pages'/,'Deployment must originate on gh-pages.');
+const siteTree=pagesTree(main);
 const out='build/publication';fs.mkdirSync(out,{recursive:true});
 const body=path.resolve(out,'pages-message.txt');
 const version=JSON.parse(fs.readFileSync('package.json','utf8')).version;
 fs.writeFileSync(body,`Publish George ${version} and validated bergman-1.001-fix engine\n`);
-const pages=git(['commit-tree',tree,'-p',pagesParent,'-F',body]);
+const pages=git(['commit-tree',siteTree,'-p',pagesParent,'-F',body]);
+const leases=Object.fromEntries(['main','gh-pages'].map(branch=>[branch,git(['rev-parse','refs/remotes/origin/'+branch])]));
+if(fastForward){
+  git(['merge-base','--is-ancestor',leases.main,main]);
+  git(['merge-base','--is-ancestor',leases['gh-pages'],pages]);
+}
 git(['update-ref','--stdin'],`start\nupdate ${refs[0]} ${main} ${previous.get(refs[0])}\nupdate ${refs[1]} ${pages} ${previous.get(refs[1])}\nprepare\ncommit\n`);
 for(const ref of refs){
   const history=git(['log',ref,'--format=%an <%ae>%n%B']);
@@ -45,17 +55,12 @@ for(const ref of refs){
   assert.doesNotMatch(history,/^.*Claude.*<.*>$/im);
 }
 assert.equal(git(['rev-parse',refs[0]+'^{tree}']),git(['rev-parse',original+'^{tree}']));
-assert.equal(git(['rev-parse',refs[1]+'^{tree}']),tree);
-const leases=Object.fromEntries(['main','gh-pages'].map(branch=>[branch,git(['rev-parse','refs/remotes/origin/'+branch])]));
-if(fastForward){
-  git(['merge-base','--is-ancestor',leases.main,main]);
-  git(['merge-base','--is-ancestor',leases['gh-pages'],pages]);
-}
+assert.equal(git(['rev-parse',refs[1]+'^{tree}']),siteTree);
 const command=fastForward
   ? 'git push --atomic origin publish/main:main publish/gh-pages:gh-pages'
   : `git push --atomic --force-with-lease=refs/heads/main:${leases.main} --force-with-lease=refs/heads/gh-pages:${leases['gh-pages']} origin publish/main:main publish/gh-pages:gh-pages`;
-const plan={date:new Date().toISOString(),original,oldPages,main,pages,pagesParent,webTree:tree,
-  rewritten,leases,command,fastForwardOnly:fastForward,remotePublication:false,originalRefsPreserved:true};
+const plan={date:new Date().toISOString(),original,oldPages,main,pages,pagesParent,webTree:tree,pagesTree:siteTree,
+  rewritten,leases,command,deploymentBranch:'gh-pages',deploymentEnvironment:'github-pages',verifyDeployment:true,fastForwardOnly:fastForward,remotePublication:false,originalRefsPreserved:true};
 fs.writeFileSync(path.join(out,'plan.json'),JSON.stringify(plan,null,2)+'\n');
 fs.writeFileSync(path.join(out,'publish.sh'),`#!/bin/sh
 set -eu
@@ -74,5 +79,6 @@ cd "$(git rev-parse --show-toplevel)"
 test "$(git rev-parse publish/main)" = '${main}'
 test "$(git rev-parse publish/gh-pages)" = '${pages}'
 ${command}
+node tools/wait-for-pages.mjs '${pages}'
 `);
 console.log(JSON.stringify({main,pages,webTree:tree,rewritten:rewritten.length,plan:path.join(out,'plan.json'),remotePublication:false},null,2));

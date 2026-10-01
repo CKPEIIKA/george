@@ -77,6 +77,20 @@
     "8": {
       "sha256": "532ab282709a5567babff6a1caa02132fb8a04b60404cf3e615ed38476406772",
       "bytes": 164073
+    },
+    "7": {
+      "sha256": "eb1b77810dc15ad376f7039bb1063566bd187da4243783ce14b8814604a9aa23",
+      "bytes": 60887,
+      "basisElements": 695,
+      "basisByDegree": {
+        "2": 100,
+        "3": 76,
+        "4": 89,
+        "5": 95,
+        "6": 137,
+        "7": 198
+      },
+      "report": "build/diagnosis-15-generators/native-gb7-summary.json"
     }
   },
   "measurements": {
@@ -2520,5 +2534,6 @@
     "tools/profile-browser.mjs": "9e4fdafd662ad9f218c450d3f0ec4ab9f34e22719a56bf810df71e29097f1190",
     "test/support/regression.mjs": "9c60007032b59aecea7d90ec5a36e707073eeaa2495bf36b08382b8a2c4080c9",
     "tools/validate-reader.mjs": "274af64a50de8a1f2a60b5a5ab11c936eba371d2e83d2de264c77bbc5e450d6b"
-  }
+  },
+  "sourceHashesScope": "Original degree-4/6 measurement tools at commit 1b47dd0; degree-7/8 support and timeout reporting were added afterward."
 }

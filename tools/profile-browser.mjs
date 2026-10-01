@@ -1,5 +1,5 @@
 // Ordinary Chromium timings, using the real worker without DevTools.
-// node tools/profile-browser.mjs ENGINE DEGREE OUTPUT [REPEATS]
+// node tools/profile-browser.mjs ENGINE DEGREE OUTPUT [REPEATS] [TIMEOUT_SECONDS]
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -9,10 +9,12 @@ import assert from 'node:assert/strict';
 import {spawn,spawnSync} from 'node:child_process';
 import {buildJob,readInputFile,parseBasis} from '../web/src/bergman-syntax.js';
 
-const [engineArgument,degreeArgument,outputArgument,repeatArgument='3']=process.argv.slice(2);
-if (!engineArgument || !degreeArgument || !outputArgument) throw Error('Supply ENGINE DEGREE OUTPUT [REPEATS].');
+const [engineArgument,degreeArgument,outputArgument,repeatArgument='3',timeoutArgument]=process.argv.slice(2);
+if (!engineArgument || !degreeArgument || !outputArgument) throw Error('Supply ENGINE DEGREE OUTPUT [REPEATS] [TIMEOUT_SECONDS].');
 const engine=path.resolve(engineArgument),out=path.resolve(outputArgument),degree=Number(degreeArgument),repeats=Number(repeatArgument);
-assert.ok([4,6,8].includes(degree)); assert.ok(Number.isInteger(repeats)&&repeats>0&&repeats<=20);
+assert.ok([4,6,7,8].includes(degree)); assert.ok(Number.isInteger(repeats)&&repeats>0&&repeats<=20);
+const timeoutMs=timeoutArgument===undefined?repeats*240000+60000:Number(timeoutArgument)*1000;
+assert.ok(Number.isFinite(timeoutMs)&&timeoutMs>0&&timeoutMs<=7200000);
 fs.mkdirSync(out,{recursive:true});
 const sha=bytes=>crypto.createHash('sha256').update(bytes).digest('hex');
 const inputText=JSON.parse(fs.readFileSync('docs/development/validation/memory.json','utf8')).presentationAssessment.inputText;
@@ -25,7 +27,7 @@ const expectedHash=expected===null?JSON.parse(fs.readFileSync('docs/development/
 const browserExecutable=process.env.CHROMIUM||'/usr/bin/chromium';
 const version=spawnSync(browserExecutable,['--version'],{encoding:'utf8'});assert.ifError(version.error);assert.equal(version.status,0);
 const tier=process.env.GEORGE_BROWSER_TIER||'default';assert.ok(['default','turbofan'].includes(tier));
-const report={devtools:false,degree,freshWorkerEachRun:true,engine,browser:version.stdout.trim(),tier,inputSha256:sha(inputText),
+const report={state:'running',startedAt:new Date().toISOString(),timeoutMs,devtools:false,degree,freshWorkerEachRun:true,engine,browser:version.stdout.trim(),tier,inputSha256:sha(inputText),
   hashes:Object.fromEntries(['ecl.js','ecl.wasm','ecl.data'].map(n=>[n,sha(fs.readFileSync(path.join(engine,n)))])),runs:[]};
 let resolveDone,rejectDone;
 const done=new Promise((resolve,reject)=>{resolveDone=resolve;rejectDone=reject;});
@@ -71,6 +73,7 @@ const server=http.createServer(async(req,res)=>{
         ticks:r.ticks,nativeEquality:true,outputSha256:sha(r.files['result.gb']),...r.profile,
         basis:parseBasis(r.files['result.gb']).groups.map(g=>({degree:g.deg,count:g.polys.length}))};
       report.runs.push(row);fs.writeFileSync(path.join(out,`run-${r.iteration}.log`),r.stdout);
+      fs.writeFileSync(path.join(out,`run-${r.iteration}.gb`),r.files['result.gb']);
       fs.writeFileSync(path.join(out,'report.json'),JSON.stringify(report,null,2)+'\n');
       console.log(JSON.stringify(row));res.end('ok');return;
     }
@@ -87,8 +90,12 @@ const browserProfile=fs.mkdtempSync(path.join(os.tmpdir(),'george-runtime-bench-
 const browser=spawn(browserExecutable,['--headless','--no-sandbox','--no-first-run',...(tier==='turbofan'?['--js-flags=--no-liftoff']:[]),
   `--user-data-dir=${browserProfile}`,`http://127.0.0.1:${server.address().port}/`],{stdio:['ignore','ignore','pipe']});
 let stderr='';browser.stderr.on('data',chunk=>stderr+=chunk);browser.on('error',rejectDone);
-const timeout=setTimeout(()=>rejectDone(Error('Browser measurement exceeded its external time limit')),repeats*240000+60000);
-try{await done;assert.equal(report.runs.length,repeats);}
-catch(error){report.error=String(error);console.error(error);process.exitCode=1;}
+report.processes={node:process.pid,browser:browser.pid};
+fs.writeFileSync(path.join(out,'report.json'),JSON.stringify(report,null,2)+'\n');
+browser.on('exit',(code,signal)=>rejectDone(Error(`Browser exited before completion (${code}, ${signal})`)));
+const timeout=setTimeout(()=>rejectDone(Error('Browser measurement exceeded its external time limit')),timeoutMs);
+try{await done;assert.equal(report.runs.length,repeats);report.state='complete';}
+catch(error){report.state='failed';report.error=String(error);console.error(error);process.exitCode=1;}
 finally{clearTimeout(timeout);browser.kill('SIGTERM');server.close();
+  report.finishedAt=new Date().toISOString();
   fs.writeFileSync(path.join(out,'browser.log'),stderr);fs.writeFileSync(path.join(out,'report.json'),JSON.stringify(report,null,2)+'\n');}

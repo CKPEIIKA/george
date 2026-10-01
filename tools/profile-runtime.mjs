@@ -34,7 +34,7 @@ const report = {caseId,cpuProfile:cpu,engine,hashes,node:process.version,v8:proc
   flags:process.execArgv,startupMs:performance.now()-startup,profileCounters:typeof m._george_profile_start==='function',runs:[]};
 fs.writeFileSync(path.join(out,'startup.log'),stdout);
 let job, expected, expectedHash;
-if (/^gb[3468]$/.test(caseId)) {
+if (/^gb[34678]$/.test(caseId)) {
   const degree = Number(caseId.slice(2));
   const inputText=JSON.parse(fs.readFileSync('docs/development/validation/memory.json','utf8')).presentationAssessment.inputText;
   const parsed = readInputFile('(ALGFORMINPUT)\n'+inputText);
