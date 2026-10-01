@@ -6,17 +6,17 @@
   "ecl": "59f60e09102961bf5872c672fdd9d200b2e83d6b",
   "emscripten": "4.0.12",
   "files": {
+    "ecl.js": {
+      "bytes": 110375,
+      "sha256": "28fbd34f967df956371ca8c7c69909dd697e0385f9e984a7e95f731ff009a7df"
+    },
+    "ecl.wasm": {
+      "bytes": 4784709,
+      "sha256": "b90c140372df3f8857e535fd8a8de3406ba57d27a40b6cf2e62b51a123a26585"
+    },
     "ecl.data": {
       "bytes": 3022218,
       "sha256": "790ba520c484eb05e9e5d4134a67ec343c4993d4847cd9b0752233bb32d51368"
-    },
-    "ecl.js": {
-      "bytes": 110176,
-      "sha256": "befbdaa074c024417291a43185a286ab5ed3f588820ede6cfd0665fa4abeb9ae"
-    },
-    "ecl.wasm": {
-      "bytes": 4617817,
-      "sha256": "c96fa125c12681a3bcfbd4b563237d38fb75e10f5ca85ac942b9149ec4c81935"
     }
   },
   "appVersion": "0.3.0",
@@ -24,5 +24,12 @@
     "wasmMaximumBytes": 4294967296,
     "defaultHeapMiB": 2048,
     "maximumHeapMiB": 3584
+  },
+  "compiler": {
+    "libraryOptimization": "O2",
+    "linkOptimization": "O2",
+    "longjmp": "emscripten",
+    "pointerSpilling": true,
+    "profiling": false
   }
 }

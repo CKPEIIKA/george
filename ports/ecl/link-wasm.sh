@@ -4,12 +4,23 @@ root=$(cd "$(dirname "$0")/../.." && pwd)
 toolchain=${GEORGE_TOOLCHAIN:-$root/build/toolchain}
 runtime=${1:-$root/build/ecl-runtime}
 source "$toolchain/emsdk/emsdk_env.sh" >/dev/null 2>&1
-prefix=${GEORGE_ECL_WASM:-$toolchain/ecl-wasm-neutral}
-mkdir -p "$root/web/engine"
+prefix=${GEORGE_ECL_WASM:-$toolchain/ecl-wasm-neutral-${GEORGE_ECL_OPT:-O2}}
+engine=${GEORGE_ENGINE_DIR:-$root/web/engine}
+mkdir -p "$engine"
 # Link from inside web/engine with a relative output name, so the loader
 # refers to "ecl.data" rather than to this checkout's absolute path.
-cd "$root/web/engine"
+cd "$engine"
+profile_flags=()
+if [[ ${GEORGE_PROFILE:-0} == 1 ]]; then
+  profile_flags=("$root/ports/ecl/profile.c" --profiling-funcs)
+fi
+longjmp_flags=()
+if [[ ${GEORGE_LONGJMP:-emscripten} == wasm ]]; then
+  longjmp_flags=(-sSUPPORT_LONGJMP=wasm)
+fi
 emcc "$root/ports/ecl/bridge.c" -ffile-prefix-map="$root"=. -I"$prefix" \
+  "${profile_flags[@]}" \
+  "${longjmp_flags[@]}" \
   -L"$prefix" -lecl -leclgmp -leclgc -lm \
   "${GEORGE_LINK_OPT:--O2}" -DECL_C_COMPATIBLE_VARIADIC_DISPATCH \
   -sBINARYEN_EXTRA_PASSES=--spill-pointers -sSTACK_SIZE=8388608 \

@@ -169,6 +169,11 @@ reader and streams recover after errors; variables and files remain available.
 
 Node.js 22.8 or later. Engine build: Git, Python 3, a C toolchain and make;
 the toolchain goes to `build/toolchain/` (`GEORGE_TOOLCHAIN`, `JOBS`).
+ECL, GMP and GC are compiled at `-O2`; `GEORGE_ECL_OPT=O0` selects the
+previous library settings in a separate cache. The final link uses `-O2`
+and retains the GC pointer spilling pass. See the
+[performance assessment](docs/development/PERFORMANCE.md) for measurements
+and isolated build/profiling commands.
 Reference build: SBCL. Oracle tests: Singular 4.4.1, SymPy 1.14.0,
 OCaml 5.3 and dune 3.17.2
 (`python3 tools/setup-oracles.py` fetches pinned copies). `CHROMIUM` selects

@@ -12,10 +12,35 @@ the current memory-enabled build separately.
 
 The current interface version is **George 0.3** (package version 0.3.0).
 It adds locale-aware seconds and compressed share links restoring the full
-form, memory allowance, preset, language and theme. Existing locale/version
-assertions were updated. Tests were not run for these interface edits;
-the executed results below retain their original source/version identity.
-The Wasm engine binaries are unchanged from the memory assessment.
+form, memory allowance, preset, language and theme. All 53 JavaScript unit
+assertions passed on October 1. The engine was subsequently optimized as
+described below; earlier audit results retain their original engine identity.
+
+## Runtime optimization — 2026-10-01
+
+The current release engine uses fully rebuilt **O2 ECL/GMP/GC libraries**,
+an O2 final link and the existing GC pointer spilling pass. Bergman's Lisp
+bytecode is byte for byte unchanged from the memory update. Profiling hooks
+are excluded from the release. See [PERFORMANCE.md](PERFORMANCE.md) and
+[performance.json](validation/performance.json) for exact hashes, build
+variants, measurements and checks on this engine.
+
+The submitted 15-generator, 100-relation presentation takes **9.635 seconds**
+through degree 4, versus **17.541 seconds** on the preceding engine in the
+same current Chromium measurement series (medians of three runs). Through
+degree 6 it takes **155.148 seconds**, saving 497 basis elements. Both outputs
+match native SBCL byte for byte. These are degree-bounded computations.
+The earlier 50-second measurement below was under different conditions and
+is not used to calculate this improvement.
+
+The optimized release also passes all **74 historical outputs**, **46 Wasm
+reader error/recovery cases** plus eight native EOF checks, **42 independent
+basis cases with 597 ambiguities**, and **nine resolution cases with 560
+d² identities**. A Node allocation stress check holds 3.125 GiB of live
+arrays; forced heap exhaustion preserves saved basis output and permits
+same-runtime recovery. Current browser behavior results are recorded in
+the performance report. The full September upstream and UI suite has not
+been rerun in its entirety against this engine.
 
 ## Memory update — 2026-10-01
 
@@ -55,7 +80,7 @@ native run with a 3.5 GiB allowance is stopped externally after 300 seconds,
 having saved degrees through 8. **The complete unrestricted basis is not
 certified.** The input counts alone do not determine the resource requirement.
 
-The current engine hashes, source hashes, measurements and local report
+The memory assessment's engine hashes, source hashes, measurements and local report
 paths are recorded in [memory.json](validation/memory.json). Instrumented
 degree-4 and degree-6 browser runs timed out after ten minutes; they are
 retained as diagnostics and excluded from normal-browser timing claims.

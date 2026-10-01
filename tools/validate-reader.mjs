@@ -29,7 +29,10 @@ const n=spawnSync(native,[],{input:nativeSource,encoding:'utf8',timeout:30000,ma
 fs.writeFileSync(`${out}/native.log`,(n.stdout||'')+(n.stderr||''));
 assert.ifError(n.error);assert.equal(n.status,0);assert.match(n.stdout,/READER-NATIVE:8 PASS/);
 
-const report={engine:JSON.parse(fs.readFileSync('web/engine/build.json','utf8')),nativeCases:8,modes:[],sourceHashes:{}};
+const enginePath=path.resolve(process.env.GEORGE_ENGINE_DIR||'web/engine');
+const manifest=[path.join(enginePath,'build.json'),path.join(enginePath,'../build.json')].find(p=>fs.existsSync(p));
+const engine=manifest?JSON.parse(fs.readFileSync(manifest,'utf8')):{files:Object.fromEntries(['ecl.js','ecl.wasm','ecl.data'].map(name=>[name,{sha256:crypto.createHash('sha256').update(fs.readFileSync(path.join(enginePath,name))).digest('hex')}]))};
+const report={engine,nativeCases:8,modes:[],sourceHashes:{}};
 for(const legacy of [false,true]){
  let output='';const rt=await wasmRuntime({onOutput:s=>{output+=s+'\n';}});
  const evaluate=(source)=>{output='';const status=rt.m.ccall('george_eval','number',['string','number'],[source,1]);return {status,stdout:output};};

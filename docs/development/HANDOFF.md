@@ -1,5 +1,31 @@
 # George handoff
 
+## Runtime profiling and O2 release — 2026-10-01
+
+The current engine uses freshly compiled O2 ECL/GMP/GC libraries and an O2
+final link, with the conservative GC pointer spilling pass retained. The
+original Bergman bytecode data is unchanged. The release excludes profiling
+hooks. `ports/ecl/build.sh` now defaults to O2 and uses an identified,
+optimization-specific cache; the previous O0 settings remain selectable.
+
+The submitted 15-generator/100-relation example takes 9.635 seconds through
+degree 4 in Chromium versus 17.541 seconds for the previous engine in the
+current comparison, and 155.148 seconds through degree 6 (497 elements).
+Native output equality is exact. O3 does not improve this example clearly;
+native Wasm jumps help Node but lose to plain O2 in Chromium. Profiling
+identifies the ECL interpreter/control flow as the main runtime cost, with
+GC around 4–6% of the measured computations. Full unrestricted completion
+is still not certified.
+
+The selected engine passes 74 historical output checks, reader recovery,
+51 independent algebra/resolution cases, large live allocations and real
+browser cancellation/exhaustion/form recovery. All 53 current unit tests
+pass. See [PERFORMANCE.md](PERFORMANCE.md) and
+[performance.json](validation/performance.json) for hashes, exact timings,
+scope and reproducible isolated build/profile commands. Earlier sections
+describe older engine snapshots. Publication is still prepared locally
+for the user's manual push; no remote publication was performed.
+
 ## Pages publication setup — 2026-10-01
 
 `.github/workflows/pages.yml` deploys the prebuilt `web/` tree on each push
