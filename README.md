@@ -19,7 +19,7 @@ No installation. Everything runs in your browser; nothing is sent to a server.
 npm ci && npm run serve        open http://127.0.0.1:8000/
 npm test                       unit tests
 npm run test:ui                browser checks: examples, EN/RU, themes, /george/
-npm run wasm:build:backends    rebuild all three engines
+npm run wasm:build:backends    rebuild all four engines
 npm run sources                refresh the source archives beside the site
 ```
 
@@ -43,7 +43,7 @@ Common Lisp build                ports/common/           patches, fixes, legacy 
 ECL bytecode / ECL Lisp→C       ports/ecl/
         │
         ▼
-WebAssembly (Emscripten)         web/engine/ (three backends)
+WebAssembly (Emscripten)         web/engine/ (32-bit and memory64 backends)
         │
         ▼
 Web Worker ⇄ JavaScript UI       web/engine/worker.js, web/src/
@@ -70,9 +70,13 @@ and results are compared with a native SBCL build, Bergman 2 and Singular
   under *More settings*.
 
 **Memory**
-: *More settings → Memory limit* allows 512 MiB to 3.5 GiB of Lisp heap,
-  with 2 GiB selected by default. Memory grows as needed. The engine has a
-  4 GiB Wasm ceiling; the remaining space serves files and host allocations.
+: *More settings → Memory limit* defaults to 2 GiB. The 32-bit engines allow
+  up to 4095 MiB, with a 4 GiB total Wasm ceiling. Select **C / ECL O3 + LTO
+  (memory64)** for allowances up to 16 GiB or **No heap cap**. This removes
+  George's heap cap; the browser still limits this build to 16 GiB and can
+  exhaust available memory earlier. A browser with memory64 support is required.
+  Memory grows as needed. **Monomial pruning** can reduce retained memory for
+  unweighted homogeneous noncommutative Gröbner bases.
   An exhausted heap returns saved basis output as partial and releases the
   worker. A larger limit does not guarantee completion of an unbounded basis.
 
@@ -113,7 +117,7 @@ and results are compared with a native SBCL build, Bergman 2 and Singular
 | `npm run test:extra` | remaining original sessions |
 | `npm run test:ocaml` | Bergman 2 aliases and references |
 | `npm run test:algebra` | Singular, critical pairs, Hilbert dimensions |
-| `npm run test:backends` | seeded Latin hypercube inputs/settings, exact parity across the three engines |
+| `npm run test:backends` | seeded Latin hypercube inputs/settings, exact parity across the four engines |
 | `npm run test:upstream` | 90 adapted Singular/Plural, SymPy and GBNP field cases; independent oracles |
 | `npm run test:resolution:names` | long generator names, differentials |
 | `npm run test:braid` | native/Wasm braid resolutions, full differentials, projectivity and weighted bounds |
@@ -123,6 +127,11 @@ and results are compared with a native SBCL build, Bergman 2 and Singular
 | `npm run test:ui` | guide, EN/RU, themes, MathJax, `/george/` path |
 
 ## VERSION
+
+George 0.5 adds the **C / ECL O3 + LTO (memory64)** engine, allowances up to
+16 GiB and a **No heap cap** setting. It also adds optional monomial pruning
+and raises the largest 32-bit heap allowance to 4095 MiB. The 32-bit C backend
+remains the default; wider pointers can increase memory use.
 
 George 0.4 adds a computation engine selector in **More settings**. It keeps
 the same Bergman algorithms, with Lisp / ECL O2, Lisp / ECL O3 + LTO and

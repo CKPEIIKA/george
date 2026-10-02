@@ -1,4 +1,4 @@
-# Browser backends in George 0.4
+# Browser backends in George 0.5
 
 The interface offers these exact labels:
 
@@ -7,6 +7,7 @@ The interface offers these exact labels:
 | Lisp / ECL O2 | `standard` | `web/engine/` | Bergman bytecode; O2 ECL/GMP/GC |
 | Lisp / ECL O3 + LTO | `optimized` | `web/engine/optimized/` | Same bytecode; O3 libraries and final link with LTO |
 | C / ECL O3 + LTO | `compiled` | `web/engine/compiled/` | ECL compiles existing Lisp functions to C, then Emscripten produces Wasm; O3 + LTO |
+| C / ECL O3 + LTO (memory64) | `memory64` | `web/engine/memory64/` | Same compiled functions, 64-bit pointers and GC words; O3 + LTO |
 
 `compiled` is the default. The form and console use the chosen backend.
 Changing it starts a new console session on the next command. An active
@@ -41,9 +42,46 @@ bytecode implementation. Further auxiliary modules loaded later can also
 use bytecode. The C backend is therefore a mixture of compiled functions
 and bytecode. It is not a separate implementation of the mathematics.
 
-The final link retains `--spill-pointers`, exact GMP arithmetic, the existing
-Emscripten jump handling, and the 4 GiB linear-memory maximum. It contains
+The final link retains `--spill-pointers`, exact GMP arithmetic and the existing
+Emscripten jump handling. The linear-memory maximum is 4 GiB for the three
+32-bit variants and 16 GiB for memory64. It contains
 no profiling hooks or fast-math flags.
+
+## Memory64 and memory allowances
+
+The memory64 port uses `-sMEMORY64=1` throughout ECL, GMP, GC and the final
+link. `ports/ecl/wasm64-unknown-emscripten.cross_config` selects 64-bit
+`long`, fixnum representation and pointer sizes. The bundled GC's
+Emscripten word size and alignment follow the actual pointer size.
+Wasm32 lowering (`MEMORY64=2`) is not used.
+
+Pinned Binaryen revision `fc6a7977cccea66c7d78f3d86eb0cdac9f37cbdb`
+needs `ports/ecl/binaryen-memory64-stack.patch`: its spill-pointer pass
+already uses 64-bit pointer slots, but its shared stack helper originally
+only accepted i32. The patch adds i64 stack subtraction and restoration.
+Pointer spills remain enabled for ECL's conservative garbage collector.
+The host Binaryen tools use O1; the guest engine uses O3 + LTO.
+
+The memory64 option is disabled in browsers that cannot validate this
+build's 16 GiB memory64 declaration. Settings allow 6, 8, 12 and 16 GiB,
+plus `memoryMiB: 0` for no ECL heap cap. This calls ECL's native
+`EXT:SET-LIMIT` with zero, including its error-handling safety area.
+It does not remove the browser's memory limit. The current
+[WebAssembly JavaScript API](https://webassembly.github.io/spec/js-api/#implementation-defined-limits)
+sets a 16 GiB runtime maximum per memory64 memory; resources can run out
+earlier. Multiple memories would require allocator/GC changes here.
+
+The wasm32 heap allowance now reaches 4095 MiB. Exactly 4096 MiB does not
+fit its unsigned 32-bit heap-size argument. There is no measured universal
+300 MiB reserve: heap allowance and total linear memory are different
+quantities. Selecting wasm32 after an uncapped or larger memory64 setting
+clamps the allowance to 4095 MiB. Older Share links keep their defaults.
+
+Optional monomial pruning emits `SETREDUCTIVITY NIL` for unweighted,
+homogeneous, noncommutative degreewise Gröbner basis jobs. It restores
+reductivity before clearing the ring. Resolutions, weights, itemwise and
+rabbit jobs cannot enable it. Native and Singular checks remain independent
+of engine parity. Degree-seven results do not establish degree-eleven capacity.
 
 ## Rebuild
 
@@ -69,6 +107,36 @@ GEORGE_PROFILE=0 GEORGE_LTO=1 GEORGE_LINK_OPT=-O3 \
 GEORGE_LTO=1 GEORGE_LINK_OPT=-O3 \
   bash tools/build-aot-variant.sh /tmp/george-c-lto /tmp/your-runtime /tmp/george-lisp-lto/prefix
 ```
+
+The isolated memory64 build supplies the pinned, patched Binaryen tools
+and uses a neutral path for ECL's compiled function metadata:
+
+```sh
+npm run wasm:build:memory64 -- /tmp/george-memory64-build /tmp/your-runtime
+node tools/install-runtime-variant.mjs /tmp/george-memory64-build/compiled memory64
+```
+
+The release assets were produced through the equivalent pinned build,
+runtime path neutralization and final AOT steps. The combined fresh-build
+wrapper has not itself been executed end to end. It checks its pinned
+archive and patch inputs; the installer checks actual Wasm pointer width,
+maximum, asset hashes and compiler declarations.
+
+## George 0.5 checks
+
+The new engine passes **128 reference parity cases** in Node and ordinary
+Chromium, **37 original outputs per behavior mode**, and **45 pruning
+cases** in both Node and Chromium. The pruning references include native
+SBCL (45 cases) and Singular (42). The final UI audit covers all four
+engines. All **79 unit tests** pass.
+
+An ordinary browser worker retains **4.21875 GiB** of live arrays with
+GC root and exact arithmetic checks, using **4.352783203125 GiB** of total
+allocated Wasm. The submitted degree-seven job with pruning and no cap
+matches all **695** native basis elements on memory64. No paired memory64
+timing comparison or degree-nine-to-eleven run has been made.
+See [memory64.json](validation/memory64.json) and
+[VALIDATION.md](VALIDATION.md) for final engine identities and scope.
 
 ## Backend parity suite
 

@@ -1,0 +1,3378 @@
+{
+  "state": "complete",
+  "startedAt": "2026-10-02T09:23:36.075Z",
+  "reference": "/home/uu/Projects/george/build/validation/pruning-20261002-v2/report.json",
+  "referenceSha256": "6cf1f45a1154f2421429905c3df206df2cf8053e55270d8589c68a504131eb0a",
+  "sampling": {
+    "seed": 1347573070,
+    "count": 32,
+    "dimensions": [
+      "generators",
+      "field",
+      "degree",
+      "coefficient",
+      "order",
+      "legacy",
+      "reverse",
+      "linear"
+    ],
+    "samples": [
+      {
+        "generators": 0.1170177626045188,
+        "field": 0.3671414317432209,
+        "degree": 0.4781307687226217,
+        "coefficient": 0.17138051323854597,
+        "order": 0.6568528080388205,
+        "legacy": 0.18647109372977866,
+        "reverse": 0.1580106786568649,
+        "linear": 0.9669613278019824
+      },
+      {
+        "generators": 0.811176410796179,
+        "field": 0.5365495089063188,
+        "degree": 0.2814351460765465,
+        "coefficient": 0.9999255148868542,
+        "order": 0.2401779418651131,
+        "legacy": 0.8984176839730935,
+        "reverse": 0.3572684422179009,
+        "linear": 0.2490367189166136
+      },
+      {
+        "generators": 0.6413076339522377,
+        "field": 0.6724394144621328,
+        "degree": 0.593900187741383,
+        "coefficient": 0.6187941651660367,
+        "order": 0.3523101515311282,
+        "legacy": 0.3902924376379815,
+        "reverse": 0.13615987561934162,
+        "linear": 0.47693180041824235
+      },
+      {
+        "generators": 0.03428147255181102,
+        "field": 0.19248470582533628,
+        "degree": 0.1236273496542708,
+        "coefficient": 0.3339001213753363,
+        "order": 0.15610447533981642,
+        "legacy": 0.7146364852960687,
+        "reverse": 0.43059240876027616,
+        "linear": 0.16246829899318982
+      },
+      {
+        "generators": 0.06297642739082221,
+        "field": 0.018591042018670123,
+        "degree": 0.759060399257578,
+        "coefficient": 0.5756594058257178,
+        "order": 0.8404421320738038,
+        "legacy": 0.5843145629260107,
+        "reverse": 0.8678188228223007,
+        "linear": 0.05275876343512209
+      },
+      {
+        "generators": 0.001429832489520777,
+        "field": 0.16784325103799347,
+        "degree": 0.01845134409813909,
+        "coefficient": 0.2611091771395877,
+        "order": 0.07226727242959896,
+        "legacy": 0.11148154210241046,
+        "reverse": 0.03968541425274452,
+        "linear": 0.4443339707504492
+      },
+      {
+        "generators": 0.3430517437227536,
+        "field": 0.8260611402292852,
+        "degree": 0.699662079117843,
+        "coefficient": 0.8854553963683429,
+        "order": 0.5327680023619905,
+        "legacy": 0.7274951389190392,
+        "reverse": 0.5902861737267813,
+        "linear": 0.6037905156481429
+      },
+      {
+        "generators": 0.6173472405862412,
+        "field": 0.05181727514718659,
+        "degree": 0.8421207516876166,
+        "coefficient": 0.11976714014599565,
+        "order": 0.4165087164074066,
+        "legacy": 0.6034863378154114,
+        "reverse": 0.25694969474716345,
+        "linear": 0.19668634921254124
+      },
+      {
+        "generators": 0.14176393735397141,
+        "field": 0.3135414949138067,
+        "degree": 0.2703299541317392,
+        "coefficient": 0.9063286375676398,
+        "order": 0.4910551626380766,
+        "legacy": 0.32257932179345516,
+        "reverse": 0.5105261463904753,
+        "linear": 0.009050129367096815
+      },
+      {
+        "generators": 0.25020124341972405,
+        "field": 0.5079485282039968,
+        "degree": 0.4117782573666773,
+        "coefficient": 0.6828243998170365,
+        "order": 0.72696726857248,
+        "legacy": 0.19673537510971073,
+        "reverse": 0.4474477301046136,
+        "linear": 0.9239618909778073
+      },
+      {
+        "generators": 0.9508303403272294,
+        "field": 0.2187858819743269,
+        "degree": 0.14872039265173953,
+        "coefficient": 0.35398257677297806,
+        "order": 0.9188477313437033,
+        "legacy": 0.05138161540526198,
+        "reverse": 0.3778295060765231,
+        "linear": 0.7364569589190069
+      },
+      {
+        "generators": 0.5046103055865387,
+        "field": 0.9525704406551085,
+        "degree": 0.4439557608930045,
+        "coefficient": 0.19973016546282452,
+        "order": 0.308642001960834,
+        "legacy": 0.9907595678523649,
+        "reverse": 0.9159791487691109,
+        "linear": 0.5269217840541387
+      },
+      {
+        "generators": 0.2262835575529607,
+        "field": 0.07010856869601412,
+        "degree": 0.06402755243470892,
+        "coefficient": 0.7360441321288818,
+        "order": 0.1794409814028768,
+        "legacy": 0.07705658175837016,
+        "reverse": 0.231232028483646,
+        "linear": 0.08372983936715173
+      },
+      {
+        "generators": 0.708512966062699,
+        "field": 0.7851858570502372,
+        "degree": 0.21909350802161498,
+        "coefficient": 0.4601589510566555,
+        "order": 0.8506967476350837,
+        "legacy": 0.6766284752375213,
+        "reverse": 0.12458886499371147,
+        "linear": 0.9807497323781718
+      },
+      {
+        "generators": 0.9272126381692942,
+        "field": 0.7460836703030509,
+        "degree": 0.9100668028258951,
+        "coefficient": 0.14788470364146633,
+        "order": 0.6362344119115733,
+        "legacy": 0.45762185936473543,
+        "reverse": 0.6003807817323832,
+        "linear": 0.14316390049498295
+      },
+      {
+        "generators": 0.8739258686182438,
+        "field": 0.397438309941208,
+        "degree": 0.8586008972561103,
+        "coefficient": 0.04370593589555938,
+        "order": 0.6231142356336932,
+        "legacy": 0.4078362103900872,
+        "reverse": 0.3280902192709618,
+        "linear": 0.6488485356530873
+      },
+      {
+        "generators": 0.588838906478486,
+        "field": 0.6352320133810281,
+        "degree": 0.3221323511970695,
+        "coefficient": 0.3803236801250023,
+        "order": 0.32419529727485497,
+        "legacy": 0.8567266840764205,
+        "reverse": 0.6921091218828224,
+        "linear": 0.7099350793068879
+      },
+      {
+        "generators": 0.8381832261002273,
+        "field": 0.7619501799199497,
+        "degree": 0.6717534262788831,
+        "coefficient": 0.7810371935775038,
+        "order": 0.27832355211285176,
+        "legacy": 0.5536894279794069,
+        "reverse": 0.6309791290477733,
+        "linear": 0.6640104217804037
+      },
+      {
+        "generators": 0.4105516050476581,
+        "field": 0.8806083784802468,
+        "degree": 0.5667539820860839,
+        "coefficient": 0.47326671863993397,
+        "order": 0.7679577687231358,
+        "legacy": 0.30873454642278375,
+        "reverse": 0.6671553690248402,
+        "linear": 0.11094115062587662
+      },
+      {
+        "generators": 0.8865190772266942,
+        "field": 0.44981695688329637,
+        "degree": 0.9919089628747315,
+        "coefficient": 0.6984712602425134,
+        "order": 0.4436110017923056,
+        "legacy": 0.7845115082745906,
+        "reverse": 0.9855031962579233,
+        "linear": 0.7948726614267798
+      },
+      {
+        "generators": 0.6743978873273591,
+        "field": 0.14003329304250656,
+        "degree": 0.39880618662573397,
+        "coefficient": 0.5068322937368066,
+        "order": 0.8913854616548633,
+        "legacy": 0.9631878870641231,
+        "reverse": 0.30887834387249313,
+        "linear": 0.4241385348213953
+      },
+      {
+        "generators": 0.7757806964873453,
+        "field": 0.70572870237811,
+        "degree": 0.71892032399046,
+        "coefficient": 0.09360938216559589,
+        "order": 0.11168818551959703,
+        "legacy": 0.01259253358875867,
+        "reverse": 0.5452114857835113,
+        "linear": 0.2645507071574684
+      },
+      {
+        "generators": 0.30869772253208794,
+        "field": 0.10695304774708347,
+        "degree": 0.6409173446154455,
+        "coefficient": 0.4142263126486796,
+        "order": 0.9718791313935071,
+        "legacy": 0.5005989526762278,
+        "reverse": 0.9057509233098244,
+        "linear": 0.7732084092785954
+      },
+      {
+        "generators": 0.9902248478247202,
+        "field": 0.9354283382708672,
+        "degree": 0.16917314852616983,
+        "coefficient": 0.9666886675549904,
+        "order": 0.024809901595290285,
+        "legacy": 0.2603305222000927,
+        "reverse": 0.7817494096598239,
+        "linear": 0.5785815780836856
+      },
+      {
+        "generators": 0.7409525665425463,
+        "field": 0.6121374394497252,
+        "degree": 0.9424276469799224,
+        "coefficient": 0.5554890945277293,
+        "order": 0.3963300247123698,
+        "legacy": 0.1385922334084171,
+        "reverse": 0.00599114247597754,
+        "linear": 0.8211368709235103
+      },
+      {
+        "generators": 0.17195135597285116,
+        "field": 0.9850271780014737,
+        "degree": 0.7927163795320666,
+        "coefficient": 0.8674458927998785,
+        "order": 0.05426148145488696,
+        "legacy": 0.49469126960320864,
+        "reverse": 0.195056950666185,
+        "linear": 0.3887010801117867
+      },
+      {
+        "generators": 0.21317783423000947,
+        "field": 0.27709002709161723,
+        "degree": 0.5202677373745246,
+        "coefficient": 0.8195898418998695,
+        "order": 0.5685458198713604,
+        "legacy": 0.9304134050107677,
+        "reverse": 0.740684755743132,
+        "linear": 0.36025019594671903
+      },
+      {
+        "generators": 0.37314883065846516,
+        "field": 0.47222179832169786,
+        "degree": 0.8816804546877393,
+        "coefficient": 0.632715504427324,
+        "order": 0.5194485003812588,
+        "legacy": 0.6303526723349933,
+        "reverse": 0.9566804608984967,
+        "linear": 0.3397853366477648
+      },
+      {
+        "generators": 0.47097890586883295,
+        "field": 0.8712285482833977,
+        "degree": 0.3537162333377637,
+        "coefficient": 0.28238401571434224,
+        "order": 0.20997423892549705,
+        "legacy": 0.3517955288043595,
+        "reverse": 0.832804194331402,
+        "linear": 0.8823607448211988
+      },
+      {
+        "generators": 0.3894184433229384,
+        "field": 0.58170854668424,
+        "degree": 0.05192366526898695,
+        "coefficient": 0.792384039668832,
+        "order": 0.7836745871245512,
+        "legacy": 0.24121020063466858,
+        "reverse": 0.4714466009972966,
+        "linear": 0.5574006300012115
+      },
+      {
+        "generators": 0.5542492381937336,
+        "field": 0.4260467087224242,
+        "degree": 0.21505898465693463,
+        "coefficient": 0.23850688669335796,
+        "order": 0.6995106177055277,
+        "legacy": 0.8228385458714911,
+        "reverse": 0.06715214932046365,
+        "linear": 0.8535298907881952
+      },
+      {
+        "generators": 0.4393315486013307,
+        "field": 0.31146331733907573,
+        "degree": 0.5325632082603988,
+        "coefficient": 0.02670038580254186,
+        "order": 0.9495634176346357,
+        "legacy": 0.7754438678384759,
+        "reverse": 0.7512247689082869,
+        "linear": 0.28634134474850725
+      }
+    ]
+  },
+  "cases": [
+    {
+      "id": "pruning-lhs-gb-019",
+      "group": "basis",
+      "form": {
+        "vars": [
+          "a",
+          "b"
+        ],
+        "ring": "noncomm",
+        "field": "0",
+        "modulus": 0,
+        "order": "homogelim",
+        "matrix": "1 1\n0 1",
+        "reverseVars": false,
+        "maxdeg": "4",
+        "lowterms": "quick",
+        "legacy": false,
+        "outmode": "MACAULAY",
+        "nonhomog": "auto",
+        "augmentation": "graded",
+        "memoryMiB": 0,
+        "task": "gb",
+        "weights": "",
+        "rels": [
+          "a^2",
+          "b^2",
+          "a*b*a",
+          "b*a*b",
+          "a*b*a"
+        ],
+        "monomialPruning": true,
+        "backend": "memory64"
+      },
+      "sample": {
+        "ring": 0.919944837303774,
+        "field": 0.05621289352347958,
+        "generators": 0.3685332264431054,
+        "relations": 0.5058795411350729,
+        "degree": 0.13384546642919304,
+        "weights": 0.2662821730446012,
+        "shape": 0.24196594260865822,
+        "coefficient": 0.6628158569401421,
+        "order": 0.5875652117465506,
+        "reverse": 0.3109345750817738,
+        "lowterms": 0.16611990668752696,
+        "legacy": 0.4451222228271945,
+        "output": 0.6771436597700813,
+        "memory": 0.4704571530710382
+      },
+      "shape": "monomial",
+      "weightStyle": "unit",
+      "baselineId": "lhs-gb-019"
+    },
+    {
+      "id": "pruning-lhs-gb-023",
+      "group": "basis",
+      "form": {
+        "vars": [
+          "a",
+          "b",
+          "c"
+        ],
+        "ring": "noncomm",
+        "field": "2",
+        "modulus": 2,
+        "order": "invelim",
+        "matrix": "1 1 1\n0 1 0\n0 0 1",
+        "reverseVars": true,
+        "maxdeg": "6",
+        "lowterms": "quick",
+        "legacy": false,
+        "outmode": "MACAULAY",
+        "nonhomog": "auto",
+        "augmentation": "graded",
+        "memoryMiB": 0,
+        "task": "gb",
+        "weights": "",
+        "rels": [
+          "a^2",
+          "b^2",
+          "c^2",
+          "b*c+7*c*a-a*b",
+          "c*a+7*a*b-b*c",
+          "a*b+7*b*c-c*a"
+        ],
+        "monomialPruning": true,
+        "backend": "memory64"
+      },
+      "sample": {
+        "ring": 0.7898704420440481,
+        "field": 0.36824167306986055,
+        "generators": 0.5219574274669867,
+        "relations": 0.5169966886642214,
+        "degree": 0.9398220270741149,
+        "weights": 0.1411143176483165,
+        "shape": 0.6387466907181079,
+        "coefficient": 0.6795413859399559,
+        "order": 0.6181561772318673,
+        "reverse": 0.7278117278438003,
+        "lowterms": 0.19533264875644818,
+        "legacy": 0.4924191583013453,
+        "output": 0.8858334647302399,
+        "memory": 0.7663107549706183
+      },
+      "shape": "quadratic",
+      "weightStyle": "unit",
+      "baselineId": "lhs-gb-023"
+    },
+    {
+      "id": "pruning-lhs-gb-028",
+      "group": "basis",
+      "form": {
+        "vars": [
+          "a"
+        ],
+        "ring": "noncomm",
+        "field": "p",
+        "modulus": 7,
+        "order": "invelim",
+        "matrix": "1",
+        "reverseVars": false,
+        "maxdeg": "5",
+        "lowterms": "quick",
+        "legacy": true,
+        "outmode": "ALG",
+        "nonhomog": "auto",
+        "augmentation": "graded",
+        "memoryMiB": 0,
+        "task": "gb",
+        "weights": "",
+        "rels": [
+          "a^2",
+          "a*a*a",
+          "a*a*a",
+          "a*a*a",
+          "a*a*a",
+          "a*a*a"
+        ],
+        "monomialPruning": true,
+        "backend": "memory64"
+      },
+      "sample": {
+        "ring": 0.5206769418618933,
+        "field": 0.7596952174717444,
+        "generators": 0.06387814260597224,
+        "relations": 0.7473157098720549,
+        "degree": 0.37405450689038844,
+        "weights": 0.049956859707890544,
+        "shape": 0.056964494488056516,
+        "coefficient": 0.06790052048745565,
+        "order": 0.6002092715243634,
+        "reverse": 0.26219690040306887,
+        "lowterms": 0.25931997906809556,
+        "legacy": 0.7806747120484943,
+        "output": 0.021512476469069952,
+        "memory": 0.6697221675494802
+      },
+      "shape": "monomial",
+      "weightStyle": "unit",
+      "baselineId": "lhs-gb-028"
+    },
+    {
+      "id": "pruning-lhs-gb-029",
+      "group": "basis",
+      "form": {
+        "vars": [
+          "a"
+        ],
+        "ring": "noncomm",
+        "field": "2",
+        "modulus": 2,
+        "order": "invwelim",
+        "matrix": "1",
+        "reverseVars": false,
+        "maxdeg": "6",
+        "lowterms": "quick",
+        "legacy": false,
+        "outmode": "ALG",
+        "nonhomog": "auto",
+        "augmentation": "graded",
+        "memoryMiB": 0,
+        "task": "gb",
+        "weights": "",
+        "rels": [
+          "a^2",
+          "a*a+2*a*a-a*a",
+          "a*a+2*a*a-a*a"
+        ],
+        "monomialPruning": true,
+        "backend": "memory64"
+      },
+      "sample": {
+        "ring": 0.6809662299929187,
+        "field": 0.4043007174223021,
+        "generators": 0.23775976802426158,
+        "relations": 0.37316334420393105,
+        "degree": 0.9098952858912526,
+        "weights": 0.2580938385835907,
+        "shape": 0.6882512943484471,
+        "coefficient": 0.39880294419344864,
+        "order": 0.8257476531143766,
+        "reverse": 0.28370698028084007,
+        "lowterms": 0.4980968838426634,
+        "legacy": 0.03188608197888243,
+        "output": 0.2460832407377893,
+        "memory": 0.20087886063629412
+      },
+      "shape": "quadratic",
+      "weightStyle": "unit",
+      "baselineId": "lhs-gb-029"
+    },
+    {
+      "id": "pruning-lhs-gb-037",
+      "group": "basis",
+      "form": {
+        "vars": [
+          "a"
+        ],
+        "ring": "noncomm",
+        "field": "p",
+        "modulus": 7,
+        "order": "elim",
+        "matrix": "1",
+        "reverseVars": true,
+        "maxdeg": "6",
+        "lowterms": "safe",
+        "legacy": false,
+        "outmode": "MACAULAY",
+        "nonhomog": "auto",
+        "augmentation": "graded",
+        "memoryMiB": 0,
+        "task": "gb",
+        "weights": "",
+        "rels": [
+          "a^2",
+          "a*a+7*a*a-a*a"
+        ],
+        "monomialPruning": true,
+        "backend": "memory64"
+      },
+      "sample": {
+        "ring": 0.9370176769152749,
+        "field": 0.9613252189483319,
+        "generators": 0.01830005496594822,
+        "relations": 0.1786511213394988,
+        "degree": 0.8742706301418366,
+        "weights": 0.11447120158481994,
+        "shape": 0.5798663022651454,
+        "coefficient": 0.5093608491552004,
+        "order": 0.3214998150942847,
+        "reverse": 0.6442360894470767,
+        "lowterms": 0.5905249593706685,
+        "legacy": 0.23520988771269913,
+        "output": 0.5264927781390725,
+        "memory": 0.45605031494415016
+      },
+      "shape": "quadratic",
+      "weightStyle": "unit",
+      "baselineId": "lhs-gb-037"
+    },
+    {
+      "id": "pruning-lhs-gb-046",
+      "group": "basis",
+      "form": {
+        "vars": [
+          "a"
+        ],
+        "ring": "noncomm",
+        "field": "p",
+        "modulus": 7,
+        "order": "degleftlex",
+        "matrix": "1",
+        "reverseVars": true,
+        "maxdeg": "4",
+        "lowterms": "safe",
+        "legacy": false,
+        "outmode": "MACAULAY",
+        "nonhomog": "auto",
+        "augmentation": "graded",
+        "memoryMiB": 0,
+        "task": "gb",
+        "weights": "",
+        "rels": [
+          "a^2",
+          "a*a-12157665459056928801*a*a",
+          "a*a-12157665459056928801*a*a",
+          "a*a-12157665459056928801*a*a",
+          "a*a-12157665459056928801*a*a"
+        ],
+        "monomialPruning": true,
+        "backend": "memory64"
+      },
+      "sample": {
+        "ring": 0.8666898718183802,
+        "field": 0.7672231799806468,
+        "generators": 0.2007761484310322,
+        "relations": 0.7069191572300042,
+        "degree": 0.07504233849977027,
+        "weights": 0.17900886548159178,
+        "shape": 0.3607930709295033,
+        "coefficient": 0.9543357095462852,
+        "order": 0.09743881903341389,
+        "reverse": 0.5052521117322613,
+        "lowterms": 0.6845788718674157,
+        "legacy": 0.12555165672529256,
+        "output": 0.7669193981091667,
+        "memory": 0.3993881005590083
+      },
+      "shape": "binomial",
+      "weightStyle": "unit",
+      "baselineId": "lhs-gb-046"
+    },
+    {
+      "id": "pruning-lhs-gb-047",
+      "group": "basis",
+      "form": {
+        "vars": [
+          "a"
+        ],
+        "ring": "noncomm",
+        "field": "p",
+        "modulus": 5,
+        "order": "invwelim",
+        "matrix": "1",
+        "reverseVars": false,
+        "maxdeg": "5",
+        "lowterms": "safe",
+        "legacy": true,
+        "outmode": "ALG",
+        "nonhomog": "auto",
+        "augmentation": "graded",
+        "memoryMiB": 0,
+        "task": "gb",
+        "weights": "",
+        "rels": [
+          "a^2"
+        ],
+        "monomialPruning": true,
+        "backend": "memory64"
+      },
+      "sample": {
+        "ring": 0.5094520513739553,
+        "field": 0.5579708482218848,
+        "generators": 0.2190307259443216,
+        "relations": 0.1138768348209851,
+        "degree": 0.6021798921792652,
+        "weights": 0.09487930863906513,
+        "shape": 0.2775774935580557,
+        "coefficient": 0.3224960924744664,
+        "order": 0.9008151553352945,
+        "reverse": 0.165594704241812,
+        "lowterms": 0.509758672240423,
+        "legacy": 0.8907242296736513,
+        "output": 0.38982622269395506,
+        "memory": 0.7942715453791607
+      },
+      "shape": "binomial",
+      "weightStyle": "unit",
+      "baselineId": "lhs-gb-047"
+    },
+    {
+      "id": "pruning-lhs-gb-053",
+      "group": "basis",
+      "form": {
+        "vars": [
+          "a",
+          "b"
+        ],
+        "ring": "noncomm",
+        "field": "0",
+        "modulus": 0,
+        "order": "invelim",
+        "matrix": "1 1\n0 1",
+        "reverseVars": true,
+        "maxdeg": "4",
+        "lowterms": "safe",
+        "legacy": true,
+        "outmode": "ALG",
+        "nonhomog": "auto",
+        "augmentation": "graded",
+        "memoryMiB": 0,
+        "task": "gb",
+        "weights": "",
+        "rels": [
+          "a^2",
+          "b^2",
+          "a*b*a"
+        ],
+        "monomialPruning": true,
+        "backend": "memory64"
+      },
+      "sample": {
+        "ring": 0.6144803053175565,
+        "field": 0.17802062780901906,
+        "generators": 0.38838193212723127,
+        "relations": 0.14930643695333856,
+        "degree": 0.2760398596437881,
+        "weights": 0.010405554759927327,
+        "shape": 0.13172383409255417,
+        "coefficient": 0.8823775642631517,
+        "order": 0.6976203044760041,
+        "reverse": 0.8958478526510589,
+        "lowterms": 0.9866572905375506,
+        "legacy": 0.8418663413431204,
+        "output": 0.1471057266317075,
+        "memory": 0.18744388368577347
+      },
+      "shape": "monomial",
+      "weightStyle": "unit",
+      "baselineId": "lhs-gb-053"
+    },
+    {
+      "id": "pruning-tutorial-char2",
+      "group": "anchor",
+      "form": {
+        "ring": "noncomm",
+        "order": "degleftlex",
+        "field": "2",
+        "modulus": 5,
+        "maxdeg": "6",
+        "weights": "",
+        "reverseVars": false,
+        "augmentation": "graded",
+        "nonhomog": "auto",
+        "strategy": "default",
+        "lowterms": "safe",
+        "outmode": "ALG",
+        "legacy": false,
+        "vars": [
+          "x",
+          "y"
+        ],
+        "rels": [
+          "4*x*x-3*y*x+3*x*y-y*y"
+        ],
+        "relsText": "4*x*x-3*y*x+3*x*y-y*y",
+        "task": "gb",
+        "monomialPruning": true,
+        "backend": "memory64",
+        "memoryMiB": 0
+      },
+      "baselineId": "tutorial-char2"
+    },
+    {
+      "id": "pruning-tutorial-char5",
+      "group": "anchor",
+      "form": {
+        "ring": "noncomm",
+        "order": "degleftlex",
+        "field": "p",
+        "modulus": "5",
+        "maxdeg": "6",
+        "weights": "",
+        "reverseVars": false,
+        "augmentation": "graded",
+        "nonhomog": "auto",
+        "strategy": "default",
+        "lowterms": "safe",
+        "outmode": "ALG",
+        "legacy": false,
+        "vars": [
+          "x",
+          "y"
+        ],
+        "rels": [
+          "4*x*x-3*y*x+3*x*y-y*y"
+        ],
+        "relsText": "4*x*x-3*y*x+3*x*y-y*y",
+        "task": "gb",
+        "monomialPruning": true,
+        "backend": "memory64",
+        "memoryMiB": 0
+      },
+      "baselineId": "tutorial-char5"
+    },
+    {
+      "id": "pruning-large-16-generators-136-relations",
+      "group": "large",
+      "form": {
+        "task": "gb",
+        "vars": [
+          "x_1",
+          "x_2",
+          "x_3",
+          "x_4",
+          "x_5",
+          "x_6",
+          "x_7",
+          "x_8",
+          "x_9",
+          "x_10",
+          "x_11",
+          "x_12",
+          "x_13",
+          "x_14",
+          "x_15",
+          "x_16"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_3^2",
+          "x_4^2",
+          "x_5^2",
+          "x_6^2",
+          "x_7^2",
+          "x_8^2",
+          "x_9^2",
+          "x_10^2",
+          "x_11^2",
+          "x_12^2",
+          "x_13^2",
+          "x_14^2",
+          "x_15^2",
+          "x_16^2",
+          "x_1*x_2-x_2*x_1",
+          "x_1*x_3-x_3*x_1",
+          "x_1*x_4-x_4*x_1",
+          "x_1*x_5-x_5*x_1",
+          "x_1*x_6-x_6*x_1",
+          "x_1*x_7-x_7*x_1",
+          "x_1*x_8-x_8*x_1",
+          "x_1*x_9-x_9*x_1",
+          "x_1*x_10-x_10*x_1",
+          "x_1*x_11-x_11*x_1",
+          "x_1*x_12-x_12*x_1",
+          "x_1*x_13-x_13*x_1",
+          "x_1*x_14-x_14*x_1",
+          "x_1*x_15-x_15*x_1",
+          "x_1*x_16-x_16*x_1",
+          "x_2*x_3-x_3*x_2",
+          "x_2*x_4-x_4*x_2",
+          "x_2*x_5-x_5*x_2",
+          "x_2*x_6-x_6*x_2",
+          "x_2*x_7-x_7*x_2",
+          "x_2*x_8-x_8*x_2",
+          "x_2*x_9-x_9*x_2",
+          "x_2*x_10-x_10*x_2",
+          "x_2*x_11-x_11*x_2",
+          "x_2*x_12-x_12*x_2",
+          "x_2*x_13-x_13*x_2",
+          "x_2*x_14-x_14*x_2",
+          "x_2*x_15-x_15*x_2",
+          "x_2*x_16-x_16*x_2",
+          "x_3*x_4-x_4*x_3",
+          "x_3*x_5-x_5*x_3",
+          "x_3*x_6-x_6*x_3",
+          "x_3*x_7-x_7*x_3",
+          "x_3*x_8-x_8*x_3",
+          "x_3*x_9-x_9*x_3",
+          "x_3*x_10-x_10*x_3",
+          "x_3*x_11-x_11*x_3",
+          "x_3*x_12-x_12*x_3",
+          "x_3*x_13-x_13*x_3",
+          "x_3*x_14-x_14*x_3",
+          "x_3*x_15-x_15*x_3",
+          "x_3*x_16-x_16*x_3",
+          "x_4*x_5-x_5*x_4",
+          "x_4*x_6-x_6*x_4",
+          "x_4*x_7-x_7*x_4",
+          "x_4*x_8-x_8*x_4",
+          "x_4*x_9-x_9*x_4",
+          "x_4*x_10-x_10*x_4",
+          "x_4*x_11-x_11*x_4",
+          "x_4*x_12-x_12*x_4",
+          "x_4*x_13-x_13*x_4",
+          "x_4*x_14-x_14*x_4",
+          "x_4*x_15-x_15*x_4",
+          "x_4*x_16-x_16*x_4",
+          "x_5*x_6-x_6*x_5",
+          "x_5*x_7-x_7*x_5",
+          "x_5*x_8-x_8*x_5",
+          "x_5*x_9-x_9*x_5",
+          "x_5*x_10-x_10*x_5",
+          "x_5*x_11-x_11*x_5",
+          "x_5*x_12-x_12*x_5",
+          "x_5*x_13-x_13*x_5",
+          "x_5*x_14-x_14*x_5",
+          "x_5*x_15-x_15*x_5",
+          "x_5*x_16-x_16*x_5",
+          "x_6*x_7-x_7*x_6",
+          "x_6*x_8-x_8*x_6",
+          "x_6*x_9-x_9*x_6",
+          "x_6*x_10-x_10*x_6",
+          "x_6*x_11-x_11*x_6",
+          "x_6*x_12-x_12*x_6",
+          "x_6*x_13-x_13*x_6",
+          "x_6*x_14-x_14*x_6",
+          "x_6*x_15-x_15*x_6",
+          "x_6*x_16-x_16*x_6",
+          "x_7*x_8-x_8*x_7",
+          "x_7*x_9-x_9*x_7",
+          "x_7*x_10-x_10*x_7",
+          "x_7*x_11-x_11*x_7",
+          "x_7*x_12-x_12*x_7",
+          "x_7*x_13-x_13*x_7",
+          "x_7*x_14-x_14*x_7",
+          "x_7*x_15-x_15*x_7",
+          "x_7*x_16-x_16*x_7",
+          "x_8*x_9-x_9*x_8",
+          "x_8*x_10-x_10*x_8",
+          "x_8*x_11-x_11*x_8",
+          "x_8*x_12-x_12*x_8",
+          "x_8*x_13-x_13*x_8",
+          "x_8*x_14-x_14*x_8",
+          "x_8*x_15-x_15*x_8",
+          "x_8*x_16-x_16*x_8",
+          "x_9*x_10-x_10*x_9",
+          "x_9*x_11-x_11*x_9",
+          "x_9*x_12-x_12*x_9",
+          "x_9*x_13-x_13*x_9",
+          "x_9*x_14-x_14*x_9",
+          "x_9*x_15-x_15*x_9",
+          "x_9*x_16-x_16*x_9",
+          "x_10*x_11-x_11*x_10",
+          "x_10*x_12-x_12*x_10",
+          "x_10*x_13-x_13*x_10",
+          "x_10*x_14-x_14*x_10",
+          "x_10*x_15-x_15*x_10",
+          "x_10*x_16-x_16*x_10",
+          "x_11*x_12-x_12*x_11",
+          "x_11*x_13-x_13*x_11",
+          "x_11*x_14-x_14*x_11",
+          "x_11*x_15-x_15*x_11",
+          "x_11*x_16-x_16*x_11",
+          "x_12*x_13-x_13*x_12",
+          "x_12*x_14-x_14*x_12",
+          "x_12*x_15-x_15*x_12",
+          "x_12*x_16-x_16*x_12",
+          "x_13*x_14-x_14*x_13",
+          "x_13*x_15-x_15*x_13",
+          "x_13*x_16-x_16*x_13",
+          "x_14*x_15-x_15*x_14",
+          "x_14*x_16-x_16*x_14",
+          "x_15*x_16-x_16*x_15"
+        ],
+        "ring": "noncomm",
+        "order": "degleftlex",
+        "maxdeg": "3",
+        "field": "0",
+        "modulus": 5,
+        "memoryMiB": 0,
+        "monomialPruning": true,
+        "backend": "memory64"
+      },
+      "expectedDimensions": [
+        1,
+        16,
+        120,
+        560
+      ],
+      "baselineId": "large-16-generators-136-relations"
+    },
+    {
+      "id": "pruning-large-20-generators-210-relations",
+      "group": "large",
+      "form": {
+        "task": "gb",
+        "vars": [
+          "x_1",
+          "x_2",
+          "x_3",
+          "x_4",
+          "x_5",
+          "x_6",
+          "x_7",
+          "x_8",
+          "x_9",
+          "x_10",
+          "x_11",
+          "x_12",
+          "x_13",
+          "x_14",
+          "x_15",
+          "x_16",
+          "x_17",
+          "x_18",
+          "x_19",
+          "x_20"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_3^2",
+          "x_4^2",
+          "x_5^2",
+          "x_6^2",
+          "x_7^2",
+          "x_8^2",
+          "x_9^2",
+          "x_10^2",
+          "x_11^2",
+          "x_12^2",
+          "x_13^2",
+          "x_14^2",
+          "x_15^2",
+          "x_16^2",
+          "x_17^2",
+          "x_18^2",
+          "x_19^2",
+          "x_20^2",
+          "x_1*x_2-x_2*x_1",
+          "x_1*x_3-x_3*x_1",
+          "x_1*x_4-x_4*x_1",
+          "x_1*x_5-x_5*x_1",
+          "x_1*x_6-x_6*x_1",
+          "x_1*x_7-x_7*x_1",
+          "x_1*x_8-x_8*x_1",
+          "x_1*x_9-x_9*x_1",
+          "x_1*x_10-x_10*x_1",
+          "x_1*x_11-x_11*x_1",
+          "x_1*x_12-x_12*x_1",
+          "x_1*x_13-x_13*x_1",
+          "x_1*x_14-x_14*x_1",
+          "x_1*x_15-x_15*x_1",
+          "x_1*x_16-x_16*x_1",
+          "x_1*x_17-x_17*x_1",
+          "x_1*x_18-x_18*x_1",
+          "x_1*x_19-x_19*x_1",
+          "x_1*x_20-x_20*x_1",
+          "x_2*x_3-x_3*x_2",
+          "x_2*x_4-x_4*x_2",
+          "x_2*x_5-x_5*x_2",
+          "x_2*x_6-x_6*x_2",
+          "x_2*x_7-x_7*x_2",
+          "x_2*x_8-x_8*x_2",
+          "x_2*x_9-x_9*x_2",
+          "x_2*x_10-x_10*x_2",
+          "x_2*x_11-x_11*x_2",
+          "x_2*x_12-x_12*x_2",
+          "x_2*x_13-x_13*x_2",
+          "x_2*x_14-x_14*x_2",
+          "x_2*x_15-x_15*x_2",
+          "x_2*x_16-x_16*x_2",
+          "x_2*x_17-x_17*x_2",
+          "x_2*x_18-x_18*x_2",
+          "x_2*x_19-x_19*x_2",
+          "x_2*x_20-x_20*x_2",
+          "x_3*x_4-x_4*x_3",
+          "x_3*x_5-x_5*x_3",
+          "x_3*x_6-x_6*x_3",
+          "x_3*x_7-x_7*x_3",
+          "x_3*x_8-x_8*x_3",
+          "x_3*x_9-x_9*x_3",
+          "x_3*x_10-x_10*x_3",
+          "x_3*x_11-x_11*x_3",
+          "x_3*x_12-x_12*x_3",
+          "x_3*x_13-x_13*x_3",
+          "x_3*x_14-x_14*x_3",
+          "x_3*x_15-x_15*x_3",
+          "x_3*x_16-x_16*x_3",
+          "x_3*x_17-x_17*x_3",
+          "x_3*x_18-x_18*x_3",
+          "x_3*x_19-x_19*x_3",
+          "x_3*x_20-x_20*x_3",
+          "x_4*x_5-x_5*x_4",
+          "x_4*x_6-x_6*x_4",
+          "x_4*x_7-x_7*x_4",
+          "x_4*x_8-x_8*x_4",
+          "x_4*x_9-x_9*x_4",
+          "x_4*x_10-x_10*x_4",
+          "x_4*x_11-x_11*x_4",
+          "x_4*x_12-x_12*x_4",
+          "x_4*x_13-x_13*x_4",
+          "x_4*x_14-x_14*x_4",
+          "x_4*x_15-x_15*x_4",
+          "x_4*x_16-x_16*x_4",
+          "x_4*x_17-x_17*x_4",
+          "x_4*x_18-x_18*x_4",
+          "x_4*x_19-x_19*x_4",
+          "x_4*x_20-x_20*x_4",
+          "x_5*x_6-x_6*x_5",
+          "x_5*x_7-x_7*x_5",
+          "x_5*x_8-x_8*x_5",
+          "x_5*x_9-x_9*x_5",
+          "x_5*x_10-x_10*x_5",
+          "x_5*x_11-x_11*x_5",
+          "x_5*x_12-x_12*x_5",
+          "x_5*x_13-x_13*x_5",
+          "x_5*x_14-x_14*x_5",
+          "x_5*x_15-x_15*x_5",
+          "x_5*x_16-x_16*x_5",
+          "x_5*x_17-x_17*x_5",
+          "x_5*x_18-x_18*x_5",
+          "x_5*x_19-x_19*x_5",
+          "x_5*x_20-x_20*x_5",
+          "x_6*x_7-x_7*x_6",
+          "x_6*x_8-x_8*x_6",
+          "x_6*x_9-x_9*x_6",
+          "x_6*x_10-x_10*x_6",
+          "x_6*x_11-x_11*x_6",
+          "x_6*x_12-x_12*x_6",
+          "x_6*x_13-x_13*x_6",
+          "x_6*x_14-x_14*x_6",
+          "x_6*x_15-x_15*x_6",
+          "x_6*x_16-x_16*x_6",
+          "x_6*x_17-x_17*x_6",
+          "x_6*x_18-x_18*x_6",
+          "x_6*x_19-x_19*x_6",
+          "x_6*x_20-x_20*x_6",
+          "x_7*x_8-x_8*x_7",
+          "x_7*x_9-x_9*x_7",
+          "x_7*x_10-x_10*x_7",
+          "x_7*x_11-x_11*x_7",
+          "x_7*x_12-x_12*x_7",
+          "x_7*x_13-x_13*x_7",
+          "x_7*x_14-x_14*x_7",
+          "x_7*x_15-x_15*x_7",
+          "x_7*x_16-x_16*x_7",
+          "x_7*x_17-x_17*x_7",
+          "x_7*x_18-x_18*x_7",
+          "x_7*x_19-x_19*x_7",
+          "x_7*x_20-x_20*x_7",
+          "x_8*x_9-x_9*x_8",
+          "x_8*x_10-x_10*x_8",
+          "x_8*x_11-x_11*x_8",
+          "x_8*x_12-x_12*x_8",
+          "x_8*x_13-x_13*x_8",
+          "x_8*x_14-x_14*x_8",
+          "x_8*x_15-x_15*x_8",
+          "x_8*x_16-x_16*x_8",
+          "x_8*x_17-x_17*x_8",
+          "x_8*x_18-x_18*x_8",
+          "x_8*x_19-x_19*x_8",
+          "x_8*x_20-x_20*x_8",
+          "x_9*x_10-x_10*x_9",
+          "x_9*x_11-x_11*x_9",
+          "x_9*x_12-x_12*x_9",
+          "x_9*x_13-x_13*x_9",
+          "x_9*x_14-x_14*x_9",
+          "x_9*x_15-x_15*x_9",
+          "x_9*x_16-x_16*x_9",
+          "x_9*x_17-x_17*x_9",
+          "x_9*x_18-x_18*x_9",
+          "x_9*x_19-x_19*x_9",
+          "x_9*x_20-x_20*x_9",
+          "x_10*x_11-x_11*x_10",
+          "x_10*x_12-x_12*x_10",
+          "x_10*x_13-x_13*x_10",
+          "x_10*x_14-x_14*x_10",
+          "x_10*x_15-x_15*x_10",
+          "x_10*x_16-x_16*x_10",
+          "x_10*x_17-x_17*x_10",
+          "x_10*x_18-x_18*x_10",
+          "x_10*x_19-x_19*x_10",
+          "x_10*x_20-x_20*x_10",
+          "x_11*x_12-x_12*x_11",
+          "x_11*x_13-x_13*x_11",
+          "x_11*x_14-x_14*x_11",
+          "x_11*x_15-x_15*x_11",
+          "x_11*x_16-x_16*x_11",
+          "x_11*x_17-x_17*x_11",
+          "x_11*x_18-x_18*x_11",
+          "x_11*x_19-x_19*x_11",
+          "x_11*x_20-x_20*x_11",
+          "x_12*x_13-x_13*x_12",
+          "x_12*x_14-x_14*x_12",
+          "x_12*x_15-x_15*x_12",
+          "x_12*x_16-x_16*x_12",
+          "x_12*x_17-x_17*x_12",
+          "x_12*x_18-x_18*x_12",
+          "x_12*x_19-x_19*x_12",
+          "x_12*x_20-x_20*x_12",
+          "x_13*x_14-x_14*x_13",
+          "x_13*x_15-x_15*x_13",
+          "x_13*x_16-x_16*x_13",
+          "x_13*x_17-x_17*x_13",
+          "x_13*x_18-x_18*x_13",
+          "x_13*x_19-x_19*x_13",
+          "x_13*x_20-x_20*x_13",
+          "x_14*x_15-x_15*x_14",
+          "x_14*x_16-x_16*x_14",
+          "x_14*x_17-x_17*x_14",
+          "x_14*x_18-x_18*x_14",
+          "x_14*x_19-x_19*x_14",
+          "x_14*x_20-x_20*x_14",
+          "x_15*x_16-x_16*x_15",
+          "x_15*x_17-x_17*x_15",
+          "x_15*x_18-x_18*x_15",
+          "x_15*x_19-x_19*x_15",
+          "x_15*x_20-x_20*x_15",
+          "x_16*x_17-x_17*x_16",
+          "x_16*x_18-x_18*x_16",
+          "x_16*x_19-x_19*x_16",
+          "x_16*x_20-x_20*x_16",
+          "x_17*x_18-x_18*x_17",
+          "x_17*x_19-x_19*x_17",
+          "x_17*x_20-x_20*x_17",
+          "x_18*x_19-x_19*x_18",
+          "x_18*x_20-x_20*x_18",
+          "x_19*x_20-x_20*x_19"
+        ],
+        "ring": "noncomm",
+        "order": "degleftlex",
+        "maxdeg": "2",
+        "field": "p",
+        "modulus": 5,
+        "memoryMiB": 0,
+        "monomialPruning": true,
+        "backend": "memory64"
+      },
+      "expectedDimensions": [
+        1,
+        20,
+        190
+      ],
+      "baselineId": "large-20-generators-210-relations"
+    },
+    {
+      "id": "pruning-submitted-15-generators-100-relations",
+      "group": "anchor",
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "field": "0",
+        "order": "degleftlex",
+        "maxdeg": "4",
+        "memoryMiB": 0,
+        "vars": [
+          "a",
+          "b",
+          "c",
+          "d",
+          "e",
+          "f",
+          "g",
+          "h",
+          "k",
+          "m",
+          "n",
+          "p",
+          "q",
+          "r",
+          "s"
+        ],
+        "rels": [
+          "a^2",
+          "b^2",
+          "c^2",
+          "d^2",
+          "e^2",
+          "f^2",
+          "g^2",
+          "h^2",
+          "k^2",
+          "m^2",
+          "n^2",
+          "p^2",
+          "q^2",
+          "r^2",
+          "s^2",
+          "a*c-c*a",
+          "a*d-d*a",
+          "a*e-e*a",
+          "a*k-k*a",
+          "a*r-r*a",
+          "a*s-s*a",
+          "b*d-d*b",
+          "b*e-e*b",
+          "b*f-f*b",
+          "b*h-h*b",
+          "b*n-n*b",
+          "b*r-r*b",
+          "c*e-e*c",
+          "c*f-f*c",
+          "c*g-g*c",
+          "c*n-n*c",
+          "c*p-p*c",
+          "d*f-f*d",
+          "d*g-g*d",
+          "d*m-m*d",
+          "d*s-s*d",
+          "e*h-h*e",
+          "e*m-m*e",
+          "e*q-q*e",
+          "f*k-k*f",
+          "f*p-p*f",
+          "f*q-q*f",
+          "g*h-h*g",
+          "g*k-k*g",
+          "g*m-m*g",
+          "g*n-n*g",
+          "h*k-k*h",
+          "h*p-p*h",
+          "h*s-s*h",
+          "k*q-q*k",
+          "k*r-r*k",
+          "m*p-p*m",
+          "m*q-q*m",
+          "m*r-r*m",
+          "n*q-q*n",
+          "n*r-r*n",
+          "n*s-s*n",
+          "p*r-r*p",
+          "p*s-s*p",
+          "q*s-s*q",
+          "m*n-n*k-k*m",
+          "n*m-k*n-m*k",
+          "m*a-a*b-b*m",
+          "a*m-b*a-m*b",
+          "m*h-h*c-c*m",
+          "h*m-c*h-m*c",
+          "m*f-f*s-s*m",
+          "f*m-s*f-m*s",
+          "k*p-p*b-b*k",
+          "p*k-b*p-k*b",
+          "k*d-d*c-c*k",
+          "d*k-c*d-k*c",
+          "k*e-e*s-s*k",
+          "e*k-s*e-k*s",
+          "b*q-q*c-c*b",
+          "q*b-c*q-b*c",
+          "b*g-g*s-s*b",
+          "g*b-s*g-b*s",
+          "c*r-r*s-s*c",
+          "r*c-s*r-c*s",
+          "n*p-p*a-a*n",
+          "p*n-a*p-n*a",
+          "n*d-d*h-h*n",
+          "d*n-h*d-n*h",
+          "n*e-e*f-f*n",
+          "e*n-f*e-n*f",
+          "a*q-q*h-h*a",
+          "q*a-h*q-a*h",
+          "a*g-g*f-f*a",
+          "g*a-f*g-a*f",
+          "h*r-r*f-f*h",
+          "r*h-f*r-h*f",
+          "p*q-q*d-d*p",
+          "q*p-d*q-p*d",
+          "p*g-g*e-e*p",
+          "g*p-e*g-p*e",
+          "d*r-r*e-e*d",
+          "r*d-e*r-d*e",
+          "q*r-r*g-g*q",
+          "r*q-g*r-q*g"
+        ],
+        "monomialPruning": true,
+        "backend": "memory64"
+      },
+      "expectedBasisSha256": "90330a9064c82eed277c35533a9f90e79acebf681d2433c89f970abab2315f2d",
+      "baselineId": "submitted-15-generators-100-relations"
+    },
+    {
+      "id": "pruning-lhs-001",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.1170177626045188,
+        "field": 0.3671414317432209,
+        "degree": 0.4781307687226217,
+        "coefficient": 0.17138051323854597,
+        "order": 0.6568528080388205,
+        "legacy": 0.18647109372977866,
+        "reverse": 0.1580106786568649,
+        "linear": 0.9669613278019824
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_1"
+        ],
+        "field": "2",
+        "modulus": "5",
+        "order": "invelim",
+        "maxdeg": "4",
+        "legacy": false,
+        "reverseVars": false,
+        "lowterms": "safe",
+        "monomialPruning": true,
+        "backend": "memory64",
+        "memoryMiB": 0
+      }
+    },
+    {
+      "id": "pruning-lhs-002",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.811176410796179,
+        "field": 0.5365495089063188,
+        "degree": 0.2814351460765465,
+        "coefficient": 0.9999255148868542,
+        "order": 0.2401779418651131,
+        "legacy": 0.8984176839730935,
+        "reverse": 0.3572684422179009,
+        "linear": 0.2490367189166136
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2",
+          "x_3",
+          "x_4"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_3^2",
+          "x_4^2",
+          "x_2*x_1--1*x_1*x_2",
+          "x_3*x_1--1*x_1*x_3",
+          "x_4*x_1--1*x_1*x_4",
+          "x_3*x_2--1*x_2*x_3",
+          "x_4*x_2--1*x_2*x_4",
+          "x_4*x_3--1*x_3*x_4"
+        ],
+        "field": "2",
+        "modulus": "5",
+        "order": "elim",
+        "maxdeg": "4",
+        "legacy": true,
+        "reverseVars": false,
+        "lowterms": "safe",
+        "monomialPruning": true,
+        "backend": "memory64",
+        "memoryMiB": 0
+      }
+    },
+    {
+      "id": "pruning-lhs-003",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.6413076339522377,
+        "field": 0.6724394144621328,
+        "degree": 0.593900187741383,
+        "coefficient": 0.6187941651660367,
+        "order": 0.3523101515311282,
+        "legacy": 0.3902924376379815,
+        "reverse": 0.13615987561934162,
+        "linear": 0.47693180041824235
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2",
+          "x_3"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_3^2",
+          "x_2*x_1-2*x_1*x_2",
+          "x_3*x_1-2*x_1*x_3",
+          "x_3*x_2-2*x_2*x_3"
+        ],
+        "field": "p",
+        "modulus": "5",
+        "order": "elim",
+        "maxdeg": "5",
+        "legacy": false,
+        "reverseVars": false,
+        "lowterms": "safe",
+        "monomialPruning": true,
+        "backend": "memory64",
+        "memoryMiB": 0
+      }
+    },
+    {
+      "id": "pruning-lhs-004",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.03428147255181102,
+        "field": 0.19248470582533628,
+        "degree": 0.1236273496542708,
+        "coefficient": 0.3339001213753363,
+        "order": 0.15610447533981642,
+        "legacy": 0.7146364852960687,
+        "reverse": 0.43059240876027616,
+        "linear": 0.16246829899318982
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1"
+        ],
+        "rels": [
+          "x_1^2"
+        ],
+        "field": "0",
+        "modulus": "5",
+        "order": "degleftlex",
+        "maxdeg": "3",
+        "legacy": true,
+        "reverseVars": false,
+        "lowterms": "safe",
+        "monomialPruning": true,
+        "backend": "memory64",
+        "memoryMiB": 0
+      }
+    },
+    {
+      "id": "pruning-lhs-005",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.06297642739082221,
+        "field": 0.018591042018670123,
+        "degree": 0.759060399257578,
+        "coefficient": 0.5756594058257178,
+        "order": 0.8404421320738038,
+        "legacy": 0.5843145629260107,
+        "reverse": 0.8678188228223007,
+        "linear": 0.05275876343512209
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1"
+        ],
+        "rels": [
+          "x_1^2"
+        ],
+        "field": "0",
+        "modulus": "5",
+        "order": "invwelim",
+        "maxdeg": "6",
+        "legacy": true,
+        "reverseVars": true,
+        "lowterms": "safe",
+        "monomialPruning": true,
+        "backend": "memory64",
+        "memoryMiB": 0
+      }
+    },
+    {
+      "id": "pruning-lhs-006",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.001429832489520777,
+        "field": 0.16784325103799347,
+        "degree": 0.01845134409813909,
+        "coefficient": 0.2611091771395877,
+        "order": 0.07226727242959896,
+        "legacy": 0.11148154210241046,
+        "reverse": 0.03968541425274452,
+        "linear": 0.4443339707504492
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1"
+        ],
+        "rels": [
+          "x_1^2"
+        ],
+        "field": "0",
+        "modulus": "5",
+        "order": "degleftlex",
+        "maxdeg": "3",
+        "legacy": false,
+        "reverseVars": false,
+        "lowterms": "safe",
+        "monomialPruning": true,
+        "backend": "memory64",
+        "memoryMiB": 0
+      }
+    },
+    {
+      "id": "pruning-lhs-007",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.3430517437227536,
+        "field": 0.8260611402292852,
+        "degree": 0.699662079117843,
+        "coefficient": 0.8854553963683429,
+        "order": 0.5327680023619905,
+        "legacy": 0.7274951389190392,
+        "reverse": 0.5902861737267813,
+        "linear": 0.6037905156481429
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_2*x_1--1*x_1*x_2"
+        ],
+        "field": "p",
+        "modulus": "5",
+        "order": "homogelim",
+        "maxdeg": "5",
+        "legacy": true,
+        "reverseVars": true,
+        "lowterms": "safe",
+        "monomialPruning": true,
+        "backend": "memory64",
+        "memoryMiB": 0
+      }
+    },
+    {
+      "id": "pruning-lhs-008",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.6173472405862412,
+        "field": 0.05181727514718659,
+        "degree": 0.8421207516876166,
+        "coefficient": 0.11976714014599565,
+        "order": 0.4165087164074066,
+        "legacy": 0.6034863378154114,
+        "reverse": 0.25694969474716345,
+        "linear": 0.19668634921254124
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2",
+          "x_3"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_3^2",
+          "x_2*x_1-1*x_1*x_2",
+          "x_3*x_1-1*x_1*x_3",
+          "x_3*x_2-1*x_2*x_3"
+        ],
+        "field": "0",
+        "modulus": "5",
+        "order": "homogelim",
+        "maxdeg": "6",
+        "legacy": true,
+        "reverseVars": false,
+        "lowterms": "safe",
+        "monomialPruning": true,
+        "backend": "memory64",
+        "memoryMiB": 0
+      }
+    },
+    {
+      "id": "pruning-lhs-009",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.14176393735397141,
+        "field": 0.3135414949138067,
+        "degree": 0.2703299541317392,
+        "coefficient": 0.9063286375676398,
+        "order": 0.4910551626380766,
+        "legacy": 0.32257932179345516,
+        "reverse": 0.5105261463904753,
+        "linear": 0.009050129367096815
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1"
+        ],
+        "rels": [
+          "x_1^2"
+        ],
+        "field": "0",
+        "modulus": "5",
+        "order": "homogelim",
+        "maxdeg": "4",
+        "legacy": false,
+        "reverseVars": true,
+        "lowterms": "safe",
+        "monomialPruning": true,
+        "backend": "memory64",
+        "memoryMiB": 0
+      }
+    },
+    {
+      "id": "pruning-lhs-010",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.25020124341972405,
+        "field": 0.5079485282039968,
+        "degree": 0.4117782573666773,
+        "coefficient": 0.6828243998170365,
+        "order": 0.72696726857248,
+        "legacy": 0.19673537510971073,
+        "reverse": 0.4474477301046136,
+        "linear": 0.9239618909778073
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_2*x_1--1*x_1*x_2",
+          "x_1"
+        ],
+        "field": "2",
+        "modulus": "5",
+        "order": "invelim",
+        "maxdeg": "4",
+        "legacy": false,
+        "reverseVars": false,
+        "lowterms": "safe",
+        "monomialPruning": true,
+        "backend": "memory64",
+        "memoryMiB": 0
+      }
+    },
+    {
+      "id": "pruning-lhs-011",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.9508303403272294,
+        "field": 0.2187858819743269,
+        "degree": 0.14872039265173953,
+        "coefficient": 0.35398257677297806,
+        "order": 0.9188477313437033,
+        "legacy": 0.05138161540526198,
+        "reverse": 0.3778295060765231,
+        "linear": 0.7364569589190069
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2",
+          "x_3",
+          "x_4"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_3^2",
+          "x_4^2",
+          "x_2*x_1-2*x_1*x_2",
+          "x_3*x_1-2*x_1*x_3",
+          "x_4*x_1-2*x_1*x_4",
+          "x_3*x_2-2*x_2*x_3",
+          "x_4*x_2-2*x_2*x_4",
+          "x_4*x_3-2*x_3*x_4"
+        ],
+        "field": "0",
+        "modulus": "5",
+        "order": "invwelim",
+        "maxdeg": "3",
+        "legacy": false,
+        "reverseVars": false,
+        "lowterms": "safe",
+        "monomialPruning": true,
+        "backend": "memory64",
+        "memoryMiB": 0
+      }
+    },
+    {
+      "id": "pruning-lhs-012",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.5046103055865387,
+        "field": 0.9525704406551085,
+        "degree": 0.4439557608930045,
+        "coefficient": 0.19973016546282452,
+        "order": 0.308642001960834,
+        "legacy": 0.9907595678523649,
+        "reverse": 0.9159791487691109,
+        "linear": 0.5269217840541387
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2",
+          "x_3"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_3^2",
+          "x_2*x_1-1*x_1*x_2",
+          "x_3*x_1-1*x_1*x_3",
+          "x_3*x_2-1*x_2*x_3"
+        ],
+        "field": "p",
+        "modulus": "5",
+        "order": "elim",
+        "maxdeg": "4",
+        "legacy": true,
+        "reverseVars": true,
+        "lowterms": "safe",
+        "monomialPruning": true,
+        "backend": "memory64",
+        "memoryMiB": 0
+      }
+    },
+    {
+      "id": "pruning-lhs-013",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.2262835575529607,
+        "field": 0.07010856869601412,
+        "degree": 0.06402755243470892,
+        "coefficient": 0.7360441321288818,
+        "order": 0.1794409814028768,
+        "legacy": 0.07705658175837016,
+        "reverse": 0.231232028483646,
+        "linear": 0.08372983936715173
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1"
+        ],
+        "rels": [
+          "x_1^2"
+        ],
+        "field": "0",
+        "modulus": "5",
+        "order": "degleftlex",
+        "maxdeg": "3",
+        "legacy": false,
+        "reverseVars": false,
+        "lowterms": "safe",
+        "monomialPruning": true,
+        "backend": "memory64",
+        "memoryMiB": 0
+      }
+    },
+    {
+      "id": "pruning-lhs-014",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.708512966062699,
+        "field": 0.7851858570502372,
+        "degree": 0.21909350802161498,
+        "coefficient": 0.4601589510566555,
+        "order": 0.8506967476350837,
+        "legacy": 0.6766284752375213,
+        "reverse": 0.12458886499371147,
+        "linear": 0.9807497323781718
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2",
+          "x_3"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_3^2",
+          "x_2*x_1-2*x_1*x_2",
+          "x_3*x_1-2*x_1*x_3",
+          "x_3*x_2-2*x_2*x_3",
+          "x_1"
+        ],
+        "field": "p",
+        "modulus": "5",
+        "order": "invwelim",
+        "maxdeg": "3",
+        "legacy": true,
+        "reverseVars": false,
+        "lowterms": "safe",
+        "monomialPruning": true,
+        "backend": "memory64",
+        "memoryMiB": 0
+      }
+    },
+    {
+      "id": "pruning-lhs-015",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.9272126381692942,
+        "field": 0.7460836703030509,
+        "degree": 0.9100668028258951,
+        "coefficient": 0.14788470364146633,
+        "order": 0.6362344119115733,
+        "legacy": 0.45762185936473543,
+        "reverse": 0.6003807817323832,
+        "linear": 0.14316390049498295
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2",
+          "x_3",
+          "x_4"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_3^2",
+          "x_4^2",
+          "x_2*x_1-1*x_1*x_2",
+          "x_3*x_1-1*x_1*x_3",
+          "x_4*x_1-1*x_1*x_4",
+          "x_3*x_2-1*x_2*x_3",
+          "x_4*x_2-1*x_2*x_4",
+          "x_4*x_3-1*x_3*x_4"
+        ],
+        "field": "p",
+        "modulus": "5",
+        "order": "invelim",
+        "maxdeg": "6",
+        "legacy": false,
+        "reverseVars": true,
+        "lowterms": "safe",
+        "monomialPruning": true,
+        "backend": "memory64",
+        "memoryMiB": 0
+      }
+    },
+    {
+      "id": "pruning-lhs-016",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.8739258686182438,
+        "field": 0.397438309941208,
+        "degree": 0.8586008972561103,
+        "coefficient": 0.04370593589555938,
+        "order": 0.6231142356336932,
+        "legacy": 0.4078362103900872,
+        "reverse": 0.3280902192709618,
+        "linear": 0.6488485356530873
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2",
+          "x_3",
+          "x_4"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_3^2",
+          "x_4^2",
+          "x_2*x_1-1*x_1*x_2",
+          "x_3*x_1-1*x_1*x_3",
+          "x_4*x_1-1*x_1*x_4",
+          "x_3*x_2-1*x_2*x_3",
+          "x_4*x_2-1*x_2*x_4",
+          "x_4*x_3-1*x_3*x_4"
+        ],
+        "field": "2",
+        "modulus": "5",
+        "order": "invelim",
+        "maxdeg": "6",
+        "legacy": false,
+        "reverseVars": false,
+        "lowterms": "safe",
+        "monomialPruning": true,
+        "backend": "memory64",
+        "memoryMiB": 0
+      }
+    },
+    {
+      "id": "pruning-lhs-017",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.588838906478486,
+        "field": 0.6352320133810281,
+        "degree": 0.3221323511970695,
+        "coefficient": 0.3803236801250023,
+        "order": 0.32419529727485497,
+        "legacy": 0.8567266840764205,
+        "reverse": 0.6921091218828224,
+        "linear": 0.7099350793068879
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2",
+          "x_3"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_3^2",
+          "x_2*x_1-2*x_1*x_2",
+          "x_3*x_1-2*x_1*x_3",
+          "x_3*x_2-2*x_2*x_3"
+        ],
+        "field": "2",
+        "modulus": "5",
+        "order": "elim",
+        "maxdeg": "4",
+        "legacy": true,
+        "reverseVars": true,
+        "lowterms": "safe",
+        "monomialPruning": true,
+        "backend": "memory64",
+        "memoryMiB": 0
+      }
+    },
+    {
+      "id": "pruning-lhs-018",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.8381832261002273,
+        "field": 0.7619501799199497,
+        "degree": 0.6717534262788831,
+        "coefficient": 0.7810371935775038,
+        "order": 0.27832355211285176,
+        "legacy": 0.5536894279794069,
+        "reverse": 0.6309791290477733,
+        "linear": 0.6640104217804037
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2",
+          "x_3",
+          "x_4"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_3^2",
+          "x_4^2",
+          "x_2*x_1--1*x_1*x_2",
+          "x_3*x_1--1*x_1*x_3",
+          "x_4*x_1--1*x_1*x_4",
+          "x_3*x_2--1*x_2*x_3",
+          "x_4*x_2--1*x_2*x_4",
+          "x_4*x_3--1*x_3*x_4"
+        ],
+        "field": "p",
+        "modulus": "5",
+        "order": "elim",
+        "maxdeg": "5",
+        "legacy": true,
+        "reverseVars": true,
+        "lowterms": "safe",
+        "monomialPruning": true,
+        "backend": "memory64",
+        "memoryMiB": 0
+      }
+    },
+    {
+      "id": "pruning-lhs-019",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.4105516050476581,
+        "field": 0.8806083784802468,
+        "degree": 0.5667539820860839,
+        "coefficient": 0.47326671863993397,
+        "order": 0.7679577687231358,
+        "legacy": 0.30873454642278375,
+        "reverse": 0.6671553690248402,
+        "linear": 0.11094115062587662
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_2*x_1-2*x_1*x_2"
+        ],
+        "field": "p",
+        "modulus": "5",
+        "order": "invelim",
+        "maxdeg": "5",
+        "legacy": false,
+        "reverseVars": true,
+        "lowterms": "safe",
+        "monomialPruning": true,
+        "backend": "memory64",
+        "memoryMiB": 0
+      }
+    },
+    {
+      "id": "pruning-lhs-020",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.8865190772266942,
+        "field": 0.44981695688329637,
+        "degree": 0.9919089628747315,
+        "coefficient": 0.6984712602425134,
+        "order": 0.4436110017923056,
+        "legacy": 0.7845115082745906,
+        "reverse": 0.9855031962579233,
+        "linear": 0.7948726614267798
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2",
+          "x_3",
+          "x_4"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_3^2",
+          "x_4^2",
+          "x_2*x_1--1*x_1*x_2",
+          "x_3*x_1--1*x_1*x_3",
+          "x_4*x_1--1*x_1*x_4",
+          "x_3*x_2--1*x_2*x_3",
+          "x_4*x_2--1*x_2*x_4",
+          "x_4*x_3--1*x_3*x_4"
+        ],
+        "field": "2",
+        "modulus": "5",
+        "order": "homogelim",
+        "maxdeg": "6",
+        "legacy": true,
+        "reverseVars": true,
+        "lowterms": "safe",
+        "monomialPruning": true,
+        "backend": "memory64",
+        "memoryMiB": 0
+      }
+    },
+    {
+      "id": "pruning-lhs-021",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.6743978873273591,
+        "field": 0.14003329304250656,
+        "degree": 0.39880618662573397,
+        "coefficient": 0.5068322937368066,
+        "order": 0.8913854616548633,
+        "legacy": 0.9631878870641231,
+        "reverse": 0.30887834387249313,
+        "linear": 0.4241385348213953
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2",
+          "x_3"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_3^2",
+          "x_2*x_1-2*x_1*x_2",
+          "x_3*x_1-2*x_1*x_3",
+          "x_3*x_2-2*x_2*x_3"
+        ],
+        "field": "0",
+        "modulus": "5",
+        "order": "invwelim",
+        "maxdeg": "4",
+        "legacy": true,
+        "reverseVars": false,
+        "lowterms": "safe",
+        "monomialPruning": true,
+        "backend": "memory64",
+        "memoryMiB": 0
+      }
+    },
+    {
+      "id": "pruning-lhs-022",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.7757806964873453,
+        "field": 0.70572870237811,
+        "degree": 0.71892032399046,
+        "coefficient": 0.09360938216559589,
+        "order": 0.11168818551959703,
+        "legacy": 0.01259253358875867,
+        "reverse": 0.5452114857835113,
+        "linear": 0.2645507071574684
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2",
+          "x_3",
+          "x_4"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_3^2",
+          "x_4^2",
+          "x_2*x_1-1*x_1*x_2",
+          "x_3*x_1-1*x_1*x_3",
+          "x_4*x_1-1*x_1*x_4",
+          "x_3*x_2-1*x_2*x_3",
+          "x_4*x_2-1*x_2*x_4",
+          "x_4*x_3-1*x_3*x_4"
+        ],
+        "field": "p",
+        "modulus": "5",
+        "order": "degleftlex",
+        "maxdeg": "5",
+        "legacy": false,
+        "reverseVars": true,
+        "lowterms": "safe",
+        "monomialPruning": true,
+        "backend": "memory64",
+        "memoryMiB": 0
+      }
+    },
+    {
+      "id": "pruning-lhs-023",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.30869772253208794,
+        "field": 0.10695304774708347,
+        "degree": 0.6409173446154455,
+        "coefficient": 0.4142263126486796,
+        "order": 0.9718791313935071,
+        "legacy": 0.5005989526762278,
+        "reverse": 0.9057509233098244,
+        "linear": 0.7732084092785954
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_2*x_1-2*x_1*x_2"
+        ],
+        "field": "0",
+        "modulus": "5",
+        "order": "invwelim",
+        "maxdeg": "5",
+        "legacy": true,
+        "reverseVars": true,
+        "lowterms": "safe",
+        "monomialPruning": true,
+        "backend": "memory64",
+        "memoryMiB": 0
+      }
+    },
+    {
+      "id": "pruning-lhs-024",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.9902248478247202,
+        "field": 0.9354283382708672,
+        "degree": 0.16917314852616983,
+        "coefficient": 0.9666886675549904,
+        "order": 0.024809901595290285,
+        "legacy": 0.2603305222000927,
+        "reverse": 0.7817494096598239,
+        "linear": 0.5785815780836856
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2",
+          "x_3",
+          "x_4"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_3^2",
+          "x_4^2",
+          "x_2*x_1--1*x_1*x_2",
+          "x_3*x_1--1*x_1*x_3",
+          "x_4*x_1--1*x_1*x_4",
+          "x_3*x_2--1*x_2*x_3",
+          "x_4*x_2--1*x_2*x_4",
+          "x_4*x_3--1*x_3*x_4"
+        ],
+        "field": "p",
+        "modulus": "5",
+        "order": "degleftlex",
+        "maxdeg": "3",
+        "legacy": false,
+        "reverseVars": true,
+        "lowterms": "safe",
+        "monomialPruning": true,
+        "backend": "memory64",
+        "memoryMiB": 0
+      }
+    },
+    {
+      "id": "pruning-lhs-025",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.7409525665425463,
+        "field": 0.6121374394497252,
+        "degree": 0.9424276469799224,
+        "coefficient": 0.5554890945277293,
+        "order": 0.3963300247123698,
+        "legacy": 0.1385922334084171,
+        "reverse": 0.00599114247597754,
+        "linear": 0.8211368709235103
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2",
+          "x_3"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_3^2",
+          "x_2*x_1-2*x_1*x_2",
+          "x_3*x_1-2*x_1*x_3",
+          "x_3*x_2-2*x_2*x_3",
+          "x_1"
+        ],
+        "field": "2",
+        "modulus": "5",
+        "order": "elim",
+        "maxdeg": "6",
+        "legacy": false,
+        "reverseVars": false,
+        "lowterms": "safe",
+        "monomialPruning": true,
+        "backend": "memory64",
+        "memoryMiB": 0
+      }
+    },
+    {
+      "id": "pruning-lhs-026",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.17195135597285116,
+        "field": 0.9850271780014737,
+        "degree": 0.7927163795320666,
+        "coefficient": 0.8674458927998785,
+        "order": 0.05426148145488696,
+        "legacy": 0.49469126960320864,
+        "reverse": 0.195056950666185,
+        "linear": 0.3887010801117867
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1"
+        ],
+        "rels": [
+          "x_1^2"
+        ],
+        "field": "p",
+        "modulus": "5",
+        "order": "degleftlex",
+        "maxdeg": "6",
+        "legacy": false,
+        "reverseVars": false,
+        "lowterms": "safe",
+        "monomialPruning": true,
+        "backend": "memory64",
+        "memoryMiB": 0
+      }
+    },
+    {
+      "id": "pruning-lhs-027",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.21317783423000947,
+        "field": 0.27709002709161723,
+        "degree": 0.5202677373745246,
+        "coefficient": 0.8195898418998695,
+        "order": 0.5685458198713604,
+        "legacy": 0.9304134050107677,
+        "reverse": 0.740684755743132,
+        "linear": 0.36025019594671903
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1"
+        ],
+        "rels": [
+          "x_1^2"
+        ],
+        "field": "0",
+        "modulus": "5",
+        "order": "homogelim",
+        "maxdeg": "5",
+        "legacy": true,
+        "reverseVars": true,
+        "lowterms": "safe",
+        "monomialPruning": true,
+        "backend": "memory64",
+        "memoryMiB": 0
+      }
+    },
+    {
+      "id": "pruning-lhs-028",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.37314883065846516,
+        "field": 0.47222179832169786,
+        "degree": 0.8816804546877393,
+        "coefficient": 0.632715504427324,
+        "order": 0.5194485003812588,
+        "legacy": 0.6303526723349933,
+        "reverse": 0.9566804608984967,
+        "linear": 0.3397853366477648
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_2*x_1-2*x_1*x_2"
+        ],
+        "field": "2",
+        "modulus": "5",
+        "order": "homogelim",
+        "maxdeg": "6",
+        "legacy": true,
+        "reverseVars": true,
+        "lowterms": "safe",
+        "monomialPruning": true,
+        "backend": "memory64",
+        "memoryMiB": 0
+      }
+    },
+    {
+      "id": "pruning-lhs-029",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.47097890586883295,
+        "field": 0.8712285482833977,
+        "degree": 0.3537162333377637,
+        "coefficient": 0.28238401571434224,
+        "order": 0.20997423892549705,
+        "legacy": 0.3517955288043595,
+        "reverse": 0.832804194331402,
+        "linear": 0.8823607448211988
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_2*x_1-1*x_1*x_2",
+          "x_1"
+        ],
+        "field": "p",
+        "modulus": "5",
+        "order": "elim",
+        "maxdeg": "4",
+        "legacy": false,
+        "reverseVars": true,
+        "lowterms": "safe",
+        "monomialPruning": true,
+        "backend": "memory64",
+        "memoryMiB": 0
+      }
+    },
+    {
+      "id": "pruning-lhs-030",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.3894184433229384,
+        "field": 0.58170854668424,
+        "degree": 0.05192366526898695,
+        "coefficient": 0.792384039668832,
+        "order": 0.7836745871245512,
+        "legacy": 0.24121020063466858,
+        "reverse": 0.4714466009972966,
+        "linear": 0.5574006300012115
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_2*x_1--1*x_1*x_2"
+        ],
+        "field": "2",
+        "modulus": "5",
+        "order": "invelim",
+        "maxdeg": "3",
+        "legacy": false,
+        "reverseVars": false,
+        "lowterms": "safe",
+        "monomialPruning": true,
+        "backend": "memory64",
+        "memoryMiB": 0
+      }
+    },
+    {
+      "id": "pruning-lhs-031",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.5542492381937336,
+        "field": 0.4260467087224242,
+        "degree": 0.21505898465693463,
+        "coefficient": 0.23850688669335796,
+        "order": 0.6995106177055277,
+        "legacy": 0.8228385458714911,
+        "reverse": 0.06715214932046365,
+        "linear": 0.8535298907881952
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2",
+          "x_3"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_3^2",
+          "x_2*x_1-1*x_1*x_2",
+          "x_3*x_1-1*x_1*x_3",
+          "x_3*x_2-1*x_2*x_3",
+          "x_1"
+        ],
+        "field": "2",
+        "modulus": "5",
+        "order": "invelim",
+        "maxdeg": "3",
+        "legacy": true,
+        "reverseVars": false,
+        "lowterms": "safe",
+        "monomialPruning": true,
+        "backend": "memory64",
+        "memoryMiB": 0
+      }
+    },
+    {
+      "id": "pruning-lhs-032",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.4393315486013307,
+        "field": 0.31146331733907573,
+        "degree": 0.5325632082603988,
+        "coefficient": 0.02670038580254186,
+        "order": 0.9495634176346357,
+        "legacy": 0.7754438678384759,
+        "reverse": 0.7512247689082869,
+        "linear": 0.28634134474850725
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_2*x_1-1*x_1*x_2"
+        ],
+        "field": "0",
+        "modulus": "5",
+        "order": "invwelim",
+        "maxdeg": "5",
+        "legacy": true,
+        "reverseVars": true,
+        "lowterms": "safe",
+        "monomialPruning": true,
+        "backend": "memory64",
+        "memoryMiB": 0
+      }
+    }
+  ],
+  "perCaseTimeoutMs": 180000,
+  "engines": {
+    "memory64": {
+      "directory": "/home/uu/Projects/george/web/engine/memory64",
+      "hashes": {
+        "ecl.js": "20396f8ba77b29ef330513e55fcab5352678ba20c96119d4d7174089b3c1e667",
+        "ecl.wasm": "56a55b5829bb678eb65c35eee34eb6ecb91b714d0b057eba045367774e85960d",
+        "ecl.data": "dce742ded7cc24a6ace543505cad50b4699d7acdb9c51fef8dbae01905871ece"
+      },
+      "manifest": {
+        "bergman": "bergman-1.001-fix",
+        "upstreamBergman": "1.001",
+        "defaultBehavior": "fixed",
+        "legacyBehavior": "original",
+        "ecl": "59f60e09102961bf5872c672fdd9d200b2e83d6b",
+        "emscripten": "4.0.12",
+        "files": {
+          "ecl.js": {
+            "bytes": 113128,
+            "sha256": "20396f8ba77b29ef330513e55fcab5352678ba20c96119d4d7174089b3c1e667"
+          },
+          "ecl.wasm": {
+            "bytes": 6809943,
+            "sha256": "56a55b5829bb678eb65c35eee34eb6ecb91b714d0b057eba045367774e85960d"
+          },
+          "ecl.data": {
+            "bytes": 3024774,
+            "sha256": "dce742ded7cc24a6ace543505cad50b4699d7acdb9c51fef8dbae01905871ece"
+          }
+        },
+        "appVersion": "0.5.0",
+        "memory": {
+          "wasmMaximumBytes": 17179869184,
+          "defaultHeapMiB": 2048,
+          "maximumHeapMiB": 16384,
+          "uncappedHeap": true
+        },
+        "compiler": {
+          "libraryOptimization": "O3",
+          "linkOptimization": "O3",
+          "lto": true,
+          "aot": true,
+          "memory64": true,
+          "longjmp": "emscripten",
+          "pointerSpilling": true,
+          "profiling": false
+        },
+        "backend": "memory64",
+        "boundaryFixes": "2026-10-01: one-generator degree sums and weighted Hilbert series; equal-word and unequal-length elimination comparisons; both modes",
+        "binaryen": {
+          "revision": "fc6a7977cccea66c7d78f3d86eb0cdac9f37cbdb",
+          "memory64StackPatchSha256": "071c2e981cd50bcb59f5cb9baba2e22559b378be2a0eff961ea5fb5250409b83"
+        },
+        "compilation": {
+          "functions": 763,
+          "aliases": 163,
+          "sourceModules": 18,
+          "compilerFailure": false
+        }
+      }
+    }
+  },
+  "results": [
+    {
+      "id": "pruning-lhs-gb-019",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 48.34649400000035,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "879eeea953dabcf827789220f64d30d1a40502f7b0ad0242357a99db3711e4b2",
+            "result.macaulay": "2005e276421f9a2caef4943df51810dbaeeb4de23cbe78493233d9ebefeef1c0"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-gb-023",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 72.64572799999951,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "0bdacba21324a818c481d4066ac14430125f4913e1e7a42789ef613f9d3c123d",
+            "result.macaulay": "f828c28087dfb5406c55474f08a79752e2d8fd1b8903b02bf987485fff3fdd3a"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-gb-028",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 59.65714900000057,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-gb-029",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 60.642445999999836,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-gb-037",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 54.78362399999969,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b",
+            "result.macaulay": "7abc0ac40fe3d50af09007568944bdcd98ba907b05b839a681f2329a4342cb69"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-gb-046",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 79.37036199999966,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b",
+            "result.macaulay": "7abc0ac40fe3d50af09007568944bdcd98ba907b05b839a681f2329a4342cb69"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-gb-047",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 72.58816599999955,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-gb-053",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 51.000036999997974,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "88bc16d8cec23b5e014356e1d624da8121128d8790ad56f352e4f9283b721dc9"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-tutorial-char2",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 52.4666470000011,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "ca14382d6f49dce6993c7e7f03ece18aa0be5e9c8a4f0fa330344b77666e4a48"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-tutorial-char5",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 80.16421899999841,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "e53da70693e8a9da36a06259149c4fcd48051047bab6865beb6af6901a79ed5c"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-large-16-generators-136-relations",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 147.34188200000062,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "e98c2c590e09132503d29fa8941a0aee84c24b0483af1a613e4da3217a8c3c32"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-large-20-generators-210-relations",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 111.65862699999707,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "76c0164710ba173c624a79355c59bb2c41ca70251d57b1fdbdb15303380272fa"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-submitted-15-generators-100-relations",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 270.5893560000004,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "90330a9064c82eed277c35533a9f90e79acebf681d2433c89f970abab2315f2d"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-001",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 43.788087000000814,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "533722c50b881e885782be0bcf60e2936faeea630cd6c57f68a2c9ba137fe2a6"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-002",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 53.8700940000017,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "e54f55394fbdde57e134a8a9dc472f0d3dc67d1bc4bb978269f64c54df70ec59"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-003",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 67.05515000000014,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "a974cd99f45b0c0e15290871b8d3a97788349ad294bd0d6e44314114893aa566"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-004",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 39.50081300000238,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-005",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 42.92951600000015,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-006",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 50.292828000001464,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-007",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 58.99213300000338,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "575cba6f25912cbe61b5e4e2573d7b72f9bd486a73bcb2a6f7f19a92dfdd95c9"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-008",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 55.41644200000155,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "e9db4cb52fbe7860d28e6c9f0f7db5eb2276d87a9041441a8d1ade09b9d5832a"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-009",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 43.432199999995646,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-010",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 50.50798500000383,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "678465758ed4f9b7c61887f2d80ec2e39658b84604b17c89978391e9439a7a9c"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-011",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 49.795312999995076,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "6b649245022e80e18da53fb5f6c58b97632253dee4b78fca658286ca758bec9f"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-012",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 69.17030599999998,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "9aac69d662518be022e9984892117c7771f71d3807b02ff9293bbb533ae7c22a"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-013",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 46.690342999994755,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-014",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 110.14446499999758,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "c08970c13afd982be698cc2406e60a341e1e7db8f2d246d8ac9450e8df5b118e"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-015",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 70.97218900000007,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "5bab4f03766b509a0034182e1d7cf5a2bf8c05fe722de6c72e4bbac9792aa2e8"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-016",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 65.14836900000228,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "45afd06975b81423eb4ced051b60c8eef1a4ed897162b1e974f2dc8ce4b03475"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-017",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 54.27318500000547,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "e058bc07cd4e8cbb92010eb72d99c09251f95b48b5bf0bcf6f49736d4198e2a4"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-018",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 67.91299199999776,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "c6532e6a631d6d837a5b8ef060b70482ad2e07d842f514820f4841b1fb0b4f57"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-019",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 63.282317000004696,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "fc7d5529e09c081509050203e99fe7fc433e6abcc3ed8db03b2903f4584a0ceb"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-020",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 65.366446,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "0ae7d8e41e5b3e25a52117603ebe2533b0ad36dac2aeba455e6cc28995714771"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-021",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 49.07780800000182,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "effa362b91a7973a498fd06894e616a253cd3b08e5c545b44815d284fcb724fb"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-022",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 63.38287699999637,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "dd71871217cee78b4939c6eb46558a8c91d24b672fc4bd021e18f20d88dc741f"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-023",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 45.03832500000135,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "92a28f3e3aeb80dcef12f2c7362db3bb95a9670ed94e69271978a078a6e517ae"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-024",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 64.52566099999967,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "0ae7d8e41e5b3e25a52117603ebe2533b0ad36dac2aeba455e6cc28995714771"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-025",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 65.90483500000119,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "77278a5bbd68e51e010d59de823af6528d38d8181f69b8db440abf544666aa6c"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-026",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 59.45840099999623,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-027",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 42.32487399999809,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-028",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 68.60026700000162,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "dc2753525318359b8ca903cf7a555a902cd02a694c89b792fa6e64b421ae2041"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-029",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 69.98067400000582,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "678465758ed4f9b7c61887f2d80ec2e39658b84604b17c89978391e9439a7a9c"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-030",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 54.851965000001655,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "08f5c522694cf6f57da933ab9b2360362b4d916053aa63449fc996a800bec826"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-031",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 61.877941999999166,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "6604727141894dff26d9fbf28d5aec43b23096d6731aead830dbeec5fc993102"
+          }
+        }
+      }
+    },
+    {
+      "id": "pruning-lhs-032",
+      "outcome": "success",
+      "backends": {
+        "memory64": {
+          "exactEquality": true,
+          "elapsedMs": 40.66518999999971,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "28aa1927528bf2ac71d9cff031acee6dfb36fda86614ce056a420106d4c20438"
+          }
+        }
+      }
+    }
+  ],
+  "sequentialSessions": [
+    {
+      "legacy": false,
+      "equalOutputs": 37
+    },
+    {
+      "legacy": true,
+      "equalOutputs": 37
+    }
+  ],
+  "parityAgainstSavedBackends": [
+    "standard",
+    "optimized",
+    "compiled"
+  ],
+  "timingIsDiagnosticOnly": true,
+  "summary": {
+    "cases": 45,
+    "backendRuns": 45,
+    "successfulRuns": 45,
+    "sequentialOutputs": 74
+  },
+  "finishedAt": "2026-10-02T09:23:36.083Z"
+}

@@ -5,5 +5,5 @@ export function publicationAssets(paths) {
     'engine/runner.js', 'sources/george-source.tar.gz'];
   for (const file of required) if (!paths.includes(file)) throw Error('Missing publication asset: ' + file);
   return [...new Set([...required, ...paths.filter(file => /^src\/[^/]+\.js$/.test(file)
-    || /^engine\/(?:optimized\/|compiled\/)?(?:build\.json|ecl\.(?:js|wasm|data))$/.test(file))])];
+    || /^engine\/(?:optimized\/|compiled\/|memory64\/)?(?:build\.json|ecl\.(?:js|wasm|data))$/.test(file))])];
 }

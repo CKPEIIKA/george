@@ -10,13 +10,27 @@ test('reject the undeclared uppercase generator from the historical lin_nc backu
 test('reject injection and invalid numeric settings',()=>{for(const change of [{maxdeg:'1)(QUIT)('},{weights:'1 nope'},{weights:'1 -2'},{maxdeg:0},{field:'p',modulus:9},{field:'p',modulus:Infinity},{strategy:'rabbit',rabbit:'1) (QUIT'},{order:'matrix',ring:'comm',matrix:'1 2\n2 4'}])assert.ok(validateSettings({...form,...change}).length);});
 test('weights follow their generators when their order is reversed',()=>assert.match(buildJob({...form,weights:'1 2',reverseVars:true}).script,/SETWEIGHTS 2 1/));
 test('an unlimited job explicitly clears the degree limit',()=>assert.match(buildJob(form).script,/SETMAXDEG NIL/));
+test('monomial pruning is explicit and limited to supported basis jobs',()=>{
+ assert.doesNotMatch(buildJob(form).script,/SETREDUCTIVITY NIL/);
+ assert.match(buildJob({...form,monomialPruning:true}).script,/SETREDUCTIVITY NIL/);
+ for(const change of [{weights:'1 1'},{task:'anick'},{nonhomog:'itemwise'},
+  {strategy:'rabbit',rabbit:'2 2 8'},{rels:['x^2-x']},{ring:'comm',order:'deglex'},
+  {monomialPruning:'true'}])assert.throws(()=>buildJob({...form,monomialPruning:true,...change}),/Monomial pruning/);
+});
 test('memory budgets reject injection and persist through both resolution stages',()=>{
- for(const memoryMiB of ['3584)(QUIT)(',128.5,127,3585,Infinity])assert.ok(validateSettings({...form,memoryMiB}).length);
+ for(const memoryMiB of ['3584)(QUIT)(',128.5,127,4096,Infinity])assert.ok(validateSettings({...form,memoryMiB}).length);
+ for(const memoryMiB of [3789,3994,4095])assert.deepEqual(validateSettings({...form,memoryMiB}),[]);
  assert.equal(buildJob(form).memoryMiB,2048);
  const job=buildJob({...form,task:'anick',rels:['x^2-x'],memoryMiB:'3584'});
  assert.equal(job.memoryMiB,3584);assert.equal(resolutionJob(job,'% 2\nx^2-x,\nDone\n').memoryMiB,3584);
 });
 test('valid prime fields and integer matrices are accepted',()=>assert.deepEqual(validateSettings({...form,ring:'comm',order:'matrix',matrix:'1 2\n0 -1',field:'p',modulus:2147483647}),[]));
+test('memory64 permits a larger or uncapped heap in both resolution stages',()=>{
+ for(const memoryMiB of [0,4096,8192,16384])assert.deepEqual(validateSettings({...form,backend:'memory64',memoryMiB}),[]);
+ for(const memoryMiB of [-1,127,16385,Infinity,'0)(QUIT)('])assert.ok(validateSettings({...form,backend:'memory64',memoryMiB}).length);
+ const job=buildJob({...form,backend:'memory64',memoryMiB:0,task:'anick',rels:['x^2-x']});
+ const next=resolutionJob(job,'% 2\nx^2-x,\nDone\n');assert.equal(next.backend,'memory64');assert.equal(next.memoryMiB,0);
+});
 test('integer augmentation shift expands and cancels exactly',()=>{assert.equal(shiftRelations(['x^2-1'],['x'])[0],'+2*x+1*x*x');assert.equal(shiftRelations(['xy-yx'],form.vars)[0],'+1*x*y-1*y*x');});
 test('reject relations incompatible with their augmentation',()=>assert.throws(()=>buildJob({...form,task:'anick',rels:['x^2-1']}),/augmentation/));
 test('monoid resolution preserves original basis and uses a completed shifted basis',()=>{const j=buildJob({...form,task:'anick',rels:['x^2-1'],augmentation:'monoid',maxdeg:4});assert.ok(j.resolution);const next=resolutionJob(j,'% 2\nx^2-1,\nDone\n');assert.match(next.files['resolution-input.bg'],/2\*x\+x\*x/);assert.match(next.script,/SETDEGREEWISE/);assert.throws(()=>resolutionJob(j,'% 2\nx^2-1,'),/completed/);});

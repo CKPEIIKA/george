@@ -1,0 +1,583 @@
+{
+  "state": "complete",
+  "startedAt": "2026-10-02T09:22:00.676Z",
+  "reference": "/home/uu/Projects/george/build/validation/memory64-pruning-20261002/report.json",
+  "referenceSha256": "f85740b036f62e459c871b87f7b8a3e30758aafc32169144b27c36da7ad1863f",
+  "resumedResults": 0,
+  "debuggerDuringCalculations": false,
+  "concurrentBackends": true,
+  "timingIsDiagnosticOnly": true,
+  "mount": "/george/",
+  "seed": 1347573070,
+  "perCaseTimeoutMs": 180000,
+  "engines": {
+    "memory64": {
+      "directory": "/home/uu/Projects/george/web/engine/memory64",
+      "hashes": {
+        "ecl.js": "20396f8ba77b29ef330513e55fcab5352678ba20c96119d4d7174089b3c1e667",
+        "ecl.wasm": "56a55b5829bb678eb65c35eee34eb6ecb91b714d0b057eba045367774e85960d",
+        "ecl.data": "dce742ded7cc24a6ace543505cad50b4699d7acdb9c51fef8dbae01905871ece"
+      },
+      "manifest": {
+        "bergman": "bergman-1.001-fix",
+        "upstreamBergman": "1.001",
+        "defaultBehavior": "fixed",
+        "legacyBehavior": "original",
+        "ecl": "59f60e09102961bf5872c672fdd9d200b2e83d6b",
+        "emscripten": "4.0.12",
+        "files": {
+          "ecl.js": {
+            "bytes": 113128,
+            "sha256": "20396f8ba77b29ef330513e55fcab5352678ba20c96119d4d7174089b3c1e667"
+          },
+          "ecl.wasm": {
+            "bytes": 6809943,
+            "sha256": "56a55b5829bb678eb65c35eee34eb6ecb91b714d0b057eba045367774e85960d"
+          },
+          "ecl.data": {
+            "bytes": 3024774,
+            "sha256": "dce742ded7cc24a6ace543505cad50b4699d7acdb9c51fef8dbae01905871ece"
+          }
+        },
+        "appVersion": "0.5.0",
+        "memory": {
+          "wasmMaximumBytes": 17179869184,
+          "defaultHeapMiB": 2048,
+          "maximumHeapMiB": 16384,
+          "uncappedHeap": true
+        },
+        "compiler": {
+          "libraryOptimization": "O3",
+          "linkOptimization": "O3",
+          "lto": true,
+          "aot": true,
+          "memory64": true,
+          "longjmp": "emscripten",
+          "pointerSpilling": true,
+          "profiling": false
+        },
+        "backend": "memory64",
+        "boundaryFixes": "2026-10-01: one-generator degree sums and weighted Hilbert series; equal-word and unequal-length elimination comparisons; both modes",
+        "binaryen": {
+          "revision": "fc6a7977cccea66c7d78f3d86eb0cdac9f37cbdb",
+          "memory64StackPatchSha256": "071c2e981cd50bcb59f5cb9baba2e22559b378be2a0eff961ea5fb5250409b83"
+        },
+        "compilation": {
+          "functions": 763,
+          "aliases": 163,
+          "sourceModules": 18,
+          "compilerFailure": false
+        }
+      }
+    }
+  },
+  "results": [
+    {
+      "id": "pruning-lhs-gb-019",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "879eeea953dabcf827789220f64d30d1a40502f7b0ad0242357a99db3711e4b2",
+        "result.macaulay": "2005e276421f9a2caef4943df51810dbaeeb4de23cbe78493233d9ebefeef1c0"
+      },
+      "elapsedMs": 47.400000005960464,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-gb-023",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "0bdacba21324a818c481d4066ac14430125f4913e1e7a42789ef613f9d3c123d",
+        "result.macaulay": "f828c28087dfb5406c55474f08a79752e2d8fd1b8903b02bf987485fff3fdd3a"
+      },
+      "elapsedMs": 72.30000001192093,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-gb-028",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b"
+      },
+      "elapsedMs": 59.19999998807907,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-gb-029",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b"
+      },
+      "elapsedMs": 50.70000001788139,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-gb-037",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b",
+        "result.macaulay": "7abc0ac40fe3d50af09007568944bdcd98ba907b05b839a681f2329a4342cb69"
+      },
+      "elapsedMs": 57.900000005960464,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-gb-046",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b",
+        "result.macaulay": "7abc0ac40fe3d50af09007568944bdcd98ba907b05b839a681f2329a4342cb69"
+      },
+      "elapsedMs": 63.69999998807907,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-gb-047",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b"
+      },
+      "elapsedMs": 51.89999997615814,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-gb-053",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "88bc16d8cec23b5e014356e1d624da8121128d8790ad56f352e4f9283b721dc9"
+      },
+      "elapsedMs": 44.599999994039536,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-tutorial-char2",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "ca14382d6f49dce6993c7e7f03ece18aa0be5e9c8a4f0fa330344b77666e4a48"
+      },
+      "elapsedMs": 51.79999998211861,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-tutorial-char5",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "e53da70693e8a9da36a06259149c4fcd48051047bab6865beb6af6901a79ed5c"
+      },
+      "elapsedMs": 74.2000000178814,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-large-16-generators-136-relations",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "e98c2c590e09132503d29fa8941a0aee84c24b0483af1a613e4da3217a8c3c32"
+      },
+      "elapsedMs": 155.19999998807907,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-large-20-generators-210-relations",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "76c0164710ba173c624a79355c59bb2c41ca70251d57b1fdbdb15303380272fa"
+      },
+      "elapsedMs": 109.7000000178814,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-submitted-15-generators-100-relations",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "90330a9064c82eed277c35533a9f90e79acebf681d2433c89f970abab2315f2d"
+      },
+      "elapsedMs": 235.40000000596046,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-001",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "533722c50b881e885782be0bcf60e2936faeea630cd6c57f68a2c9ba137fe2a6"
+      },
+      "elapsedMs": 42.29999998211861,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-002",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "e54f55394fbdde57e134a8a9dc472f0d3dc67d1bc4bb978269f64c54df70ec59"
+      },
+      "elapsedMs": 53.5,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-003",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "a974cd99f45b0c0e15290871b8d3a97788349ad294bd0d6e44314114893aa566"
+      },
+      "elapsedMs": 62.30000001192093,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-004",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+      },
+      "elapsedMs": 37.79999998211861,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-005",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+      },
+      "elapsedMs": 37.69999998807907,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-006",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+      },
+      "elapsedMs": 40.400000005960464,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-007",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "575cba6f25912cbe61b5e4e2573d7b72f9bd486a73bcb2a6f7f19a92dfdd95c9"
+      },
+      "elapsedMs": 57,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-008",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "e9db4cb52fbe7860d28e6c9f0f7db5eb2276d87a9041441a8d1ade09b9d5832a"
+      },
+      "elapsedMs": 48.099999994039536,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-009",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+      },
+      "elapsedMs": 38,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-010",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "678465758ed4f9b7c61887f2d80ec2e39658b84604b17c89978391e9439a7a9c"
+      },
+      "elapsedMs": 50.30000001192093,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-011",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "6b649245022e80e18da53fb5f6c58b97632253dee4b78fca658286ca758bec9f"
+      },
+      "elapsedMs": 48.80000001192093,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-012",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "9aac69d662518be022e9984892117c7771f71d3807b02ff9293bbb533ae7c22a"
+      },
+      "elapsedMs": 63.5,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-013",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+      },
+      "elapsedMs": 37.5,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-014",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "c08970c13afd982be698cc2406e60a341e1e7db8f2d246d8ac9450e8df5b118e"
+      },
+      "elapsedMs": 68.40000000596046,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-015",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "5bab4f03766b509a0034182e1d7cf5a2bf8c05fe722de6c72e4bbac9792aa2e8"
+      },
+      "elapsedMs": 63.80000001192093,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-016",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "45afd06975b81423eb4ced051b60c8eef1a4ed897162b1e974f2dc8ce4b03475"
+      },
+      "elapsedMs": 53.400000005960464,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-017",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "e058bc07cd4e8cbb92010eb72d99c09251f95b48b5bf0bcf6f49736d4198e2a4"
+      },
+      "elapsedMs": 52.5,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-018",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "c6532e6a631d6d837a5b8ef060b70482ad2e07d842f514820f4841b1fb0b4f57"
+      },
+      "elapsedMs": 62.5,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-019",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "fc7d5529e09c081509050203e99fe7fc433e6abcc3ed8db03b2903f4584a0ceb"
+      },
+      "elapsedMs": 56,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-020",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "0ae7d8e41e5b3e25a52117603ebe2533b0ad36dac2aeba455e6cc28995714771"
+      },
+      "elapsedMs": 55.20000001788139,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-021",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "effa362b91a7973a498fd06894e616a253cd3b08e5c545b44815d284fcb724fb"
+      },
+      "elapsedMs": 48.80000001192093,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-022",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "dd71871217cee78b4939c6eb46558a8c91d24b672fc4bd021e18f20d88dc741f"
+      },
+      "elapsedMs": 63.5,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-023",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "92a28f3e3aeb80dcef12f2c7362db3bb95a9670ed94e69271978a078a6e517ae"
+      },
+      "elapsedMs": 40.099999994039536,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-024",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "0ae7d8e41e5b3e25a52117603ebe2533b0ad36dac2aeba455e6cc28995714771"
+      },
+      "elapsedMs": 65.30000001192093,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-025",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "77278a5bbd68e51e010d59de823af6528d38d8181f69b8db440abf544666aa6c"
+      },
+      "elapsedMs": 59.69999998807907,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-026",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+      },
+      "elapsedMs": 54.900000005960464,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-027",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+      },
+      "elapsedMs": 37.79999998211861,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-028",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "dc2753525318359b8ca903cf7a555a902cd02a694c89b792fa6e64b421ae2041"
+      },
+      "elapsedMs": 45.80000001192093,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-029",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "678465758ed4f9b7c61887f2d80ec2e39658b84604b17c89978391e9439a7a9c"
+      },
+      "elapsedMs": 61.19999998807907,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-030",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "08f5c522694cf6f57da933ab9b2360362b4d916053aa63449fc996a800bec826"
+      },
+      "elapsedMs": 46.10000002384186,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-031",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "6604727141894dff26d9fbf28d5aec43b23096d6731aead830dbeec5fc993102"
+      },
+      "elapsedMs": 58,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-032",
+      "backend": "memory64",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "28aa1927528bf2ac71d9cff031acee6dfb36fda86614ce056a420106d4c20438"
+      },
+      "elapsedMs": 41.20000001788139,
+      "memoryBytes": 67108864
+    }
+  ],
+  "errors": [],
+  "overallTimeoutMs": 900000,
+  "summary": {
+    "cases": 45,
+    "backendRuns": 45,
+    "successfulRuns": 45
+  },
+  "finishedAt": "2026-10-02T09:22:55.776Z"
+}

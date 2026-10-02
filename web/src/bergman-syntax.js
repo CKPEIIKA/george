@@ -1,7 +1,7 @@
 // Bergman input/output syntax: parsing relations, typesetting polynomials,
 // reading bergman input files, and generating the bergman session script
 // for a computation.  No DOM access here except building HTML strings.
-import { BACKENDS } from './backends.js';
+import { BACKENDS, validMemoryMiB, memoryLimitMessage } from './backends.js';
 import { timeoutMilliseconds } from './time-limit.js';
 
 // ------------------------------------------------------------ tokens
@@ -367,7 +367,9 @@ export const TASKS = [
 
 export const TASK_BY_ID = new Map(TASKS.map((t) => [t.id, t]));
 export const DEFAULT_MEMORY_MIB = 2048;
-export const MAX_MEMORY_MIB = 3584; // Leave 512 MiB for files and host allocations below Wasm's 4 GiB ceiling.
+// The wasm32 GC limit is a size_t; 4096 MiB itself cannot fit in 32 bits.
+// This is an allowance, not a promise that all of it can be used as Lisp heap.
+export const MAX_MEMORY_MIB = 4095;
 
 export function exampleForm(ex) {
   const st=readInputFile(ex.input),s=st.settings,extra=ex.session||{};
@@ -378,6 +380,13 @@ export function exampleForm(ex) {
     weights:s.weights||extra.weights||'',nonhomog:extra.nonhomog||'auto',augmentation:'graded',
     strategy:s.rabbit?'rabbit':'default',rabbit:s.rabbit,maxserdeg:s.maxserdeg,
     nmodgen:s.nmodgen,nlmodgen:s.nlmodgen,nrmodgen:s.nrmodgen};
+}
+
+export function monomialPruningAvailable(form) {
+  if (form.task !== 'gb' || form.ring !== 'noncomm' || form.nonhomog === 'itemwise' ||
+      (form.strategy && form.strategy !== 'default') || String(form.weights || '').trim()) return false;
+  try { return (form.rels || []).every(r => isHomogeneous(parseRelation(r, form.vars || []), new Map())); }
+  catch { return false; }
 }
 
 export function validateSettings(form) {
@@ -391,8 +400,11 @@ export function validateSettings(form) {
     if (form[key] !== undefined && form[key] !== '' && !integer(form[key], 1, 10000)) errors.push(`${label} must be an integer from 1 to 10000.`);
   }
   if (!['0', '2', 'p'].includes(form.field)) errors.push('Choose a coefficient field.');
-  if (form.memoryMiB !== undefined && !integer(form.memoryMiB, 128, MAX_MEMORY_MIB)) errors.push(`Memory limit must be an integer from 128 to ${MAX_MEMORY_MIB} MiB.`);
+  const memoryBackend = Object.hasOwn(BACKENDS, form.backend ?? 'standard') ? form.backend ?? 'standard' : 'standard';
+  if (form.memoryMiB !== undefined && (!/^\d+$/.test(String(form.memoryMiB)) || !validMemoryMiB(Number(form.memoryMiB), memoryBackend))) errors.push(memoryLimitMessage(memoryBackend));
   if (form.backend !== undefined && !Object.hasOwn(BACKENDS, form.backend)) errors.push('Unknown computation engine.');
+  if (form.monomialPruning !== undefined && typeof form.monomialPruning !== 'boolean') errors.push('Monomial pruning must be on or off.');
+  if (form.monomialPruning && !monomialPruningAvailable(form)) errors.push('Monomial pruning requires unweighted homogeneous noncommutative Gröbner basis relations and the default degreewise strategy.');
   try { timeoutMilliseconds(form.timeoutMinutes); } catch (error) { errors.push(error.message); }
   if (form.field === 'p') {
     const p = Number(form.modulus);
@@ -484,6 +496,9 @@ export function buildJob(form) {
   }
   if (form.strategy === 'rabbit' && form.rabbit) session.push(`(SETRABBIT ${form.rabbit.trim().split(/[\s,]+/).join(' ')})`);
   if (form.lowterms === 'safe' && form.nonhomog !== 'itemwise') session.push('(SETSAFELOWTERMSHANDLING)');
+  // Pruning discards completed-degree lookup data. Only basis-file jobs use it;
+  // resolutions and later polynomial reductions need the retained data.
+  if (form.monomialPruning) session.push('(SETREDUCTIVITY NIL)');
 
   const files = { 'input.bg': input.join('\n') + '\n' };
   const outs = { gb: 'result.gb', hs: 'result.hs', pb: 'result.pb', anick: 'result.anick' };
@@ -509,6 +524,7 @@ export function buildJob(form) {
       if (task.id === 'anick' && !form.legacy) session.push('(GEORGEWRITERESOLUTION "resolution.jsonl")');
   }
   if (form.outmode === 'MACAULAY') session.push('(SETALGOUTMODE MACAULAY)', '(GEORGEWRITEBASIS "result.macaulay")', '(SETALGOUTMODE ALG)');
+  if (form.monomialPruning) session.push('(SETREDUCTIVITY T)');
   session.push('(CLEARRING)');
   const outputs = {};
   for (const k of extended ? ['gb'] : task.out) outputs[k] = outs[k];

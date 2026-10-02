@@ -1,0 +1,1546 @@
+{
+  "state": "complete",
+  "startedAt": "2026-10-02T07:54:16.827Z",
+  "reference": "/home/uu/Projects/george/build/validation/pruning-20261002-v2/report.json",
+  "referenceSha256": "6cf1f45a1154f2421429905c3df206df2cf8053e55270d8589c68a504131eb0a",
+  "resumedResults": 0,
+  "debuggerDuringCalculations": false,
+  "concurrentBackends": true,
+  "timingIsDiagnosticOnly": true,
+  "mount": "/george/",
+  "seed": 1347573070,
+  "perCaseTimeoutMs": 180000,
+  "engines": {
+    "standard": {
+      "directory": "/home/uu/Projects/george/web/engine",
+      "hashes": {
+        "ecl.js": "10b688b96b805c2339a76f6d9fc0c800fbefb37b9ec0310d297d49873cda530f",
+        "ecl.wasm": "b90c140372df3f8857e535fd8a8de3406ba57d27a40b6cf2e62b51a123a26585",
+        "ecl.data": "dce742ded7cc24a6ace543505cad50b4699d7acdb9c51fef8dbae01905871ece"
+      }
+    },
+    "optimized": {
+      "directory": "/home/uu/Projects/george/web/engine/optimized",
+      "hashes": {
+        "ecl.js": "d4bda52e4d48ed9610f55ef882cdaf2a64639a3903f1fa27a77e4a2c72550916",
+        "ecl.wasm": "221a268e3aac9bf1a7167f1e613eb51f600437f8c65596c2b0dfbbff0677786c",
+        "ecl.data": "dce742ded7cc24a6ace543505cad50b4699d7acdb9c51fef8dbae01905871ece"
+      }
+    },
+    "compiled": {
+      "directory": "/home/uu/Projects/george/web/engine/compiled",
+      "hashes": {
+        "ecl.js": "b51a386338911b8d262557686fe0ff81e46fdbd99c55a058a7ceb3223d55edee",
+        "ecl.wasm": "8bd7c0b8be173025c741e9cb90718de0210be7eb6a0537725b06bd702f8d687d",
+        "ecl.data": "dce742ded7cc24a6ace543505cad50b4699d7acdb9c51fef8dbae01905871ece"
+      }
+    }
+  },
+  "results": [
+    {
+      "id": "pruning-lhs-gb-019",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "879eeea953dabcf827789220f64d30d1a40502f7b0ad0242357a99db3711e4b2",
+        "result.macaulay": "2005e276421f9a2caef4943df51810dbaeeb4de23cbe78493233d9ebefeef1c0"
+      },
+      "elapsedMs": 128.30000001192093,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-gb-019",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "879eeea953dabcf827789220f64d30d1a40502f7b0ad0242357a99db3711e4b2",
+        "result.macaulay": "2005e276421f9a2caef4943df51810dbaeeb4de23cbe78493233d9ebefeef1c0"
+      },
+      "elapsedMs": 118.10000002384186,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-gb-019",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "879eeea953dabcf827789220f64d30d1a40502f7b0ad0242357a99db3711e4b2",
+        "result.macaulay": "2005e276421f9a2caef4943df51810dbaeeb4de23cbe78493233d9ebefeef1c0"
+      },
+      "elapsedMs": 150.90000000596046,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-gb-023",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "0bdacba21324a818c481d4066ac14430125f4913e1e7a42789ef613f9d3c123d",
+        "result.macaulay": "f828c28087dfb5406c55474f08a79752e2d8fd1b8903b02bf987485fff3fdd3a"
+      },
+      "elapsedMs": 246.30000001192093,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-gb-023",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "0bdacba21324a818c481d4066ac14430125f4913e1e7a42789ef613f9d3c123d",
+        "result.macaulay": "f828c28087dfb5406c55474f08a79752e2d8fd1b8903b02bf987485fff3fdd3a"
+      },
+      "elapsedMs": 263.90000000596046,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-gb-023",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "0bdacba21324a818c481d4066ac14430125f4913e1e7a42789ef613f9d3c123d",
+        "result.macaulay": "f828c28087dfb5406c55474f08a79752e2d8fd1b8903b02bf987485fff3fdd3a"
+      },
+      "elapsedMs": 234,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-gb-028",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b"
+      },
+      "elapsedMs": 157.19999998807907,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-gb-028",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b"
+      },
+      "elapsedMs": 131.5,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-gb-028",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b"
+      },
+      "elapsedMs": 260,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-gb-029",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b"
+      },
+      "elapsedMs": 120,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-gb-029",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b"
+      },
+      "elapsedMs": 124.60000002384186,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-gb-029",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b"
+      },
+      "elapsedMs": 133.89999997615814,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-gb-037",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b",
+        "result.macaulay": "7abc0ac40fe3d50af09007568944bdcd98ba907b05b839a681f2329a4342cb69"
+      },
+      "elapsedMs": 139,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-gb-037",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b",
+        "result.macaulay": "7abc0ac40fe3d50af09007568944bdcd98ba907b05b839a681f2329a4342cb69"
+      },
+      "elapsedMs": 104.10000002384186,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-gb-037",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b",
+        "result.macaulay": "7abc0ac40fe3d50af09007568944bdcd98ba907b05b839a681f2329a4342cb69"
+      },
+      "elapsedMs": 104.2000000178814,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-gb-046",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b",
+        "result.macaulay": "7abc0ac40fe3d50af09007568944bdcd98ba907b05b839a681f2329a4342cb69"
+      },
+      "elapsedMs": 159.69999998807907,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-gb-046",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b",
+        "result.macaulay": "7abc0ac40fe3d50af09007568944bdcd98ba907b05b839a681f2329a4342cb69"
+      },
+      "elapsedMs": 133.7999999821186,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-gb-046",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b",
+        "result.macaulay": "7abc0ac40fe3d50af09007568944bdcd98ba907b05b839a681f2329a4342cb69"
+      },
+      "elapsedMs": 164.19999998807907,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-gb-047",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b"
+      },
+      "elapsedMs": 134.09999999403954,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-gb-047",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b"
+      },
+      "elapsedMs": 115.59999999403954,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-gb-047",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b"
+      },
+      "elapsedMs": 149.30000001192093,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-gb-053",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "88bc16d8cec23b5e014356e1d624da8121128d8790ad56f352e4f9283b721dc9"
+      },
+      "elapsedMs": 117,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-gb-053",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "88bc16d8cec23b5e014356e1d624da8121128d8790ad56f352e4f9283b721dc9"
+      },
+      "elapsedMs": 96.90000000596046,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-gb-053",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "88bc16d8cec23b5e014356e1d624da8121128d8790ad56f352e4f9283b721dc9"
+      },
+      "elapsedMs": 104,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-tutorial-char2",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "ca14382d6f49dce6993c7e7f03ece18aa0be5e9c8a4f0fa330344b77666e4a48"
+      },
+      "elapsedMs": 126.19999998807907,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-tutorial-char2",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "ca14382d6f49dce6993c7e7f03ece18aa0be5e9c8a4f0fa330344b77666e4a48"
+      },
+      "elapsedMs": 103.59999999403954,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-tutorial-char2",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "ca14382d6f49dce6993c7e7f03ece18aa0be5e9c8a4f0fa330344b77666e4a48"
+      },
+      "elapsedMs": 99.30000001192093,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-tutorial-char5",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "e53da70693e8a9da36a06259149c4fcd48051047bab6865beb6af6901a79ed5c"
+      },
+      "elapsedMs": 207.90000000596046,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-tutorial-char5",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "e53da70693e8a9da36a06259149c4fcd48051047bab6865beb6af6901a79ed5c"
+      },
+      "elapsedMs": 250.40000000596046,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-tutorial-char5",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "e53da70693e8a9da36a06259149c4fcd48051047bab6865beb6af6901a79ed5c"
+      },
+      "elapsedMs": 148.2999999821186,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-large-16-generators-136-relations",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "e98c2c590e09132503d29fa8941a0aee84c24b0483af1a613e4da3217a8c3c32"
+      },
+      "elapsedMs": 789.7999999821186,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-large-16-generators-136-relations",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "e98c2c590e09132503d29fa8941a0aee84c24b0483af1a613e4da3217a8c3c32"
+      },
+      "elapsedMs": 14019.700000017881,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-large-16-generators-136-relations",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "e98c2c590e09132503d29fa8941a0aee84c24b0483af1a613e4da3217a8c3c32"
+      },
+      "elapsedMs": 18742.80000001192,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-large-20-generators-210-relations",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "76c0164710ba173c624a79355c59bb2c41ca70251d57b1fdbdb15303380272fa"
+      },
+      "elapsedMs": 562.9000000059605,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-large-20-generators-210-relations",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "76c0164710ba173c624a79355c59bb2c41ca70251d57b1fdbdb15303380272fa"
+      },
+      "elapsedMs": 1450.5999999940395,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-large-20-generators-210-relations",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "76c0164710ba173c624a79355c59bb2c41ca70251d57b1fdbdb15303380272fa"
+      },
+      "elapsedMs": 1349.199999988079,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-submitted-15-generators-100-relations",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "90330a9064c82eed277c35533a9f90e79acebf681d2433c89f970abab2315f2d"
+      },
+      "elapsedMs": 1104,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-submitted-15-generators-100-relations",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "90330a9064c82eed277c35533a9f90e79acebf681d2433c89f970abab2315f2d"
+      },
+      "elapsedMs": 37625.80000001192,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-submitted-15-generators-100-relations",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "90330a9064c82eed277c35533a9f90e79acebf681d2433c89f970abab2315f2d"
+      },
+      "elapsedMs": 41258.19999998808,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-001",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "533722c50b881e885782be0bcf60e2936faeea630cd6c57f68a2c9ba137fe2a6"
+      },
+      "elapsedMs": 97.09999999403954,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-001",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "533722c50b881e885782be0bcf60e2936faeea630cd6c57f68a2c9ba137fe2a6"
+      },
+      "elapsedMs": 87.2999999821186,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-001",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "533722c50b881e885782be0bcf60e2936faeea630cd6c57f68a2c9ba137fe2a6"
+      },
+      "elapsedMs": 83.7000000178814,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-002",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "e54f55394fbdde57e134a8a9dc472f0d3dc67d1bc4bb978269f64c54df70ec59"
+      },
+      "elapsedMs": 331.19999998807907,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-002",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "e54f55394fbdde57e134a8a9dc472f0d3dc67d1bc4bb978269f64c54df70ec59"
+      },
+      "elapsedMs": 178.80000001192093,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-002",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "e54f55394fbdde57e134a8a9dc472f0d3dc67d1bc4bb978269f64c54df70ec59"
+      },
+      "elapsedMs": 164.19999998807907,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-003",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "a974cd99f45b0c0e15290871b8d3a97788349ad294bd0d6e44314114893aa566"
+      },
+      "elapsedMs": 200.7999999821186,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-003",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "a974cd99f45b0c0e15290871b8d3a97788349ad294bd0d6e44314114893aa566"
+      },
+      "elapsedMs": 202.90000000596046,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-003",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "a974cd99f45b0c0e15290871b8d3a97788349ad294bd0d6e44314114893aa566"
+      },
+      "elapsedMs": 150.09999999403954,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-004",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+      },
+      "elapsedMs": 148,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-004",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+      },
+      "elapsedMs": 78.69999998807907,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-004",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+      },
+      "elapsedMs": 93.80000001192093,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-005",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+      },
+      "elapsedMs": 88.2000000178814,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-005",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+      },
+      "elapsedMs": 82.60000002384186,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-005",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+      },
+      "elapsedMs": 113.80000001192093,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-006",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+      },
+      "elapsedMs": 83.7000000178814,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-006",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+      },
+      "elapsedMs": 72.80000001192093,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-006",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+      },
+      "elapsedMs": 108.09999999403954,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-007",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "575cba6f25912cbe61b5e4e2573d7b72f9bd486a73bcb2a6f7f19a92dfdd95c9"
+      },
+      "elapsedMs": 143.90000000596046,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-007",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "575cba6f25912cbe61b5e4e2573d7b72f9bd486a73bcb2a6f7f19a92dfdd95c9"
+      },
+      "elapsedMs": 246.60000002384186,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-007",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "575cba6f25912cbe61b5e4e2573d7b72f9bd486a73bcb2a6f7f19a92dfdd95c9"
+      },
+      "elapsedMs": 131.89999997615814,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-008",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "e9db4cb52fbe7860d28e6c9f0f7db5eb2276d87a9041441a8d1ade09b9d5832a"
+      },
+      "elapsedMs": 145.40000000596046,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-008",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "e9db4cb52fbe7860d28e6c9f0f7db5eb2276d87a9041441a8d1ade09b9d5832a"
+      },
+      "elapsedMs": 137.5,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-008",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "e9db4cb52fbe7860d28e6c9f0f7db5eb2276d87a9041441a8d1ade09b9d5832a"
+      },
+      "elapsedMs": 133.2999999821186,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-009",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+      },
+      "elapsedMs": 112.2999999821186,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-009",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+      },
+      "elapsedMs": 64.90000000596046,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-009",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+      },
+      "elapsedMs": 114.5,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-010",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "678465758ed4f9b7c61887f2d80ec2e39658b84604b17c89978391e9439a7a9c"
+      },
+      "elapsedMs": 126.40000000596046,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-010",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "678465758ed4f9b7c61887f2d80ec2e39658b84604b17c89978391e9439a7a9c"
+      },
+      "elapsedMs": 110.80000001192093,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-010",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "678465758ed4f9b7c61887f2d80ec2e39658b84604b17c89978391e9439a7a9c"
+      },
+      "elapsedMs": 117.69999998807907,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-011",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "6b649245022e80e18da53fb5f6c58b97632253dee4b78fca658286ca758bec9f"
+      },
+      "elapsedMs": 214.60000002384186,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-011",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "6b649245022e80e18da53fb5f6c58b97632253dee4b78fca658286ca758bec9f"
+      },
+      "elapsedMs": 150,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-011",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "6b649245022e80e18da53fb5f6c58b97632253dee4b78fca658286ca758bec9f"
+      },
+      "elapsedMs": 147.59999999403954,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-012",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "9aac69d662518be022e9984892117c7771f71d3807b02ff9293bbb533ae7c22a"
+      },
+      "elapsedMs": 183.5,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-012",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "9aac69d662518be022e9984892117c7771f71d3807b02ff9293bbb533ae7c22a"
+      },
+      "elapsedMs": 189.2000000178814,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-012",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "9aac69d662518be022e9984892117c7771f71d3807b02ff9293bbb533ae7c22a"
+      },
+      "elapsedMs": 159.69999998807907,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-013",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+      },
+      "elapsedMs": 84.09999999403954,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-013",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+      },
+      "elapsedMs": 74.30000001192093,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-013",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+      },
+      "elapsedMs": 85.5,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-014",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "c08970c13afd982be698cc2406e60a341e1e7db8f2d246d8ac9450e8df5b118e"
+      },
+      "elapsedMs": 199.59999999403954,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-014",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "c08970c13afd982be698cc2406e60a341e1e7db8f2d246d8ac9450e8df5b118e"
+      },
+      "elapsedMs": 163.10000002384186,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-014",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "c08970c13afd982be698cc2406e60a341e1e7db8f2d246d8ac9450e8df5b118e"
+      },
+      "elapsedMs": 152,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-015",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "5bab4f03766b509a0034182e1d7cf5a2bf8c05fe722de6c72e4bbac9792aa2e8"
+      },
+      "elapsedMs": 269.89999997615814,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-015",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "5bab4f03766b509a0034182e1d7cf5a2bf8c05fe722de6c72e4bbac9792aa2e8"
+      },
+      "elapsedMs": 156,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-015",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "5bab4f03766b509a0034182e1d7cf5a2bf8c05fe722de6c72e4bbac9792aa2e8"
+      },
+      "elapsedMs": 139.40000000596046,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-016",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "45afd06975b81423eb4ced051b60c8eef1a4ed897162b1e974f2dc8ce4b03475"
+      },
+      "elapsedMs": 260.30000001192093,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-016",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "45afd06975b81423eb4ced051b60c8eef1a4ed897162b1e974f2dc8ce4b03475"
+      },
+      "elapsedMs": 165.80000001192093,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-016",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "45afd06975b81423eb4ced051b60c8eef1a4ed897162b1e974f2dc8ce4b03475"
+      },
+      "elapsedMs": 157.19999998807907,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-017",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "e058bc07cd4e8cbb92010eb72d99c09251f95b48b5bf0bcf6f49736d4198e2a4"
+      },
+      "elapsedMs": 137.5,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-017",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "e058bc07cd4e8cbb92010eb72d99c09251f95b48b5bf0bcf6f49736d4198e2a4"
+      },
+      "elapsedMs": 119.80000001192093,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-017",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "e058bc07cd4e8cbb92010eb72d99c09251f95b48b5bf0bcf6f49736d4198e2a4"
+      },
+      "elapsedMs": 134.40000000596046,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-018",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "c6532e6a631d6d837a5b8ef060b70482ad2e07d842f514820f4841b1fb0b4f57"
+      },
+      "elapsedMs": 240.5,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-018",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "c6532e6a631d6d837a5b8ef060b70482ad2e07d842f514820f4841b1fb0b4f57"
+      },
+      "elapsedMs": 198.80000001192093,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-018",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "c6532e6a631d6d837a5b8ef060b70482ad2e07d842f514820f4841b1fb0b4f57"
+      },
+      "elapsedMs": 149.5,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-019",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "fc7d5529e09c081509050203e99fe7fc433e6abcc3ed8db03b2903f4584a0ceb"
+      },
+      "elapsedMs": 169.09999999403954,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-019",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "fc7d5529e09c081509050203e99fe7fc433e6abcc3ed8db03b2903f4584a0ceb"
+      },
+      "elapsedMs": 128.5,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-019",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "fc7d5529e09c081509050203e99fe7fc433e6abcc3ed8db03b2903f4584a0ceb"
+      },
+      "elapsedMs": 147.59999999403954,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-020",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "0ae7d8e41e5b3e25a52117603ebe2533b0ad36dac2aeba455e6cc28995714771"
+      },
+      "elapsedMs": 186.10000002384186,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-020",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "0ae7d8e41e5b3e25a52117603ebe2533b0ad36dac2aeba455e6cc28995714771"
+      },
+      "elapsedMs": 168.7999999821186,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-020",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "0ae7d8e41e5b3e25a52117603ebe2533b0ad36dac2aeba455e6cc28995714771"
+      },
+      "elapsedMs": 148.19999998807907,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-021",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "effa362b91a7973a498fd06894e616a253cd3b08e5c545b44815d284fcb724fb"
+      },
+      "elapsedMs": 113.30000001192093,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-021",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "effa362b91a7973a498fd06894e616a253cd3b08e5c545b44815d284fcb724fb"
+      },
+      "elapsedMs": 138.30000001192093,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-021",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "effa362b91a7973a498fd06894e616a253cd3b08e5c545b44815d284fcb724fb"
+      },
+      "elapsedMs": 89.19999998807907,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-022",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "dd71871217cee78b4939c6eb46558a8c91d24b672fc4bd021e18f20d88dc741f"
+      },
+      "elapsedMs": 266.59999999403954,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-022",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "dd71871217cee78b4939c6eb46558a8c91d24b672fc4bd021e18f20d88dc741f"
+      },
+      "elapsedMs": 188.59999999403954,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-022",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "dd71871217cee78b4939c6eb46558a8c91d24b672fc4bd021e18f20d88dc741f"
+      },
+      "elapsedMs": 184.39999997615814,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-023",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "92a28f3e3aeb80dcef12f2c7362db3bb95a9670ed94e69271978a078a6e517ae"
+      },
+      "elapsedMs": 98.69999998807907,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-023",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "92a28f3e3aeb80dcef12f2c7362db3bb95a9670ed94e69271978a078a6e517ae"
+      },
+      "elapsedMs": 68.2999999821186,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-023",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "92a28f3e3aeb80dcef12f2c7362db3bb95a9670ed94e69271978a078a6e517ae"
+      },
+      "elapsedMs": 120.90000000596046,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-024",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "0ae7d8e41e5b3e25a52117603ebe2533b0ad36dac2aeba455e6cc28995714771"
+      },
+      "elapsedMs": 243,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-024",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "0ae7d8e41e5b3e25a52117603ebe2533b0ad36dac2aeba455e6cc28995714771"
+      },
+      "elapsedMs": 181,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-024",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "0ae7d8e41e5b3e25a52117603ebe2533b0ad36dac2aeba455e6cc28995714771"
+      },
+      "elapsedMs": 135.90000000596046,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-025",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "77278a5bbd68e51e010d59de823af6528d38d8181f69b8db440abf544666aa6c"
+      },
+      "elapsedMs": 136.09999999403954,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-025",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "77278a5bbd68e51e010d59de823af6528d38d8181f69b8db440abf544666aa6c"
+      },
+      "elapsedMs": 159.09999999403954,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-025",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "77278a5bbd68e51e010d59de823af6528d38d8181f69b8db440abf544666aa6c"
+      },
+      "elapsedMs": 144.09999999403954,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-026",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+      },
+      "elapsedMs": 177.19999998807907,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-026",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+      },
+      "elapsedMs": 120,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-026",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+      },
+      "elapsedMs": 104,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-027",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+      },
+      "elapsedMs": 109.5,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-027",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+      },
+      "elapsedMs": 83.10000002384186,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-027",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+      },
+      "elapsedMs": 117.19999998807907,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-028",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "dc2753525318359b8ca903cf7a555a902cd02a694c89b792fa6e64b421ae2041"
+      },
+      "elapsedMs": 124,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-028",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "dc2753525318359b8ca903cf7a555a902cd02a694c89b792fa6e64b421ae2041"
+      },
+      "elapsedMs": 105.30000001192093,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-028",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "dc2753525318359b8ca903cf7a555a902cd02a694c89b792fa6e64b421ae2041"
+      },
+      "elapsedMs": 94,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-029",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "678465758ed4f9b7c61887f2d80ec2e39658b84604b17c89978391e9439a7a9c"
+      },
+      "elapsedMs": 146.80000001192093,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-029",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "678465758ed4f9b7c61887f2d80ec2e39658b84604b17c89978391e9439a7a9c"
+      },
+      "elapsedMs": 107.09999999403954,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-029",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "678465758ed4f9b7c61887f2d80ec2e39658b84604b17c89978391e9439a7a9c"
+      },
+      "elapsedMs": 125.09999999403954,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-030",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "08f5c522694cf6f57da933ab9b2360362b4d916053aa63449fc996a800bec826"
+      },
+      "elapsedMs": 122,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-030",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "08f5c522694cf6f57da933ab9b2360362b4d916053aa63449fc996a800bec826"
+      },
+      "elapsedMs": 85.80000001192093,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-030",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "08f5c522694cf6f57da933ab9b2360362b4d916053aa63449fc996a800bec826"
+      },
+      "elapsedMs": 89.09999999403954,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-031",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "6604727141894dff26d9fbf28d5aec43b23096d6731aead830dbeec5fc993102"
+      },
+      "elapsedMs": 117.10000002384186,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-031",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "6604727141894dff26d9fbf28d5aec43b23096d6731aead830dbeec5fc993102"
+      },
+      "elapsedMs": 95.10000002384186,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-031",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "6604727141894dff26d9fbf28d5aec43b23096d6731aead830dbeec5fc993102"
+      },
+      "elapsedMs": 99.60000002384186,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-032",
+      "backend": "standard",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "28aa1927528bf2ac71d9cff031acee6dfb36fda86614ce056a420106d4c20438"
+      },
+      "elapsedMs": 91.40000000596046,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-032",
+      "backend": "optimized",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "28aa1927528bf2ac71d9cff031acee6dfb36fda86614ce056a420106d4c20438"
+      },
+      "elapsedMs": 61.900000005960464,
+      "memoryBytes": 67108864
+    },
+    {
+      "id": "pruning-lhs-032",
+      "backend": "compiled",
+      "outcome": "success",
+      "exactEquality": true,
+      "hashes": {
+        "result.gb": "28aa1927528bf2ac71d9cff031acee6dfb36fda86614ce056a420106d4c20438"
+      },
+      "elapsedMs": 80.5,
+      "memoryBytes": 67108864
+    }
+  ],
+  "errors": [],
+  "overallTimeoutMs": 1350000,
+  "summary": {
+    "cases": 45,
+    "backendRuns": 135,
+    "successfulRuns": 135
+  },
+  "finishedAt": "2026-10-02T07:59:03.849Z"
+}

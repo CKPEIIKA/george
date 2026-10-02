@@ -1,5 +1,25 @@
 # Runtime performance assessment
 
+## George 0.5 memory measurements — 2026-10-02
+
+The new memory64 engine has not been compared in a controlled timing
+series. It remains an explicit option, and the wasm32 C backend remains
+the default. Concurrent validation timings do not establish a speed gain.
+
+For the submitted presentation through degree 7, repeated wasm32 C runs
+with pruning off/on/on/off retain the same native **695-element** result.
+Allocated Wasm memory falls from **110.875 to 92.375 MiB**, about **16.7%**.
+The corresponding memory64/pruning/no-cap run uses **191.1875 MiB** and
+matches the same exact result. This is not a paired estimate of general
+64-bit overhead. Allocated Wasm memory is not live Lisp heap or browser RSS.
+
+The final memory64 browser stress check retains **4.21875 GiB** of live
+arrays, using **4.352783203125 GiB** of allocated Wasm. GC roots, retained
+arrays after GC and exact arithmetic all pass. It demonstrates crossing
+4 GiB, not capacity for the submitted problem at degrees 9–11; those
+degrees have not been tested here. Evidence and final asset hashes are in
+[memory64.json](validation/memory64.json).
+
 ## George 0.4: Lisp O2, Lisp O3 + LTO, and C
 
 Measured on **2026-10-01**. The submitted 15-generator, 100-relation

@@ -16,7 +16,7 @@ const upstream=JSON.parse(fs.readFileSync('test/fixtures/upstream-cases.json','u
 const out=`build/validation/ui-${Date.now()}`;fs.mkdirSync(out,{recursive:true});
 const sha=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
 const browserFiles=['web/index.html','web/style.css',...fs.readdirSync('web/src').filter(n=>n.endsWith('.js')).map(n=>'web/src/'+n),'web/engine/worker.js','web/engine/runner.js'];
-const report={debuggerDuringCalculations:false,mobileViewportControl:'CDP Emulation only; no Runtime, Debugger or Profiler domains',engine:JSON.parse(fs.readFileSync('web/engine/compiled/build.json','utf8')),sourceHashes:Object.fromEntries(browserFiles.map(p=>[p,sha(p)])),browser:null,mounts:[],console:[],backends:[],examples:[],checks:[],errors:[],externalRequests:[]};
+const report={debuggerDuringCalculations:false,mobileViewportControl:'CDP Emulation only; no Runtime, Debugger or Profiler domains',engine:JSON.parse(fs.readFileSync('web/engine/compiled/build.json','utf8')),sourceHashes:Object.fromEntries(browserFiles.map(p=>[p,sha(p)])),browser:null,mounts:[],console:[],backends:[],pruning:[],examples:[],checks:[],errors:[],externalRequests:[]};
 const data={tutorials:TUTORIALS.map(t=>({...t,form:tutorialForm(t.id)})),examples:EXAMPLES,
  upstream:upstream.cases.filter(c=>['sympy-katsura3','singular-gb_braid3-11','gbnp-weighted','gbnp-sl2-quotient'].includes(c.id))};
 
@@ -31,7 +31,7 @@ async function checkUI(){
  const mode=new URL(location.href).searchParams.get('validation')||'desktop';
  const files=()=>Object.fromEntries(all('#filesOut .file').map(e=>[e.querySelector('.name').textContent,e.querySelector('pre').textContent]));
  const form=()=>all('#presentation input:not([readonly]),#presentation select,#presentation textarea').map(n=>({id:n.id||n.name+':'+n.value,value:n.value,checked:n.checked??null}));
- const set=(id,value)=>{const el=$('#'+id);el.value=String(value);el.dispatchEvent(new Event(el.tagName==='SELECT'?'change':'input',{bubbles:true}));};
+ const set=(id,value)=>{const el=$('#'+id);if(el.type==='checkbox')el.checked=!!value;else el.value=String(value);el.dispatchEvent(new Event(el.tagName==='SELECT'?'change':'input',{bubbles:true}));};
  const radio=(name,value)=>{const el=$(`input[name="${name}"][value="${value}"]`);el.checked=true;el.dispatchEvent(new Event('change',{bubbles:true}));};
  const language=value=>$(`[data-lang="${value}"]`).click();
  const theme=async value=>{for(let i=0;i<3&&$('#theme').dataset.pref!==value;i++)$('#theme').click();eq($('#theme').dataset.pref,value,'theme selection');};
@@ -52,10 +52,12 @@ async function checkUI(){
    $('[data-tutorial="monoid"]').click();await compute();ok(!$('#view-compute').hidden,'mobile computed result visible');ok($('#bettiOut').textContent.includes('Ungraded Betti numbers'),'mobile Betti result');ok(document.documentElement.scrollWidth<=innerWidth+1,'mobile result overflow');await post('done',{mode,errors,checks:['390px guide and computed monoid result have no page overflow']});return;
   }
   if(phase==='start'){
-   language('en');eq($('.brand-sub').textContent,'an interface to bergman','English interface wording');eq($('.brand-version').textContent,'0.4','application version');
+   language('en');eq($('.brand-sub').textContent,'an interface to bergman','English interface wording');eq($('.brand-version').textContent,'0.5','application version');
    eq($('#backend').value,'compiled','default backend');
    eq($('#timeoutMinutes').value,'0','default time limit is unlimited');
-   eq(all('#backend option').map(o=>o.textContent),['C / ECL O3 + LTO','Lisp / ECL O3 + LTO','Lisp / ECL O2'],'explicit backend labels');
+   eq(all('#backend option').map(o=>o.textContent),['C / ECL O3 + LTO','C / ECL O3 + LTO (memory64)','Lisp / ECL O3 + LTO','Lisp / ECL O2'],'explicit backend labels');
+   ok(!$('#backend option[value="memory64"]').disabled,'memory64 available in this browser');
+   ok($('#memoryMiB option[value="0"]').disabled,'uncapped heap unavailable in wasm32');
    location.hash='#console';
    const command=async(src,expected)=>{
     const term=$('#terminal'),start=term.children.length;
@@ -97,12 +99,34 @@ async function checkUI(){
    set('timeoutMinutes',30);
    location.hash='#compute';$('details.advanced').open=true;
    const {readShareLink}=await import(new URL('src/share.js',location.href));
+   set('memoryMiB',4095);eq($('#memoryMiB').value,'4095','highest wasm32 allowance');
+   set('preset','tutorial:char2');await compute();const unpruned=files();
+   ok(!$('#monomialPruning').disabled,'pruning available for homogeneous basis');
+   set('monomialPruning',true);await compute();eq(files(),unpruned,'pruning output parity');
+   eq(JSON.parse(localStorage.getItem('george.form.v1')).form.monomialPruning,true,'pruning saved locally');
+   $('#shareLink').value='';$('#share').click();await wait(()=>$('#shareLink').value&&!$('#share').disabled,'pruning share');
+   const pruningHash=new URL($('#shareLink').value).hash;
+   eq((await readShareLink(pruningHash)).monomialPruning,true,'shared pruning');
+   eq((await readShareLink(pruningHash)).memoryMiB,4095,'shared highest wasm32 allowance');
+   set('monomialPruning',false);location.hash=pruningHash;
+   await wait(()=>$('#monomialPruning').checked,'incoming pruning share');
+   ok($('#stop').hidden,'incoming share does not compute');
+   set('preset','tutorial:weights');ok($('#monomialPruning').disabled&&!$('#monomialPruning').checked,'weights disable pruning');
+   set('preset','tutorial:char2');set('monomialPruning',true);radio('task','anick');
+   ok($('#monomialPruning').disabled&&!$('#monomialPruning').checked,'resolution disables pruning');
+   radio('task','gb');set('monomialPruning',false);location.hash='#compute';
+   await post('pruning',{mount:data.mount,outputParity:true,localPersistence:true,shareRoundTrip:true,incomingRestoration:true,incompatibleDisabled:true});
    const backendRows=[];let reference;
-   for(const backend of ['standard','optimized','compiled']){
+   for(const backend of ['standard','optimized','compiled','memory64']){
     set('backend',backend);set('preset','tutorial:char2');eq($('#backend').value,backend,'preset preserves backend');eq($('#timeoutMinutes').value,'30','preset preserves time limit');
+    if(backend==='memory64'){
+     ok(!$('#memoryMiB option[value="16384"]').disabled,'16 GiB allowance available');
+     set('memoryMiB',16384);await compute();set('memoryMiB',0);
+    }
     await compute();const raw=files();if(reference)eq(raw,reference,'backend output parity');else reference=raw;
     $('#shareLink').value='';$('#share').click();await wait(()=>$('#shareLink').value&&!$('#share').disabled,'backend share');
     eq((await readShareLink(new URL($('#shareLink').value).hash)).backend,backend,'shared backend');
+    eq((await readShareLink(new URL($('#shareLink').value).hash)).memoryMiB,backend==='memory64'?0:4095,'shared memory allowance');
     eq((await readShareLink(new URL($('#shareLink').value).hash)).timeoutMinutes,30,'shared time limit');
     location.hash='#console';set('timeoutMinutes',0.001);await command('(loop)',/configured time limit/);
     set('timeoutMinutes',30);await command('(+ 1 2)',/3/);location.hash='#compute';
@@ -110,6 +134,7 @@ async function checkUI(){
    }
    await post('backends',{mount:data.mount,defaultBackend:'compiled',rows:backendRows});
    set('backend','optimized');
+   eq($('#memoryMiB').value,'4095','switching to wasm32 clamps the uncapped heap allowance');
    location.hash='#compute';await theme('light');eq(getComputedStyle(document.body).backgroundColor,'rgb(238, 242, 243)','light theme');await theme('dark');eq(getComputedStyle(document.body).backgroundColor,'rgb(17, 26, 39)','dark theme');await theme('auto');eq(document.documentElement.getAttribute('data-theme'),null,'automatic theme');eq(getComputedStyle(document.body).backgroundColor,matchMedia('(prefers-color-scheme: dark)').matches?'rgb(17, 26, 39)':'rgb(238, 242, 243)','automatic follows OS');
    set('preset','tutorial:weights');await compute();const before=form(),raw=files();language('ru');eq($('.brand-sub').textContent,'интерфейс к bergman','Russian interface wording');eq(document.documentElement.lang,'ru','Russian lang');ok(/Вычислить/.test($('#go').textContent),'Russian controls');ok(/Вычислено/.test($('#runStatus').textContent),'Russian status');eq(form(),before,'language preserves form');eq(files(),raw,'language preserves files');
    location.hash='#guide';await math();eq($('#guideTitle').textContent,'Руководство пользователя','Russian guide');checkMath();await theme('dark');sessionStorage.setItem('validation.savedForm',JSON.stringify(before));next('persist');return;
@@ -184,9 +209,12 @@ async function run(mount,mode='desktop'){
      else{assert.deepEqual(JSON.parse(v.files['homology.json']).betti.slice(0,5),[1,1,0,0,0]);assert.ok(v.resolutionLines>0);}
      report.examples.push({id:item.id,task:tutorialForm(item.id).task,outputs:Object.keys(v.files),hashes:Object.fromEntries(Object.entries(v.files).map(([n,s])=>[n,crypto.createHash('sha256').update(s).digest('hex')]))});console.log(item.id,'PASS');
     }else if(kind==='backends'){
-     assert.equal(v.defaultBackend,'compiled');assert.deepEqual(v.rows.map(r=>r.backend),['standard','optimized','compiled']);
+     assert.equal(v.defaultBackend,'compiled');assert.deepEqual(v.rows.map(r=>r.backend),['standard','optimized','compiled','memory64']);
      for(const row of v.rows){assert.equal(row.outputParity,true);assert.equal(row.shareRoundTrip,true);assert.equal(row.timeoutMinutes,30);assert.equal(row.timeoutAndRestart,true);}
      report.backends.push(v);console.log(mount,'backend selection, parity and share PASS');
+    }else if(kind==='pruning'){
+     for(const key of ['outputParity','localPersistence','shareRoundTrip','incomingRestoration','incompatibleDisabled'])assert.equal(v[key],true,key);
+     report.pruning.push(v);console.log(mount,'monomial pruning controls and share PASS');
     }else if(kind==='console'){
      assert.equal(v.recoveryCases,8);for(const key of ['settingsAndFilesRetained','firstValue','help','completion','history','currentComputation'])assert.equal(v[key],true,key);
      report.console.push(v);console.log(mount,'console recovery PASS');

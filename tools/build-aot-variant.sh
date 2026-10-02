@@ -24,6 +24,11 @@ for host_library in "$toolchain/ecl-host"/lib{,64}/ecl-*; do
 done
 export GEORGE_AOT_DIRECTORY="$destination" GEORGE_AOT_RUNTIME="$destination/host-runtime"
 export GEORGE_ECL_WASM="$prefix" GEORGE_AOT_CC_FLAGS="${GEORGE_LINK_OPT:--O2}"
+case "${GEORGE_MEMORY64:-0}" in
+  0) ;;
+  1) GEORGE_AOT_CC_FLAGS+=' -sMEMORY64=1' ;;
+  *) echo 'GEORGE_MEMORY64 must be 0 or 1' >&2; exit 2 ;;
+esac
 case "${GEORGE_LTO:-0}" in
   0) ;;
   1) GEORGE_AOT_CC_FLAGS+=' -flto' ;;
@@ -50,6 +55,7 @@ metadata = prefix/'george-runtime.json'
 if not metadata.exists(): metadata = prefix.parent/'build.json'
 library = json.loads(metadata.read_text())
 report = {'aot': True, 'prefix': sys.argv[2], 'optimization': library['optimization'],
+          'memory64': bool(library.get('memory64', False)),
           'linkOptimization': sys.argv[3].removeprefix('-'),
           'libraryLto': bool(library.get('lto', False)),
           'lto': sys.argv[4] == '1', 'profile': False,

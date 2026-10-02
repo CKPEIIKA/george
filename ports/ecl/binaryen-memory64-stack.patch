@@ -1,0 +1,27 @@
+--- a/src/abi/stack.h
++++ b/src/abi/stack.h
+@@ -60,6 +60,10 @@
+       builder.makeBinary(SubInt32,
+                          builder.makeGlobalGet(stackPointer->name, pointerType),
+                          builder.makeConst(int32_t(size)));
++  } else if (pointerType == Type::i64) {
++    added = builder.makeBinary(
++      SubInt64, builder.makeGlobalGet(stackPointer->name, pointerType),
++      builder.makeConst(int64_t(size)));
+   } else {
+     WASM_UNREACHABLE("unhandled pointerType");
+   }
+@@ -68,9 +72,11 @@
+   auto makeStackRestore = [&]() {
+     return builder.makeGlobalSet(
+       stackPointer->name,
+-      builder.makeBinary(AddInt32,
++      builder.makeBinary(pointerType == Type::i64 ? AddInt64 : AddInt32,
+                          builder.makeLocalGet(local, pointerType),
+-                         builder.makeConst(int32_t(size))));
++                         pointerType == Type::i64
++                           ? builder.makeConst(int64_t(size))
++                           : builder.makeConst(int32_t(size))));
+   };
+   // add stack restores to the returns
+   FindAllPointers<Return> finder(func->body);

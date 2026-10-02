@@ -19,11 +19,11 @@
       "sha256": "dce742ded7cc24a6ace543505cad50b4699d7acdb9c51fef8dbae01905871ece"
     }
   },
-  "appVersion": "0.4.0",
+  "appVersion": "0.5.0",
   "memory": {
     "wasmMaximumBytes": 4294967296,
     "defaultHeapMiB": 2048,
-    "maximumHeapMiB": 3584
+    "maximumHeapMiB": 4095
   },
   "compiler": {
     "libraryOptimization": "O3",

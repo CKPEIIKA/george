@@ -1,0 +1,242 @@
+{
+  "date": "2026-10-02T09:04:07.859Z",
+  "debuggerDuringCalculation": false,
+  "backend": "memory64",
+  "allowanceMiB": 0,
+  "bytesPerArray": 125829120,
+  "targetArrays": 36,
+  "rows": [
+    {
+      "arrays": 1,
+      "liveArrayBytes": 125829120,
+      "wasmBytes": 191627264,
+      "stdout": "(1 7)\n"
+    },
+    {
+      "arrays": 2,
+      "liveArrayBytes": 251658240,
+      "wasmBytes": 342884352,
+      "stdout": "(2 7)\n"
+    },
+    {
+      "arrays": 3,
+      "liveArrayBytes": 377487360,
+      "wasmBytes": 494206976,
+      "stdout": "(3 7)\n"
+    },
+    {
+      "arrays": 4,
+      "liveArrayBytes": 503316480,
+      "wasmBytes": 593100800,
+      "stdout": "(4 7)\n"
+    },
+    {
+      "arrays": 5,
+      "liveArrayBytes": 629145600,
+      "wasmBytes": 711720960,
+      "stdout": "(5 7)\n"
+    },
+    {
+      "arrays": 6,
+      "liveArrayBytes": 754974720,
+      "wasmBytes": 854065152,
+      "stdout": "(6 7)\n"
+    },
+    {
+      "arrays": 7,
+      "liveArrayBytes": 880803840,
+      "wasmBytes": 1016922112,
+      "stdout": "(7 7)\n"
+    },
+    {
+      "arrays": 8,
+      "liveArrayBytes": 1006632960,
+      "wasmBytes": 1143013376,
+      "stdout": "(8 7)\n"
+    },
+    {
+      "arrays": 9,
+      "liveArrayBytes": 1132462080,
+      "wasmBytes": 1269170176,
+      "stdout": "(9 7)\n"
+    },
+    {
+      "arrays": 10,
+      "liveArrayBytes": 1258291200,
+      "wasmBytes": 1395261440,
+      "stdout": "(10 7)\n"
+    },
+    {
+      "arrays": 11,
+      "liveArrayBytes": 1384120320,
+      "wasmBytes": 1521352704,
+      "stdout": "(11 7)\n"
+    },
+    {
+      "arrays": 12,
+      "liveArrayBytes": 1509949440,
+      "wasmBytes": 1647443968,
+      "stdout": "(12 7)\n"
+    },
+    {
+      "arrays": 13,
+      "liveArrayBytes": 1635778560,
+      "wasmBytes": 1773600768,
+      "stdout": "(13 7)\n"
+    },
+    {
+      "arrays": 14,
+      "liveArrayBytes": 1761607680,
+      "wasmBytes": 1899429888,
+      "stdout": "(14 7)\n"
+    },
+    {
+      "arrays": 15,
+      "liveArrayBytes": 1887436800,
+      "wasmBytes": 2025521152,
+      "stdout": "(15 7)\n"
+    },
+    {
+      "arrays": 16,
+      "liveArrayBytes": 2013265920,
+      "wasmBytes": 2151612416,
+      "stdout": "(16 7)\n"
+    },
+    {
+      "arrays": 17,
+      "liveArrayBytes": 2139095040,
+      "wasmBytes": 2277769216,
+      "stdout": "(17 7)\n"
+    },
+    {
+      "arrays": 18,
+      "liveArrayBytes": 2264924160,
+      "wasmBytes": 2403860480,
+      "stdout": "(18 7)\n"
+    },
+    {
+      "arrays": 19,
+      "liveArrayBytes": 2390753280,
+      "wasmBytes": 2529951744,
+      "stdout": "(19 7)\n"
+    },
+    {
+      "arrays": 20,
+      "liveArrayBytes": 2516582400,
+      "wasmBytes": 2656043008,
+      "stdout": "(20 7)\n"
+    },
+    {
+      "arrays": 21,
+      "liveArrayBytes": 2642411520,
+      "wasmBytes": 2782199808,
+      "stdout": "(21 7)\n"
+    },
+    {
+      "arrays": 22,
+      "liveArrayBytes": 2768240640,
+      "wasmBytes": 2908291072,
+      "stdout": "(22 7)\n"
+    },
+    {
+      "arrays": 23,
+      "liveArrayBytes": 2894069760,
+      "wasmBytes": 3034382336,
+      "stdout": "(23 7)\n"
+    },
+    {
+      "arrays": 24,
+      "liveArrayBytes": 3019898880,
+      "wasmBytes": 3160473600,
+      "stdout": "(24 7)\n"
+    },
+    {
+      "arrays": 25,
+      "liveArrayBytes": 3145728000,
+      "wasmBytes": 3286630400,
+      "stdout": "(25 7)\n"
+    },
+    {
+      "arrays": 26,
+      "liveArrayBytes": 3271557120,
+      "wasmBytes": 3412721664,
+      "stdout": "(26 7)\n"
+    },
+    {
+      "arrays": 27,
+      "liveArrayBytes": 3397386240,
+      "wasmBytes": 3538812928,
+      "stdout": "(27 7)\n"
+    },
+    {
+      "arrays": 28,
+      "liveArrayBytes": 3523215360,
+      "wasmBytes": 3664904192,
+      "stdout": "(28 7)\n"
+    },
+    {
+      "arrays": 29,
+      "liveArrayBytes": 3649044480,
+      "wasmBytes": 3791060992,
+      "stdout": "(29 7)\n"
+    },
+    {
+      "arrays": 30,
+      "liveArrayBytes": 3774873600,
+      "wasmBytes": 3917152256,
+      "stdout": "(30 7)\n"
+    },
+    {
+      "arrays": 31,
+      "liveArrayBytes": 3900702720,
+      "wasmBytes": 4043243520,
+      "stdout": "(31 7)\n"
+    },
+    {
+      "arrays": 32,
+      "liveArrayBytes": 4026531840,
+      "wasmBytes": 4169334784,
+      "stdout": "(32 7)\n"
+    },
+    {
+      "arrays": 33,
+      "liveArrayBytes": 4152360960,
+      "wasmBytes": 4295491584,
+      "stdout": "(33 7)\n"
+    },
+    {
+      "arrays": 34,
+      "liveArrayBytes": 4278190080,
+      "wasmBytes": 4421582848,
+      "stdout": "(34 7)\n"
+    },
+    {
+      "arrays": 35,
+      "liveArrayBytes": 4404019200,
+      "wasmBytes": 4547674112,
+      "stdout": "(35 7)\n"
+    },
+    {
+      "arrays": 36,
+      "liveArrayBytes": 4529848320,
+      "wasmBytes": 4673765376,
+      "stdout": "(36 7)\n"
+    }
+  ],
+  "engineHashes": {
+    "ecl.js": "20396f8ba77b29ef330513e55fcab5352678ba20c96119d4d7174089b3c1e667",
+    "ecl.wasm": "56a55b5829bb678eb65c35eee34eb6ecb91b714d0b057eba045367774e85960d",
+    "ecl.data": "dce742ded7cc24a6ace543505cad50b4699d7acdb9c51fef8dbae01905871ece"
+  },
+  "configured": {
+    "stdout": "0\n"
+  },
+  "roots": {
+    "stdout": "T\nT\n",
+    "wasmBytes": 4673765376
+  },
+  "done": {
+    "stdout": "T\n12157665459056928801\n",
+    "wasmBytes": 4673765376
+  }
+}

@@ -1,0 +1,4844 @@
+{
+  "state": "complete",
+  "startedAt": "2026-10-02T07:42:36.739Z",
+  "reference": "/home/uu/Projects/george/build/validation/parity-oracle-final-20261001/report.json",
+  "referenceSha256": "8318923d99bf55f58f1e3964be268a46166d5ae9266cfa4ea4c5fe74bb538f25",
+  "sampling": {
+    "seed": 1347573070,
+    "count": 32,
+    "dimensions": [
+      "generators",
+      "field",
+      "degree",
+      "coefficient",
+      "order",
+      "legacy",
+      "reverse",
+      "linear"
+    ],
+    "samples": [
+      {
+        "generators": 0.1170177626045188,
+        "field": 0.3671414317432209,
+        "degree": 0.4781307687226217,
+        "coefficient": 0.17138051323854597,
+        "order": 0.6568528080388205,
+        "legacy": 0.18647109372977866,
+        "reverse": 0.1580106786568649,
+        "linear": 0.9669613278019824
+      },
+      {
+        "generators": 0.811176410796179,
+        "field": 0.5365495089063188,
+        "degree": 0.2814351460765465,
+        "coefficient": 0.9999255148868542,
+        "order": 0.2401779418651131,
+        "legacy": 0.8984176839730935,
+        "reverse": 0.3572684422179009,
+        "linear": 0.2490367189166136
+      },
+      {
+        "generators": 0.6413076339522377,
+        "field": 0.6724394144621328,
+        "degree": 0.593900187741383,
+        "coefficient": 0.6187941651660367,
+        "order": 0.3523101515311282,
+        "legacy": 0.3902924376379815,
+        "reverse": 0.13615987561934162,
+        "linear": 0.47693180041824235
+      },
+      {
+        "generators": 0.03428147255181102,
+        "field": 0.19248470582533628,
+        "degree": 0.1236273496542708,
+        "coefficient": 0.3339001213753363,
+        "order": 0.15610447533981642,
+        "legacy": 0.7146364852960687,
+        "reverse": 0.43059240876027616,
+        "linear": 0.16246829899318982
+      },
+      {
+        "generators": 0.06297642739082221,
+        "field": 0.018591042018670123,
+        "degree": 0.759060399257578,
+        "coefficient": 0.5756594058257178,
+        "order": 0.8404421320738038,
+        "legacy": 0.5843145629260107,
+        "reverse": 0.8678188228223007,
+        "linear": 0.05275876343512209
+      },
+      {
+        "generators": 0.001429832489520777,
+        "field": 0.16784325103799347,
+        "degree": 0.01845134409813909,
+        "coefficient": 0.2611091771395877,
+        "order": 0.07226727242959896,
+        "legacy": 0.11148154210241046,
+        "reverse": 0.03968541425274452,
+        "linear": 0.4443339707504492
+      },
+      {
+        "generators": 0.3430517437227536,
+        "field": 0.8260611402292852,
+        "degree": 0.699662079117843,
+        "coefficient": 0.8854553963683429,
+        "order": 0.5327680023619905,
+        "legacy": 0.7274951389190392,
+        "reverse": 0.5902861737267813,
+        "linear": 0.6037905156481429
+      },
+      {
+        "generators": 0.6173472405862412,
+        "field": 0.05181727514718659,
+        "degree": 0.8421207516876166,
+        "coefficient": 0.11976714014599565,
+        "order": 0.4165087164074066,
+        "legacy": 0.6034863378154114,
+        "reverse": 0.25694969474716345,
+        "linear": 0.19668634921254124
+      },
+      {
+        "generators": 0.14176393735397141,
+        "field": 0.3135414949138067,
+        "degree": 0.2703299541317392,
+        "coefficient": 0.9063286375676398,
+        "order": 0.4910551626380766,
+        "legacy": 0.32257932179345516,
+        "reverse": 0.5105261463904753,
+        "linear": 0.009050129367096815
+      },
+      {
+        "generators": 0.25020124341972405,
+        "field": 0.5079485282039968,
+        "degree": 0.4117782573666773,
+        "coefficient": 0.6828243998170365,
+        "order": 0.72696726857248,
+        "legacy": 0.19673537510971073,
+        "reverse": 0.4474477301046136,
+        "linear": 0.9239618909778073
+      },
+      {
+        "generators": 0.9508303403272294,
+        "field": 0.2187858819743269,
+        "degree": 0.14872039265173953,
+        "coefficient": 0.35398257677297806,
+        "order": 0.9188477313437033,
+        "legacy": 0.05138161540526198,
+        "reverse": 0.3778295060765231,
+        "linear": 0.7364569589190069
+      },
+      {
+        "generators": 0.5046103055865387,
+        "field": 0.9525704406551085,
+        "degree": 0.4439557608930045,
+        "coefficient": 0.19973016546282452,
+        "order": 0.308642001960834,
+        "legacy": 0.9907595678523649,
+        "reverse": 0.9159791487691109,
+        "linear": 0.5269217840541387
+      },
+      {
+        "generators": 0.2262835575529607,
+        "field": 0.07010856869601412,
+        "degree": 0.06402755243470892,
+        "coefficient": 0.7360441321288818,
+        "order": 0.1794409814028768,
+        "legacy": 0.07705658175837016,
+        "reverse": 0.231232028483646,
+        "linear": 0.08372983936715173
+      },
+      {
+        "generators": 0.708512966062699,
+        "field": 0.7851858570502372,
+        "degree": 0.21909350802161498,
+        "coefficient": 0.4601589510566555,
+        "order": 0.8506967476350837,
+        "legacy": 0.6766284752375213,
+        "reverse": 0.12458886499371147,
+        "linear": 0.9807497323781718
+      },
+      {
+        "generators": 0.9272126381692942,
+        "field": 0.7460836703030509,
+        "degree": 0.9100668028258951,
+        "coefficient": 0.14788470364146633,
+        "order": 0.6362344119115733,
+        "legacy": 0.45762185936473543,
+        "reverse": 0.6003807817323832,
+        "linear": 0.14316390049498295
+      },
+      {
+        "generators": 0.8739258686182438,
+        "field": 0.397438309941208,
+        "degree": 0.8586008972561103,
+        "coefficient": 0.04370593589555938,
+        "order": 0.6231142356336932,
+        "legacy": 0.4078362103900872,
+        "reverse": 0.3280902192709618,
+        "linear": 0.6488485356530873
+      },
+      {
+        "generators": 0.588838906478486,
+        "field": 0.6352320133810281,
+        "degree": 0.3221323511970695,
+        "coefficient": 0.3803236801250023,
+        "order": 0.32419529727485497,
+        "legacy": 0.8567266840764205,
+        "reverse": 0.6921091218828224,
+        "linear": 0.7099350793068879
+      },
+      {
+        "generators": 0.8381832261002273,
+        "field": 0.7619501799199497,
+        "degree": 0.6717534262788831,
+        "coefficient": 0.7810371935775038,
+        "order": 0.27832355211285176,
+        "legacy": 0.5536894279794069,
+        "reverse": 0.6309791290477733,
+        "linear": 0.6640104217804037
+      },
+      {
+        "generators": 0.4105516050476581,
+        "field": 0.8806083784802468,
+        "degree": 0.5667539820860839,
+        "coefficient": 0.47326671863993397,
+        "order": 0.7679577687231358,
+        "legacy": 0.30873454642278375,
+        "reverse": 0.6671553690248402,
+        "linear": 0.11094115062587662
+      },
+      {
+        "generators": 0.8865190772266942,
+        "field": 0.44981695688329637,
+        "degree": 0.9919089628747315,
+        "coefficient": 0.6984712602425134,
+        "order": 0.4436110017923056,
+        "legacy": 0.7845115082745906,
+        "reverse": 0.9855031962579233,
+        "linear": 0.7948726614267798
+      },
+      {
+        "generators": 0.6743978873273591,
+        "field": 0.14003329304250656,
+        "degree": 0.39880618662573397,
+        "coefficient": 0.5068322937368066,
+        "order": 0.8913854616548633,
+        "legacy": 0.9631878870641231,
+        "reverse": 0.30887834387249313,
+        "linear": 0.4241385348213953
+      },
+      {
+        "generators": 0.7757806964873453,
+        "field": 0.70572870237811,
+        "degree": 0.71892032399046,
+        "coefficient": 0.09360938216559589,
+        "order": 0.11168818551959703,
+        "legacy": 0.01259253358875867,
+        "reverse": 0.5452114857835113,
+        "linear": 0.2645507071574684
+      },
+      {
+        "generators": 0.30869772253208794,
+        "field": 0.10695304774708347,
+        "degree": 0.6409173446154455,
+        "coefficient": 0.4142263126486796,
+        "order": 0.9718791313935071,
+        "legacy": 0.5005989526762278,
+        "reverse": 0.9057509233098244,
+        "linear": 0.7732084092785954
+      },
+      {
+        "generators": 0.9902248478247202,
+        "field": 0.9354283382708672,
+        "degree": 0.16917314852616983,
+        "coefficient": 0.9666886675549904,
+        "order": 0.024809901595290285,
+        "legacy": 0.2603305222000927,
+        "reverse": 0.7817494096598239,
+        "linear": 0.5785815780836856
+      },
+      {
+        "generators": 0.7409525665425463,
+        "field": 0.6121374394497252,
+        "degree": 0.9424276469799224,
+        "coefficient": 0.5554890945277293,
+        "order": 0.3963300247123698,
+        "legacy": 0.1385922334084171,
+        "reverse": 0.00599114247597754,
+        "linear": 0.8211368709235103
+      },
+      {
+        "generators": 0.17195135597285116,
+        "field": 0.9850271780014737,
+        "degree": 0.7927163795320666,
+        "coefficient": 0.8674458927998785,
+        "order": 0.05426148145488696,
+        "legacy": 0.49469126960320864,
+        "reverse": 0.195056950666185,
+        "linear": 0.3887010801117867
+      },
+      {
+        "generators": 0.21317783423000947,
+        "field": 0.27709002709161723,
+        "degree": 0.5202677373745246,
+        "coefficient": 0.8195898418998695,
+        "order": 0.5685458198713604,
+        "legacy": 0.9304134050107677,
+        "reverse": 0.740684755743132,
+        "linear": 0.36025019594671903
+      },
+      {
+        "generators": 0.37314883065846516,
+        "field": 0.47222179832169786,
+        "degree": 0.8816804546877393,
+        "coefficient": 0.632715504427324,
+        "order": 0.5194485003812588,
+        "legacy": 0.6303526723349933,
+        "reverse": 0.9566804608984967,
+        "linear": 0.3397853366477648
+      },
+      {
+        "generators": 0.47097890586883295,
+        "field": 0.8712285482833977,
+        "degree": 0.3537162333377637,
+        "coefficient": 0.28238401571434224,
+        "order": 0.20997423892549705,
+        "legacy": 0.3517955288043595,
+        "reverse": 0.832804194331402,
+        "linear": 0.8823607448211988
+      },
+      {
+        "generators": 0.3894184433229384,
+        "field": 0.58170854668424,
+        "degree": 0.05192366526898695,
+        "coefficient": 0.792384039668832,
+        "order": 0.7836745871245512,
+        "legacy": 0.24121020063466858,
+        "reverse": 0.4714466009972966,
+        "linear": 0.5574006300012115
+      },
+      {
+        "generators": 0.5542492381937336,
+        "field": 0.4260467087224242,
+        "degree": 0.21505898465693463,
+        "coefficient": 0.23850688669335796,
+        "order": 0.6995106177055277,
+        "legacy": 0.8228385458714911,
+        "reverse": 0.06715214932046365,
+        "linear": 0.8535298907881952
+      },
+      {
+        "generators": 0.4393315486013307,
+        "field": 0.31146331733907573,
+        "degree": 0.5325632082603988,
+        "coefficient": 0.02670038580254186,
+        "order": 0.9495634176346357,
+        "legacy": 0.7754438678384759,
+        "reverse": 0.7512247689082869,
+        "linear": 0.28634134474850725
+      }
+    ]
+  },
+  "perCaseTimeoutMs": 180000,
+  "engines": {
+    "standard": {
+      "directory": "/home/uu/Projects/george/web/engine",
+      "hashes": {
+        "ecl.js": "10b688b96b805c2339a76f6d9fc0c800fbefb37b9ec0310d297d49873cda530f",
+        "ecl.wasm": "b90c140372df3f8857e535fd8a8de3406ba57d27a40b6cf2e62b51a123a26585",
+        "ecl.data": "dce742ded7cc24a6ace543505cad50b4699d7acdb9c51fef8dbae01905871ece"
+      }
+    },
+    "optimized": {
+      "directory": "/home/uu/Projects/george/web/engine/optimized",
+      "hashes": {
+        "ecl.js": "d4bda52e4d48ed9610f55ef882cdaf2a64639a3903f1fa27a77e4a2c72550916",
+        "ecl.wasm": "221a268e3aac9bf1a7167f1e613eb51f600437f8c65596c2b0dfbbff0677786c",
+        "ecl.data": "dce742ded7cc24a6ace543505cad50b4699d7acdb9c51fef8dbae01905871ece"
+      }
+    },
+    "compiled": {
+      "directory": "/home/uu/Projects/george/web/engine/compiled",
+      "hashes": {
+        "ecl.js": "b51a386338911b8d262557686fe0ff81e46fdbd99c55a058a7ceb3223d55edee",
+        "ecl.wasm": "8bd7c0b8be173025c741e9cb90718de0210be7eb6a0537725b06bd702f8d687d",
+        "ecl.data": "dce742ded7cc24a6ace543505cad50b4699d7acdb9c51fef8dbae01905871ece"
+      }
+    }
+  },
+  "cases": [
+    {
+      "id": "pruning-lhs-gb-019",
+      "group": "basis",
+      "form": {
+        "vars": [
+          "a",
+          "b"
+        ],
+        "ring": "noncomm",
+        "field": "0",
+        "modulus": 0,
+        "order": "homogelim",
+        "matrix": "1 1\n0 1",
+        "reverseVars": false,
+        "maxdeg": "4",
+        "lowterms": "quick",
+        "legacy": false,
+        "outmode": "MACAULAY",
+        "nonhomog": "auto",
+        "augmentation": "graded",
+        "memoryMiB": 2048,
+        "task": "gb",
+        "weights": "",
+        "rels": [
+          "a^2",
+          "b^2",
+          "a*b*a",
+          "b*a*b",
+          "a*b*a"
+        ],
+        "monomialPruning": true
+      },
+      "sample": {
+        "ring": 0.919944837303774,
+        "field": 0.05621289352347958,
+        "generators": 0.3685332264431054,
+        "relations": 0.5058795411350729,
+        "degree": 0.13384546642919304,
+        "weights": 0.2662821730446012,
+        "shape": 0.24196594260865822,
+        "coefficient": 0.6628158569401421,
+        "order": 0.5875652117465506,
+        "reverse": 0.3109345750817738,
+        "lowterms": 0.16611990668752696,
+        "legacy": 0.4451222228271945,
+        "output": 0.6771436597700813,
+        "memory": 0.4704571530710382
+      },
+      "shape": "monomial",
+      "weightStyle": "unit",
+      "baselineId": "lhs-gb-019"
+    },
+    {
+      "id": "pruning-lhs-gb-023",
+      "group": "basis",
+      "form": {
+        "vars": [
+          "a",
+          "b",
+          "c"
+        ],
+        "ring": "noncomm",
+        "field": "2",
+        "modulus": 2,
+        "order": "invelim",
+        "matrix": "1 1 1\n0 1 0\n0 0 1",
+        "reverseVars": true,
+        "maxdeg": "6",
+        "lowterms": "quick",
+        "legacy": false,
+        "outmode": "MACAULAY",
+        "nonhomog": "auto",
+        "augmentation": "graded",
+        "memoryMiB": 3072,
+        "task": "gb",
+        "weights": "",
+        "rels": [
+          "a^2",
+          "b^2",
+          "c^2",
+          "b*c+7*c*a-a*b",
+          "c*a+7*a*b-b*c",
+          "a*b+7*b*c-c*a"
+        ],
+        "monomialPruning": true
+      },
+      "sample": {
+        "ring": 0.7898704420440481,
+        "field": 0.36824167306986055,
+        "generators": 0.5219574274669867,
+        "relations": 0.5169966886642214,
+        "degree": 0.9398220270741149,
+        "weights": 0.1411143176483165,
+        "shape": 0.6387466907181079,
+        "coefficient": 0.6795413859399559,
+        "order": 0.6181561772318673,
+        "reverse": 0.7278117278438003,
+        "lowterms": 0.19533264875644818,
+        "legacy": 0.4924191583013453,
+        "output": 0.8858334647302399,
+        "memory": 0.7663107549706183
+      },
+      "shape": "quadratic",
+      "weightStyle": "unit",
+      "baselineId": "lhs-gb-023"
+    },
+    {
+      "id": "pruning-lhs-gb-028",
+      "group": "basis",
+      "form": {
+        "vars": [
+          "a"
+        ],
+        "ring": "noncomm",
+        "field": "p",
+        "modulus": 7,
+        "order": "invelim",
+        "matrix": "1",
+        "reverseVars": false,
+        "maxdeg": "5",
+        "lowterms": "quick",
+        "legacy": true,
+        "outmode": "ALG",
+        "nonhomog": "auto",
+        "augmentation": "graded",
+        "memoryMiB": 3072,
+        "task": "gb",
+        "weights": "",
+        "rels": [
+          "a^2",
+          "a*a*a",
+          "a*a*a",
+          "a*a*a",
+          "a*a*a",
+          "a*a*a"
+        ],
+        "monomialPruning": true
+      },
+      "sample": {
+        "ring": 0.5206769418618933,
+        "field": 0.7596952174717444,
+        "generators": 0.06387814260597224,
+        "relations": 0.7473157098720549,
+        "degree": 0.37405450689038844,
+        "weights": 0.049956859707890544,
+        "shape": 0.056964494488056516,
+        "coefficient": 0.06790052048745565,
+        "order": 0.6002092715243634,
+        "reverse": 0.26219690040306887,
+        "lowterms": 0.25931997906809556,
+        "legacy": 0.7806747120484943,
+        "output": 0.021512476469069952,
+        "memory": 0.6697221675494802
+      },
+      "shape": "monomial",
+      "weightStyle": "unit",
+      "baselineId": "lhs-gb-028"
+    },
+    {
+      "id": "pruning-lhs-gb-029",
+      "group": "basis",
+      "form": {
+        "vars": [
+          "a"
+        ],
+        "ring": "noncomm",
+        "field": "2",
+        "modulus": 2,
+        "order": "invwelim",
+        "matrix": "1",
+        "reverseVars": false,
+        "maxdeg": "6",
+        "lowterms": "quick",
+        "legacy": false,
+        "outmode": "ALG",
+        "nonhomog": "auto",
+        "augmentation": "graded",
+        "memoryMiB": 1024,
+        "task": "gb",
+        "weights": "",
+        "rels": [
+          "a^2",
+          "a*a+2*a*a-a*a",
+          "a*a+2*a*a-a*a"
+        ],
+        "monomialPruning": true
+      },
+      "sample": {
+        "ring": 0.6809662299929187,
+        "field": 0.4043007174223021,
+        "generators": 0.23775976802426158,
+        "relations": 0.37316334420393105,
+        "degree": 0.9098952858912526,
+        "weights": 0.2580938385835907,
+        "shape": 0.6882512943484471,
+        "coefficient": 0.39880294419344864,
+        "order": 0.8257476531143766,
+        "reverse": 0.28370698028084007,
+        "lowterms": 0.4980968838426634,
+        "legacy": 0.03188608197888243,
+        "output": 0.2460832407377893,
+        "memory": 0.20087886063629412
+      },
+      "shape": "quadratic",
+      "weightStyle": "unit",
+      "baselineId": "lhs-gb-029"
+    },
+    {
+      "id": "pruning-lhs-gb-037",
+      "group": "basis",
+      "form": {
+        "vars": [
+          "a"
+        ],
+        "ring": "noncomm",
+        "field": "p",
+        "modulus": 7,
+        "order": "elim",
+        "matrix": "1",
+        "reverseVars": true,
+        "maxdeg": "6",
+        "lowterms": "safe",
+        "legacy": false,
+        "outmode": "MACAULAY",
+        "nonhomog": "auto",
+        "augmentation": "graded",
+        "memoryMiB": 2048,
+        "task": "gb",
+        "weights": "",
+        "rels": [
+          "a^2",
+          "a*a+7*a*a-a*a"
+        ],
+        "monomialPruning": true
+      },
+      "sample": {
+        "ring": 0.9370176769152749,
+        "field": 0.9613252189483319,
+        "generators": 0.01830005496594822,
+        "relations": 0.1786511213394988,
+        "degree": 0.8742706301418366,
+        "weights": 0.11447120158481994,
+        "shape": 0.5798663022651454,
+        "coefficient": 0.5093608491552004,
+        "order": 0.3214998150942847,
+        "reverse": 0.6442360894470767,
+        "lowterms": 0.5905249593706685,
+        "legacy": 0.23520988771269913,
+        "output": 0.5264927781390725,
+        "memory": 0.45605031494415016
+      },
+      "shape": "quadratic",
+      "weightStyle": "unit",
+      "baselineId": "lhs-gb-037"
+    },
+    {
+      "id": "pruning-lhs-gb-046",
+      "group": "basis",
+      "form": {
+        "vars": [
+          "a"
+        ],
+        "ring": "noncomm",
+        "field": "p",
+        "modulus": 7,
+        "order": "degleftlex",
+        "matrix": "1",
+        "reverseVars": true,
+        "maxdeg": "4",
+        "lowterms": "safe",
+        "legacy": false,
+        "outmode": "MACAULAY",
+        "nonhomog": "auto",
+        "augmentation": "graded",
+        "memoryMiB": 1024,
+        "task": "gb",
+        "weights": "",
+        "rels": [
+          "a^2",
+          "a*a-12157665459056928801*a*a",
+          "a*a-12157665459056928801*a*a",
+          "a*a-12157665459056928801*a*a",
+          "a*a-12157665459056928801*a*a"
+        ],
+        "monomialPruning": true
+      },
+      "sample": {
+        "ring": 0.8666898718183802,
+        "field": 0.7672231799806468,
+        "generators": 0.2007761484310322,
+        "relations": 0.7069191572300042,
+        "degree": 0.07504233849977027,
+        "weights": 0.17900886548159178,
+        "shape": 0.3607930709295033,
+        "coefficient": 0.9543357095462852,
+        "order": 0.09743881903341389,
+        "reverse": 0.5052521117322613,
+        "lowterms": 0.6845788718674157,
+        "legacy": 0.12555165672529256,
+        "output": 0.7669193981091667,
+        "memory": 0.3993881005590083
+      },
+      "shape": "binomial",
+      "weightStyle": "unit",
+      "baselineId": "lhs-gb-046"
+    },
+    {
+      "id": "pruning-lhs-gb-047",
+      "group": "basis",
+      "form": {
+        "vars": [
+          "a"
+        ],
+        "ring": "noncomm",
+        "field": "p",
+        "modulus": 5,
+        "order": "invwelim",
+        "matrix": "1",
+        "reverseVars": false,
+        "maxdeg": "5",
+        "lowterms": "safe",
+        "legacy": true,
+        "outmode": "ALG",
+        "nonhomog": "auto",
+        "augmentation": "graded",
+        "memoryMiB": 3072,
+        "task": "gb",
+        "weights": "",
+        "rels": [
+          "a^2"
+        ],
+        "monomialPruning": true
+      },
+      "sample": {
+        "ring": 0.5094520513739553,
+        "field": 0.5579708482218848,
+        "generators": 0.2190307259443216,
+        "relations": 0.1138768348209851,
+        "degree": 0.6021798921792652,
+        "weights": 0.09487930863906513,
+        "shape": 0.2775774935580557,
+        "coefficient": 0.3224960924744664,
+        "order": 0.9008151553352945,
+        "reverse": 0.165594704241812,
+        "lowterms": 0.509758672240423,
+        "legacy": 0.8907242296736513,
+        "output": 0.38982622269395506,
+        "memory": 0.7942715453791607
+      },
+      "shape": "binomial",
+      "weightStyle": "unit",
+      "baselineId": "lhs-gb-047"
+    },
+    {
+      "id": "pruning-lhs-gb-053",
+      "group": "basis",
+      "form": {
+        "vars": [
+          "a",
+          "b"
+        ],
+        "ring": "noncomm",
+        "field": "0",
+        "modulus": 0,
+        "order": "invelim",
+        "matrix": "1 1\n0 1",
+        "reverseVars": true,
+        "maxdeg": "4",
+        "lowterms": "safe",
+        "legacy": true,
+        "outmode": "ALG",
+        "nonhomog": "auto",
+        "augmentation": "graded",
+        "memoryMiB": 512,
+        "task": "gb",
+        "weights": "",
+        "rels": [
+          "a^2",
+          "b^2",
+          "a*b*a"
+        ],
+        "monomialPruning": true
+      },
+      "sample": {
+        "ring": 0.6144803053175565,
+        "field": 0.17802062780901906,
+        "generators": 0.38838193212723127,
+        "relations": 0.14930643695333856,
+        "degree": 0.2760398596437881,
+        "weights": 0.010405554759927327,
+        "shape": 0.13172383409255417,
+        "coefficient": 0.8823775642631517,
+        "order": 0.6976203044760041,
+        "reverse": 0.8958478526510589,
+        "lowterms": 0.9866572905375506,
+        "legacy": 0.8418663413431204,
+        "output": 0.1471057266317075,
+        "memory": 0.18744388368577347
+      },
+      "shape": "monomial",
+      "weightStyle": "unit",
+      "baselineId": "lhs-gb-053"
+    },
+    {
+      "id": "pruning-tutorial-char2",
+      "group": "anchor",
+      "form": {
+        "ring": "noncomm",
+        "order": "degleftlex",
+        "field": "2",
+        "modulus": 5,
+        "maxdeg": "6",
+        "weights": "",
+        "reverseVars": false,
+        "augmentation": "graded",
+        "nonhomog": "auto",
+        "strategy": "default",
+        "lowterms": "safe",
+        "outmode": "ALG",
+        "legacy": false,
+        "vars": [
+          "x",
+          "y"
+        ],
+        "rels": [
+          "4*x*x-3*y*x+3*x*y-y*y"
+        ],
+        "relsText": "4*x*x-3*y*x+3*x*y-y*y",
+        "task": "gb",
+        "monomialPruning": true
+      },
+      "baselineId": "tutorial-char2"
+    },
+    {
+      "id": "pruning-tutorial-char5",
+      "group": "anchor",
+      "form": {
+        "ring": "noncomm",
+        "order": "degleftlex",
+        "field": "p",
+        "modulus": "5",
+        "maxdeg": "6",
+        "weights": "",
+        "reverseVars": false,
+        "augmentation": "graded",
+        "nonhomog": "auto",
+        "strategy": "default",
+        "lowterms": "safe",
+        "outmode": "ALG",
+        "legacy": false,
+        "vars": [
+          "x",
+          "y"
+        ],
+        "rels": [
+          "4*x*x-3*y*x+3*x*y-y*y"
+        ],
+        "relsText": "4*x*x-3*y*x+3*x*y-y*y",
+        "task": "gb",
+        "monomialPruning": true
+      },
+      "baselineId": "tutorial-char5"
+    },
+    {
+      "id": "pruning-large-16-generators-136-relations",
+      "group": "large",
+      "form": {
+        "task": "gb",
+        "vars": [
+          "x_1",
+          "x_2",
+          "x_3",
+          "x_4",
+          "x_5",
+          "x_6",
+          "x_7",
+          "x_8",
+          "x_9",
+          "x_10",
+          "x_11",
+          "x_12",
+          "x_13",
+          "x_14",
+          "x_15",
+          "x_16"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_3^2",
+          "x_4^2",
+          "x_5^2",
+          "x_6^2",
+          "x_7^2",
+          "x_8^2",
+          "x_9^2",
+          "x_10^2",
+          "x_11^2",
+          "x_12^2",
+          "x_13^2",
+          "x_14^2",
+          "x_15^2",
+          "x_16^2",
+          "x_1*x_2-x_2*x_1",
+          "x_1*x_3-x_3*x_1",
+          "x_1*x_4-x_4*x_1",
+          "x_1*x_5-x_5*x_1",
+          "x_1*x_6-x_6*x_1",
+          "x_1*x_7-x_7*x_1",
+          "x_1*x_8-x_8*x_1",
+          "x_1*x_9-x_9*x_1",
+          "x_1*x_10-x_10*x_1",
+          "x_1*x_11-x_11*x_1",
+          "x_1*x_12-x_12*x_1",
+          "x_1*x_13-x_13*x_1",
+          "x_1*x_14-x_14*x_1",
+          "x_1*x_15-x_15*x_1",
+          "x_1*x_16-x_16*x_1",
+          "x_2*x_3-x_3*x_2",
+          "x_2*x_4-x_4*x_2",
+          "x_2*x_5-x_5*x_2",
+          "x_2*x_6-x_6*x_2",
+          "x_2*x_7-x_7*x_2",
+          "x_2*x_8-x_8*x_2",
+          "x_2*x_9-x_9*x_2",
+          "x_2*x_10-x_10*x_2",
+          "x_2*x_11-x_11*x_2",
+          "x_2*x_12-x_12*x_2",
+          "x_2*x_13-x_13*x_2",
+          "x_2*x_14-x_14*x_2",
+          "x_2*x_15-x_15*x_2",
+          "x_2*x_16-x_16*x_2",
+          "x_3*x_4-x_4*x_3",
+          "x_3*x_5-x_5*x_3",
+          "x_3*x_6-x_6*x_3",
+          "x_3*x_7-x_7*x_3",
+          "x_3*x_8-x_8*x_3",
+          "x_3*x_9-x_9*x_3",
+          "x_3*x_10-x_10*x_3",
+          "x_3*x_11-x_11*x_3",
+          "x_3*x_12-x_12*x_3",
+          "x_3*x_13-x_13*x_3",
+          "x_3*x_14-x_14*x_3",
+          "x_3*x_15-x_15*x_3",
+          "x_3*x_16-x_16*x_3",
+          "x_4*x_5-x_5*x_4",
+          "x_4*x_6-x_6*x_4",
+          "x_4*x_7-x_7*x_4",
+          "x_4*x_8-x_8*x_4",
+          "x_4*x_9-x_9*x_4",
+          "x_4*x_10-x_10*x_4",
+          "x_4*x_11-x_11*x_4",
+          "x_4*x_12-x_12*x_4",
+          "x_4*x_13-x_13*x_4",
+          "x_4*x_14-x_14*x_4",
+          "x_4*x_15-x_15*x_4",
+          "x_4*x_16-x_16*x_4",
+          "x_5*x_6-x_6*x_5",
+          "x_5*x_7-x_7*x_5",
+          "x_5*x_8-x_8*x_5",
+          "x_5*x_9-x_9*x_5",
+          "x_5*x_10-x_10*x_5",
+          "x_5*x_11-x_11*x_5",
+          "x_5*x_12-x_12*x_5",
+          "x_5*x_13-x_13*x_5",
+          "x_5*x_14-x_14*x_5",
+          "x_5*x_15-x_15*x_5",
+          "x_5*x_16-x_16*x_5",
+          "x_6*x_7-x_7*x_6",
+          "x_6*x_8-x_8*x_6",
+          "x_6*x_9-x_9*x_6",
+          "x_6*x_10-x_10*x_6",
+          "x_6*x_11-x_11*x_6",
+          "x_6*x_12-x_12*x_6",
+          "x_6*x_13-x_13*x_6",
+          "x_6*x_14-x_14*x_6",
+          "x_6*x_15-x_15*x_6",
+          "x_6*x_16-x_16*x_6",
+          "x_7*x_8-x_8*x_7",
+          "x_7*x_9-x_9*x_7",
+          "x_7*x_10-x_10*x_7",
+          "x_7*x_11-x_11*x_7",
+          "x_7*x_12-x_12*x_7",
+          "x_7*x_13-x_13*x_7",
+          "x_7*x_14-x_14*x_7",
+          "x_7*x_15-x_15*x_7",
+          "x_7*x_16-x_16*x_7",
+          "x_8*x_9-x_9*x_8",
+          "x_8*x_10-x_10*x_8",
+          "x_8*x_11-x_11*x_8",
+          "x_8*x_12-x_12*x_8",
+          "x_8*x_13-x_13*x_8",
+          "x_8*x_14-x_14*x_8",
+          "x_8*x_15-x_15*x_8",
+          "x_8*x_16-x_16*x_8",
+          "x_9*x_10-x_10*x_9",
+          "x_9*x_11-x_11*x_9",
+          "x_9*x_12-x_12*x_9",
+          "x_9*x_13-x_13*x_9",
+          "x_9*x_14-x_14*x_9",
+          "x_9*x_15-x_15*x_9",
+          "x_9*x_16-x_16*x_9",
+          "x_10*x_11-x_11*x_10",
+          "x_10*x_12-x_12*x_10",
+          "x_10*x_13-x_13*x_10",
+          "x_10*x_14-x_14*x_10",
+          "x_10*x_15-x_15*x_10",
+          "x_10*x_16-x_16*x_10",
+          "x_11*x_12-x_12*x_11",
+          "x_11*x_13-x_13*x_11",
+          "x_11*x_14-x_14*x_11",
+          "x_11*x_15-x_15*x_11",
+          "x_11*x_16-x_16*x_11",
+          "x_12*x_13-x_13*x_12",
+          "x_12*x_14-x_14*x_12",
+          "x_12*x_15-x_15*x_12",
+          "x_12*x_16-x_16*x_12",
+          "x_13*x_14-x_14*x_13",
+          "x_13*x_15-x_15*x_13",
+          "x_13*x_16-x_16*x_13",
+          "x_14*x_15-x_15*x_14",
+          "x_14*x_16-x_16*x_14",
+          "x_15*x_16-x_16*x_15"
+        ],
+        "ring": "noncomm",
+        "order": "degleftlex",
+        "maxdeg": "3",
+        "field": "0",
+        "modulus": 5,
+        "memoryMiB": 3584,
+        "monomialPruning": true
+      },
+      "expectedDimensions": [
+        1,
+        16,
+        120,
+        560
+      ],
+      "baselineId": "large-16-generators-136-relations"
+    },
+    {
+      "id": "pruning-large-20-generators-210-relations",
+      "group": "large",
+      "form": {
+        "task": "gb",
+        "vars": [
+          "x_1",
+          "x_2",
+          "x_3",
+          "x_4",
+          "x_5",
+          "x_6",
+          "x_7",
+          "x_8",
+          "x_9",
+          "x_10",
+          "x_11",
+          "x_12",
+          "x_13",
+          "x_14",
+          "x_15",
+          "x_16",
+          "x_17",
+          "x_18",
+          "x_19",
+          "x_20"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_3^2",
+          "x_4^2",
+          "x_5^2",
+          "x_6^2",
+          "x_7^2",
+          "x_8^2",
+          "x_9^2",
+          "x_10^2",
+          "x_11^2",
+          "x_12^2",
+          "x_13^2",
+          "x_14^2",
+          "x_15^2",
+          "x_16^2",
+          "x_17^2",
+          "x_18^2",
+          "x_19^2",
+          "x_20^2",
+          "x_1*x_2-x_2*x_1",
+          "x_1*x_3-x_3*x_1",
+          "x_1*x_4-x_4*x_1",
+          "x_1*x_5-x_5*x_1",
+          "x_1*x_6-x_6*x_1",
+          "x_1*x_7-x_7*x_1",
+          "x_1*x_8-x_8*x_1",
+          "x_1*x_9-x_9*x_1",
+          "x_1*x_10-x_10*x_1",
+          "x_1*x_11-x_11*x_1",
+          "x_1*x_12-x_12*x_1",
+          "x_1*x_13-x_13*x_1",
+          "x_1*x_14-x_14*x_1",
+          "x_1*x_15-x_15*x_1",
+          "x_1*x_16-x_16*x_1",
+          "x_1*x_17-x_17*x_1",
+          "x_1*x_18-x_18*x_1",
+          "x_1*x_19-x_19*x_1",
+          "x_1*x_20-x_20*x_1",
+          "x_2*x_3-x_3*x_2",
+          "x_2*x_4-x_4*x_2",
+          "x_2*x_5-x_5*x_2",
+          "x_2*x_6-x_6*x_2",
+          "x_2*x_7-x_7*x_2",
+          "x_2*x_8-x_8*x_2",
+          "x_2*x_9-x_9*x_2",
+          "x_2*x_10-x_10*x_2",
+          "x_2*x_11-x_11*x_2",
+          "x_2*x_12-x_12*x_2",
+          "x_2*x_13-x_13*x_2",
+          "x_2*x_14-x_14*x_2",
+          "x_2*x_15-x_15*x_2",
+          "x_2*x_16-x_16*x_2",
+          "x_2*x_17-x_17*x_2",
+          "x_2*x_18-x_18*x_2",
+          "x_2*x_19-x_19*x_2",
+          "x_2*x_20-x_20*x_2",
+          "x_3*x_4-x_4*x_3",
+          "x_3*x_5-x_5*x_3",
+          "x_3*x_6-x_6*x_3",
+          "x_3*x_7-x_7*x_3",
+          "x_3*x_8-x_8*x_3",
+          "x_3*x_9-x_9*x_3",
+          "x_3*x_10-x_10*x_3",
+          "x_3*x_11-x_11*x_3",
+          "x_3*x_12-x_12*x_3",
+          "x_3*x_13-x_13*x_3",
+          "x_3*x_14-x_14*x_3",
+          "x_3*x_15-x_15*x_3",
+          "x_3*x_16-x_16*x_3",
+          "x_3*x_17-x_17*x_3",
+          "x_3*x_18-x_18*x_3",
+          "x_3*x_19-x_19*x_3",
+          "x_3*x_20-x_20*x_3",
+          "x_4*x_5-x_5*x_4",
+          "x_4*x_6-x_6*x_4",
+          "x_4*x_7-x_7*x_4",
+          "x_4*x_8-x_8*x_4",
+          "x_4*x_9-x_9*x_4",
+          "x_4*x_10-x_10*x_4",
+          "x_4*x_11-x_11*x_4",
+          "x_4*x_12-x_12*x_4",
+          "x_4*x_13-x_13*x_4",
+          "x_4*x_14-x_14*x_4",
+          "x_4*x_15-x_15*x_4",
+          "x_4*x_16-x_16*x_4",
+          "x_4*x_17-x_17*x_4",
+          "x_4*x_18-x_18*x_4",
+          "x_4*x_19-x_19*x_4",
+          "x_4*x_20-x_20*x_4",
+          "x_5*x_6-x_6*x_5",
+          "x_5*x_7-x_7*x_5",
+          "x_5*x_8-x_8*x_5",
+          "x_5*x_9-x_9*x_5",
+          "x_5*x_10-x_10*x_5",
+          "x_5*x_11-x_11*x_5",
+          "x_5*x_12-x_12*x_5",
+          "x_5*x_13-x_13*x_5",
+          "x_5*x_14-x_14*x_5",
+          "x_5*x_15-x_15*x_5",
+          "x_5*x_16-x_16*x_5",
+          "x_5*x_17-x_17*x_5",
+          "x_5*x_18-x_18*x_5",
+          "x_5*x_19-x_19*x_5",
+          "x_5*x_20-x_20*x_5",
+          "x_6*x_7-x_7*x_6",
+          "x_6*x_8-x_8*x_6",
+          "x_6*x_9-x_9*x_6",
+          "x_6*x_10-x_10*x_6",
+          "x_6*x_11-x_11*x_6",
+          "x_6*x_12-x_12*x_6",
+          "x_6*x_13-x_13*x_6",
+          "x_6*x_14-x_14*x_6",
+          "x_6*x_15-x_15*x_6",
+          "x_6*x_16-x_16*x_6",
+          "x_6*x_17-x_17*x_6",
+          "x_6*x_18-x_18*x_6",
+          "x_6*x_19-x_19*x_6",
+          "x_6*x_20-x_20*x_6",
+          "x_7*x_8-x_8*x_7",
+          "x_7*x_9-x_9*x_7",
+          "x_7*x_10-x_10*x_7",
+          "x_7*x_11-x_11*x_7",
+          "x_7*x_12-x_12*x_7",
+          "x_7*x_13-x_13*x_7",
+          "x_7*x_14-x_14*x_7",
+          "x_7*x_15-x_15*x_7",
+          "x_7*x_16-x_16*x_7",
+          "x_7*x_17-x_17*x_7",
+          "x_7*x_18-x_18*x_7",
+          "x_7*x_19-x_19*x_7",
+          "x_7*x_20-x_20*x_7",
+          "x_8*x_9-x_9*x_8",
+          "x_8*x_10-x_10*x_8",
+          "x_8*x_11-x_11*x_8",
+          "x_8*x_12-x_12*x_8",
+          "x_8*x_13-x_13*x_8",
+          "x_8*x_14-x_14*x_8",
+          "x_8*x_15-x_15*x_8",
+          "x_8*x_16-x_16*x_8",
+          "x_8*x_17-x_17*x_8",
+          "x_8*x_18-x_18*x_8",
+          "x_8*x_19-x_19*x_8",
+          "x_8*x_20-x_20*x_8",
+          "x_9*x_10-x_10*x_9",
+          "x_9*x_11-x_11*x_9",
+          "x_9*x_12-x_12*x_9",
+          "x_9*x_13-x_13*x_9",
+          "x_9*x_14-x_14*x_9",
+          "x_9*x_15-x_15*x_9",
+          "x_9*x_16-x_16*x_9",
+          "x_9*x_17-x_17*x_9",
+          "x_9*x_18-x_18*x_9",
+          "x_9*x_19-x_19*x_9",
+          "x_9*x_20-x_20*x_9",
+          "x_10*x_11-x_11*x_10",
+          "x_10*x_12-x_12*x_10",
+          "x_10*x_13-x_13*x_10",
+          "x_10*x_14-x_14*x_10",
+          "x_10*x_15-x_15*x_10",
+          "x_10*x_16-x_16*x_10",
+          "x_10*x_17-x_17*x_10",
+          "x_10*x_18-x_18*x_10",
+          "x_10*x_19-x_19*x_10",
+          "x_10*x_20-x_20*x_10",
+          "x_11*x_12-x_12*x_11",
+          "x_11*x_13-x_13*x_11",
+          "x_11*x_14-x_14*x_11",
+          "x_11*x_15-x_15*x_11",
+          "x_11*x_16-x_16*x_11",
+          "x_11*x_17-x_17*x_11",
+          "x_11*x_18-x_18*x_11",
+          "x_11*x_19-x_19*x_11",
+          "x_11*x_20-x_20*x_11",
+          "x_12*x_13-x_13*x_12",
+          "x_12*x_14-x_14*x_12",
+          "x_12*x_15-x_15*x_12",
+          "x_12*x_16-x_16*x_12",
+          "x_12*x_17-x_17*x_12",
+          "x_12*x_18-x_18*x_12",
+          "x_12*x_19-x_19*x_12",
+          "x_12*x_20-x_20*x_12",
+          "x_13*x_14-x_14*x_13",
+          "x_13*x_15-x_15*x_13",
+          "x_13*x_16-x_16*x_13",
+          "x_13*x_17-x_17*x_13",
+          "x_13*x_18-x_18*x_13",
+          "x_13*x_19-x_19*x_13",
+          "x_13*x_20-x_20*x_13",
+          "x_14*x_15-x_15*x_14",
+          "x_14*x_16-x_16*x_14",
+          "x_14*x_17-x_17*x_14",
+          "x_14*x_18-x_18*x_14",
+          "x_14*x_19-x_19*x_14",
+          "x_14*x_20-x_20*x_14",
+          "x_15*x_16-x_16*x_15",
+          "x_15*x_17-x_17*x_15",
+          "x_15*x_18-x_18*x_15",
+          "x_15*x_19-x_19*x_15",
+          "x_15*x_20-x_20*x_15",
+          "x_16*x_17-x_17*x_16",
+          "x_16*x_18-x_18*x_16",
+          "x_16*x_19-x_19*x_16",
+          "x_16*x_20-x_20*x_16",
+          "x_17*x_18-x_18*x_17",
+          "x_17*x_19-x_19*x_17",
+          "x_17*x_20-x_20*x_17",
+          "x_18*x_19-x_19*x_18",
+          "x_18*x_20-x_20*x_18",
+          "x_19*x_20-x_20*x_19"
+        ],
+        "ring": "noncomm",
+        "order": "degleftlex",
+        "maxdeg": "2",
+        "field": "p",
+        "modulus": 5,
+        "memoryMiB": 3584,
+        "monomialPruning": true
+      },
+      "expectedDimensions": [
+        1,
+        20,
+        190
+      ],
+      "baselineId": "large-20-generators-210-relations"
+    },
+    {
+      "id": "pruning-submitted-15-generators-100-relations",
+      "group": "anchor",
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "field": "0",
+        "order": "degleftlex",
+        "maxdeg": "4",
+        "memoryMiB": 3584,
+        "vars": [
+          "a",
+          "b",
+          "c",
+          "d",
+          "e",
+          "f",
+          "g",
+          "h",
+          "k",
+          "m",
+          "n",
+          "p",
+          "q",
+          "r",
+          "s"
+        ],
+        "rels": [
+          "a^2",
+          "b^2",
+          "c^2",
+          "d^2",
+          "e^2",
+          "f^2",
+          "g^2",
+          "h^2",
+          "k^2",
+          "m^2",
+          "n^2",
+          "p^2",
+          "q^2",
+          "r^2",
+          "s^2",
+          "a*c-c*a",
+          "a*d-d*a",
+          "a*e-e*a",
+          "a*k-k*a",
+          "a*r-r*a",
+          "a*s-s*a",
+          "b*d-d*b",
+          "b*e-e*b",
+          "b*f-f*b",
+          "b*h-h*b",
+          "b*n-n*b",
+          "b*r-r*b",
+          "c*e-e*c",
+          "c*f-f*c",
+          "c*g-g*c",
+          "c*n-n*c",
+          "c*p-p*c",
+          "d*f-f*d",
+          "d*g-g*d",
+          "d*m-m*d",
+          "d*s-s*d",
+          "e*h-h*e",
+          "e*m-m*e",
+          "e*q-q*e",
+          "f*k-k*f",
+          "f*p-p*f",
+          "f*q-q*f",
+          "g*h-h*g",
+          "g*k-k*g",
+          "g*m-m*g",
+          "g*n-n*g",
+          "h*k-k*h",
+          "h*p-p*h",
+          "h*s-s*h",
+          "k*q-q*k",
+          "k*r-r*k",
+          "m*p-p*m",
+          "m*q-q*m",
+          "m*r-r*m",
+          "n*q-q*n",
+          "n*r-r*n",
+          "n*s-s*n",
+          "p*r-r*p",
+          "p*s-s*p",
+          "q*s-s*q",
+          "m*n-n*k-k*m",
+          "n*m-k*n-m*k",
+          "m*a-a*b-b*m",
+          "a*m-b*a-m*b",
+          "m*h-h*c-c*m",
+          "h*m-c*h-m*c",
+          "m*f-f*s-s*m",
+          "f*m-s*f-m*s",
+          "k*p-p*b-b*k",
+          "p*k-b*p-k*b",
+          "k*d-d*c-c*k",
+          "d*k-c*d-k*c",
+          "k*e-e*s-s*k",
+          "e*k-s*e-k*s",
+          "b*q-q*c-c*b",
+          "q*b-c*q-b*c",
+          "b*g-g*s-s*b",
+          "g*b-s*g-b*s",
+          "c*r-r*s-s*c",
+          "r*c-s*r-c*s",
+          "n*p-p*a-a*n",
+          "p*n-a*p-n*a",
+          "n*d-d*h-h*n",
+          "d*n-h*d-n*h",
+          "n*e-e*f-f*n",
+          "e*n-f*e-n*f",
+          "a*q-q*h-h*a",
+          "q*a-h*q-a*h",
+          "a*g-g*f-f*a",
+          "g*a-f*g-a*f",
+          "h*r-r*f-f*h",
+          "r*h-f*r-h*f",
+          "p*q-q*d-d*p",
+          "q*p-d*q-p*d",
+          "p*g-g*e-e*p",
+          "g*p-e*g-p*e",
+          "d*r-r*e-e*d",
+          "r*d-e*r-d*e",
+          "q*r-r*g-g*q",
+          "r*q-g*r-q*g"
+        ],
+        "monomialPruning": true
+      },
+      "expectedBasisSha256": "90330a9064c82eed277c35533a9f90e79acebf681d2433c89f970abab2315f2d",
+      "baselineId": "submitted-15-generators-100-relations"
+    },
+    {
+      "id": "pruning-lhs-001",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.1170177626045188,
+        "field": 0.3671414317432209,
+        "degree": 0.4781307687226217,
+        "coefficient": 0.17138051323854597,
+        "order": 0.6568528080388205,
+        "legacy": 0.18647109372977866,
+        "reverse": 0.1580106786568649,
+        "linear": 0.9669613278019824
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_1"
+        ],
+        "field": "2",
+        "modulus": "5",
+        "order": "invelim",
+        "maxdeg": "4",
+        "legacy": false,
+        "reverseVars": false,
+        "lowterms": "safe",
+        "monomialPruning": true
+      }
+    },
+    {
+      "id": "pruning-lhs-002",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.811176410796179,
+        "field": 0.5365495089063188,
+        "degree": 0.2814351460765465,
+        "coefficient": 0.9999255148868542,
+        "order": 0.2401779418651131,
+        "legacy": 0.8984176839730935,
+        "reverse": 0.3572684422179009,
+        "linear": 0.2490367189166136
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2",
+          "x_3",
+          "x_4"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_3^2",
+          "x_4^2",
+          "x_2*x_1--1*x_1*x_2",
+          "x_3*x_1--1*x_1*x_3",
+          "x_4*x_1--1*x_1*x_4",
+          "x_3*x_2--1*x_2*x_3",
+          "x_4*x_2--1*x_2*x_4",
+          "x_4*x_3--1*x_3*x_4"
+        ],
+        "field": "2",
+        "modulus": "5",
+        "order": "elim",
+        "maxdeg": "4",
+        "legacy": true,
+        "reverseVars": false,
+        "lowterms": "safe",
+        "monomialPruning": true
+      }
+    },
+    {
+      "id": "pruning-lhs-003",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.6413076339522377,
+        "field": 0.6724394144621328,
+        "degree": 0.593900187741383,
+        "coefficient": 0.6187941651660367,
+        "order": 0.3523101515311282,
+        "legacy": 0.3902924376379815,
+        "reverse": 0.13615987561934162,
+        "linear": 0.47693180041824235
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2",
+          "x_3"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_3^2",
+          "x_2*x_1-2*x_1*x_2",
+          "x_3*x_1-2*x_1*x_3",
+          "x_3*x_2-2*x_2*x_3"
+        ],
+        "field": "p",
+        "modulus": "5",
+        "order": "elim",
+        "maxdeg": "5",
+        "legacy": false,
+        "reverseVars": false,
+        "lowterms": "safe",
+        "monomialPruning": true
+      }
+    },
+    {
+      "id": "pruning-lhs-004",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.03428147255181102,
+        "field": 0.19248470582533628,
+        "degree": 0.1236273496542708,
+        "coefficient": 0.3339001213753363,
+        "order": 0.15610447533981642,
+        "legacy": 0.7146364852960687,
+        "reverse": 0.43059240876027616,
+        "linear": 0.16246829899318982
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1"
+        ],
+        "rels": [
+          "x_1^2"
+        ],
+        "field": "0",
+        "modulus": "5",
+        "order": "degleftlex",
+        "maxdeg": "3",
+        "legacy": true,
+        "reverseVars": false,
+        "lowterms": "safe",
+        "monomialPruning": true
+      }
+    },
+    {
+      "id": "pruning-lhs-005",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.06297642739082221,
+        "field": 0.018591042018670123,
+        "degree": 0.759060399257578,
+        "coefficient": 0.5756594058257178,
+        "order": 0.8404421320738038,
+        "legacy": 0.5843145629260107,
+        "reverse": 0.8678188228223007,
+        "linear": 0.05275876343512209
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1"
+        ],
+        "rels": [
+          "x_1^2"
+        ],
+        "field": "0",
+        "modulus": "5",
+        "order": "invwelim",
+        "maxdeg": "6",
+        "legacy": true,
+        "reverseVars": true,
+        "lowterms": "safe",
+        "monomialPruning": true
+      }
+    },
+    {
+      "id": "pruning-lhs-006",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.001429832489520777,
+        "field": 0.16784325103799347,
+        "degree": 0.01845134409813909,
+        "coefficient": 0.2611091771395877,
+        "order": 0.07226727242959896,
+        "legacy": 0.11148154210241046,
+        "reverse": 0.03968541425274452,
+        "linear": 0.4443339707504492
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1"
+        ],
+        "rels": [
+          "x_1^2"
+        ],
+        "field": "0",
+        "modulus": "5",
+        "order": "degleftlex",
+        "maxdeg": "3",
+        "legacy": false,
+        "reverseVars": false,
+        "lowterms": "safe",
+        "monomialPruning": true
+      }
+    },
+    {
+      "id": "pruning-lhs-007",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.3430517437227536,
+        "field": 0.8260611402292852,
+        "degree": 0.699662079117843,
+        "coefficient": 0.8854553963683429,
+        "order": 0.5327680023619905,
+        "legacy": 0.7274951389190392,
+        "reverse": 0.5902861737267813,
+        "linear": 0.6037905156481429
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_2*x_1--1*x_1*x_2"
+        ],
+        "field": "p",
+        "modulus": "5",
+        "order": "homogelim",
+        "maxdeg": "5",
+        "legacy": true,
+        "reverseVars": true,
+        "lowterms": "safe",
+        "monomialPruning": true
+      }
+    },
+    {
+      "id": "pruning-lhs-008",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.6173472405862412,
+        "field": 0.05181727514718659,
+        "degree": 0.8421207516876166,
+        "coefficient": 0.11976714014599565,
+        "order": 0.4165087164074066,
+        "legacy": 0.6034863378154114,
+        "reverse": 0.25694969474716345,
+        "linear": 0.19668634921254124
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2",
+          "x_3"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_3^2",
+          "x_2*x_1-1*x_1*x_2",
+          "x_3*x_1-1*x_1*x_3",
+          "x_3*x_2-1*x_2*x_3"
+        ],
+        "field": "0",
+        "modulus": "5",
+        "order": "homogelim",
+        "maxdeg": "6",
+        "legacy": true,
+        "reverseVars": false,
+        "lowterms": "safe",
+        "monomialPruning": true
+      }
+    },
+    {
+      "id": "pruning-lhs-009",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.14176393735397141,
+        "field": 0.3135414949138067,
+        "degree": 0.2703299541317392,
+        "coefficient": 0.9063286375676398,
+        "order": 0.4910551626380766,
+        "legacy": 0.32257932179345516,
+        "reverse": 0.5105261463904753,
+        "linear": 0.009050129367096815
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1"
+        ],
+        "rels": [
+          "x_1^2"
+        ],
+        "field": "0",
+        "modulus": "5",
+        "order": "homogelim",
+        "maxdeg": "4",
+        "legacy": false,
+        "reverseVars": true,
+        "lowterms": "safe",
+        "monomialPruning": true
+      }
+    },
+    {
+      "id": "pruning-lhs-010",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.25020124341972405,
+        "field": 0.5079485282039968,
+        "degree": 0.4117782573666773,
+        "coefficient": 0.6828243998170365,
+        "order": 0.72696726857248,
+        "legacy": 0.19673537510971073,
+        "reverse": 0.4474477301046136,
+        "linear": 0.9239618909778073
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_2*x_1--1*x_1*x_2",
+          "x_1"
+        ],
+        "field": "2",
+        "modulus": "5",
+        "order": "invelim",
+        "maxdeg": "4",
+        "legacy": false,
+        "reverseVars": false,
+        "lowterms": "safe",
+        "monomialPruning": true
+      }
+    },
+    {
+      "id": "pruning-lhs-011",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.9508303403272294,
+        "field": 0.2187858819743269,
+        "degree": 0.14872039265173953,
+        "coefficient": 0.35398257677297806,
+        "order": 0.9188477313437033,
+        "legacy": 0.05138161540526198,
+        "reverse": 0.3778295060765231,
+        "linear": 0.7364569589190069
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2",
+          "x_3",
+          "x_4"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_3^2",
+          "x_4^2",
+          "x_2*x_1-2*x_1*x_2",
+          "x_3*x_1-2*x_1*x_3",
+          "x_4*x_1-2*x_1*x_4",
+          "x_3*x_2-2*x_2*x_3",
+          "x_4*x_2-2*x_2*x_4",
+          "x_4*x_3-2*x_3*x_4"
+        ],
+        "field": "0",
+        "modulus": "5",
+        "order": "invwelim",
+        "maxdeg": "3",
+        "legacy": false,
+        "reverseVars": false,
+        "lowterms": "safe",
+        "monomialPruning": true
+      }
+    },
+    {
+      "id": "pruning-lhs-012",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.5046103055865387,
+        "field": 0.9525704406551085,
+        "degree": 0.4439557608930045,
+        "coefficient": 0.19973016546282452,
+        "order": 0.308642001960834,
+        "legacy": 0.9907595678523649,
+        "reverse": 0.9159791487691109,
+        "linear": 0.5269217840541387
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2",
+          "x_3"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_3^2",
+          "x_2*x_1-1*x_1*x_2",
+          "x_3*x_1-1*x_1*x_3",
+          "x_3*x_2-1*x_2*x_3"
+        ],
+        "field": "p",
+        "modulus": "5",
+        "order": "elim",
+        "maxdeg": "4",
+        "legacy": true,
+        "reverseVars": true,
+        "lowterms": "safe",
+        "monomialPruning": true
+      }
+    },
+    {
+      "id": "pruning-lhs-013",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.2262835575529607,
+        "field": 0.07010856869601412,
+        "degree": 0.06402755243470892,
+        "coefficient": 0.7360441321288818,
+        "order": 0.1794409814028768,
+        "legacy": 0.07705658175837016,
+        "reverse": 0.231232028483646,
+        "linear": 0.08372983936715173
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1"
+        ],
+        "rels": [
+          "x_1^2"
+        ],
+        "field": "0",
+        "modulus": "5",
+        "order": "degleftlex",
+        "maxdeg": "3",
+        "legacy": false,
+        "reverseVars": false,
+        "lowterms": "safe",
+        "monomialPruning": true
+      }
+    },
+    {
+      "id": "pruning-lhs-014",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.708512966062699,
+        "field": 0.7851858570502372,
+        "degree": 0.21909350802161498,
+        "coefficient": 0.4601589510566555,
+        "order": 0.8506967476350837,
+        "legacy": 0.6766284752375213,
+        "reverse": 0.12458886499371147,
+        "linear": 0.9807497323781718
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2",
+          "x_3"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_3^2",
+          "x_2*x_1-2*x_1*x_2",
+          "x_3*x_1-2*x_1*x_3",
+          "x_3*x_2-2*x_2*x_3",
+          "x_1"
+        ],
+        "field": "p",
+        "modulus": "5",
+        "order": "invwelim",
+        "maxdeg": "3",
+        "legacy": true,
+        "reverseVars": false,
+        "lowterms": "safe",
+        "monomialPruning": true
+      }
+    },
+    {
+      "id": "pruning-lhs-015",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.9272126381692942,
+        "field": 0.7460836703030509,
+        "degree": 0.9100668028258951,
+        "coefficient": 0.14788470364146633,
+        "order": 0.6362344119115733,
+        "legacy": 0.45762185936473543,
+        "reverse": 0.6003807817323832,
+        "linear": 0.14316390049498295
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2",
+          "x_3",
+          "x_4"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_3^2",
+          "x_4^2",
+          "x_2*x_1-1*x_1*x_2",
+          "x_3*x_1-1*x_1*x_3",
+          "x_4*x_1-1*x_1*x_4",
+          "x_3*x_2-1*x_2*x_3",
+          "x_4*x_2-1*x_2*x_4",
+          "x_4*x_3-1*x_3*x_4"
+        ],
+        "field": "p",
+        "modulus": "5",
+        "order": "invelim",
+        "maxdeg": "6",
+        "legacy": false,
+        "reverseVars": true,
+        "lowterms": "safe",
+        "monomialPruning": true
+      }
+    },
+    {
+      "id": "pruning-lhs-016",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.8739258686182438,
+        "field": 0.397438309941208,
+        "degree": 0.8586008972561103,
+        "coefficient": 0.04370593589555938,
+        "order": 0.6231142356336932,
+        "legacy": 0.4078362103900872,
+        "reverse": 0.3280902192709618,
+        "linear": 0.6488485356530873
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2",
+          "x_3",
+          "x_4"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_3^2",
+          "x_4^2",
+          "x_2*x_1-1*x_1*x_2",
+          "x_3*x_1-1*x_1*x_3",
+          "x_4*x_1-1*x_1*x_4",
+          "x_3*x_2-1*x_2*x_3",
+          "x_4*x_2-1*x_2*x_4",
+          "x_4*x_3-1*x_3*x_4"
+        ],
+        "field": "2",
+        "modulus": "5",
+        "order": "invelim",
+        "maxdeg": "6",
+        "legacy": false,
+        "reverseVars": false,
+        "lowterms": "safe",
+        "monomialPruning": true
+      }
+    },
+    {
+      "id": "pruning-lhs-017",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.588838906478486,
+        "field": 0.6352320133810281,
+        "degree": 0.3221323511970695,
+        "coefficient": 0.3803236801250023,
+        "order": 0.32419529727485497,
+        "legacy": 0.8567266840764205,
+        "reverse": 0.6921091218828224,
+        "linear": 0.7099350793068879
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2",
+          "x_3"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_3^2",
+          "x_2*x_1-2*x_1*x_2",
+          "x_3*x_1-2*x_1*x_3",
+          "x_3*x_2-2*x_2*x_3"
+        ],
+        "field": "2",
+        "modulus": "5",
+        "order": "elim",
+        "maxdeg": "4",
+        "legacy": true,
+        "reverseVars": true,
+        "lowterms": "safe",
+        "monomialPruning": true
+      }
+    },
+    {
+      "id": "pruning-lhs-018",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.8381832261002273,
+        "field": 0.7619501799199497,
+        "degree": 0.6717534262788831,
+        "coefficient": 0.7810371935775038,
+        "order": 0.27832355211285176,
+        "legacy": 0.5536894279794069,
+        "reverse": 0.6309791290477733,
+        "linear": 0.6640104217804037
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2",
+          "x_3",
+          "x_4"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_3^2",
+          "x_4^2",
+          "x_2*x_1--1*x_1*x_2",
+          "x_3*x_1--1*x_1*x_3",
+          "x_4*x_1--1*x_1*x_4",
+          "x_3*x_2--1*x_2*x_3",
+          "x_4*x_2--1*x_2*x_4",
+          "x_4*x_3--1*x_3*x_4"
+        ],
+        "field": "p",
+        "modulus": "5",
+        "order": "elim",
+        "maxdeg": "5",
+        "legacy": true,
+        "reverseVars": true,
+        "lowterms": "safe",
+        "monomialPruning": true
+      }
+    },
+    {
+      "id": "pruning-lhs-019",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.4105516050476581,
+        "field": 0.8806083784802468,
+        "degree": 0.5667539820860839,
+        "coefficient": 0.47326671863993397,
+        "order": 0.7679577687231358,
+        "legacy": 0.30873454642278375,
+        "reverse": 0.6671553690248402,
+        "linear": 0.11094115062587662
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_2*x_1-2*x_1*x_2"
+        ],
+        "field": "p",
+        "modulus": "5",
+        "order": "invelim",
+        "maxdeg": "5",
+        "legacy": false,
+        "reverseVars": true,
+        "lowterms": "safe",
+        "monomialPruning": true
+      }
+    },
+    {
+      "id": "pruning-lhs-020",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.8865190772266942,
+        "field": 0.44981695688329637,
+        "degree": 0.9919089628747315,
+        "coefficient": 0.6984712602425134,
+        "order": 0.4436110017923056,
+        "legacy": 0.7845115082745906,
+        "reverse": 0.9855031962579233,
+        "linear": 0.7948726614267798
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2",
+          "x_3",
+          "x_4"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_3^2",
+          "x_4^2",
+          "x_2*x_1--1*x_1*x_2",
+          "x_3*x_1--1*x_1*x_3",
+          "x_4*x_1--1*x_1*x_4",
+          "x_3*x_2--1*x_2*x_3",
+          "x_4*x_2--1*x_2*x_4",
+          "x_4*x_3--1*x_3*x_4"
+        ],
+        "field": "2",
+        "modulus": "5",
+        "order": "homogelim",
+        "maxdeg": "6",
+        "legacy": true,
+        "reverseVars": true,
+        "lowterms": "safe",
+        "monomialPruning": true
+      }
+    },
+    {
+      "id": "pruning-lhs-021",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.6743978873273591,
+        "field": 0.14003329304250656,
+        "degree": 0.39880618662573397,
+        "coefficient": 0.5068322937368066,
+        "order": 0.8913854616548633,
+        "legacy": 0.9631878870641231,
+        "reverse": 0.30887834387249313,
+        "linear": 0.4241385348213953
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2",
+          "x_3"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_3^2",
+          "x_2*x_1-2*x_1*x_2",
+          "x_3*x_1-2*x_1*x_3",
+          "x_3*x_2-2*x_2*x_3"
+        ],
+        "field": "0",
+        "modulus": "5",
+        "order": "invwelim",
+        "maxdeg": "4",
+        "legacy": true,
+        "reverseVars": false,
+        "lowterms": "safe",
+        "monomialPruning": true
+      }
+    },
+    {
+      "id": "pruning-lhs-022",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.7757806964873453,
+        "field": 0.70572870237811,
+        "degree": 0.71892032399046,
+        "coefficient": 0.09360938216559589,
+        "order": 0.11168818551959703,
+        "legacy": 0.01259253358875867,
+        "reverse": 0.5452114857835113,
+        "linear": 0.2645507071574684
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2",
+          "x_3",
+          "x_4"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_3^2",
+          "x_4^2",
+          "x_2*x_1-1*x_1*x_2",
+          "x_3*x_1-1*x_1*x_3",
+          "x_4*x_1-1*x_1*x_4",
+          "x_3*x_2-1*x_2*x_3",
+          "x_4*x_2-1*x_2*x_4",
+          "x_4*x_3-1*x_3*x_4"
+        ],
+        "field": "p",
+        "modulus": "5",
+        "order": "degleftlex",
+        "maxdeg": "5",
+        "legacy": false,
+        "reverseVars": true,
+        "lowterms": "safe",
+        "monomialPruning": true
+      }
+    },
+    {
+      "id": "pruning-lhs-023",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.30869772253208794,
+        "field": 0.10695304774708347,
+        "degree": 0.6409173446154455,
+        "coefficient": 0.4142263126486796,
+        "order": 0.9718791313935071,
+        "legacy": 0.5005989526762278,
+        "reverse": 0.9057509233098244,
+        "linear": 0.7732084092785954
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_2*x_1-2*x_1*x_2"
+        ],
+        "field": "0",
+        "modulus": "5",
+        "order": "invwelim",
+        "maxdeg": "5",
+        "legacy": true,
+        "reverseVars": true,
+        "lowterms": "safe",
+        "monomialPruning": true
+      }
+    },
+    {
+      "id": "pruning-lhs-024",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.9902248478247202,
+        "field": 0.9354283382708672,
+        "degree": 0.16917314852616983,
+        "coefficient": 0.9666886675549904,
+        "order": 0.024809901595290285,
+        "legacy": 0.2603305222000927,
+        "reverse": 0.7817494096598239,
+        "linear": 0.5785815780836856
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2",
+          "x_3",
+          "x_4"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_3^2",
+          "x_4^2",
+          "x_2*x_1--1*x_1*x_2",
+          "x_3*x_1--1*x_1*x_3",
+          "x_4*x_1--1*x_1*x_4",
+          "x_3*x_2--1*x_2*x_3",
+          "x_4*x_2--1*x_2*x_4",
+          "x_4*x_3--1*x_3*x_4"
+        ],
+        "field": "p",
+        "modulus": "5",
+        "order": "degleftlex",
+        "maxdeg": "3",
+        "legacy": false,
+        "reverseVars": true,
+        "lowterms": "safe",
+        "monomialPruning": true
+      }
+    },
+    {
+      "id": "pruning-lhs-025",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.7409525665425463,
+        "field": 0.6121374394497252,
+        "degree": 0.9424276469799224,
+        "coefficient": 0.5554890945277293,
+        "order": 0.3963300247123698,
+        "legacy": 0.1385922334084171,
+        "reverse": 0.00599114247597754,
+        "linear": 0.8211368709235103
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2",
+          "x_3"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_3^2",
+          "x_2*x_1-2*x_1*x_2",
+          "x_3*x_1-2*x_1*x_3",
+          "x_3*x_2-2*x_2*x_3",
+          "x_1"
+        ],
+        "field": "2",
+        "modulus": "5",
+        "order": "elim",
+        "maxdeg": "6",
+        "legacy": false,
+        "reverseVars": false,
+        "lowterms": "safe",
+        "monomialPruning": true
+      }
+    },
+    {
+      "id": "pruning-lhs-026",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.17195135597285116,
+        "field": 0.9850271780014737,
+        "degree": 0.7927163795320666,
+        "coefficient": 0.8674458927998785,
+        "order": 0.05426148145488696,
+        "legacy": 0.49469126960320864,
+        "reverse": 0.195056950666185,
+        "linear": 0.3887010801117867
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1"
+        ],
+        "rels": [
+          "x_1^2"
+        ],
+        "field": "p",
+        "modulus": "5",
+        "order": "degleftlex",
+        "maxdeg": "6",
+        "legacy": false,
+        "reverseVars": false,
+        "lowterms": "safe",
+        "monomialPruning": true
+      }
+    },
+    {
+      "id": "pruning-lhs-027",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.21317783423000947,
+        "field": 0.27709002709161723,
+        "degree": 0.5202677373745246,
+        "coefficient": 0.8195898418998695,
+        "order": 0.5685458198713604,
+        "legacy": 0.9304134050107677,
+        "reverse": 0.740684755743132,
+        "linear": 0.36025019594671903
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1"
+        ],
+        "rels": [
+          "x_1^2"
+        ],
+        "field": "0",
+        "modulus": "5",
+        "order": "homogelim",
+        "maxdeg": "5",
+        "legacy": true,
+        "reverseVars": true,
+        "lowterms": "safe",
+        "monomialPruning": true
+      }
+    },
+    {
+      "id": "pruning-lhs-028",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.37314883065846516,
+        "field": 0.47222179832169786,
+        "degree": 0.8816804546877393,
+        "coefficient": 0.632715504427324,
+        "order": 0.5194485003812588,
+        "legacy": 0.6303526723349933,
+        "reverse": 0.9566804608984967,
+        "linear": 0.3397853366477648
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_2*x_1-2*x_1*x_2"
+        ],
+        "field": "2",
+        "modulus": "5",
+        "order": "homogelim",
+        "maxdeg": "6",
+        "legacy": true,
+        "reverseVars": true,
+        "lowterms": "safe",
+        "monomialPruning": true
+      }
+    },
+    {
+      "id": "pruning-lhs-029",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.47097890586883295,
+        "field": 0.8712285482833977,
+        "degree": 0.3537162333377637,
+        "coefficient": 0.28238401571434224,
+        "order": 0.20997423892549705,
+        "legacy": 0.3517955288043595,
+        "reverse": 0.832804194331402,
+        "linear": 0.8823607448211988
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_2*x_1-1*x_1*x_2",
+          "x_1"
+        ],
+        "field": "p",
+        "modulus": "5",
+        "order": "elim",
+        "maxdeg": "4",
+        "legacy": false,
+        "reverseVars": true,
+        "lowterms": "safe",
+        "monomialPruning": true
+      }
+    },
+    {
+      "id": "pruning-lhs-030",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.3894184433229384,
+        "field": 0.58170854668424,
+        "degree": 0.05192366526898695,
+        "coefficient": 0.792384039668832,
+        "order": 0.7836745871245512,
+        "legacy": 0.24121020063466858,
+        "reverse": 0.4714466009972966,
+        "linear": 0.5574006300012115
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_2*x_1--1*x_1*x_2"
+        ],
+        "field": "2",
+        "modulus": "5",
+        "order": "invelim",
+        "maxdeg": "3",
+        "legacy": false,
+        "reverseVars": false,
+        "lowterms": "safe",
+        "monomialPruning": true
+      }
+    },
+    {
+      "id": "pruning-lhs-031",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.5542492381937336,
+        "field": 0.4260467087224242,
+        "degree": 0.21505898465693463,
+        "coefficient": 0.23850688669335796,
+        "order": 0.6995106177055277,
+        "legacy": 0.8228385458714911,
+        "reverse": 0.06715214932046365,
+        "linear": 0.8535298907881952
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2",
+          "x_3"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_3^2",
+          "x_2*x_1-1*x_1*x_2",
+          "x_3*x_1-1*x_1*x_3",
+          "x_3*x_2-1*x_2*x_3",
+          "x_1"
+        ],
+        "field": "2",
+        "modulus": "5",
+        "order": "invelim",
+        "maxdeg": "3",
+        "legacy": true,
+        "reverseVars": false,
+        "lowterms": "safe",
+        "monomialPruning": true
+      }
+    },
+    {
+      "id": "pruning-lhs-032",
+      "group": "pruning-lhs",
+      "sample": {
+        "generators": 0.4393315486013307,
+        "field": 0.31146331733907573,
+        "degree": 0.5325632082603988,
+        "coefficient": 0.02670038580254186,
+        "order": 0.9495634176346357,
+        "legacy": 0.7754438678384759,
+        "reverse": 0.7512247689082869,
+        "linear": 0.28634134474850725
+      },
+      "form": {
+        "task": "gb",
+        "ring": "noncomm",
+        "vars": [
+          "x_1",
+          "x_2"
+        ],
+        "rels": [
+          "x_1^2",
+          "x_2^2",
+          "x_2*x_1-1*x_1*x_2"
+        ],
+        "field": "0",
+        "modulus": "5",
+        "order": "invwelim",
+        "maxdeg": "5",
+        "legacy": true,
+        "reverseVars": true,
+        "lowterms": "safe",
+        "monomialPruning": true
+      }
+    }
+  ],
+  "results": [
+    {
+      "id": "pruning-lhs-gb-019",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 80.55071499999985,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "879eeea953dabcf827789220f64d30d1a40502f7b0ad0242357a99db3711e4b2",
+            "result.macaulay": "2005e276421f9a2caef4943df51810dbaeeb4de23cbe78493233d9ebefeef1c0"
+          }
+        },
+        "standard": {
+          "elapsedMs": 85.47251400000005,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "879eeea953dabcf827789220f64d30d1a40502f7b0ad0242357a99db3711e4b2",
+            "result.macaulay": "2005e276421f9a2caef4943df51810dbaeeb4de23cbe78493233d9ebefeef1c0"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 83.48162299999967,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "879eeea953dabcf827789220f64d30d1a40502f7b0ad0242357a99db3711e4b2",
+            "result.macaulay": "2005e276421f9a2caef4943df51810dbaeeb4de23cbe78493233d9ebefeef1c0"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 84.63816600000064,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "879eeea953dabcf827789220f64d30d1a40502f7b0ad0242357a99db3711e4b2",
+            "result.macaulay": "2005e276421f9a2caef4943df51810dbaeeb4de23cbe78493233d9ebefeef1c0"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 91.78431600000113,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "879eeea953dabcf827789220f64d30d1a40502f7b0ad0242357a99db3711e4b2",
+            "result.macaulay": "2005e276421f9a2caef4943df51810dbaeeb4de23cbe78493233d9ebefeef1c0"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 91.40450699999928,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "879eeea953dabcf827789220f64d30d1a40502f7b0ad0242357a99db3711e4b2",
+            "result.macaulay": "2005e276421f9a2caef4943df51810dbaeeb4de23cbe78493233d9ebefeef1c0"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true
+    },
+    {
+      "id": "pruning-lhs-gb-023",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 154.9947740000007,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "0bdacba21324a818c481d4066ac14430125f4913e1e7a42789ef613f9d3c123d",
+            "result.macaulay": "f828c28087dfb5406c55474f08a79752e2d8fd1b8903b02bf987485fff3fdd3a"
+          }
+        },
+        "standard": {
+          "elapsedMs": 151.68476100000044,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "0bdacba21324a818c481d4066ac14430125f4913e1e7a42789ef613f9d3c123d",
+            "result.macaulay": "f828c28087dfb5406c55474f08a79752e2d8fd1b8903b02bf987485fff3fdd3a"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 146.3775710000009,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "0bdacba21324a818c481d4066ac14430125f4913e1e7a42789ef613f9d3c123d",
+            "result.macaulay": "f828c28087dfb5406c55474f08a79752e2d8fd1b8903b02bf987485fff3fdd3a"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 134.93094599999677,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "0bdacba21324a818c481d4066ac14430125f4913e1e7a42789ef613f9d3c123d",
+            "result.macaulay": "f828c28087dfb5406c55474f08a79752e2d8fd1b8903b02bf987485fff3fdd3a"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 135.07988299999852,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "0bdacba21324a818c481d4066ac14430125f4913e1e7a42789ef613f9d3c123d",
+            "result.macaulay": "f828c28087dfb5406c55474f08a79752e2d8fd1b8903b02bf987485fff3fdd3a"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 133.73566199999914,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "0bdacba21324a818c481d4066ac14430125f4913e1e7a42789ef613f9d3c123d",
+            "result.macaulay": "f828c28087dfb5406c55474f08a79752e2d8fd1b8903b02bf987485fff3fdd3a"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true
+    },
+    {
+      "id": "pruning-lhs-gb-028",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 94.98747200000071,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b"
+          }
+        },
+        "standard": {
+          "elapsedMs": 100.50082299999849,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 87.04012299999886,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 91.75079000000187,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 92.52014299999792,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 101.24413599999752,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true
+    },
+    {
+      "id": "pruning-lhs-gb-029",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 66.51204199999484,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b"
+          }
+        },
+        "standard": {
+          "elapsedMs": 67.45502100000158,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 70.04786500000046,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 75.23619899999903,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 83.88616000000184,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 78.83548099999462,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true
+    },
+    {
+      "id": "pruning-lhs-gb-037",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 90.57685700000002,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b",
+            "result.macaulay": "7abc0ac40fe3d50af09007568944bdcd98ba907b05b839a681f2329a4342cb69"
+          }
+        },
+        "standard": {
+          "elapsedMs": 86.76028600000427,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b",
+            "result.macaulay": "7abc0ac40fe3d50af09007568944bdcd98ba907b05b839a681f2329a4342cb69"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 72.24682500000199,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b",
+            "result.macaulay": "7abc0ac40fe3d50af09007568944bdcd98ba907b05b839a681f2329a4342cb69"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 77.54740600000514,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b",
+            "result.macaulay": "7abc0ac40fe3d50af09007568944bdcd98ba907b05b839a681f2329a4342cb69"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 92.21289400000387,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b",
+            "result.macaulay": "7abc0ac40fe3d50af09007568944bdcd98ba907b05b839a681f2329a4342cb69"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 99.11242700000003,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b",
+            "result.macaulay": "7abc0ac40fe3d50af09007568944bdcd98ba907b05b839a681f2329a4342cb69"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true
+    },
+    {
+      "id": "pruning-lhs-gb-046",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 104.84416099999362,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b",
+            "result.macaulay": "7abc0ac40fe3d50af09007568944bdcd98ba907b05b839a681f2329a4342cb69"
+          }
+        },
+        "standard": {
+          "elapsedMs": 110.22145100000489,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b",
+            "result.macaulay": "7abc0ac40fe3d50af09007568944bdcd98ba907b05b839a681f2329a4342cb69"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 91.6548380000022,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b",
+            "result.macaulay": "7abc0ac40fe3d50af09007568944bdcd98ba907b05b839a681f2329a4342cb69"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 93.82544400000188,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b",
+            "result.macaulay": "7abc0ac40fe3d50af09007568944bdcd98ba907b05b839a681f2329a4342cb69"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 101.08781699999963,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b",
+            "result.macaulay": "7abc0ac40fe3d50af09007568944bdcd98ba907b05b839a681f2329a4342cb69"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 121.31137000000308,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b",
+            "result.macaulay": "7abc0ac40fe3d50af09007568944bdcd98ba907b05b839a681f2329a4342cb69"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true
+    },
+    {
+      "id": "pruning-lhs-gb-047",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 86.13305600000604,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b"
+          }
+        },
+        "standard": {
+          "elapsedMs": 91.11443000000145,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 73.62423500001023,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 71.96560799999861,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 94.02677000001131,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 95.11944400001084,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "bafe30cdea773b85e69d97d968236fe013fe04458d0f4a71f1ea04248f76491b"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true
+    },
+    {
+      "id": "pruning-lhs-gb-053",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 73.30389399999694,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "88bc16d8cec23b5e014356e1d624da8121128d8790ad56f352e4f9283b721dc9"
+          }
+        },
+        "standard": {
+          "elapsedMs": 74.79144500000984,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "88bc16d8cec23b5e014356e1d624da8121128d8790ad56f352e4f9283b721dc9"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 65.23589900000661,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "88bc16d8cec23b5e014356e1d624da8121128d8790ad56f352e4f9283b721dc9"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 72.63183600000048,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "88bc16d8cec23b5e014356e1d624da8121128d8790ad56f352e4f9283b721dc9"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 86.7805159999989,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "88bc16d8cec23b5e014356e1d624da8121128d8790ad56f352e4f9283b721dc9"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 88.40331100000185,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "88bc16d8cec23b5e014356e1d624da8121128d8790ad56f352e4f9283b721dc9"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true
+    },
+    {
+      "id": "pruning-tutorial-char2",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 84.50723899999866,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "ca14382d6f49dce6993c7e7f03ece18aa0be5e9c8a4f0fa330344b77666e4a48"
+          }
+        },
+        "standard": {
+          "elapsedMs": 91.76868999999715,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "ca14382d6f49dce6993c7e7f03ece18aa0be5e9c8a4f0fa330344b77666e4a48"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 74.14453700000013,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "ca14382d6f49dce6993c7e7f03ece18aa0be5e9c8a4f0fa330344b77666e4a48"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 78.44260300000315,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "ca14382d6f49dce6993c7e7f03ece18aa0be5e9c8a4f0fa330344b77666e4a48"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 93.73444899999595,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "ca14382d6f49dce6993c7e7f03ece18aa0be5e9c8a4f0fa330344b77666e4a48"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 101.2697979999939,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "ca14382d6f49dce6993c7e7f03ece18aa0be5e9c8a4f0fa330344b77666e4a48"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true,
+      "ambiguities": 6
+    },
+    {
+      "id": "pruning-tutorial-char5",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 161.16786699999648,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "e53da70693e8a9da36a06259149c4fcd48051047bab6865beb6af6901a79ed5c"
+          }
+        },
+        "standard": {
+          "elapsedMs": 164.04807699999947,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "e53da70693e8a9da36a06259149c4fcd48051047bab6865beb6af6901a79ed5c"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 143.3788169999898,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "e53da70693e8a9da36a06259149c4fcd48051047bab6865beb6af6901a79ed5c"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 149.91502099999343,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "e53da70693e8a9da36a06259149c4fcd48051047bab6865beb6af6901a79ed5c"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 139.16703699999198,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "e53da70693e8a9da36a06259149c4fcd48051047bab6865beb6af6901a79ed5c"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 136.52412899999763,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "e53da70693e8a9da36a06259149c4fcd48051047bab6865beb6af6901a79ed5c"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true,
+      "ambiguities": 20
+    },
+    {
+      "id": "pruning-large-16-generators-136-relations",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 12170.96033300001,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "e98c2c590e09132503d29fa8941a0aee84c24b0483af1a613e4da3217a8c3c32"
+          }
+        },
+        "standard": {
+          "elapsedMs": 11963.250986999992,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "e98c2c590e09132503d29fa8941a0aee84c24b0483af1a613e4da3217a8c3c32"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 9975.58317300002,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "e98c2c590e09132503d29fa8941a0aee84c24b0483af1a613e4da3217a8c3c32"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 10022.260809,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "e98c2c590e09132503d29fa8941a0aee84c24b0483af1a613e4da3217a8c3c32"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 327.78124799998477,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "e98c2c590e09132503d29fa8941a0aee84c24b0483af1a613e4da3217a8c3c32"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 326.27523500000825,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "e98c2c590e09132503d29fa8941a0aee84c24b0483af1a613e4da3217a8c3c32"
+          }
+        }
+      },
+      "nativeExact": true
+    },
+    {
+      "id": "pruning-large-20-generators-210-relations",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 813.2337430000189,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "76c0164710ba173c624a79355c59bb2c41ca70251d57b1fdbdb15303380272fa"
+          }
+        },
+        "standard": {
+          "elapsedMs": 835.674818999978,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "76c0164710ba173c624a79355c59bb2c41ca70251d57b1fdbdb15303380272fa"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 699.4973190000164,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "76c0164710ba173c624a79355c59bb2c41ca70251d57b1fdbdb15303380272fa"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 705.4633109999995,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "76c0164710ba173c624a79355c59bb2c41ca70251d57b1fdbdb15303380272fa"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 221.38118699999177,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "76c0164710ba173c624a79355c59bb2c41ca70251d57b1fdbdb15303380272fa"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 242.39086499999394,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "76c0164710ba173c624a79355c59bb2c41ca70251d57b1fdbdb15303380272fa"
+          }
+        }
+      },
+      "nativeExact": true
+    },
+    {
+      "id": "pruning-submitted-15-generators-100-relations",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 75592.93225900001,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "90330a9064c82eed277c35533a9f90e79acebf681d2433c89f970abab2315f2d"
+          }
+        },
+        "standard": {
+          "elapsedMs": 63729.25381400001,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "90330a9064c82eed277c35533a9f90e79acebf681d2433c89f970abab2315f2d"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 51771.44628100001,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "90330a9064c82eed277c35533a9f90e79acebf681d2433c89f970abab2315f2d"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 54788.621541,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "90330a9064c82eed277c35533a9f90e79acebf681d2433c89f970abab2315f2d"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 1002.5938569999998,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "90330a9064c82eed277c35533a9f90e79acebf681d2433c89f970abab2315f2d"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 1131.5659530000412,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "90330a9064c82eed277c35533a9f90e79acebf681d2433c89f970abab2315f2d"
+          }
+        }
+      },
+      "nativeExact": true
+    },
+    {
+      "id": "pruning-lhs-001",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 108.22957299998961,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "533722c50b881e885782be0bcf60e2936faeea630cd6c57f68a2c9ba137fe2a6"
+          }
+        },
+        "standard": {
+          "elapsedMs": 114.60056800005259,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "533722c50b881e885782be0bcf60e2936faeea630cd6c57f68a2c9ba137fe2a6"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 106.8109289999702,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "533722c50b881e885782be0bcf60e2936faeea630cd6c57f68a2c9ba137fe2a6"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 126.13071699999273,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "533722c50b881e885782be0bcf60e2936faeea630cd6c57f68a2c9ba137fe2a6"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 146.17729899997357,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "533722c50b881e885782be0bcf60e2936faeea630cd6c57f68a2c9ba137fe2a6"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 145.15069500001846,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "533722c50b881e885782be0bcf60e2936faeea630cd6c57f68a2c9ba137fe2a6"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true
+    },
+    {
+      "id": "pruning-lhs-002",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 130.42116299999998,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "e54f55394fbdde57e134a8a9dc472f0d3dc67d1bc4bb978269f64c54df70ec59"
+          }
+        },
+        "standard": {
+          "elapsedMs": 139.33011299999998,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "e54f55394fbdde57e134a8a9dc472f0d3dc67d1bc4bb978269f64c54df70ec59"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 109.68899899999997,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "e54f55394fbdde57e134a8a9dc472f0d3dc67d1bc4bb978269f64c54df70ec59"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 116.10412899999938,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "e54f55394fbdde57e134a8a9dc472f0d3dc67d1bc4bb978269f64c54df70ec59"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 99.07828700000027,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "e54f55394fbdde57e134a8a9dc472f0d3dc67d1bc4bb978269f64c54df70ec59"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 99.29557100000056,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "e54f55394fbdde57e134a8a9dc472f0d3dc67d1bc4bb978269f64c54df70ec59"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true
+    },
+    {
+      "id": "pruning-lhs-003",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 117.06316000000152,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "a974cd99f45b0c0e15290871b8d3a97788349ad294bd0d6e44314114893aa566"
+          }
+        },
+        "standard": {
+          "elapsedMs": 118.72697100000005,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "a974cd99f45b0c0e15290871b8d3a97788349ad294bd0d6e44314114893aa566"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 103.22903600000063,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "a974cd99f45b0c0e15290871b8d3a97788349ad294bd0d6e44314114893aa566"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 104.66544799999974,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "a974cd99f45b0c0e15290871b8d3a97788349ad294bd0d6e44314114893aa566"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 100.90486199999941,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "a974cd99f45b0c0e15290871b8d3a97788349ad294bd0d6e44314114893aa566"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 99.29204599999866,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "a974cd99f45b0c0e15290871b8d3a97788349ad294bd0d6e44314114893aa566"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true
+    },
+    {
+      "id": "pruning-lhs-004",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 54.367096000001766,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        },
+        "standard": {
+          "elapsedMs": 57.64347099999941,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 50.94903500000146,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 54.85798200000136,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 70.2388749999991,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 72.17758500000491,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true,
+      "ambiguities": 3
+    },
+    {
+      "id": "pruning-lhs-005",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 54.43261100000382,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        },
+        "standard": {
+          "elapsedMs": 55.7244869999995,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 51.88818000000174,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 51.68948100000125,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 68.75382399999944,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 70.93031100000371,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true
+    },
+    {
+      "id": "pruning-lhs-006",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 55.997840000003634,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        },
+        "standard": {
+          "elapsedMs": 57.687058999996225,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 51.81253200000356,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 55.34438200000295,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 70.26956100000098,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 83.28128400000423,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true,
+      "ambiguities": 3
+    },
+    {
+      "id": "pruning-lhs-007",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 86.78961800000252,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "575cba6f25912cbe61b5e4e2573d7b72f9bd486a73bcb2a6f7f19a92dfdd95c9"
+          }
+        },
+        "standard": {
+          "elapsedMs": 91.36948200000188,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "575cba6f25912cbe61b5e4e2573d7b72f9bd486a73bcb2a6f7f19a92dfdd95c9"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 81.29268600000069,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "575cba6f25912cbe61b5e4e2573d7b72f9bd486a73bcb2a6f7f19a92dfdd95c9"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 76.96597800000018,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "575cba6f25912cbe61b5e4e2573d7b72f9bd486a73bcb2a6f7f19a92dfdd95c9"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 99.74893700000393,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "575cba6f25912cbe61b5e4e2573d7b72f9bd486a73bcb2a6f7f19a92dfdd95c9"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 108.28055499999755,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "575cba6f25912cbe61b5e4e2573d7b72f9bd486a73bcb2a6f7f19a92dfdd95c9"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true
+    },
+    {
+      "id": "pruning-lhs-008",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 141.69693099999859,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "e9db4cb52fbe7860d28e6c9f0f7db5eb2276d87a9041441a8d1ade09b9d5832a"
+          }
+        },
+        "standard": {
+          "elapsedMs": 135.59575999999652,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "e9db4cb52fbe7860d28e6c9f0f7db5eb2276d87a9041441a8d1ade09b9d5832a"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 82.60548199999903,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "e9db4cb52fbe7860d28e6c9f0f7db5eb2276d87a9041441a8d1ade09b9d5832a"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 86.25769199999922,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "e9db4cb52fbe7860d28e6c9f0f7db5eb2276d87a9041441a8d1ade09b9d5832a"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 79.10314500000095,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "e9db4cb52fbe7860d28e6c9f0f7db5eb2276d87a9041441a8d1ade09b9d5832a"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 126.30102700000862,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "e9db4cb52fbe7860d28e6c9f0f7db5eb2276d87a9041441a8d1ade09b9d5832a"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true
+    },
+    {
+      "id": "pruning-lhs-009",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 61.750771999999415,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        },
+        "standard": {
+          "elapsedMs": 65.76186899999448,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 70.52064000000246,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 65.99500900000567,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 74.07089899999846,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 88.31369100000302,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true
+    },
+    {
+      "id": "pruning-lhs-010",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 78.32404199999291,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "678465758ed4f9b7c61887f2d80ec2e39658b84604b17c89978391e9439a7a9c"
+          }
+        },
+        "standard": {
+          "elapsedMs": 86.92648400001053,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "678465758ed4f9b7c61887f2d80ec2e39658b84604b17c89978391e9439a7a9c"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 90.71907399999327,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "678465758ed4f9b7c61887f2d80ec2e39658b84604b17c89978391e9439a7a9c"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 76.39664600000833,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "678465758ed4f9b7c61887f2d80ec2e39658b84604b17c89978391e9439a7a9c"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 102.7567859999981,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "678465758ed4f9b7c61887f2d80ec2e39658b84604b17c89978391e9439a7a9c"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 92.75463899999158,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "678465758ed4f9b7c61887f2d80ec2e39658b84604b17c89978391e9439a7a9c"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true
+    },
+    {
+      "id": "pruning-lhs-011",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 120.34003500000108,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "6b649245022e80e18da53fb5f6c58b97632253dee4b78fca658286ca758bec9f"
+          }
+        },
+        "standard": {
+          "elapsedMs": 127.7500560000044,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "6b649245022e80e18da53fb5f6c58b97632253dee4b78fca658286ca758bec9f"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 113.40871000000334,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "6b649245022e80e18da53fb5f6c58b97632253dee4b78fca658286ca758bec9f"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 115.60201000000234,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "6b649245022e80e18da53fb5f6c58b97632253dee4b78fca658286ca758bec9f"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 93.99746700000833,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "6b649245022e80e18da53fb5f6c58b97632253dee4b78fca658286ca758bec9f"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 93.23692400001164,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "6b649245022e80e18da53fb5f6c58b97632253dee4b78fca658286ca758bec9f"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true
+    },
+    {
+      "id": "pruning-lhs-012",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 115.24364499999501,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "9aac69d662518be022e9984892117c7771f71d3807b02ff9293bbb533ae7c22a"
+          }
+        },
+        "standard": {
+          "elapsedMs": 116.90145999999368,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "9aac69d662518be022e9984892117c7771f71d3807b02ff9293bbb533ae7c22a"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 103.76357999999891,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "9aac69d662518be022e9984892117c7771f71d3807b02ff9293bbb533ae7c22a"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 108.36396899999818,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "9aac69d662518be022e9984892117c7771f71d3807b02ff9293bbb533ae7c22a"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 99.13057900000422,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "9aac69d662518be022e9984892117c7771f71d3807b02ff9293bbb533ae7c22a"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 97.60319300000265,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "9aac69d662518be022e9984892117c7771f71d3807b02ff9293bbb533ae7c22a"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true
+    },
+    {
+      "id": "pruning-lhs-013",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 57.34134699999413,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        },
+        "standard": {
+          "elapsedMs": 60.26895000001241,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 54.42840299999807,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 55.69959599999129,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 82.105979999993,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 117.76887599998736,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true,
+      "ambiguities": 3
+    },
+    {
+      "id": "pruning-lhs-014",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 225.86289899999974,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "c08970c13afd982be698cc2406e60a341e1e7db8f2d246d8ac9450e8df5b118e"
+          }
+        },
+        "standard": {
+          "elapsedMs": 355.89102300000377,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "c08970c13afd982be698cc2406e60a341e1e7db8f2d246d8ac9450e8df5b118e"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 157.58003599999938,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "c08970c13afd982be698cc2406e60a341e1e7db8f2d246d8ac9450e8df5b118e"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 170.27221299998928,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "c08970c13afd982be698cc2406e60a341e1e7db8f2d246d8ac9450e8df5b118e"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 176.9866069999989,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "c08970c13afd982be698cc2406e60a341e1e7db8f2d246d8ac9450e8df5b118e"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 137.48435799998697,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "c08970c13afd982be698cc2406e60a341e1e7db8f2d246d8ac9450e8df5b118e"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true
+    },
+    {
+      "id": "pruning-lhs-015",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 186.6726839999901,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "5bab4f03766b509a0034182e1d7cf5a2bf8c05fe722de6c72e4bbac9792aa2e8"
+          }
+        },
+        "standard": {
+          "elapsedMs": 254.6123179999995,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "5bab4f03766b509a0034182e1d7cf5a2bf8c05fe722de6c72e4bbac9792aa2e8"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 205.85657699999865,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "5bab4f03766b509a0034182e1d7cf5a2bf8c05fe722de6c72e4bbac9792aa2e8"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 220.78321799999685,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "5bab4f03766b509a0034182e1d7cf5a2bf8c05fe722de6c72e4bbac9792aa2e8"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 177.00471800001105,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "5bab4f03766b509a0034182e1d7cf5a2bf8c05fe722de6c72e4bbac9792aa2e8"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 159.09502399998019,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "5bab4f03766b509a0034182e1d7cf5a2bf8c05fe722de6c72e4bbac9792aa2e8"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true
+    },
+    {
+      "id": "pruning-lhs-016",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 197.2445230000012,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "45afd06975b81423eb4ced051b60c8eef1a4ed897162b1e974f2dc8ce4b03475"
+          }
+        },
+        "standard": {
+          "elapsedMs": 210.63385199999902,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "45afd06975b81423eb4ced051b60c8eef1a4ed897162b1e974f2dc8ce4b03475"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 174.4811880000052,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "45afd06975b81423eb4ced051b60c8eef1a4ed897162b1e974f2dc8ce4b03475"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 149.73892299999716,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "45afd06975b81423eb4ced051b60c8eef1a4ed897162b1e974f2dc8ce4b03475"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 130.4503079999995,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "45afd06975b81423eb4ced051b60c8eef1a4ed897162b1e974f2dc8ce4b03475"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 151.03244900002028,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "45afd06975b81423eb4ced051b60c8eef1a4ed897162b1e974f2dc8ce4b03475"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true
+    },
+    {
+      "id": "pruning-lhs-017",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 159.98469100001967,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "e058bc07cd4e8cbb92010eb72d99c09251f95b48b5bf0bcf6f49736d4198e2a4"
+          }
+        },
+        "standard": {
+          "elapsedMs": 144.20538900000975,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "e058bc07cd4e8cbb92010eb72d99c09251f95b48b5bf0bcf6f49736d4198e2a4"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 98.77320100000361,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "e058bc07cd4e8cbb92010eb72d99c09251f95b48b5bf0bcf6f49736d4198e2a4"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 124.15289399999892,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "e058bc07cd4e8cbb92010eb72d99c09251f95b48b5bf0bcf6f49736d4198e2a4"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 150.72346099998686,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "e058bc07cd4e8cbb92010eb72d99c09251f95b48b5bf0bcf6f49736d4198e2a4"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 123.86401600000681,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "e058bc07cd4e8cbb92010eb72d99c09251f95b48b5bf0bcf6f49736d4198e2a4"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true
+    },
+    {
+      "id": "pruning-lhs-018",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 232.80193600000348,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "c6532e6a631d6d837a5b8ef060b70482ad2e07d842f514820f4841b1fb0b4f57"
+          }
+        },
+        "standard": {
+          "elapsedMs": 240.6486370000057,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "c6532e6a631d6d837a5b8ef060b70482ad2e07d842f514820f4841b1fb0b4f57"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 192.8484129999997,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "c6532e6a631d6d837a5b8ef060b70482ad2e07d842f514820f4841b1fb0b4f57"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 149.07495700000436,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "c6532e6a631d6d837a5b8ef060b70482ad2e07d842f514820f4841b1fb0b4f57"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 172.51322200000868,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "c6532e6a631d6d837a5b8ef060b70482ad2e07d842f514820f4841b1fb0b4f57"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 182.36006600002293,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "c6532e6a631d6d837a5b8ef060b70482ad2e07d842f514820f4841b1fb0b4f57"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true
+    },
+    {
+      "id": "pruning-lhs-019",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 152.8183419999841,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "fc7d5529e09c081509050203e99fe7fc433e6abcc3ed8db03b2903f4584a0ceb"
+          }
+        },
+        "standard": {
+          "elapsedMs": 205.53911700000754,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "fc7d5529e09c081509050203e99fe7fc433e6abcc3ed8db03b2903f4584a0ceb"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 116.95113000000129,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "fc7d5529e09c081509050203e99fe7fc433e6abcc3ed8db03b2903f4584a0ceb"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 125.51391599999624,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "fc7d5529e09c081509050203e99fe7fc433e6abcc3ed8db03b2903f4584a0ceb"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 143.67511199999717,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "fc7d5529e09c081509050203e99fe7fc433e6abcc3ed8db03b2903f4584a0ceb"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 143.5483950000198,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "fc7d5529e09c081509050203e99fe7fc433e6abcc3ed8db03b2903f4584a0ceb"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true
+    },
+    {
+      "id": "pruning-lhs-020",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 175.10009699998773,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "0ae7d8e41e5b3e25a52117603ebe2533b0ad36dac2aeba455e6cc28995714771"
+          }
+        },
+        "standard": {
+          "elapsedMs": 197.42408500000602,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "0ae7d8e41e5b3e25a52117603ebe2533b0ad36dac2aeba455e6cc28995714771"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 116.10671900000307,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "0ae7d8e41e5b3e25a52117603ebe2533b0ad36dac2aeba455e6cc28995714771"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 173.09891999998945,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "0ae7d8e41e5b3e25a52117603ebe2533b0ad36dac2aeba455e6cc28995714771"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 99.45587600005092,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "0ae7d8e41e5b3e25a52117603ebe2533b0ad36dac2aeba455e6cc28995714771"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 137.86739800003124,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "0ae7d8e41e5b3e25a52117603ebe2533b0ad36dac2aeba455e6cc28995714771"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true
+    },
+    {
+      "id": "pruning-lhs-021",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 102.43517599999905,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "effa362b91a7973a498fd06894e616a253cd3b08e5c545b44815d284fcb724fb"
+          }
+        },
+        "standard": {
+          "elapsedMs": 147.3173480000114,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "effa362b91a7973a498fd06894e616a253cd3b08e5c545b44815d284fcb724fb"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 117.028374000045,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "effa362b91a7973a498fd06894e616a253cd3b08e5c545b44815d284fcb724fb"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 124.71128499996848,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "effa362b91a7973a498fd06894e616a253cd3b08e5c545b44815d284fcb724fb"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 82.8923519999953,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "effa362b91a7973a498fd06894e616a253cd3b08e5c545b44815d284fcb724fb"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 114.18420499999775,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "effa362b91a7973a498fd06894e616a253cd3b08e5c545b44815d284fcb724fb"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true
+    },
+    {
+      "id": "pruning-lhs-022",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 149.6326339999796,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "dd71871217cee78b4939c6eb46558a8c91d24b672fc4bd021e18f20d88dc741f"
+          }
+        },
+        "standard": {
+          "elapsedMs": 154.57166499999585,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "dd71871217cee78b4939c6eb46558a8c91d24b672fc4bd021e18f20d88dc741f"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 201.69856900000013,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "dd71871217cee78b4939c6eb46558a8c91d24b672fc4bd021e18f20d88dc741f"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 155.91084900003625,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "dd71871217cee78b4939c6eb46558a8c91d24b672fc4bd021e18f20d88dc741f"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 175.51276899996446,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "dd71871217cee78b4939c6eb46558a8c91d24b672fc4bd021e18f20d88dc741f"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 168.58849199995166,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "dd71871217cee78b4939c6eb46558a8c91d24b672fc4bd021e18f20d88dc741f"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true
+    },
+    {
+      "id": "pruning-lhs-023",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 81.38344399997732,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "92a28f3e3aeb80dcef12f2c7362db3bb95a9670ed94e69271978a078a6e517ae"
+          }
+        },
+        "standard": {
+          "elapsedMs": 90.38548200001242,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "92a28f3e3aeb80dcef12f2c7362db3bb95a9670ed94e69271978a078a6e517ae"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 61.954106999968644,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "92a28f3e3aeb80dcef12f2c7362db3bb95a9670ed94e69271978a078a6e517ae"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 83.13082799996482,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "92a28f3e3aeb80dcef12f2c7362db3bb95a9670ed94e69271978a078a6e517ae"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 96.95898299996043,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "92a28f3e3aeb80dcef12f2c7362db3bb95a9670ed94e69271978a078a6e517ae"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 116.93043399997987,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "92a28f3e3aeb80dcef12f2c7362db3bb95a9670ed94e69271978a078a6e517ae"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true
+    },
+    {
+      "id": "pruning-lhs-024",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 207.69164799997816,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "0ae7d8e41e5b3e25a52117603ebe2533b0ad36dac2aeba455e6cc28995714771"
+          }
+        },
+        "standard": {
+          "elapsedMs": 173.60182400001213,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "0ae7d8e41e5b3e25a52117603ebe2533b0ad36dac2aeba455e6cc28995714771"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 176.5736400000169,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "0ae7d8e41e5b3e25a52117603ebe2533b0ad36dac2aeba455e6cc28995714771"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 205.9459270000225,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "0ae7d8e41e5b3e25a52117603ebe2533b0ad36dac2aeba455e6cc28995714771"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 164.31478199997218,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "0ae7d8e41e5b3e25a52117603ebe2533b0ad36dac2aeba455e6cc28995714771"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 125.95137300004717,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "0ae7d8e41e5b3e25a52117603ebe2533b0ad36dac2aeba455e6cc28995714771"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true
+    },
+    {
+      "id": "pruning-lhs-025",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 121.41820000001462,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "77278a5bbd68e51e010d59de823af6528d38d8181f69b8db440abf544666aa6c"
+          }
+        },
+        "standard": {
+          "elapsedMs": 133.9224379999796,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "77278a5bbd68e51e010d59de823af6528d38d8181f69b8db440abf544666aa6c"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 188.56462100002682,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "77278a5bbd68e51e010d59de823af6528d38d8181f69b8db440abf544666aa6c"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 130.11106299998937,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "77278a5bbd68e51e010d59de823af6528d38d8181f69b8db440abf544666aa6c"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 140.06202800001483,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "77278a5bbd68e51e010d59de823af6528d38d8181f69b8db440abf544666aa6c"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 162.6886339999619,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "77278a5bbd68e51e010d59de823af6528d38d8181f69b8db440abf544666aa6c"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true
+    },
+    {
+      "id": "pruning-lhs-026",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 128.22310699999798,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        },
+        "standard": {
+          "elapsedMs": 331.15445899998304,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 120.47296800004551,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 92.33279099996435,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 142.95476400002372,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 151.6173889999627,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true,
+      "ambiguities": 3
+    },
+    {
+      "id": "pruning-lhs-027",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 63.5687339999713,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        },
+        "standard": {
+          "elapsedMs": 67.62377199996263,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 69.7921389999683,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 79.9135290000122,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 93.33703100000275,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 111.06069700000808,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "f7cf6347b6ff7ff0d756b211e9b40f22c49a5b374faa9a5d6953c19e0c32d11c"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true
+    },
+    {
+      "id": "pruning-lhs-028",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 87.83319299999857,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "dc2753525318359b8ca903cf7a555a902cd02a694c89b792fa6e64b421ae2041"
+          }
+        },
+        "standard": {
+          "elapsedMs": 112.30317400000058,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "dc2753525318359b8ca903cf7a555a902cd02a694c89b792fa6e64b421ae2041"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 92.85926699999254,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "dc2753525318359b8ca903cf7a555a902cd02a694c89b792fa6e64b421ae2041"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 99.05908600002294,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "dc2753525318359b8ca903cf7a555a902cd02a694c89b792fa6e64b421ae2041"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 165.90656400000444,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "dc2753525318359b8ca903cf7a555a902cd02a694c89b792fa6e64b421ae2041"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 130.92278299998725,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "dc2753525318359b8ca903cf7a555a902cd02a694c89b792fa6e64b421ae2041"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true
+    },
+    {
+      "id": "pruning-lhs-029",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 161.20324799994705,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "678465758ed4f9b7c61887f2d80ec2e39658b84604b17c89978391e9439a7a9c"
+          }
+        },
+        "standard": {
+          "elapsedMs": 159.3117370000109,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "678465758ed4f9b7c61887f2d80ec2e39658b84604b17c89978391e9439a7a9c"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 104.48471999994945,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "678465758ed4f9b7c61887f2d80ec2e39658b84604b17c89978391e9439a7a9c"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 97.63663800002541,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "678465758ed4f9b7c61887f2d80ec2e39658b84604b17c89978391e9439a7a9c"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 128.63632499997038,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "678465758ed4f9b7c61887f2d80ec2e39658b84604b17c89978391e9439a7a9c"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 160.98551799997222,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "678465758ed4f9b7c61887f2d80ec2e39658b84604b17c89978391e9439a7a9c"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true
+    },
+    {
+      "id": "pruning-lhs-030",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 91.1832300000242,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "08f5c522694cf6f57da933ab9b2360362b4d916053aa63449fc996a800bec826"
+          }
+        },
+        "standard": {
+          "elapsedMs": 111.75607199996011,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "08f5c522694cf6f57da933ab9b2360362b4d916053aa63449fc996a800bec826"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 92.22503900004085,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "08f5c522694cf6f57da933ab9b2360362b4d916053aa63449fc996a800bec826"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 82.5647680000402,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "08f5c522694cf6f57da933ab9b2360362b4d916053aa63449fc996a800bec826"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 121.13138600002276,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "08f5c522694cf6f57da933ab9b2360362b4d916053aa63449fc996a800bec826"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 89.28973099996801,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "08f5c522694cf6f57da933ab9b2360362b4d916053aa63449fc996a800bec826"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true
+    },
+    {
+      "id": "pruning-lhs-031",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 119.19702000002144,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "6604727141894dff26d9fbf28d5aec43b23096d6731aead830dbeec5fc993102"
+          }
+        },
+        "standard": {
+          "elapsedMs": 138.32082700001774,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "6604727141894dff26d9fbf28d5aec43b23096d6731aead830dbeec5fc993102"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 95.24577000003774,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "6604727141894dff26d9fbf28d5aec43b23096d6731aead830dbeec5fc993102"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 99.33785499999067,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "6604727141894dff26d9fbf28d5aec43b23096d6731aead830dbeec5fc993102"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 108.34524600004079,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "6604727141894dff26d9fbf28d5aec43b23096d6731aead830dbeec5fc993102"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 105.2811469999724,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "6604727141894dff26d9fbf28d5aec43b23096d6731aead830dbeec5fc993102"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true
+    },
+    {
+      "id": "pruning-lhs-032",
+      "backends": {
+        "standard-unpruned": {
+          "elapsedMs": 66.55273499997566,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "28aa1927528bf2ac71d9cff031acee6dfb36fda86614ce056a420106d4c20438"
+          }
+        },
+        "standard": {
+          "elapsedMs": 93.02006300003268,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "28aa1927528bf2ac71d9cff031acee6dfb36fda86614ce056a420106d4c20438"
+          }
+        },
+        "optimized-unpruned": {
+          "elapsedMs": 83.30111599998781,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "28aa1927528bf2ac71d9cff031acee6dfb36fda86614ce056a420106d4c20438"
+          }
+        },
+        "optimized": {
+          "elapsedMs": 87.97382499999367,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "28aa1927528bf2ac71d9cff031acee6dfb36fda86614ce056a420106d4c20438"
+          }
+        },
+        "compiled-unpruned": {
+          "elapsedMs": 112.0153949999949,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "28aa1927528bf2ac71d9cff031acee6dfb36fda86614ce056a420106d4c20438"
+          }
+        },
+        "compiled": {
+          "elapsedMs": 115.17606600001454,
+          "memoryBytes": 67108864,
+          "hashes": {
+            "result.gb": "28aa1927528bf2ac71d9cff031acee6dfb36fda86614ce056a420106d4c20438"
+          }
+        }
+      },
+      "nativeExact": true,
+      "singularMutualIdealMembership": true
+    }
+  ],
+  "native": "/home/uu/Projects/george/build/sbcl-oracle-fixed-v4-04-20261001/bin/clisp/unix/bergman",
+  "singular": "/home/uu/Projects/george/build/oracles/root/usr/bin/Singular",
+  "timingIsDiagnosticOnly": true,
+  "resumedResults": 14,
+  "finishedAt": "2026-10-02T07:50:24.660Z"
+}

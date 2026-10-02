@@ -1,8 +1,63 @@
 # George handoff
 
+## George 0.5 memory64 — 2026-10-02
+
+The current package/interface are **0.5.0 / 0.5**. The fourth backend is
+**C / ECL O3 + LTO (memory64)**, with actual 64-bit pointers throughout
+ECL, GMP and GC. The wasm32 C backend remains the default; there is no
+paired memory64 speed assessment. The new assets contain no builder home
+paths and retain conservative GC pointer spills, exact arithmetic and the
+same Bergman data as the three existing engines.
+
+Memory64 offers allowances through **16 GiB** and **No heap cap** (`0`).
+The latter removes ECL's heap allowance, not the browser's 16 GiB maximum
+for this single memory. Unsupported browsers disable this backend.
+Wasm32 allowances reach **4095 MiB**; switching from a larger or uncapped
+memory64 setting clamps the allowance. There is no measured universal
+300 MiB reserve. Share links preserve these settings and the new pruning
+checkbox while retaining old version-1 field defaults.
+
+Executed checks: **79 unit tests**, **128 memory64 parity cases in Node
+and ordinary Chromium**, both original sequential sessions (**37 exact
+outputs per mode**), and **45 pruned cases in Node and Chromium**. The
+pruning references were checked independently with native SBCL (45 cases)
+and Singular (42). The real browser UI passes with all four backends at
+root and `/george/`, including timeouts/restart, sharing, 16 GiB and no-cap
+settings, mobile and blocked storage.
+
+An ordinary browser worker holds **4.21875 GiB of live arrays** and
+**4.352783203125 GiB of allocated Wasm memory**, surviving GC/root checks
+and exact bignum arithmetic. Final engine hashes and evidence are recorded
+in [memory64.json](validation/memory64.json). Allocated Wasm memory is not
+live Lisp heap or browser RSS. Browser reference reports were rechecked
+against every saved output after a timestamp-only Node report refresh;
+both reference hashes are retained in that audit.
+
+The submitted 15-generator/100-relation presentation completes degree 7
+on memory64 with pruning and no heap cap: **695 elements**, byte-for-byte
+native equality, **191.1875 MiB allocated Wasm**. On wasm32, repeated
+off/on comparisons reduce allocation from **110.875 to 92.375 MiB**
+(about **16.7%**) with the same output. These are memory observations;
+concurrent builds/validation prevent a fair speed claim. Pruning is
+optional and applies only to homogeneous, unweighted, noncommutative,
+degreewise Gröbner basis jobs. **Do not restart the cancelled main
+degree-eight run. Degrees 9–11 have not been checked on memory64.**
+
+Rebuild with `npm run wasm:build:backends`, or use the isolated memory64
+recipe in [BACKENDS.md](BACKENDS.md). The pinned Binaryen spill-pointer
+stack helper requires the included i64 patch. The final release was
+assembled through the equivalent pinned build and neutral-path AOT steps;
+the combined fresh-build wrapper has not itself been run end to end.
+
+Prepare the committed release and refresh `publish/main`,
+`publish/gh-pages` and `build/publication/publish.sh` for the user's manual
+push. Deployment continues from permitted `gh-pages`; publishing guidance
+belongs in [DEPLOYMENT.md](DEPLOYMENT.md). No remote push is authorized by
+the user's current preference to publish personally.
+
 ## George 0.4 backends and LHS parity — 2026-10-01
 
-The current package/interface are **0.4.0 / 0.4**. The default is
+That package/interface were **0.4.0 / 0.4**. The default was
 **C / ECL O3 + LTO**. More settings also offer **Lisp / ECL O3 + LTO** and
 **Lisp / ECL O2**; labels state the actual compilation choices. Backend
 selection is persisted and shared. Version-1 share field order/defaults

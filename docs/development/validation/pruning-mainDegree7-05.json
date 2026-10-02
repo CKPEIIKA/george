@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-02T07:23:14.010Z",
+  "degree": 7,
+  "backend": "C / ECL O3 + LTO",
+  "inputSha256": "1337f8bbdf2ed27f8da93430a520364ddccb2430d423e5fc315dd550d2110903",
+  "metric": "Peak allocated Wasm linear memory, which grows without shrinking. This is not live Lisp heap or total browser RAM.",
+  "timingIsDiagnosticOnly": true,
+  "concurrentCompilerBuild": true,
+  "engineHashes": {
+    "ecl.js": "b51a386338911b8d262557686fe0ff81e46fdbd99c55a058a7ceb3223d55edee",
+    "ecl.wasm": "8bd7c0b8be173025c741e9cb90718de0210be7eb6a0537725b06bd702f8d687d",
+    "ecl.data": "dce742ded7cc24a6ace543505cad50b4699d7acdb9c51fef8dbae01905871ece"
+  },
+  "runs": [
+    {
+      "monomialPruning": false,
+      "peakWasmBytes": 116260864,
+      "peakWasmMiB": 110.875,
+      "elapsedMs": 45259.137575,
+      "exactNativeEquality": true,
+      "elements": 695
+    },
+    {
+      "monomialPruning": true,
+      "peakWasmBytes": 96862208,
+      "peakWasmMiB": 92.375,
+      "elapsedMs": 52063.894635,
+      "exactNativeEquality": true,
+      "elements": 695
+    },
+    {
+      "monomialPruning": true,
+      "peakWasmBytes": 96862208,
+      "peakWasmMiB": 92.375,
+      "elapsedMs": 44680.981719999996,
+      "exactNativeEquality": true,
+      "elements": 695
+    },
+    {
+      "monomialPruning": false,
+      "peakWasmBytes": 116260864,
+      "peakWasmMiB": 110.875,
+      "elapsedMs": 35866.859673,
+      "exactNativeEquality": true,
+      "elements": 695
+    }
+  ]
+}

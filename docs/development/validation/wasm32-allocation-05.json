@@ -1,0 +1,209 @@
+{
+  "date": "2026-10-02T07:48:14.571Z",
+  "debuggerDuringCalculation": false,
+  "backend": "compiled",
+  "allowanceMiB": 4095,
+  "bytesPerArray": 125829120,
+  "targetArrays": 32,
+  "rows": [
+    {
+      "arrays": 1,
+      "liveArrayBytes": 125829120,
+      "wasmBytes": 150536192,
+      "stdout": "(1 7)\n"
+    },
+    {
+      "arrays": 2,
+      "liveArrayBytes": 251658240,
+      "wasmBytes": 331677696,
+      "stdout": "(2 7)\n"
+    },
+    {
+      "arrays": 3,
+      "liveArrayBytes": 377487360,
+      "wasmBytes": 402456576,
+      "stdout": "(3 7)\n"
+    },
+    {
+      "arrays": 4,
+      "liveArrayBytes": 503316480,
+      "wasmBytes": 629276672,
+      "stdout": "(4 7)\n"
+    },
+    {
+      "arrays": 5,
+      "liveArrayBytes": 629145600,
+      "wasmBytes": 755105792,
+      "stdout": "(5 7)\n"
+    },
+    {
+      "arrays": 6,
+      "liveArrayBytes": 754974720,
+      "wasmBytes": 880934912,
+      "stdout": "(6 7)\n"
+    },
+    {
+      "arrays": 7,
+      "liveArrayBytes": 880803840,
+      "wasmBytes": 1007026176,
+      "stdout": "(7 7)\n"
+    },
+    {
+      "arrays": 8,
+      "liveArrayBytes": 1006632960,
+      "wasmBytes": 1132920832,
+      "stdout": "(8 7)\n"
+    },
+    {
+      "arrays": 9,
+      "liveArrayBytes": 1132462080,
+      "wasmBytes": 1259012096,
+      "stdout": "(9 7)\n"
+    },
+    {
+      "arrays": 10,
+      "liveArrayBytes": 1258291200,
+      "wasmBytes": 1384841216,
+      "stdout": "(10 7)\n"
+    },
+    {
+      "arrays": 11,
+      "liveArrayBytes": 1384120320,
+      "wasmBytes": 1510932480,
+      "stdout": "(11 7)\n"
+    },
+    {
+      "arrays": 12,
+      "liveArrayBytes": 1509949440,
+      "wasmBytes": 1636827136,
+      "stdout": "(12 7)\n"
+    },
+    {
+      "arrays": 13,
+      "liveArrayBytes": 1635778560,
+      "wasmBytes": 1762918400,
+      "stdout": "(13 7)\n"
+    },
+    {
+      "arrays": 14,
+      "liveArrayBytes": 1761607680,
+      "wasmBytes": 1888747520,
+      "stdout": "(14 7)\n"
+    },
+    {
+      "arrays": 15,
+      "liveArrayBytes": 1887436800,
+      "wasmBytes": 2014838784,
+      "stdout": "(15 7)\n"
+    },
+    {
+      "arrays": 16,
+      "liveArrayBytes": 2013265920,
+      "wasmBytes": 2140733440,
+      "stdout": "(16 7)\n"
+    },
+    {
+      "arrays": 17,
+      "liveArrayBytes": 2139095040,
+      "wasmBytes": 2266562560,
+      "stdout": "(17 7)\n"
+    },
+    {
+      "arrays": 18,
+      "liveArrayBytes": 2264924160,
+      "wasmBytes": 2392653824,
+      "stdout": "(18 7)\n"
+    },
+    {
+      "arrays": 19,
+      "liveArrayBytes": 2390753280,
+      "wasmBytes": 2518482944,
+      "stdout": "(19 7)\n"
+    },
+    {
+      "arrays": 20,
+      "liveArrayBytes": 2516582400,
+      "wasmBytes": 2644639744,
+      "stdout": "(20 7)\n"
+    },
+    {
+      "arrays": 21,
+      "liveArrayBytes": 2642411520,
+      "wasmBytes": 2770468864,
+      "stdout": "(21 7)\n"
+    },
+    {
+      "arrays": 22,
+      "liveArrayBytes": 2768240640,
+      "wasmBytes": 2896560128,
+      "stdout": "(22 7)\n"
+    },
+    {
+      "arrays": 23,
+      "liveArrayBytes": 2894069760,
+      "wasmBytes": 3022389248,
+      "stdout": "(23 7)\n"
+    },
+    {
+      "arrays": 24,
+      "liveArrayBytes": 3019898880,
+      "wasmBytes": 3148546048,
+      "stdout": "(24 7)\n"
+    },
+    {
+      "arrays": 25,
+      "liveArrayBytes": 3145728000,
+      "wasmBytes": 3274375168,
+      "stdout": "(25 7)\n"
+    },
+    {
+      "arrays": 26,
+      "liveArrayBytes": 3271557120,
+      "wasmBytes": 3400466432,
+      "stdout": "(26 7)\n"
+    },
+    {
+      "arrays": 27,
+      "liveArrayBytes": 3397386240,
+      "wasmBytes": 3526295552,
+      "stdout": "(27 7)\n"
+    },
+    {
+      "arrays": 28,
+      "liveArrayBytes": 3523215360,
+      "wasmBytes": 3652452352,
+      "stdout": "(28 7)\n"
+    },
+    {
+      "arrays": 29,
+      "liveArrayBytes": 3649044480,
+      "wasmBytes": 3778281472,
+      "stdout": "(29 7)\n"
+    },
+    {
+      "arrays": 30,
+      "liveArrayBytes": 3774873600,
+      "wasmBytes": 3904372736,
+      "stdout": "(30 7)\n"
+    },
+    {
+      "arrays": 31,
+      "liveArrayBytes": 3900702720,
+      "wasmBytes": 4030201856,
+      "stdout": "(31 7)\n"
+    },
+    {
+      "arrays": 32,
+      "liveArrayBytes": 4026531840,
+      "wasmBytes": 4156358656,
+      "stdout": "(32 7)\n"
+    }
+  ],
+  "configured": {
+    "stdout": "4293918720\n"
+  },
+  "done": {
+    "stdout": "T\n12157665459056928801\n",
+    "wasmBytes": 4156358656
+  }
+}

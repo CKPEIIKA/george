@@ -1,7 +1,8 @@
-import { resolutionJob, DEFAULT_MEMORY_MIB, MAX_MEMORY_MIB } from '../src/bergman-syntax.js';
+import { resolutionJob, DEFAULT_MEMORY_MIB } from '../src/bergman-syntax.js';
+import { validMemoryMiB, memoryLimitMessage } from '../src/backends.js';
 import { augmentedHomology } from '../src/homology.js';
-export function setMemoryLimit(runtime, memoryMiB = DEFAULT_MEMORY_MIB) {
-  if (!Number.isSafeInteger(memoryMiB) || memoryMiB < 128 || memoryMiB > MAX_MEMORY_MIB) throw new Error(`Memory limit must be an integer from 128 to ${MAX_MEMORY_MIB} MiB.`);
+export function setMemoryLimit(runtime, memoryMiB = DEFAULT_MEMORY_MIB, backend = 'standard') {
+  if (!validMemoryMiB(memoryMiB, backend)) throw new Error(memoryLimitMessage(backend));
   const source = `(EXT:SET-LIMIT 'EXT:HEAP-SIZE ${memoryMiB * 1048576})`;
   if (runtime.ccall('george_eval', 'number', ['string', 'number'], [source, 0])) throw new Error('Cannot set the engine memory limit.');
 }
@@ -11,7 +12,7 @@ export function putFile(runtime, path, text) {
   runtime.FS.writeFile(absolute, text);
 }
 export function runJob(runtime, job) {
-  setMemoryLimit(runtime, job.memoryMiB);
+  setMemoryLimit(runtime, job.memoryMiB, job.backend);
   function execute(part, skipAnick=false) {
     for (const [path,text] of Object.entries(part.files)) putFile(runtime,path,text);
     for (const path of Object.values(part.outputs)) if (runtime.FS.analyzePath(path).exists) runtime.FS.unlink(path);

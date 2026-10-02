@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build the three browser backends from one corresponding Bergman package.
+# Build all four browser backends from one corresponding Bergman package.
 # All build directories are fresh; the selected engines are installed in web/.
 set -euo pipefail
 root=$(cd "$(dirname "$0")/.." && pwd)
@@ -18,3 +18,5 @@ GEORGE_LTO=1 GEORGE_LINK_OPT=-O3 \
   bash tools/build-aot-variant.sh "$destination/compiled" "$runtime" "$destination/optimized/prefix"
 node tools/install-runtime-variant.mjs "$destination/optimized" optimized
 node tools/install-runtime-variant.mjs "$destination/compiled" compiled
+bash tools/build-memory64-backend.sh "$destination/memory64" "$runtime"
+node tools/install-runtime-variant.mjs "$destination/memory64/compiled" memory64

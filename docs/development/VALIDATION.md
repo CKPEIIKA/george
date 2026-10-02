@@ -1,8 +1,51 @@
 # Validation and verification
 
+## George 0.5 — 2026-10-02
+
+The current package is **0.5.0**. It adds an explicitly selected
+**C / ECL O3 + LTO (memory64)** engine to the three existing backends.
+All four use identical Bergman data; the wasm32 C backend remains the
+default. Final memory64 asset identities and report hashes are in
+[memory64.json](validation/memory64.json).
+
+| Executed check | Result |
+|---|---|
+| JavaScript unit tests | **79 passed**; [log](validation/unit-tests-05.log) |
+| Memory64 LHS and anchors | **128 cases in Node + 128 in ordinary Chromium**, exact saved-output equality with the independently checked 0.4 reference |
+| Memory64 sequential sessions | **37 exact outputs in fixed mode + 37 in legacy mode** |
+| Monomial pruning | **45 cases off/on on each wasm32 backend** (270 Node runs), 135 browser pruned runs; memory64 adds 45 Node + 45 browser pruned runs; all outputs agree |
+| Independent pruning references | Native SBCL checks all 45 cases; Singular checks generating-ideal membership in 42 noncommutative eligible cases |
+| Above-4-GiB allocation | Production Chromium worker holds **36 × 120 MiB = 4.21875 GiB** live arrays; **4.352783203125 GiB** allocated Wasm; GC roots, arrays after GC and exact arithmetic pass; [report](validation/memory64-allocation.json) |
+| Wasm32 highest allowance | 4095 MiB accepted; **3.75 GiB live arrays**, 3963.8125 MiB allocated Wasm, GC and arithmetic pass |
+| Submitted presentation, memory64 | Degree 7, pruning on, no ECL heap cap: **695 elements**, exact native output, 191.1875 MiB allocated Wasm; [report](validation/memory64-mainDegree7.json) |
+| Submitted presentation, wasm32 pruning | Repeated off/on/on/off runs: **110.875 → 92.375 MiB** allocated Wasm, about **16.7%** reduction, exact 695-element output in every run |
+| Actual UI | Root and `/george/`, all four backends, memory64 16 GiB/no-cap calculations and Share links, wasm32 clamping, pruning persistence/sharing, timeouts/restart, EN/RU, mobile and blocked storage; no external requests |
+
+Browser calculations run without a debugger. The new reports record final
+engine hashes. Browser references were audited again against all raw
+outputs after resuming Node reports changed report timestamps; old and
+current reference-report hashes are recorded explicitly. The mathematical
+cases, engine assets and output hashes agree.
+
+The summary links the archived full reports, including
+[Node parity](validation/memory64-node-parity.json),
+[browser parity](validation/memory64-browser-parity.json),
+[pruning references](validation/pruning-05.json), and
+[UI checks](validation/ui-05.json). Sampled forms and individual output
+hashes remain available in these reports.
+
+Memory values above describe allocated linear memory, not browser RSS or
+live Lisp heap, except the explicitly retained arrays. Timings gathered
+during concurrent builds and validation are diagnostic; **no memory64
+speed advantage is claimed**. No-cap removes ECL's allowance but this
+engine still has a **16 GiB browser memory maximum**. The submitted
+presentation has not been checked at degrees 9–11 in memory64. The user's
+cancelled degree-eight run remains cancelled. Degree-bounded results do
+not certify unrestricted completion.
+
 ## George 0.4 — 2026-10-01
 
-The current package is **0.4.0**, with **C / ECL O3 + LTO** selected by
+That package was **0.4.0**, with **C / ECL O3 + LTO** selected by
 default and explicit **Lisp / ECL O2** and **Lisp / ECL O3 + LTO** alternatives.
 All three use the same Bergman algorithms and bytecode data. The C backend
 compiles existing functions through ECL; auxiliary bytecode remains.
