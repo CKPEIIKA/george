@@ -3,6 +3,7 @@
 // for a computation.  No DOM access here except building HTML strings.
 import { BACKENDS, validMemoryMiB, memoryLimitMessage, defaultMemoryMiB } from './backends.js';
 import { backendCapabilities, backendSettingsErrors, backendRelationErrors } from './backend-capabilities.js';
+import { fomkyrEngineOptions } from './fomkyr-options.js';
 import { timeoutMilliseconds } from './time-limit.js';
 
 // ------------------------------------------------------------ tokens
@@ -55,7 +56,7 @@ export function splitRelations(text) {
   return text.split(/[,;\n]+/).map((s) => s.trim()).filter(Boolean);
 }
 
-export function parseRelation(src, vars) {
+export function parseRelation(src, vars, maxExponent = 10000) {
   const toks = tokenize(src);
   const varSet = new Set(vars);
   const single = vars.every((v) => v.length === 1);
@@ -107,7 +108,7 @@ export function parseRelation(src, vars) {
           const n = peek();
           if (!n || n.t !== 'num') throw new SyntaxError('Exponents must be non-negative integers');
           e = Number(n.v); i++;
-          if (!Number.isSafeInteger(e) || e > 10000) throw new SyntaxError('Exponents must be integers from 0 to 10000');
+          if (!Number.isSafeInteger(e) || e > maxExponent) throw new SyntaxError(`Exponents must be integers from 0 to ${maxExponent}`);
         }
         for (let k = 0; k < names.length - 1; k++) factors.push({ v: names[k], e: 1 });
         factors.push({ v: names[names.length - 1], e });
@@ -385,8 +386,9 @@ export function exampleForm(ex) {
 
 export function monomialPruningAvailable(form) {
   if (form.task !== 'gb' || form.ring !== 'noncomm' || form.nonhomog === 'itemwise' ||
-      (form.strategy && form.strategy !== 'default') || String(form.weights || '').trim()) return false;
-  try { return (form.rels || []).every(r => isHomogeneous(parseRelation(r, form.vars || []), new Map())); }
+      (form.strategy && form.strategy !== 'default') || (form.backend === 'fomkyr'
+        ? String(form.weights || '').trim().split(/[\s,]+/).filter(Boolean).some(w => w !== '1') : String(form.weights || '').trim())) return false;
+  try { return (form.rels || []).every(r => isHomogeneous(parseRelation(r, form.vars || [], form.backend === 'fomkyr' ? 0xfffffffe : 10000), new Map())); }
   catch { return false; }
 }
 
@@ -398,7 +400,8 @@ export function validateSettings(form) {
   if (!ORDERS[form.ring]?.some((o) => o.id === form.order)) errors.push('Choose an order for this algebra.');
   if (TASK_BY_ID.get(form.task)?.ring && TASK_BY_ID.get(form.task).ring !== form.ring) errors.push('This computation requires a different algebra type.');
   for (const [key, label] of [['maxdeg', 'Maximal degree'], ['maxserdeg', 'Series degree']]) {
-    if (form[key] !== undefined && form[key] !== '' && !integer(form[key], 1, 10000)) errors.push(`${label} must be an integer from 1 to 10000.`);
+    const maximum = form.backend === 'fomkyr' ? 0xfffffffe : 10000;
+    if (form[key] !== undefined && form[key] !== '' && !integer(form[key], 1, maximum)) errors.push(`${label} must be an integer from 1 to ${maximum}.`);
   }
   if (!['0', '2', 'p'].includes(form.field)) errors.push('Choose a coefficient field.');
   const memoryBackend = Object.hasOwn(BACKENDS, form.backend ?? 'standard') ? form.backend ?? 'standard' : 'standard';
@@ -406,10 +409,15 @@ export function validateSettings(form) {
   if (form.backend !== undefined && !Object.hasOwn(BACKENDS, form.backend)) errors.push('Unknown computation engine.');
   errors.push(...backendSettingsErrors(form, memoryBackend));
   const caps = backendCapabilities(memoryBackend);
+  if (form.backend === 'fomkyr') {
+    const weights = String(form.weights || '').trim().split(/[\s,]+/).filter(Boolean);
+    if (weights.length && (weights.length !== n || weights.some(w => w !== '1'))) errors.push('Fomkyr requires unit generator degrees.');
+    try { fomkyrEngineOptions(form); } catch (error) { errors.push(error.message); }
+  }
   if (form.nativeWorkers !== undefined && !integer(form.nativeWorkers, 0, 32)) errors.push('Worker count must be an integer from 0 to 32 (0 means automatic).');
   if (caps.homogeneous || caps.relationDegrees || caps.maximumCoefficient) {
     try {
-      const parsed = (form.rels || []).map(r => parseRelation(r, form.vars || []));
+      const parsed = (form.rels || []).map(r => parseRelation(r, form.vars || [], form.backend === 'fomkyr' ? 0xfffffffe : 10000));
       errors.push(...backendRelationErrors(parsed, memoryBackend));
     } catch { /* The normal input validation reports malformed relations. */ }
   }
@@ -459,7 +467,7 @@ export function buildJob(form) {
   const vv = parseVars((form.vars || []).join(','));
   if (!vv.names.length || vv.errors.length) throw new Error(vv.errors.join(' ') || 'Enter generators.');
   const task = TASK_BY_ID.get(form.task);
-  const parsed = form.rels.map((r) => parseRelation(r, form.vars));
+  const parsed = form.rels.map((r) => parseRelation(r, form.vars, form.backend === 'fomkyr' ? 0xfffffffe : 10000));
   const weights = new Map(String(form.weights || '').trim().split(/[\s,]+/).filter(Boolean).map((w,i) => [form.vars[i], Number(w)]));
   const nonhomogeneous = parsed.some((r) => !isHomogeneous(r, weights));
   const augmentation = form.augmentation || 'graded';
@@ -508,7 +516,7 @@ export function buildJob(form) {
   if (form.lowterms === 'safe' && form.nonhomog !== 'itemwise') session.push('(SETSAFELOWTERMSHANDLING)');
   // Pruning discards completed-degree lookup data. Only basis-file jobs use it;
   // resolutions and later polynomial reductions need the retained data.
-  if (form.monomialPruning) session.push('(SETREDUCTIVITY NIL)');
+  if (form.monomialPruning && form.backend !== 'fomkyr') session.push('(SETREDUCTIVITY NIL)');
 
   const files = { 'input.bg': input.join('\n') + '\n' };
   const outs = { gb: 'result.gb', hs: 'result.hs', pb: 'result.pb', anick: 'result.anick' };
@@ -534,7 +542,7 @@ export function buildJob(form) {
       if (task.id === 'anick' && !form.legacy) session.push('(GEORGEWRITERESOLUTION "resolution.jsonl")');
   }
   if (form.outmode === 'MACAULAY') session.push('(SETALGOUTMODE MACAULAY)', '(GEORGEWRITEBASIS "result.macaulay")', '(SETALGOUTMODE ALG)');
-  if (form.monomialPruning) session.push('(SETREDUCTIVITY T)');
+  if (form.monomialPruning && form.backend !== 'fomkyr') session.push('(SETREDUCTIVITY T)');
   session.push('(CLEARRING)');
   const outputs = {};
   for (const k of extended ? ['gb'] : task.out) outputs[k] = outs[k];
@@ -543,6 +551,10 @@ export function buildJob(form) {
   const job = { task: task.id, files, script: session.join('\n') + '\n', outputs, legacy: !!form.legacy, degreeBound: form.maxdeg || (task.group === 'Resolutions' ? 6 : null), memoryMiB: Number(form.memoryMiB ?? defaultMemoryMiB(form.backend ?? 'standard')), backend: form.backend ?? 'standard' };
   job.timeoutMs = timeoutMilliseconds(form.timeoutMinutes);
   if (job.backend === 'native') job.nativeOptions = {workers: Number(form.nativeWorkers) || undefined};
+  if (job.backend === 'fomkyr') {
+    job.fomkyrOptions = fomkyrEngineOptions(form);
+    if (job.fomkyrOptions.hilbert) job.outputs.hs = 'result.hs';
+  }
   if (extended) {
     job.resolution = { form: { ...form, augmentation }, nonhomogeneous };
     job.outputs.anick = outs.anick; // produced by the second stage

@@ -1,5 +1,6 @@
 // IDs are persisted in forms and share links; keep their meaning stable.
 import {NATIVE_CAPABILITIES} from './native-capabilities.js';
+import {FOMKYR_CAPABILITIES} from '../engine/fomkyr/backend-capabilities.js';
 export const DEFAULT_BACKEND = 'memory64';
 export const DEFAULT_MEMORY64_MIB = 16077; // 15.7 GiB rounded to a whole MiB.
 export const BACKENDS = Object.freeze({
@@ -10,6 +11,9 @@ export const BACKENDS = Object.freeze({
   native: Object.freeze({directory: '../engine/native/', worker: '../engine/native/worker.js',
     label: 'backend.native', kind: 'native', experimental: true, defaultHeapMiB: 512,
     maximumHeapMiB: 14304, capabilities: NATIVE_CAPABILITIES}),
+  fomkyr: Object.freeze({directory: '../engine/fomkyr/', worker: '../engine/fomkyr/george-worker.js',
+    label: 'backend.fomkyr', kind: 'native', experimental: true, defaultHeapMiB: 512,
+    maximumHeapMiB: 14304, capabilities: {...FOMKYR_CAPABILITIES, maximumCoefficient: '4611686018427387903'}}),
 });
 
 // These clients consume ECL assets and support the full Bergman task matrix.

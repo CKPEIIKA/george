@@ -20,6 +20,10 @@ function flush() {
 }
 function print(line) {
   const text = `${line}\n`;
+  // These are degree-start announcements from Bergman's Anick routines.
+  // Do not infer a current degree from basis polynomials or completed output.
+  const degree = String(line).match(/^Calculating the (?:module )?Anick resolution in degree\s+(\d+)(?:\.\.\.)?\s*$/);
+  if (degree && activeId !== undefined) postMessage({id: activeId, event: {type: 'degree-start', degree: Number(degree[1]), phase: 'anick'}});
   output += text;
   pending += text;
   if (pending.length >= 8192) flush();

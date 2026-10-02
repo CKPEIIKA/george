@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-import {HARD_BYTES,createMemory,hostFor,stats,checked,wordCode,recordTerms} from './runtime.js';
+import {HARD_BYTES,createMemory,hostFor,stats,checked,wordCode,recordTerms,setStack} from './runtime.js';
+import {openBasisHandle,acquireRunLock} from './storage.js';
 const MiB=1048576;
 const enc=new TextEncoder();
 export class NativeEngine {
@@ -22,9 +23,13 @@ export class NativeEngine {
       const root=await navigator.storage.getDirectory();const dir=await root.getDirectoryHandle('george-native',{create:true});
       this.directory=await dir.getDirectoryHandle(this.runKey,{create:true});
       // An ordinary exclusive handle prevents two coordinators/tabs using one run.
-      this.lockHandle=await (await this.directory.getFileHandle('coordinator.lock',{create:true})).createSyncAccessHandle();
+      this.lockHandle=await acquireRunLock(this.directory);
       this.file=await this.directory.getFileHandle('basis.gnb',{create:true});
-      this.handle=await this.file.createSyncAccessHandle({mode:'readwrite-unsafe'});
+      const access=await openBasisHandle(this.file);this.handle=access.handle;
+      if(!access.shared) {
+        this.localReduction=true;this.workers=1;
+        this.emit('stdout',{text:'Browser storage uses exclusive file access. Native NC will compute with one worker and disk checkpoints.\n'});
+      }
       if(!o.resume) {
         this.handle.truncate(0);
         for(const name of ['checkpoint-0.json','checkpoint-1.json']) {
@@ -48,7 +53,7 @@ export class NativeEngine {
     this.e=(await WebAssembly.instantiate(this.module,this.host.imports)).exports;
     if(this.e.gn_abi()!==1)throw new Error('Kernel/host ABI mismatch');
     // All instances must be instantiated BEFORE gn_init: data initialization is shared.
-    for(let lane=0;lane<this.workers;lane++) {
+    for(let lane=0;!this.localReduction&&lane<this.workers;lane++) {
       const worker=new Worker(new URL('lane.js',import.meta.url),{type:'module'});
       const slot={worker,pending:new Map(),serial:0,lane};this.pool.push(slot);
       worker.onmessage=({data:m})=>{const p=slot.pending.get(m.id);if(!p)return;slot.pending.delete(m.id);m.error?p.reject(new Error(m.error)):p.resolve(m.result);};
@@ -58,6 +63,14 @@ export class NativeEngine {
     return this;
   }
   rpc(slot,message) {return new Promise((resolve,reject)=>{const id=++slot.serial;slot.pending.set(id,{resolve,reject});slot.worker.postMessage({...message,id});});}
+  reduce(lane) {
+    if(!this.localReduction)return this.rpc(this.pool[lane],{command:'reduce'});
+    // Use the lane's reserved stack and restore the coordinator's call stack.
+    const pointer=this.e.__stack_pointer,previous=pointer.value;
+    setStack(this.e,lane,this.bits);
+    try {return this.e.gn_reduce_pair(lane);}
+    finally {pointer.value=previous;}
+  }
   async identity(fixture,modulus) {
     const x=JSON.stringify({abi:1,order:'degleftlex',variables:fixture.variables,relations:fixture.relations,modulus});
     const hash=await crypto.subtle.digest('SHA-256',enc.encode(x));
@@ -122,8 +135,10 @@ export class NativeEngine {
       if(this.options.timeoutMs>0)timer=setTimeout(()=>this.cancel(),this.options.timeoutMs);
       const identity=await this.identity(fixture,modulus);this.identityHash=identity;
       await this.restore(identity);
+      this.emit('progress',{...stats(this.e),elapsedMs:performance.now()-start});
       let lastProgress=0;
       for(let degree=Number(this.e.gn_stat(2))+1;degree<=target;degree++) {
+        this.emit('degree-start',{degree,target});
         for(const r of fixture.relations)if(r.degree===degree) {
           checked(this.e.gn_input_begin(degree,r.terms.length));
           for(const t of r.terms) {
@@ -138,7 +153,7 @@ export class NativeEngine {
           const batch=[];
           for(let lane=0;lane<this.workers;lane++) {const rc=this.e.gn_next_pair(lane);if(rc<0)checked(rc);if(!rc)break;batch.push(lane);}
           if(!batch.length)break;
-          const rcs=await Promise.all(batch.map(lane=>this.rpc(this.pool[lane],{command:'reduce'})));
+          const rcs=await Promise.all(batch.map(lane=>this.reduce(lane)));
           if(rcs.includes(2)&&await this.shrinkAndReplay())continue;
           rcs.forEach(checked);
           let replay=false;
@@ -153,7 +168,7 @@ export class NativeEngine {
         checked(this.e.gn_finish_degree());await this.checkpoint(identity);
         this.emit('degree',{...stats(this.e),elapsedMs:performance.now()-start});
       }
-      const result={...stats(this.e),complete:true,reduced:false,target,modulus,order:'degleftlex',runKey:this.runKey,identity,bits:this.bits,elapsedMs:performance.now()-start};
+      const result={...stats(this.e),complete:true,reduced:false,target,modulus,order:'degleftlex',runKey:this.runKey,identity,bits:this.bits,storageAccess:this.localReduction?'exclusive':'shared',elapsedMs:performance.now()-start};
       if(this.options.exportText!==false)Object.assign(result,await this.exportText(fixture.variables));
       return result;
     } catch(error) {
