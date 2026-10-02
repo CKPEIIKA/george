@@ -1,7 +1,7 @@
 import { EXAMPLES } from './examples.js';
 import {
   esc, parseVars, splitRelations, parseRelation, isHomogeneous, toBergman, typeset, typesetTerms,
-  parseBasis, parseAnick, typesetTensor, typesetWord, readInputFile, buildJob, validateSettings, exampleForm, ORDERS, TASKS, TASK_BY_ID, FAMILIES,
+  parseBasis, parseAnick, typesetTensor, typesetWord, readInputFile, buildJob, validateSettings, monomialPruningAvailable, exampleForm, ORDERS, TASKS, TASK_BY_ID, FAMILIES,
 } from './bergman-syntax.js';
 import { EclEngine } from './engine.js';
 import { t, tn, setLanguage, getLanguage, applyTranslations, translateMessage } from './i18n.js';
@@ -12,7 +12,7 @@ import { renderMath } from './math.js';
 import { structuralResolutionDisplay } from './resolution-data.js';
 import { initConsole } from './console.js';
 import { createShareLink, readShareLink, SHARE_PREFIX } from './share.js';
-import { BACKENDS, DEFAULT_BACKEND } from './backends.js';
+import { BACKENDS, DEFAULT_BACKEND, validMemoryMiB, memory64Supported } from './backends.js';
 import { timeoutMilliseconds } from './time-limit.js';
 
 const $ = (id) => document.getElementById(id);
@@ -44,6 +44,7 @@ const els = {
   order: $('order'), reverseVars: $('reverseVars'), matrix: $('matrix'), matrixField: $('matrixField'),
   maxdeg: $('maxdeg'), weights: $('weights'), homogWarn: $('homogWarn'),
   memoryMiB: $('memoryMiB'), backend: $('backend'), timeoutMinutes: $('timeoutMinutes'),
+  monomialPruning: $('monomialPruning'),
   nonhomog: $('nonhomog'), strategy: $('strategy'), rabbit: $('rabbit'), rabbitField: $('rabbitField'),
   augmentation: $('augmentation'),
   lowterms: $('lowterms'), outmode: $('outmode'), legacy: $('legacy'), maxserdeg: $('maxserdeg'), maxserdegField: $('maxserdegField'),
@@ -80,6 +81,7 @@ function readForm() {
     memoryMiB: Number(els.memoryMiB.value),
     backend: els.backend.value,
     timeoutMinutes: Number(els.timeoutMinutes.value),
+    monomialPruning: els.monomialPruning.checked,
     weights: els.weights.value,
     nonhomog: els.nonhomog.value,
     augmentation: els.augmentation.value,
@@ -108,9 +110,14 @@ function writeForm(s) {
   els.reverseVars.checked = !!s.reverseVars;
   if (s.matrix !== undefined) els.matrix.value = s.matrix;
   els.maxdeg.value = s.maxdeg || '';
-  els.memoryMiB.value = String(s.memoryMiB ?? els.memoryMiB.value ?? 2048);
   els.timeoutMinutes.value = String(s.timeoutMinutes ?? els.timeoutMinutes.value ?? 0);
+  els.monomialPruning.checked = s.monomialPruning ?? els.monomialPruning.checked;
   if (s.backend !== undefined) els.backend.value = Object.hasOwn(BACKENDS, s.backend) ? s.backend : DEFAULT_BACKEND;
+  const memoryMiB = Number(s.memoryMiB ?? els.memoryMiB.value ?? 2048);
+  if (validMemoryMiB(memoryMiB, els.backend.value) && ![...els.memoryMiB.options].some(o => Number(o.value) === memoryMiB)) {
+    els.memoryMiB.add(new Option(`${memoryMiB} MiB`, String(memoryMiB)));
+  }
+  els.memoryMiB.value = String(memoryMiB);
   els.weights.value = s.weights || '';
   els.nonhomog.value = s.nonhomog || 'auto';
   els.augmentation.value = s.augmentation || 'graded';
@@ -213,6 +220,7 @@ function validate() {
   const f = readForm();
   const problems = [];
   const settingsErrors = validateSettings(f);
+  if (f.backend === 'memory64' && !memory64Supported()) settingsErrors.push('This browser does not support the memory64 engine. Select a 32-bit engine.');
   problems.push(...settingsErrors);
   const vv = parseVars(els.vars.value);
   els.varsErr.hidden = vv.errors.length === 0 && vv.names.length > 0;
@@ -263,6 +271,10 @@ function refresh() {
   shareGeneration++;
   els.sharePanel.hidden = true;
   els.shareStatus.hidden = true;
+  for (const option of els.memoryMiB.options) {
+    option.hidden = option.disabled = !validMemoryMiB(Number(option.value), els.backend.value);
+  }
+  if (!validMemoryMiB(Number(els.memoryMiB.value), els.backend.value)) els.memoryMiB.value = '4095';
   const f = readForm();
   const task = TASK_BY_ID.get(f.task);
   els.matrixField.hidden = f.order !== 'matrix';
@@ -284,6 +296,8 @@ function refresh() {
   if (task.ring && task.ring !== f.ring) {
     document.querySelector('input[name="task"][value="gb"]').checked = true;
   }
+  els.monomialPruning.disabled = !monomialPruningAvailable(readForm());
+  if (els.monomialPruning.disabled) els.monomialPruning.checked = false;
   els.go.textContent = t('task.' + readForm().task + '.b');
   const tutorial = TUTORIALS.find(item => els.preset.value === 'tutorial:' + item.id);
   $('presetDescription').textContent = tutorial ? tutorial.description[getLanguage()] : t('start.hint');
@@ -346,7 +360,7 @@ async function compute(ev) {
     setStatus('status.done', { ms });
   } catch (e) {
     if (e.partialResult) renderResults(job, e.partialResult);
-    if (e.code === 'memory-limit') setStatus('status.memory', {mib: job.memoryMiB});
+    if (e.code === 'memory-limit') setStatus(job.memoryMiB === 0 ? 'status.memoryUncapped' : 'status.memory', {mib: job.memoryMiB});
     else if (e.code === 'timeout') setStatus('status.timeout');
     else setStatus(e.name === 'AbortError' ? 'status.stopped' : 'status.error', { msg: e.message });
   } finally {
@@ -687,6 +701,7 @@ function updateLanguage() {
   fillPresets();
   fillTasks();
   fillOrders();
+  els.backend.querySelector('option[value="memory64"]').disabled = !memory64Supported();
   refresh();
   document.documentElement.lang = getLanguage();
   setStatus(statusState.key, statusState.params, statusState.busy);
@@ -710,6 +725,7 @@ document.addEventListener('click', e => {
 
 async function init() {
   applyTranslations();
+  els.backend.querySelector('option[value="memory64"]').disabled = !memory64Supported();
   document.documentElement.lang = getLanguage();
   syncPreferenceControls();
   for (const button of document.querySelectorAll('[data-lang]')) {

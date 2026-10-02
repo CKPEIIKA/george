@@ -7,12 +7,12 @@
   "emscripten": "4.0.12",
   "files": {
     "ecl.js": {
-      "bytes": 109173,
-      "sha256": "b51a386338911b8d262557686fe0ff81e46fdbd99c55a058a7ceb3223d55edee"
+      "bytes": 113128,
+      "sha256": "20396f8ba77b29ef330513e55fcab5352678ba20c96119d4d7174089b3c1e667"
     },
     "ecl.wasm": {
-      "bytes": 6536140,
-      "sha256": "8bd7c0b8be173025c741e9cb90718de0210be7eb6a0537725b06bd702f8d687d"
+      "bytes": 6809943,
+      "sha256": "56a55b5829bb678eb65c35eee34eb6ecb91b714d0b057eba045367774e85960d"
     },
     "ecl.data": {
       "bytes": 3024774,
@@ -21,21 +21,27 @@
   },
   "appVersion": "0.5.0",
   "memory": {
-    "wasmMaximumBytes": 4294967296,
+    "wasmMaximumBytes": 17179869184,
     "defaultHeapMiB": 2048,
-    "maximumHeapMiB": 4095
+    "maximumHeapMiB": 16384,
+    "uncappedHeap": true
   },
   "compiler": {
     "libraryOptimization": "O3",
     "linkOptimization": "O3",
     "lto": true,
     "aot": true,
+    "memory64": true,
     "longjmp": "emscripten",
     "pointerSpilling": true,
     "profiling": false
   },
-  "backend": "compiled",
+  "backend": "memory64",
   "boundaryFixes": "2026-10-01: one-generator degree sums and weighted Hilbert series; equal-word and unequal-length elimination comparisons; both modes",
+  "binaryen": {
+    "revision": "fc6a7977cccea66c7d78f3d86eb0cdac9f37cbdb",
+    "memory64StackPatchSha256": "071c2e981cd50bcb59f5cb9baba2e22559b378be2a0eff961ea5fb5250409b83"
+  },
   "compilation": {
     "functions": 763,
     "aliases": 163,

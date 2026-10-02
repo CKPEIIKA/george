@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>George 0.4</title>
+<title>George 0.5</title>
 <meta name="description" content="George computes Gröbner bases, Hilbert series, Anick resolutions and Betti numbers for noncommutative and commutative algebras, by running the original bergman in your browser.">
 <meta name="theme-color" content="#eef2f3" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#111a27" media="(prefers-color-scheme: dark)">
@@ -17,7 +17,7 @@
 <header class="top">
   <a class="brand" href="#compute" aria-label="George, an interface to bergman">
     <svg class="logo" viewBox="0 0 28 28" aria-hidden="true"><path class="logo-face" d="M14 3 25 14 14 25 3 14Z"/><path class="logo-edge" d="M14 3 25 14 14 25 3 14Z"/><circle cx="14" cy="3.6" r="2"/><circle cx="24.4" cy="14" r="2"/><circle cx="14" cy="24.4" r="2"/><circle cx="3.6" cy="14" r="2"/></svg>
-    <span class="brand-name">George <small class="brand-version">0.4</small></span>
+    <span class="brand-name">George <small class="brand-version">0.5</small></span>
     <span class="brand-sub" data-i18n="brand.sub">an interface to bergman</span>
   </a>
   <nav class="views" aria-label="Views" data-i18n-attr="aria-label:nav.views">
@@ -146,6 +146,7 @@
         <span class="label" data-i18n="backend.label">Computation engine</span>
         <select id="backend">
           <option value="compiled" selected data-i18n="backend.compiled">C / ECL O3 + LTO</option>
+          <option value="memory64" data-i18n="backend.memory64">C / ECL O3 + LTO (memory64)</option>
           <option value="optimized" data-i18n="backend.optimized">Lisp / ECL O3 + LTO</option>
           <option value="standard" data-i18n="backend.standard">Lisp / ECL O2</option>
         </select>
@@ -164,8 +165,20 @@
           <option value="2048" selected>2 GiB</option>
           <option value="3072">3 GiB</option>
           <option value="3584">3.5 GiB</option>
+          <option value="3789">3.7 GiB</option>
+          <option value="3994">3.9 GiB</option>
+          <option value="4095">≈4 GiB (4095 MiB)</option>
+          <option value="6144" data-memory64 hidden disabled>6 GiB</option>
+          <option value="8192" data-memory64 hidden disabled>8 GiB</option>
+          <option value="12288" data-memory64 hidden disabled>12 GiB</option>
+          <option value="16384" data-memory64 hidden disabled>16 GiB</option>
+          <option value="0" data-memory64 data-i18n="memory.uncapped" hidden disabled>No heap cap (browser limit)</option>
         </select>
         <span class="hint" id="memoryHint" data-i18n="memory.hint">Memory grows as needed. Larger limits help large presentations; the browser also needs memory for files and results.</span>
+      </label>
+      <label class="field">
+        <span><input id="monomialPruning" type="checkbox" aria-describedby="pruningHint"> <span data-i18n="pruning.label">Monomial pruning</span></span>
+        <span class="hint" id="pruningHint" data-i18n="pruning.hint">Release stored monomials after each completed degree. Available for unweighted homogeneous noncommutative Gröbner bases with the default degreewise strategy.</span>
       </label>
       <label class="field">
         <span class="label" data-i18n="augmentation.label">Augmentation for the Anick resolution</span>

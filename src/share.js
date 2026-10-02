@@ -1,5 +1,5 @@
 import { ORDERS, TASKS } from './bergman-syntax.js';
-import { BACKENDS } from './backends.js';
+import { BACKENDS, validMemoryMiB } from './backends.js';
 import { timeoutMilliseconds } from './time-limit.js';
 
 export const SHARE_PREFIX = '#s=';
@@ -18,11 +18,11 @@ const FIELDS = [
   // Old links reproduce the engine that was available when they were made.
   ['backend', 'standard'],
   ['timeoutMinutes', 0],
+  ['monomialPruning', false],
 ];
 const CHOICES = {
   ring: ['noncomm', 'comm'], field: ['0', '2', 'p'],
   order: Object.values(ORDERS).flat().map(order => order.id),
-  memoryMiB: [512, 1024, 2048, 3072, 3584],
   nonhomog: ['auto', 'itemwise', 'degreewise'], augmentation: ['graded', 'monoid'],
   strategy: ['default', 'rabbit'], lowterms: ['quick', 'safe'], outmode: ['ALG', 'MACAULAY'],
   task: TASKS.map(task => task.id), language: ['en', 'ru'], theme: ['auto', 'light', 'dark'],
@@ -34,6 +34,7 @@ function validateState(state) {
     if (typeof state[key] !== typeof fallback || (CHOICES[key] && !CHOICES[key].includes(state[key]))) throw new Error('share.invalid');
   }
   if (!ORDERS[state.ring].some(order => order.id === state.order)) throw new Error('share.invalid');
+  if (!validMemoryMiB(state.memoryMiB, state.backend)) throw new Error('share.invalid');
   try { timeoutMilliseconds(state.timeoutMinutes); } catch { throw new Error('share.invalid'); }
   return state;
 }
