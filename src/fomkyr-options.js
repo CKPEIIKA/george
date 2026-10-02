@@ -1,14 +1,21 @@
-// Public, persisted options for Fomkyr (upstream fomkyr 0.3).
+// Public, persisted options for Fomkyr (upstream fomkyr 0.4).
 export const FOMKYR_DEFAULTS = Object.freeze({
   execution: 'auto', bits: 'auto', spill: true, resume: 'auto', hilbert: false,
   heapReduction: true, cachePercent: 12, heapThreshold: 16, batchPairs: null,
   hashBits: 18, scratchMiB: null, hilbertMiB: 256, ioMode: 'auto',
+  wordMatcher: true, chainCriterion: true, eagerPruning: true,
+  quadraticRewrite: true, costScheduling: true, wordCacheEntries: 256,
+  matcherMiB: null, progress: true, progressIntervalSeconds: 1,
 });
 export const FOMKYR_FIELDS = Object.freeze([
   ['execution', 'select', ['auto', 'single', 'multicore']],
   ['bits', 'select', ['auto', '32', '64']],
   ['spill', 'checkbox'], ['resume', 'checkbox'], ['hilbert', 'checkbox'],
   ['heapReduction', 'checkbox'], ['cachePercent', 'number', 0, 40],
+  ['wordMatcher', 'checkbox'], ['chainCriterion', 'checkbox'], ['eagerPruning', 'checkbox'],
+  ['quadraticRewrite', 'checkbox'], ['costScheduling', 'checkbox'],
+  ['wordCacheEntries', 'number', 256, 1048576], ['matcherMiB', 'number', 0, 14304],
+  ['progress', 'checkbox'], ['progressIntervalSeconds', 'number', 0.25, 60],
   ['heapThreshold', 'number', 1, 1048576], ['batchPairs', 'number', 0, 512],
   ['hashBits', 'number', 8, 26], ['scratchMiB', 'number', 1, 14303],
   ['hilbertMiB', 'number', 0, 14304], ['ioMode', 'select', ['auto', 'broker', 'direct']],
@@ -21,14 +28,15 @@ export function validateFomkyrOptions(options = {}) {
     const value = values[key];
     const valid = type === 'select' ? min.includes(value)
       : type === 'checkbox' ? (key === 'resume' ? value === 'auto' || value === false : typeof value === 'boolean')
-      : value === null && FOMKYR_DEFAULTS[key] === null || Number.isInteger(value) && value >= min && value <= max;
+      : value === null && FOMKYR_DEFAULTS[key] === null || (key === 'progressIntervalSeconds' ? Number.isFinite(value) : Number.isInteger(value)) && value >= min && value <= max;
     if (!valid) throw new Error('Invalid Fomkyr option: ' + key);
+    if (key === 'wordCacheEntries' && (value & (value - 1)) !== 0) throw new Error('Fomkyr word cache entries must be a power of two.');
   }
   return values;
 }
 export function fomkyrEngineOptions(form) {
   const options = validateFomkyrOptions(form.fomkyrOptions);
-  const {scratchMiB, hilbertMiB, ...engine} = options;
+  const {scratchMiB, hilbertMiB, matcherMiB, progressIntervalSeconds, ...engine} = options;
   if (engine.batchPairs === null) delete engine.batchPairs;
   if (scratchMiB !== null) {
     const lanes = engine.execution === 'single' ? 1 : Number(form.nativeWorkers) || 4;
@@ -36,6 +44,11 @@ export function fomkyrEngineOptions(form) {
     engine.scratchBytes = scratchMiB * 1048576;
   }
   engine.hilbertBudgetBytes = hilbertMiB * 1048576;
+  if (matcherMiB !== null) {
+    if (matcherMiB >= Number(form.memoryMiB ?? 512)) throw new Error('Fomkyr matcher space must fit the memory budget.');
+    engine.matcherBudgetBytes = matcherMiB * 1048576;
+  }
+  engine.progressIntervalMs = progressIntervalSeconds * 1000;
   engine.workers = Number(form.nativeWorkers) || undefined;
   engine.monomialPruning = form.monomialPruning ?? true;
   if (String(form.maxserdeg ?? '').trim() !== '') engine.hilbertDegree = Number(form.maxserdeg);
@@ -60,8 +73,8 @@ export function writeFomkyrOptions(options = {}, root = document, {strict = true
   }
 }
 export function installFomkyrControls(root, t) {
-  const container = root.getElementById('fomkyrOptions');
   for (const [key, type, min, max] of FOMKYR_FIELDS) {
+    const container = root.getElementById(key === 'hilbert' ? 'fomkyrMathOptions' : 'fomkyrOptions');
     const label = root.createElement('label');
     const title = root.createElement('span'); title.className = 'label-row';
     const text = root.createElement('span'); text.dataset.i18n = 'fomkyr.' + key; text.textContent = t(text.dataset.i18n);
@@ -78,7 +91,7 @@ export function installFomkyrControls(root, t) {
       const option = root.createElement('option'); option.value = value;
       option.dataset.i18n = 'fomkyr.choice.' + value; option.textContent = t(option.dataset.i18n); input.append(option);
     }
-    else {input.type = type; if (type === 'number') {input.min = min; input.max = max; input.step = 1;}}
+    else {input.type = type; if (type === 'number') {input.min = min; input.max = max; input.step = key === 'progressIntervalSeconds' ? 0.25 : 1;}}
     if (type === 'checkbox') {label.className = 'check'; label.append(input, title);}
     else label.append(title, input);
     container.append(label);

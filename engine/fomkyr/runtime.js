@@ -14,7 +14,7 @@ export function createMemory(bits, budget, shared = true) {
 export function hostFor(memory, bits, budget, handle = null, diskLimit = Infinity, writable = true) {
   // OPFS BufferSource support varies; use ONE bounded non-shared bounce buffer.
   const bounce = new Uint8Array(65536);
-  let lastIOError = null;
+  let lastIOError = null, pulse=null, pulseInterval=1000, lastPulse=0, pulseBusy=false;
   function transfer(write, position, pointer, size) {
     if (!handle || (write && (!writable || Number(position) + size > diskLimit))) return 0;
     try {
@@ -47,10 +47,18 @@ export function hostFor(memory, bits, budget, handle = null, diskLimit = Infinit
         },
         read:(off,ptr,n)=>transfer(false,off,ptr,n),
         write:(off,ptr,n)=>transfer(true,off,ptr,n),
-        clock:()=>performance.timeOrigin+performance.now(),
+        clock:()=>{
+          const now=performance.timeOrigin+performance.now();
+          // A forced phase event can already have used the engine's reporting slot.
+          // Advance this throttle only when an event was actually accepted;
+          // otherwise two independent throttles could starve in-WASM pulses.
+          if(pulse&&!pulseBusy&&now-lastPulse>=pulseInterval){pulseBusy=true;try{if(pulse()!==false)lastPulse=now;}catch{pulse=null;}finally{pulseBusy=false;}}
+          return now;
+        },
       },
     },
     attach(h,limit=Infinity) {handle=h;diskLimit=limit;},
+    setPulse(fn,interval=1000){pulse=fn;pulseInterval=interval;lastPulse=0;},
     get lastIOError() { return lastIOError; },
   };
 }
@@ -60,6 +68,11 @@ export function stats(e) {
   s.monomialPruning=!!Number(e.gn_stat(21));s.heapReduction=!!Number(e.gn_stat(22));
   s.reductions = 0; s.monomialTermsPruned = 0; s.diskReads=0; s.diskReadBytes=0; s.reducerCacheHits=0;
   for (let i=0;i<s.workers;i++) { s.reductions+=Number(e.gn_lane_stat(i,0)); s.monomialTermsPruned+=Number(e.gn_lane_stat(i,1)); s.diskReads+=Number(e.gn_lane_stat(i,2));s.diskReadBytes+=Number(e.gn_lane_stat(i,3));s.reducerCacheHits+=Number(e.gn_lane_stat(i,7)); }
+  s.costScheduling=!!e.gn_stat(36);s.wordCacheEntries=Number(e.gn_stat(37));s.wordCacheBytes=Number(e.gn_stat(38));
+  s.chainPairsPruned=Number(e.gn_stat(29));s.matcherNodes=Number(e.gn_stat(25));s.matcherAllocatedBytes=Number(e.gn_stat(26));s.matcherBuilds=Number(e.gn_stat(27));s.matcherFallbacks=Number(e.gn_stat(28));
+  for(const [name,key] of [['hashProbes',8],['matcherQueries',9],['matcherCharacters',10],['wordCacheHits',11],['heapAttempts',12],['heapSuccesses',13],['heapFallbacks',14],['insertionPrunes',15],['commutingPrunes',16],['quadraticSwaps',17]]){
+    s[name]=0;for(let i=0;i<s.workers;i++)s[name]+=Number(e.gn_lane_stat(i,key));
+  }
   return s;
 }
 export function setStack(e, lane, bits) {

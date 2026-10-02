@@ -3,8 +3,8 @@
 import {requestPersistentStorage,listCachedRuns,deleteCachedRun} from './storage.js';
 import {browserCapabilities} from './capabilities.js';
 import {requestIsolation} from './isolation.js';
-const KEY='fomkyr-options-v3';
-const defaults={workers:0,execution:'auto',bits:'auto',spill:true,hilbert:true,resume:'auto',ioMode:'auto',monomialPruning:true,heapReduction:true,cachePercent:12,heapThreshold:16,batchPairs:null,hashBits:18,scratchMiB:null,hilbertMiB:256};
+const KEY='fomkyr-options-v3'; // keep existing user tuning on upgrade
+const defaults={workers:0,execution:'auto',bits:'auto',spill:true,hilbert:true,resume:'auto',ioMode:'auto',monomialPruning:true,heapReduction:true,cachePercent:12,heapThreshold:16,batchPairs:null,hashBits:18,scratchMiB:null,hilbertMiB:256,wordMatcher:true,chainCriterion:true,eagerPruning:true,quadraticRewrite:true,costScheduling:true,wordCacheEntries:256,progress:true,progressIntervalMs:1000};
 let state={...defaults};
 try{const saved=JSON.parse(globalThis.localStorage?.getItem(KEY)||'{}');for(const key of Object.keys(defaults))if(Object.hasOwn(saved,key))state[key]=saved[key];}catch{}
 function persist(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch{}}
@@ -27,7 +27,7 @@ export function installFomkyrControls(){
   function label(text,parent=box){const el=document.createElement('label');el.style.display='block';el.style.margin='0.35em 0';el.append(document.createTextNode(text+' '));parent.append(el);return el;}
   function choice(key,text,values,parent=box){const row=label(text,parent),input=document.createElement('select');input.id='fomkyr-'+key;for(const [value,name] of values){const o=document.createElement('option');o.value=value;o.textContent=name;input.append(o);}input.value=state[key];input.onchange=()=>{state[key]=input.value;persist();};row.append(input);return input;}
   function number(key,text,min,max,parent=box){const row=label(text,parent),input=document.createElement('input');input.type='number';input.id='fomkyr-'+key;input.min=min;if(max!=null)input.max=max;input.step='1';input.value=state[key]??'';input.placeholder='automatic';input.style.width='7em';input.onchange=()=>{const v=input.value===''?null:Number(input.value);if(v!==null&&(!Number.isInteger(v)||v<min||max!=null&&v>max)){input.setCustomValidity(`Enter an integer from ${min} to ${max??'the available budget'}, or leave automatic.`);return;}input.setCustomValidity('');state[key]=v;persist();};row.append(input);return input;}
-  function check(key,text,parent=box){const row=label('',parent),input=document.createElement('input');input.id='fomkyr-'+key;input.type='checkbox';input.checked=!!state[key];input.onchange=()=>{state[key]=key==='resume'?(input.checked?'auto':false):input.checked;persist();};row.append(input,document.createTextNode(' '+text));return input;}
+  function check(key,text,parent=box){const row=label('',parent),input=document.createElement('input');input.id='fomkyr-'+key;input.type='checkbox';input.checked=!!state[key];input.onchange=()=>{state[key]=key==='resume'?(input.checked?'auto':false):input.checked;persist();if(key==='progress'&&!input.checked){const p=document.getElementById('fomkyr-progress');if(p)p.hidden=true;}};row.append(input,document.createTextNode(' '+text));return input;}
   choice('execution','Execution',[['auto','Automatic: shared multicore when available'],['single','Single worker: no shared-memory requirement'],['multicore','Require shared multicore; fail if isolation is unavailable']]);
   if(!document.getElementById('nativeWorkers'))number('workers','CPU lanes (0 = automatic)',0,32);
   choice('bits','WASM addressing',[['auto','Automatic: 32-bit unless the budget needs memory64'],['32','32-bit'],['64','64-bit, with capability fallback']]);
@@ -37,7 +37,15 @@ export function installFomkyrControls(){
   const pruneOriginal=document.getElementById('monomialPruning');
   if(!pruneOriginal)check('monomialPruning','Prune consequences of monomial zero relations');
   const details=document.createElement('details');const summary=document.createElement('summary');summary.textContent='Advanced tuning';details.append(summary);box.append(details);
-  check('heapReduction','Fast sparse heap reduction for short words',details);
+  check('wordMatcher','Indexed leading-word matching (same monomial order)',details);
+  check('chainCriterion','Skip overlaps certified by lower-degree chains',details);
+  check('eagerPruning','Discard proved square/commutation zeros before heap insertion',details);
+  check('quadraticRewrite','Pre-rewrite known monic quadratic binomials',details);
+  check('costScheduling','Dispatch larger input pairs first; keep exact commit order',details);
+  number('wordCacheEntries','Exact word-cache entries per lane (power of two; 256 = small cache)',256,1048576,details);
+  check('progress','Live overlap-count progress and conservative timing estimates',details);
+  number('progressIntervalMs','Progress update interval, milliseconds',250,60000,details);
+  check('heapReduction' ,'Fast sparse heap reduction for short words',details);
   number('cachePercent','Reducer cache (% of each lane workspace)',0,40,details);
   number('heapThreshold','Heap reduction minimum term count',1,1048576,details);
   number('batchPairs','Critical pairs per batch (blank = auto; 0 = low-memory scheduler)',0,512,details);
@@ -65,7 +73,7 @@ export function installFomkyrControls(){
   box.append(status,entries);select.parentElement.insertAdjacentElement('afterend',box);
   const originalTitles=new Map();
   function update(){
-    const active=select.value==='fomkyr';box.hidden=!active;
+    const active=select.value==='fomkyr';box.hidden=!active;const progressPanel=document.getElementById('fomkyr-progress');if(progressPanel)progressPanel.hidden=!active||!state.progress;
     const workers=document.getElementById('nativeWorkers');if(active&&workers){workers.disabled=false;workers.closest('[hidden]')?.removeAttribute('hidden');}
     if(pruneOriginal){if(!originalTitles.has(pruneOriginal))originalTitles.set(pruneOriginal,pruneOriginal.title);if(active){pruneOriginal.disabled=false;pruneOriginal.title='fomkyr: exact monomial-zero reduction and pair shortcuts (not Lisp garbage collection).';}else pruneOriginal.title=originalTitles.get(pruneOriginal);}
     const max=document.getElementById('maxdeg');if(active&&max){max.removeAttribute('max');max.placeholder='none: complete until stopped or proved';}

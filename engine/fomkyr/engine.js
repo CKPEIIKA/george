@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+import {ProgressTracker,readProgressCounters} from './progress.js';
 import {HARD_BYTES,createMemory,hostFor,stats,checked,wordCode,recordTerms} from './runtime.js';
 import {STORE,VERSION,identityOf,acquireRunLock,checkpointCandidates,writeJSON} from './storage.js';
 import {loadKernel} from './module-cache.js';
@@ -38,6 +39,19 @@ export class FomkyrEngine {
       try{slot.worker.postMessage({...message,id},transfer);}catch(e){slot.pending.delete(id);clearTimeout(timer);reject(e);}
     });
   }
+  publishProgress(force=false){
+    if(this.options.progress===false||!this.tracker||!this.e||this.publishingProgress)return false;
+    const now=performance.now();if(!force&&now-(this.lastProgressSent??-Infinity)<this.progressInterval)return false;
+    this.publishingProgress=true;this.lastProgressSent=now;
+    try{this.lastProgress=this.tracker.sample(readProgressCounters(this.e));this.emit('progress',this.lastProgress);}
+    catch(error){this.progressError=String(error.message??error);}finally{this.publishingProgress=false;}
+    return true;
+  }
+  setPhase(phase,force=true){
+    if(this.tracker)this.tracker.setPhase(phase);
+    if(['checkpoint','hilbert','export'].includes(phase))this.emit('phase',{phase,...stats(this.e)});
+    this.publishProgress(force);
+  }
   warn(message){this.emit('warning',{message});(this.fallbacks??=[]).push(message);}
   async open(){
     const o=this.options;this.capabilities=browserCapabilities();
@@ -58,7 +72,7 @@ export class FomkyrEngine {
         this.module=await loadKernel(bits,o.wasmURL,!this.shared);
         this.host=hostFor(this.memory,bits,this.budget,null,Infinity,true);
         this.e=(await WebAssembly.instantiate(this.module,this.host.imports)).exports;
-        if(this.e.gn_abi()!==3)throw new Error('Kernel/host ABI mismatch');
+        if(this.e.gn_abi()!==3||typeof this.e.gn_optimize!=='function'||typeof this.e.gn_word_cache!=='function'||typeof this.e.gn_progress_stat!=='function')throw new Error('Kernel/host API mismatch. Deploy fomkyr 0.4.0 JS and WASM together.');
         break;
       }catch(error){
         if(bits!==64||o.strictCapabilities||o.wasmURL)throw error;
@@ -135,6 +149,8 @@ export class FomkyrEngine {
   async resetKernel(fixture,target,modulus){
     checked(this.e.gn_init(fixture.variables.length,target??0,this.workers,BigInt(this.budget),BigInt(this.scratch),this.options.hashBits??18,modulus,this.spill?1:0));
     checked(this.e.gn_tune((this.options.monomialPruning!==false?1:0)|(this.options.heapReduction!==false?2:0),this.options.cachePercent??12,this.options.heapThreshold??16));
+    checked(this.e.gn_optimize((this.options.wordMatcher!==false?1:0)|(this.options.chainCriterion!==false?2:0)|(this.options.progress!==false?4:0)|(this.options.eagerPruning!==false?8:0)|(this.options.quadraticRewrite!==false?16:0)|(this.options.costScheduling!==false?32:0),BigInt(this.options.matcherBudgetBytes??Math.min(this.budget/16,64*MiB))));
+    checked(this.e.gn_word_cache(this.options.wordCacheEntries??256));
     if(this.batchPairs)checked(this.e.gn_batch_mode(1));
     this.cancelView=new Int32Array(this.memory.buffer,Number(this.e.gn_cancel_ptr()),1);
     this.emit('control',this.shared?{memory:this.memory,cancelOffset:Number(this.e.gn_cancel_ptr()),runKey:this.runKey,shared:true}:{runKey:this.runKey,shared:false,cancellation:'worker-message'});
@@ -172,7 +188,7 @@ export class FomkyrEngine {
     this.emit('stdout',{text:'Bounded batch output/scratch exhausted: using the lower-memory single-pair scheduler and replaying this degree.\n'});
   }
   async completeDegree(){
-    let lastProgress=0,lastYield=performance.now();
+    let lastYield=performance.now();
     for(;;){
       if(this.cancelRequested)checked(5);
       if(performance.now()-lastYield>40){await new Promise(r=>setTimeout(r,0));lastYield=performance.now();}
@@ -182,12 +198,12 @@ export class FomkyrEngine {
         let start=performance.now();
         const pending=[];
         for(let lane=1;lane<this.workers&&lane<n;lane++)pending.push(this.rpc(this.pool[lane],{command:'batch'}));
-        checked(this.e.gn_batch_reduce(0));(await Promise.all(pending)).forEach(checked);
+        this.setPhase('reducing',false);checked(this.e.gn_batch_reduce(0));(await Promise.all(pending)).forEach(checked);
         this.scheduler.reduceMs+=performance.now()-start;
         const rcs=Array.from({length:n},(_,i)=>this.e.gn_batch_status(i));
         rcs.filter(rc=>rc!==2&&rc!==8).forEach(checked);
         if(rcs.includes(2)||rcs.includes(8)){this.fallbackEpoch();continue;}
-        start=performance.now();let replay=false;
+        this.setPhase('committing',false);start=performance.now();let replay=false;
         for(let i=0;i<n;i++){
           const rc=this.e.gn_batch_commit(i);
           if(rc===2){this.fallbackEpoch();replay=true;break;}checked(rc);
@@ -200,19 +216,22 @@ export class FomkyrEngine {
         this.scheduler.epochs++;this.scheduler.dispatchedPairs+=batch.length;
         let start=performance.now();
         const pending=batch.slice(1).map(lane=>this.rpc(this.pool[lane],{command:'reduce'}));
-        const rcs=[this.e.gn_reduce_pair(0),...await Promise.all(pending)];
+        this.setPhase('reducing',false);const rcs=[this.e.gn_reduce_pair(0),...await Promise.all(pending)];
         this.scheduler.reduceMs+=performance.now()-start;
         if(rcs.includes(2)&&await this.shrinkAndReplay())continue;rcs.forEach(checked);
-        let replay=false;start=performance.now();
+        this.setPhase('committing',false);let replay=false;start=performance.now();
         for(const lane of batch){const rc=this.e.gn_commit(lane);if(rc===2&&await this.shrinkAndReplay()){replay=true;break;}checked(rc);}
         this.scheduler.commitMs+=performance.now()-start;if(replay)continue;
       }
-      if(performance.now()-lastProgress>1000){this.emit('progress',{...stats(this.e),scheduler:{...this.scheduler}});lastProgress=performance.now();}
+      this.publishProgress(false);
     }
   }
   async compute(fixture,target=20,modulus=0){
     if(this.active||this.closed)throw new Error('Engine is busy or closed');
-    this.active=true;const start=performance.now();let timer;
+    this.active=true;const start=performance.now();let timer,progressTimer;
+    this.progressInterval=Number(this.options.progressIntervalMs??1000);
+    if(!Number.isFinite(this.progressInterval)||this.progressInterval<250||this.progressInterval>60000){this.active=false;throw new Error('progressIntervalMs must be 250..60000');}
+    this.tracker=new ProgressTracker({target});
     try{
       validateFixture(fixture);
       if(target!==null&&(!Number.isInteger(target)||target<1||target>0xfffffffe))throw new Error('Degree must be a positive 32-bit index, or null for completion without a user degree bound');
@@ -233,6 +252,11 @@ export class FomkyrEngine {
       }
       if(restoreError)throw restoreError;
       this.emit('cache',{runKey:this.runKey,resumedFromDegree:restored,cacheHit:target!==null&&restored>=target});
+      this.tracker.completed=restored;this.tracker.degree=restored;
+      if(this.options.progress!==false){
+        this.host.setPulse(()=>this.publishProgress(false),this.progressInterval);
+        progressTimer=setInterval(()=>this.publishProgress(false),this.progressInterval);
+      }
       if(this.options.timeoutMs>0){timer=setTimeout(()=>this.cancel(),this.options.timeoutMs);this.e.gn_deadline(performance.timeOrigin+performance.now()+this.options.timeoutMs);}
       const lastInputDegree=fixture.relations.reduce((n,r)=>Math.max(n,r.degree),0);
       const globallyComplete=()=>Number(this.e.gn_stat(2))>=lastInputDegree&&BigInt(this.e.gn_stat(2))>=this.e.gn_completion_bound();
@@ -241,6 +265,7 @@ export class FomkyrEngine {
         if(target===null&&globallyComplete())break;
         if(this.cancelRequested)checked(5);
         if(performance.now()-lastYield>40){await new Promise(r=>setTimeout(r,0));lastYield=performance.now();}
+        this.tracker.begin(degree,Number(this.e.gn_stat(2)));this.setPhase('input');
         for(const r of fixture.relations)if(r.degree===degree){
           checked(this.e.gn_input_begin(degree,r.terms.length));
           for(const t of r.terms){
@@ -254,10 +279,9 @@ export class FomkyrEngine {
           checked(this.e.gn_input_end());
         }
         this.emit('degree-start',{degree,...stats(this.e)});
-        checked(this.e.gn_start_degree(degree));await this.completeDegree();
-        checked(this.e.gn_finish_degree());
-        if(this.directory)this.emit('phase',{phase:'checkpoint',...stats(this.e)});
-        await this.checkpoint(identity);
+        this.setPhase('indexing');checked(this.e.gn_start_degree(degree));this.setPhase('reducing');await this.completeDegree();
+        checked(this.e.gn_finish_degree());this.tracker.completed=degree;this.setPhase('checkpoint');await this.checkpoint(identity);
+        this.tracker.finish(degree,readProgressCounters(this.e));this.publishProgress(true);
         this.emit('degree',{...stats(this.e),elapsedMs:performance.now()-start,scheduler:{...this.scheduler}});
       }
       if(target===null&&!globallyComplete())checked(9);
@@ -265,8 +289,7 @@ export class FomkyrEngine {
       const hilbertDegree=this.options.hilbertDegree??certified;
       let hilbert=null;
       if(this.options.hilbert!==false){
-        this.emit('phase',{phase:'hilbert',...stats(this.e)});
-        try{
+        this.setPhase('hilbert');try{
         if(!Number.isInteger(hilbertDegree)||hilbertDegree<0||hilbertDegree>0xfffffffe||hilbertDegree>Number(this.e.gn_stat(2))&&!globallyComplete())throw new Error('Hilbert degree must be completed by the GB calculation, unless a finite complete GB has been proved');
 
           const available=Math.max(0,this.budget-Number(this.e.gn_stat(4)));
@@ -281,18 +304,18 @@ export class FomkyrEngine {
         }
       }
       const result={...stats(this.e),engine:'fomkyr',version:VERSION,storage:this.spill?'opfs':'memory',complete:true,unrestrictedBasisComplete:globallyComplete(),reduced:false,target,modulus,order:'degleftlex',runKey:this.runKey,identity,bits:this.bits,shared:this.shared,ioMode:this.ioMode,executionMode:`wasm${this.bits}-${this.shared?'shared':'single'}`,fallbacks:this.fallbacks??[],requestedBudgetBytes:this.requestedBudget,hostMailboxBytes:this.brokerClients.length*(IO_HEADER+IO_CHUNK),linearMemoryBytes:this.memory.buffer.byteLength,resumedFromDegree:restored,cacheHit:target!==null&&restored>=target,hilbert,scheduler:{...this.scheduler},lanePairs:Array.from({length:this.workers},(_,i)=>Number(this.e.gn_lane_stat(i,6))),elapsedMs:performance.now()-start};
-      this.emit('phase',{phase:'export',...stats(this.e)});
-      if(this.options.exportText!==false)Object.assign(result,await this.exportText(fixture.variables));
+      if(this.options.exportText!==false){this.setPhase('export');Object.assign(result,await this.exportText(fixture.variables));}
+      result.degreeTimings=[...this.tracker.history];result.progressError=this.progressError??null;
       if(this.directory){
         if(hilbert)await writeJSON(this.directory,'hilbert.json',hilbert);
         if(hilbert?.coefficients)await this.writeSmallText('hilbert.csv',hilbertCSV(hilbert));
         const {preview,elapsedMs,...metadata}=result;await writeJSON(this.directory,'fomkyr-result.json',{...metadata,elapsedSeconds:elapsedMs/1000});
       }
-      return result;
+      this.setPhase('done');result.progress=this.lastProgress??null;result.degreeTimings=[...this.tracker.history];result.progressError=this.progressError??null;return result;
     }catch(error){
       error.native=this.e?{...stats(this.e),complete:false,lastCheckpoint:this.lastCheckpoint,runKey:this.runKey}:null;
       if(this.host?.lastIOError)error.message+=`: ${this.host.lastIOError.message}`;throw error;
-    }finally{clearTimeout(timer);this.active=false;}
+    }finally{clearTimeout(timer);clearInterval(progressTimer);this.host?.setPulse(null);this.active=false;}
   }
   async writeSmallText(name,text){
     const bytes=enc.encode(text),h=await(await this.directory.getFileHandle(name,{create:true})).createSyncAccessHandle();
