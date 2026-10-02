@@ -93,6 +93,10 @@ and results are compared with a native SBCL build, Bergman 2 and Singular
   degree** uses the computed degree; a longer prefix requires a proved complete
   basis. Integer coefficients stay exact in the page and CSV/JSON downloads.
   Runtime tuning controls have help under “?” and are saved in Share links.
+  New fomkyr runs enable monomial pruning, disk storage, checkpoint resume
+  and sparse heap reduction. Exact Hilbert counting is off until selected;
+  workers, batches and workspace are automatic. Saved settings and Share
+  links retain their explicit choices.
   Output has primitive coefficients; earlier polynomial tails are not globally
   interreduced. Large results have a preview and full disk downloads. Old
   Native NC form preferences and Share links migrate to fomkyr.
@@ -113,7 +117,10 @@ and results are compared with a native SBCL build, Bergman 2 and Singular
   Beside “Computing…”, compact icons show allocated Wasm memory, elapsed
   seconds, and the current degree when reported by the engine. Hover, focus
   or tap an icon for details. fomkyr reports each degree; a checkmark marks
-  a completed degree. A dash means the engine has not reported its degree.
+  a completed degree and an ellipsis marks a degree still being processed.
+  The degree tooltip shows the last completed degree, pair/reduction counts,
+  and whether the engine is saving a checkpoint, counting Hilbert coefficients
+  or exporting results. A dash means the engine has not reported its degree.
   Memory includes reserved workspace; fomkyr can reserve up to 512 MiB
   for scratch space. It does not measure total browser RAM or live objects,
   and disk checkpoints are separate.

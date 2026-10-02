@@ -1,5 +1,50 @@
 # Validation and verification
 
+## Degree progress and fomkyr defaults — 2026-10-02
+
+The degree display now distinguishes an active degree (`11 … / 12`) from a
+completed one (`11 ✓ / 12`). Hover/focus help reports the last completed
+degree and actual pair, reduction-step and basis-rule counters. Separate
+events identify checkpoint saving, optional Hilbert counting and export.
+The counters update after engine batches; a long batch can delay an update.
+
+The production UI was checked on the submitted 15-generator, 100-relation
+presentation with fresh limits 12 and 11, then checkpoint resume at the other
+limit. Each run stops as soon as the observed expensive degree starts, with
+a 120-second deadline. No degree-11 or degree-12 completion is claimed.
+
+| Browser and options | Observed active degree | Last completed degree | Basis rules at that boundary | Fresh seconds, limits 12 / 11 | Resume seconds, limits 11 / 12 |
+|---|---:|---:|---:|---:|---:|
+| Chromium, memory64, 2048 MiB, 4 workers, pruning on, Hilbert off | 11 | 10 | 2155 | 47.41 / 48.37 | 1.00 / 0.95 |
+| Firefox, submitted settings: wasm32, 3584 MiB, automatic workers, pruning off, Hilbert on | 10 | 9 | 1451 | 17.54 / 16.10 | 1.17 / 1.14 |
+
+Fresh bounds produce identical completed-prefix rule and term counts. Resume
+restores the last completed degree; it never labels the unfinished next
+degree complete. Thus a quick arrival at `11 / 12` can mean degree 10 was
+restored and degree 11 has only started. Reports and event traces:
+[degree-11 boundary](validation/fomkyr-progress-11-12/report.json),
+[Firefox submitted-settings check](validation/fomkyr-progress-share-firefox/report.json).
+
+New fomkyr jobs enable monomial pruning, OPFS storage, checkpoint resume and
+heap reduction. Optional Hilbert counting is off for a GB-only job; workers,
+batches and scratch space stay automatic, with the existing 12% reducer cache.
+Explicit saved or shared choices are preserved, including pruning off and
+Hilbert on. Changing a degree limit does not change the earlier degree work.
+
+All **117 unit tests** pass:
+[unit log](validation/fomkyr-progress-unit-tests.log). The production UI
+regression passes in Chromium and Firefox at both root/project mounts,
+with isolated multicore and unshared single-worker execution. It checks
+new defaults, preserving explicit pruning choices across backend switches,
+editing through invalid presentations, Share links, checkpoint/Hilbert/export
+events, cancellation/restart, blank bounds, long words and EN/RU mobile help.
+The [final eight-scenario report](validation/fomkyr-progress-ui-final/report.json)
+records hashes including the separate degree-progress module.
+Separate Pages-style tests pass in both browsers with service-worker
+isolation, both memory widths and settings restored after reload:
+[Chromium](validation/fomkyr-progress-static-chromium/report.json),
+[Firefox](validation/fomkyr-progress-static-firefox/report.json).
+
 ## fomkyr 0.3.0 integration — 2026-10-02
 
 All four prebuilt shared/unshared wasm32/wasm64 modules match the imported

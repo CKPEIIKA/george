@@ -11,7 +11,7 @@ const out = path.resolve(process.argv[2] || 'build/validation/fomkyr-browser');
 fs.mkdirSync(out, {recursive:true});
 const report = {state:'running', startedAt:new Date().toISOString(), checks:[], errors:[],
   method:'Real browsers use the production George form, workers and OPFS. Tests are serial. Every computation has a 120-second deadline.',
-  hashes:Object.fromEntries(['web/src/app.js','web/src/engine.js','web/src/share.js','web/src/fomkyr-options.js',
+  hashes:Object.fromEntries(['web/src/app.js','web/src/engine.js','web/src/share.js','web/src/fomkyr-options.js','web/src/degree-progress.js',
     ...fs.readdirSync('web/engine/fomkyr').map(name=>'web/engine/fomkyr/'+name)].map(file=>
     [file,crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex')]))};
 const save = () => fs.writeFileSync(path.join(out,'report.json'),JSON.stringify(report,null,2)+'\n');
@@ -43,10 +43,34 @@ try {
         const url = `http://127.0.0.1:${server.address().port}${mount}`;
         const context = await browser.newContext({serviceWorkers:isolated?'allow':'block',acceptDownloads:true});
         if (!isolated) await context.addInitScript(()=>Object.defineProperty(navigator,'serviceWorker',{value:undefined}));
+        await context.addInitScript(()=>{
+          window.__fomkyrPhases=[];
+          const Base=window.Worker;
+          window.Worker=class extends Base{
+            constructor(...args){super(...args);this.addEventListener('message',({data})=>{
+              if(data.event?.type==='phase')window.__fomkyrPhases.push(data.event.phase);
+            });}
+          };
+        });
         const page = await context.newPage(), errors=[], external=[];
         page.on('pageerror',error=>errors.push(error.message));
         page.on('request',request=>{if(new URL(request.url()).origin!==new URL(url).origin)external.push(request.url());});
         try {
+          await page.goto(url);await page.locator('#engineNote.live').waitFor({timeout:120000});
+          await page.locator('details.advanced').evaluate(node=>node.open=true);
+          await page.locator('#backend').selectOption('fomkyr');
+          assert.equal(await page.locator('#monomialPruning').isChecked(),true);
+          for(const option of ['spill','resume','heapReduction'])assert.equal(await page.locator('#fomkyr-'+option).isChecked(),true);
+          assert.equal(await page.locator('#fomkyr-hilbert').isChecked(),false);
+          assert.equal(await page.locator('#nativeWorkers').inputValue(),'0');
+          assert.equal(await page.locator('#fomkyr-batchPairs').inputValue(),'');
+          assert.equal(await page.locator('#fomkyr-scratchMiB').inputValue(),'');
+          await page.locator('#vars').fill('a,b');
+          await page.locator('#rels').fill('a^2,b^2,b*a-a*b');
+          assert.equal(await page.locator('#monomialPruning').isChecked(),true);
+          await page.locator('#monomialPruning').uncheck();
+          await page.locator('#backend').selectOption('compiled');await page.locator('#backend').selectOption('fomkyr');
+          assert.equal(await page.locator('#monomialPruning').isChecked(),false);
           // Legacy links migrate the public selector to fomkyr; the fragment is preserved.
           const legacy = await createShareLink({backend:'native',varsText:'x,y',relsText:'x^2,y^2,y*x-x*y',maxdeg:'4',maxserdeg:'4',
             memoryMiB:512,nativeWorkers:4,monomialPruning:true},url);
@@ -63,6 +87,7 @@ try {
           assert.equal(await page.locator('#weights').isDisabled(),false);
           assert.equal(await page.locator('#monomialPruning').isDisabled(),false);
           await page.locator('#timeoutMinutes').fill('2');
+          await page.locator('#fomkyr-hilbert').check();
           const first = await run(page);
           console.log(name,'shared32 / single32 finished',JSON.stringify({workers:first.workers,ioMode:first.ioMode,fallbacks:first.fallbacks}));
           report.latest={browser:name,mount,isolated,first};save();
@@ -70,6 +95,8 @@ try {
           if (name==='firefox' && isolated) assert.equal(first.ioMode,'broker-exclusive');
           assert.deepEqual(first.hilbert.coefficients,['1','2','1','0','0']);
           assert.equal(first.monomialPruning,true);
+          assert.deepEqual(await page.evaluate(()=>[...new Set(window.__fomkyrPhases)]),['checkpoint','hilbert','export']);
+          assert.match(await page.locator('#degreeMetric').getAttribute('aria-label'),/Exporting results/);
           await page.locator('#fomkyr-bits').selectOption('64');
           await page.locator('#fomkyr-ioMode').selectOption('broker');
           await page.locator('#maxdeg').fill('5');await page.locator('#maxserdeg').fill('5');
@@ -146,7 +173,7 @@ try {
           report.checks.push({browser:name,version:browser.version(),mount,isolated,first,
             second,unlimited:{completedThroughDegree:unlimited.completedThroughDegree,proved:unlimited.unrestrictedBasisComplete},
             longWord:true,share:true,legacyMigration:true,cancellationAndRestart:true,metrics:true,
-            stableReleaseBrand:true,unfinishedDraftRestore:true,noStaleHilbertSeries:true,
+            stableReleaseBrand:true,unfinishedDraftRestore:true,noStaleHilbertSeries:true,fastDefaults:true,explicitPhases:true,
             mobileHelp:mount==='/'&&isolated,externalRequests:0});
           console.log(name,mount,isolated?'isolated':'unshared','PASS');save();
         } finally {

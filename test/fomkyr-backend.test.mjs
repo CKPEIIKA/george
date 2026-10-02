@@ -12,7 +12,7 @@ import {publicationAssets} from '../tools/publication-assets.mjs';
 
 const form = {task:'gb', backend:'fomkyr', ring:'noncomm', order:'degleftlex', field:'0',
   vars:['a','b'], rels:['a^2','b^2','b*a-a*b'], maxdeg:'4', maxserdeg:'4',
-  nonhomog:'degreewise', nativeWorkers:3, monomialPruning:true};
+  nonhomog:'degreewise', nativeWorkers:3, monomialPruning:true,fomkyrOptions:{hilbert:true}};
 test('fomkyr ships all shared/unshared variants with exact asset hashes', () => {
   assert.match(getBackend('fomkyr').worker, /fomkyr\/george-worker\.js$/);
   const manifest = JSON.parse(fs.readFileSync('web/engine/fomkyr/build.json'));
@@ -40,6 +40,15 @@ test('George form controls are authoritative for fomkyr workers, pruning and Hil
   assert.equal(parseNativeJob(long).fixture.relations[0].degree,100001);
   assert.throws(()=>parseNativeJob(buildJob({...form,rels:['a^4294967294'],maxdeg:'4294967294'})),/workspace budget/);
   assert.equal(buildJob({...form,fomkyrOptions:{hilbert:false}}).outputs.hs,undefined);
+});
+test('new fomkyr jobs default to pruning, disk, resume and heap with optional counting off',()=>{
+  const job=buildJob({...form,monomialPruning:undefined,nativeWorkers:0,fomkyrOptions:undefined});
+  const options=job.fomkyrOptions;
+  assert.equal(options.monomialPruning,true);assert.equal(options.spill,true);assert.equal(options.resume,'auto');
+  assert.equal(options.heapReduction,true);assert.equal(options.hilbert,false);assert.equal(options.cachePercent,12);
+  assert.equal(options.workers,undefined);assert.equal(options.batchPairs,undefined);assert.equal(options.scratchBytes,undefined);
+  assert.equal(job.outputs.hs,undefined);
+  assert.equal(buildJob({...form,monomialPruning:false,fomkyrOptions:{hilbert:true}}).fomkyrOptions.monomialPruning,false);
 });
 test('unsupported fomkyr jobs and invalid runtime options are rejected before execution', () => {
   for (const change of [{task:'anick'}, {ring:'comm',order:'deglex'}, {order:'lex'}, {legacy:true},

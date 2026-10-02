@@ -1,0 +1,57 @@
+[
+  {
+    "type": "capabilities",
+    "secureContext": true,
+    "crossOriginIsolated": true,
+    "sharedMemory": true,
+    "webAssembly": true,
+    "opfs": true,
+    "webLocks": true,
+    "logicalCPUs": 8,
+    "shared": true,
+    "bits": 32,
+    "workers": 4,
+    "ioMode": "broker-exclusive",
+    "requestedBudgetBytes": 3758096384,
+    "effectiveBudgetBytes": 3758096384,
+    "seconds": 0.25008000000000175
+  },
+  {
+    "type": "degree",
+    "completedThroughDegree": 9,
+    "source": "checkpoint",
+    "seconds": 1.1422400000000017
+  },
+  {
+    "type": "cache",
+    "runKey": "alg-17c5a3b13bbae1fd6e03ece75139f297d437bda2ae062b093d77a92f091b88bf",
+    "resumedFromDegree": 9,
+    "cacheHit": false,
+    "seconds": 1.1427000000000007
+  },
+  {
+    "type": "degree-start",
+    "degree": 10,
+    "basisSize": 1451,
+    "terms": 29317,
+    "completedThroughDegree": 9,
+    "currentDegree": 0,
+    "allocatedBytes": 547481456,
+    "budgetBytes": 3758096384,
+    "diskBytes": 750040,
+    "pairs": 0,
+    "monomialPairsPruned": 0,
+    "zeroCommits": 0,
+    "workers": 4,
+    "prefixNodes": 8525,
+    "peakAllocatedBytes": 547481456,
+    "monomialPruning": false,
+    "heapReduction": true,
+    "reductions": 0,
+    "monomialTermsPruned": 0,
+    "diskReads": 0,
+    "diskReadBytes": 0,
+    "reducerCacheHits": 0,
+    "seconds": 1.1445400000000008
+  }
+]

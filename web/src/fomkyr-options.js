@@ -1,6 +1,6 @@
 // Public, persisted options for Fomkyr (upstream fomkyr 0.3).
 export const FOMKYR_DEFAULTS = Object.freeze({
-  execution: 'auto', bits: 'auto', spill: true, resume: 'auto', hilbert: true,
+  execution: 'auto', bits: 'auto', spill: true, resume: 'auto', hilbert: false,
   heapReduction: true, cachePercent: 12, heapThreshold: 16, batchPairs: null,
   hashBits: 18, scratchMiB: null, hilbertMiB: 256, ioMode: 'auto',
 });
@@ -37,7 +37,7 @@ export function fomkyrEngineOptions(form) {
   }
   engine.hilbertBudgetBytes = hilbertMiB * 1048576;
   engine.workers = Number(form.nativeWorkers) || undefined;
-  engine.monomialPruning = !!form.monomialPruning;
+  engine.monomialPruning = form.monomialPruning ?? true;
   if (String(form.maxserdeg ?? '').trim() !== '') engine.hilbertDegree = Number(form.maxserdeg);
   return engine;
 }

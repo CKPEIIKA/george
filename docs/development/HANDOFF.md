@@ -1,5 +1,33 @@
 # George development handoff
 
+## Degree progress and defaults follow-up — 2026-10-02
+
+`web/src/degree-progress.js` interprets engine events without using a timer or
+requested bound to infer progress. Active degrees show an ellipsis, completed
+degrees a checkmark. Tooltip text includes the completed prefix and actual
+pair/reduction/basis counters; checkpoint, Hilbert and export phases are
+explicit. Updates arrive after batches, so one long batch can hold a counter
+steady. The C kernel and four Wasm modules remain unchanged.
+
+`tools/validate-fomkyr-progress.mjs` checks the actual UI and OPFS with bounds
+12 and 11. Fresh memory64 Chromium runs reach degree 11 after 47–48 seconds,
+both with the completed degree-10 prefix of 2155 rules. Resumed runs reach
+the same unfinished degree in about one second. Firefox using the submitted
+wasm32/3584 MiB/pruning-off/Hilbert-on settings reproduces this at the degree-10
+boundary with 1451 degree-9 rules. The expensive observed degree is cancelled;
+no completed degree-11/12 timings or projections are established. Evidence
+is in [VALIDATION.md](VALIDATION.md#degree-progress-and-fomkyr-defaults--2026-10-02).
+
+Fresh fomkyr jobs now enable pruning as well as disk, resume and heap, and
+disable optional Hilbert counting. Explicit preferences and Share settings
+are retained. The form remembers pruning across temporary invalid input and
+backend switches; its disabled visual state does not overwrite that choice.
+Global backend selection and the Bergman memory64 default are preserved.
+All 117 unit tests and the Chromium/Firefox UI and Pages-style checks pass;
+the earlier 112-test/208-run mathematical integration evidence is retained
+below with its original hashes. Runtime changes here concern host events and
+defaults; no mathematical kernel rebuild is claimed.
+
 ## Local fomkyr 0.3.0 integration — 2026-10-02
 
 The paused backend upgrade is now completed using `vendor/fomkyr-0.3.0/`.

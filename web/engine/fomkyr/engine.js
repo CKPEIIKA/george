@@ -255,7 +255,9 @@ export class FomkyrEngine {
         }
         this.emit('degree-start',{degree,...stats(this.e)});
         checked(this.e.gn_start_degree(degree));await this.completeDegree();
-        checked(this.e.gn_finish_degree());await this.checkpoint(identity);
+        checked(this.e.gn_finish_degree());
+        if(this.directory)this.emit('phase',{phase:'checkpoint',...stats(this.e)});
+        await this.checkpoint(identity);
         this.emit('degree',{...stats(this.e),elapsedMs:performance.now()-start,scheduler:{...this.scheduler}});
       }
       if(target===null&&!globallyComplete())checked(9);
@@ -263,6 +265,7 @@ export class FomkyrEngine {
       const hilbertDegree=this.options.hilbertDegree??certified;
       let hilbert=null;
       if(this.options.hilbert!==false){
+        this.emit('phase',{phase:'hilbert',...stats(this.e)});
         try{
         if(!Number.isInteger(hilbertDegree)||hilbertDegree<0||hilbertDegree>0xfffffffe||hilbertDegree>Number(this.e.gn_stat(2))&&!globallyComplete())throw new Error('Hilbert degree must be completed by the GB calculation, unless a finite complete GB has been proved');
 
@@ -278,6 +281,7 @@ export class FomkyrEngine {
         }
       }
       const result={...stats(this.e),engine:'fomkyr',version:VERSION,storage:this.spill?'opfs':'memory',complete:true,unrestrictedBasisComplete:globallyComplete(),reduced:false,target,modulus,order:'degleftlex',runKey:this.runKey,identity,bits:this.bits,shared:this.shared,ioMode:this.ioMode,executionMode:`wasm${this.bits}-${this.shared?'shared':'single'}`,fallbacks:this.fallbacks??[],requestedBudgetBytes:this.requestedBudget,hostMailboxBytes:this.brokerClients.length*(IO_HEADER+IO_CHUNK),linearMemoryBytes:this.memory.buffer.byteLength,resumedFromDegree:restored,cacheHit:target!==null&&restored>=target,hilbert,scheduler:{...this.scheduler},lanePairs:Array.from({length:this.workers},(_,i)=>Number(this.e.gn_lane_stat(i,6))),elapsedMs:performance.now()-start};
+      this.emit('phase',{phase:'export',...stats(this.e)});
       if(this.options.exportText!==false)Object.assign(result,await this.exportText(fixture.variables));
       if(this.directory){
         if(hilbert)await writeJSON(this.directory,'hilbert.json',hilbert);

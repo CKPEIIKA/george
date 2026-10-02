@@ -91,7 +91,7 @@ try {
     for(const [bits,execution,workers] of [[32,'single',1],[32,'multicore',4],[64,'single',1],[64,'multicore',4]]) {
       const client=new BackendClient(path.join(dir,`storage-${bits}-${execution}`),{timeoutMs:30000,workerURL:new URL('../test/support/fomkyr-worker.mjs',import.meta.url)});
       let r;
-      try{r=await client.run({...buildJob({...form,backend:'fomkyr'}),fomkyrOptions:{...buildJob({...form,backend:'fomkyr'}).fomkyrOptions,bits,execution,workers,scratchBytes:32*1048576,spill:true,resume:false}});}finally{await client.close();}
+      try{r=await client.run({...buildJob({...form,backend:'fomkyr'}),fomkyrOptions:{...buildJob({...form,backend:'fomkyr'}).fomkyrOptions,bits,execution,workers,scratchBytes:32*1048576,spill:true,resume:false,hilbert:true}});}finally{await client.close();}
       const text=r.files['result.gb'];assert.equal(parseBasis(text).done,true);
       fs.writeFileSync(path.join(dir,`fomkyr-${bits}-${execution}.gb`),text);
       const gb=a.basis(text),ambiguities=a.certify(input,gb,degree);

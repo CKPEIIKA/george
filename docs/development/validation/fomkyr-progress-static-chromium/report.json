@@ -1,0 +1,53 @@
+{
+  "version": "0.6.0",
+  "startedAt": "2026-10-02T16:42:28.313Z",
+  "state": "complete",
+  "serverIsolationHeaders": false,
+  "checks": [
+    {
+      "mount": "/",
+      "isolated": true,
+      "native32Workers": 2,
+      "ioMode": "direct-unsafe",
+      "native64": true,
+      "reloadPreservesSettings": true,
+      "kernelAssetCacheOnly": true,
+      "externalRequests": 0
+    },
+    {
+      "mount": "/",
+      "serviceWorkersBlocked": true,
+      "bergmanAvailable": true,
+      "fomkyrFallbackAvailable": true
+    },
+    {
+      "mount": "/george/",
+      "isolated": true,
+      "native32Workers": 2,
+      "ioMode": "direct-unsafe",
+      "native64": true,
+      "reloadPreservesSettings": true,
+      "kernelAssetCacheOnly": true,
+      "externalRequests": 0
+    },
+    {
+      "mount": "/george/",
+      "serviceWorkersBlocked": true,
+      "bergmanAvailable": true,
+      "fomkyrFallbackAvailable": true
+    }
+  ],
+  "errors": [],
+  "sourceHashes": {
+    "web/index.html": "0f34cffc5c24dfec22d7994f4d7084204dea491a914d260ef894c30b90537e73",
+    "web/src/start.js": "e02ddc99e94b4da5fea902e547b4272dd99eb4ed0ff25fbef5ab82afe47f580c",
+    "web/src/isolation.js": "87bb9f2aeff55b4c19d3f64273b6467abe6595ee405c21745be9fb23c46d086d",
+    "web/isolation-worker.js": "225891d046bc94b2d29adfece56c95a6f7641a465aa40c748d1217c1689b308d",
+    "web/src/app.js": "ebe6a5af6ecd314be46f120a08bc4bb58ce8167c397681b6762cee1ec01f6c20",
+    "web/engine/fomkyr/fomkyr32.wasm": "3829a34fc814de14c8efe90a02ec071836e0f08e380ee9848b152f55650df737",
+    "web/engine/fomkyr/fomkyr64.wasm": "4f4f95a7aec0e28b43ed4bdf0e976ba9e3f1bf405184d1ce509980f20bba496f"
+  },
+  "browser": "153.0.8010.52",
+  "browserEngine": "chromium",
+  "finishedAt": "2026-10-02T16:43:08.501Z"
+}
