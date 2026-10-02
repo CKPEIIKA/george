@@ -1,4 +1,5 @@
-// Public, persisted options for Fomkyr (upstream fomkyr 0.4).
+// Public, persisted options for Fomkyr (upstream fomkyr 0.6).
+import {automaticWorkers} from '../engine/fomkyr/worker-count.js';
 export const FOMKYR_DEFAULTS = Object.freeze({
   execution: 'auto', bits: 'auto', spill: true, resume: 'auto', hilbert: false,
   heapReduction: true, cachePercent: 12, heapThreshold: 16, batchPairs: null,
@@ -6,12 +7,17 @@ export const FOMKYR_DEFAULTS = Object.freeze({
   wordMatcher: true, chainCriterion: true, eagerPruning: true,
   quadraticRewrite: true, costScheduling: true, wordCacheEntries: 256,
   matcherMiB: null, progress: true, progressIntervalSeconds: 1,
+  rationalHeap: true, rationalRewrites: true, compiledRewrites: true, rewriteDegree: 4, rewriteSupport: 8,
+  rewriteMiB: null, sharedCacheMiB: null,
 });
 export const FOMKYR_FIELDS = Object.freeze([
   ['execution', 'select', ['auto', 'single', 'multicore']],
   ['bits', 'select', ['auto', '32', '64']],
   ['spill', 'checkbox'], ['resume', 'checkbox'], ['hilbert', 'checkbox'],
   ['heapReduction', 'checkbox'], ['cachePercent', 'number', 0, 40],
+  ['rationalHeap', 'checkbox'], ['rationalRewrites', 'checkbox'], ['compiledRewrites', 'checkbox'],
+  ['rewriteDegree', 'number', 2, 4], ['rewriteSupport', 'number', 1, 64],
+  ['rewriteMiB', 'number', 0, 256], ['sharedCacheMiB', 'number', 0, 256],
   ['wordMatcher', 'checkbox'], ['chainCriterion', 'checkbox'], ['eagerPruning', 'checkbox'],
   ['quadraticRewrite', 'checkbox'], ['costScheduling', 'checkbox'],
   ['wordCacheEntries', 'number', 256, 1048576], ['matcherMiB', 'number', 0, 14304],
@@ -36,10 +42,10 @@ export function validateFomkyrOptions(options = {}) {
 }
 export function fomkyrEngineOptions(form) {
   const options = validateFomkyrOptions(form.fomkyrOptions);
-  const {scratchMiB, hilbertMiB, matcherMiB, progressIntervalSeconds, ...engine} = options;
+  const {scratchMiB, hilbertMiB, matcherMiB, rewriteMiB, sharedCacheMiB, progressIntervalSeconds, ...engine} = options;
   if (engine.batchPairs === null) delete engine.batchPairs;
   if (scratchMiB !== null) {
-    const lanes = engine.execution === 'single' ? 1 : Number(form.nativeWorkers) || 4;
+    const lanes = engine.execution === 'single' ? 1 : Number(form.nativeWorkers) || automaticWorkers();
     if (scratchMiB >= Number(form.memoryMiB ?? 512) || scratchMiB < lanes) throw new Error('Fomkyr scratch space must fit the memory budget and provide at least 1 MiB per worker.');
     engine.scratchBytes = scratchMiB * 1048576;
   }
@@ -47,6 +53,12 @@ export function fomkyrEngineOptions(form) {
   if (matcherMiB !== null) {
     if (matcherMiB >= Number(form.memoryMiB ?? 512)) throw new Error('Fomkyr matcher space must fit the memory budget.');
     engine.matcherBudgetBytes = matcherMiB * 1048576;
+  }
+  for (const [key, value] of [['rewriteBudgetBytes', rewriteMiB], ['sharedReducerCacheBytes', sharedCacheMiB]]) {
+    if (value !== null) {
+      if (value >= Number(form.memoryMiB ?? 512)) throw new Error('Fomkyr cache space must fit the memory budget.');
+      engine[key] = value * 1048576;
+    }
   }
   engine.progressIntervalMs = progressIntervalSeconds * 1000;
   engine.workers = Number(form.nativeWorkers) || undefined;

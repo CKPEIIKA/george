@@ -6,6 +6,7 @@ import {loadKernel} from './module-cache.js';
 import {computeHilbert,hilbertCSV} from './hilbert.js';
 import {browserCapabilities,sharedMemoryAvailable,probeUnsafeAccess} from './capabilities.js';
 import {BrokerHandle,makeMailbox,IO_CHUNK,IO_HEADER} from './io-broker.js';
+import {computeWorkers} from './worker-count.js';
 const MiB=1048576,enc=new TextEncoder();
 export function validateFixture(fixture){
   if(!fixture||!Array.isArray(fixture.variables)||!Array.isArray(fixture.relations))throw new Error('Invalid fixture');
@@ -72,7 +73,7 @@ export class FomkyrEngine {
         this.module=await loadKernel(bits,o.wasmURL,!this.shared);
         this.host=hostFor(this.memory,bits,this.budget,null,Infinity,true);
         this.e=(await WebAssembly.instantiate(this.module,this.host.imports)).exports;
-        if(this.e.gn_abi()!==3||typeof this.e.gn_optimize!=='function'||typeof this.e.gn_word_cache!=='function'||typeof this.e.gn_progress_stat!=='function')throw new Error('Kernel/host API mismatch. Deploy fomkyr 0.4.0 JS and WASM together.');
+        if(this.e.gn_abi()!==3||typeof this.e.gn_optimize!=='function'||typeof this.e.gn_word_cache!=='function'||typeof this.e.gn_progress_stat!=='function'||typeof this.e.gn_candidate_check!=='function'||typeof this.e.gn_local_rewrites!=='function'||typeof this.e.gn_pin_cache!=='function'||typeof this.e.gn_rational_rewrites!=='function'||typeof this.e.gn_modulus!=='function')throw new Error('Kernel/host API mismatch. Deploy fomkyr 0.6.1 JS and WASM together.');
         break;
       }catch(error){
         if(bits!==64||o.strictCapabilities||o.wasmURL)throw error;
@@ -80,8 +81,7 @@ export class FomkyrEngine {
       }
     }
     this.requestedBudget=requested;
-    const defaultWorkers=Math.min(Math.max(1,(navigator.hardwareConcurrency||2)-1),4);
-    this.workers=this.shared?Math.min(32,Math.max(1,Math.floor(o.workers||defaultWorkers))):1;
+    this.workers=computeWorkers(o.workers,{shared:this.shared,execution});
     if(!Number.isFinite(this.workers))throw new Error('Invalid worker count');
     this.scratch=Math.floor(Number(o.scratchBytes??Math.min(this.budget/3,512*MiB))/65536)*65536;
     if(!Number.isFinite(this.scratch)||this.scratch<this.workers*MiB||this.scratch>=this.budget)throw new Error('scratchBytes must provide >=1 MiB per lane and fit in the kernel budget');
@@ -148,6 +148,15 @@ export class FomkyrEngine {
   cancel(){this.cancelRequested=true;if(this.cancelView&&this.shared)Atomics.store(this.cancelView,0,1);else this.e?.gn_cancel(1);}
   async resetKernel(fixture,target,modulus){
     checked(this.e.gn_init(fixture.variables.length,target??0,this.workers,BigInt(this.budget),BigInt(this.scratch),this.options.hashBits??18,modulus,this.spill?1:0));
+    checked(this.e.gn_rational_heap(this.options.rationalHeap!==false?1:0));
+    checked(this.e.gn_rational_rewrites(this.options.rationalRewrites!==false?1:0));
+    const pin=this.options.sharedReducerCacheBytes??Math.min(this.budget/16,64*MiB);
+    const local=this.options.rewriteBudgetBytes??Math.min(this.budget/16,8*MiB);
+    for(const [name,value] of [['sharedReducerCacheBytes',pin],['rewriteBudgetBytes',local]])if(!Number.isSafeInteger(value)||value<0)throw new Error(`${name} must be a nonnegative integer`);
+    const localDegree=this.options.rewriteDegree??4,localSupport=this.options.rewriteSupport??8;
+    if(![2,3,4].includes(localDegree)||!Number.isInteger(localSupport)||localSupport<1||localSupport>64)throw new Error('Rewrite degree must be 2, 3 or 4 and rewrite support must be 1..64');
+    checked(this.e.gn_pin_cache(BigInt(pin)));
+    checked(this.e.gn_local_rewrites(this.options.compiledRewrites===false?0:localDegree,BigInt(local),localSupport));
     checked(this.e.gn_tune((this.options.monomialPruning!==false?1:0)|(this.options.heapReduction!==false?2:0),this.options.cachePercent??12,this.options.heapThreshold??16));
     checked(this.e.gn_optimize((this.options.wordMatcher!==false?1:0)|(this.options.chainCriterion!==false?2:0)|(this.options.progress!==false?4:0)|(this.options.eagerPruning!==false?8:0)|(this.options.quadraticRewrite!==false?16:0)|(this.options.costScheduling!==false?32:0),BigInt(this.options.matcherBudgetBytes??Math.min(this.budget/16,64*MiB))));
     checked(this.e.gn_word_cache(this.options.wordCacheEntries??256));
@@ -198,7 +207,7 @@ export class FomkyrEngine {
         let start=performance.now();
         const pending=[];
         for(let lane=1;lane<this.workers&&lane<n;lane++)pending.push(this.rpc(this.pool[lane],{command:'batch'}));
-        this.setPhase('reducing',false);checked(this.e.gn_batch_reduce(0));(await Promise.all(pending)).forEach(checked);
+        this.setPhase('reducing',false);const localResult=this.e.gn_batch_reduce(0);const remoteResults=await Promise.all(pending);checked(localResult);remoteResults.forEach(checked);
         this.scheduler.reduceMs+=performance.now()-start;
         const rcs=Array.from({length:n},(_,i)=>this.e.gn_batch_status(i));
         rcs.filter(rc=>rc!==2&&rc!==8).forEach(checked);

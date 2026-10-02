@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // OPFS data are origin-local. Persistence is a request, never a backup guarantee.
 export const STORE='fomkyr';
-export const VERSION='0.4.0';
+export const VERSION='0.6.1';
 const encoder=new TextEncoder();
 export async function sha256(bytes){
   const hash=await crypto.subtle.digest('SHA-256',typeof bytes==='string'?encoder.encode(bytes):bytes);

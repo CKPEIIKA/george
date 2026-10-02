@@ -29,6 +29,15 @@ export class ProgressTracker {
     for(let k=1;k<=distance;k++){mid+=last.elapsedMs*growth**k;lo+=last.elapsedMs*(Math.min(...ratios)*0.5)**k;hi+=last.elapsedMs*(Math.max(...ratios)*2)**k;}
     return {targetSeconds:null,conditionalNextDegrees:{fromDegree:last.degree+1,throughDegree:this.target,centralSeconds:mid/1000,scenarioSeconds:[lo/1000,hi/1000],label:'Conditional extrapolation; not a completion-time bound.'},recentDegreeGrowth:ratios};
   }
+  forecastForSample(eta,now){
+    const historical=this.forecast();
+    if(!historical.conditionalNextDegrees)return historical;
+    const stalled=/heterogeneous|long unresolved/.test(eta.reason??'');
+    const exceeded=this.degreeStart!=null && now-this.degreeStart>historical.conditionalNextDegrees.centralSeconds*1000;
+    if(stalled||exceeded)return {targetSeconds:null,recentDegreeGrowth:historical.recentDegreeGrowth,
+      reason:stalled?'Historical projection withdrawn: current overlap timings are not predictive.':'Historical projection withdrawn: the current degree has exceeded the projected duration.'};
+    return historical;
+  }
   sample(raw){
     const now=this.now();
     // A new degree's ledger is not available while relations/index are loaded.
@@ -62,12 +71,14 @@ export class ProgressTracker {
       elapsedMs:now-this.started,degreeElapsedMs:this.degreeStart==null?0:now-this.degreeStart,
       overlaps:{total:raw.totalKnown?String(total):null,resolved:String(resolved),enumerated:String(raw.seen),scheduled:String(raw.scheduled),committed:String(raw.committed),monomialSkipped:String(raw.monomialSkipped),chainSkipped:String(raw.chainSkipped),
         fraction:raw.totalKnown?(total?fraction(resolved,total):null):null,kind:'overlap-count-not-time',replay:raw.replay},
-      activity:{activeLanes:raw.activeLanes,maxActiveRowTerms:String(raw.maxTerms),sampledReductions:String(live),sampledReductionsPerSecond:reductionRate,sampleIsApproximate:true},
-      eta,forecast:this.forecast(),history:[...this.history]};
+      activity:{lanes:raw.lanes??[],activeLanes:raw.activeLanes,maxActiveRowTerms:String(raw.maxTerms),sampledReductions:String(live),sampledReductionsPerSecond:reductionRate,sampleIsApproximate:true},
+      eta,forecast:this.forecastForSample(eta,now),history:[...this.history]};
   }
 }
 export function readProgressCounters(e){
-  const p=k=>e.gn_progress_stat(k),workers=Number(e.gn_stat(10));let reductions=0n,maxTerms=0n,activeLanes=0;
-  for(let i=0;i<workers;i++){reductions+=e.gn_live_stat(i,0);const busy=e.gn_live_stat(i,7),terms=e.gn_live_stat(i,4);if(busy){activeLanes++;if(terms>maxTerms)maxTerms=terms;}}
-  return {total:p(0),seen:p(1),committed:p(2),scheduled:p(3),monomialSkipped:p(4),chainSkipped:p(5),replay:Number(p(6)),totalKnown:!!p(7),reductions,maxTerms,activeLanes};
+  const p=k=>e.gn_progress_stat(k),workers=Number(e.gn_stat(10));let reductions=0n,maxTerms=0n,activeLanes=0;const lanes=[];
+  for(let i=0;i<workers;i++){reductions+=e.gn_live_stat(i,0);const busy=e.gn_live_stat(i,7),terms=e.gn_live_stat(i,4);if(busy){activeLanes++;if(terms>maxTerms)maxTerms=terms;
+    lanes.push({lane:i,tier:['unknown','compact-integer','compact-rational','arbitrary-precision'][Number(e.gn_live_stat(i,9))]??'unknown',
+      terms:String(terms),exactFallbacks:String(e.gn_live_stat(i,10)),pair:{leftRule:Number(e.gn_live_stat(i,11)),rightRule:Number(e.gn_live_stat(i,12)),overlap:Number(e.gn_live_stat(i,13))}});}}
+  return {total:p(0),seen:p(1),committed:p(2),scheduled:p(3),monomialSkipped:p(4),chainSkipped:p(5),replay:Number(p(6)),totalKnown:!!p(7),reductions,maxTerms,activeLanes,lanes};
 }
