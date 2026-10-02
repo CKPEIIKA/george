@@ -36,7 +36,7 @@ export function backendSettingsErrors(form, backend = form.backend ?? 'standard'
     if (empty && !range.required) continue;
     if (empty || !/^\d+$/.test(String(value)) || !Number.isSafeInteger(Number(value))
         || Number(value) < range.min || Number(value) > range.max) {
-      errors.push('The selected engine requires a maximal degree from 1 to 20.');
+      errors.push(`The selected engine requires ${key} from ${range.min} to ${range.max}.`);
     }
   }
   if (caps.maximumGenerators && form.vars?.length > caps.maximumGenerators) {
@@ -47,11 +47,11 @@ export function backendSettingsErrors(form, backend = form.backend ?? 'standard'
 
 export function backendRelationErrors(parsedRelations, backend) {
   const caps = backendCapabilities(backend), errors = [];
-  const degrees = parsedRelations.map(terms => terms.map(term => term.factors.reduce((d, f) => d + f.e, 0)));
+  const degrees = parsedRelations.map(terms => terms.filter(term => BigInt(term.coef) !== 0n).map(term => term.factors.reduce((d, f) => d + f.e, 0)));
   if (caps.homogeneous && degrees.some(row => new Set(row).size > 1)) errors.push('The selected engine requires homogeneous relations.');
   if (caps.relationDegrees && degrees.some(row => row.some(d => !caps.relationDegrees.includes(d)))) errors.push('The selected engine does not support these relation degrees.');
   if (caps.maximumCoefficient && parsedRelations.some(terms => terms.some(term => BigInt(term.coef) > BigInt(caps.maximumCoefficient)))) errors.push('The selected engine supports input integers up to 2^62−1 in absolute value.');
-  if (caps.maximumCoefficient && degrees.some(row => row.some(d => d < 1 || d > 20))) errors.push('The selected engine supports relation degrees from 1 to 20.');
+  if (caps.maximumCoefficient && degrees.some(row => row.some(d => d < 1 || d > (caps.numericRanges?.maxdeg?.max ?? 20)))) errors.push('The selected engine does not support these relation degrees.');
   return errors;
 }
 

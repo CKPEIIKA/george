@@ -30,7 +30,7 @@ export class EclEngine {
       const p = this.pending.get(data.id);
       if (!p) return;
       if (data.event) {
-        if (data.event.type === 'control' && data.event.memory?.buffer instanceof SharedArrayBuffer) this.nativeControl = data.event;
+        if (data.event.type === 'control') this.nativeControl = data.event;
         if (data.event.type === 'memory') this.onMemory?.(data.event.bytes);
         p.onEvent?.(data.event); return;
       }
@@ -113,7 +113,7 @@ export class EclEngine {
     this.generation++;
     const stoppedWorker = this.worker;
     if (this.nativeControl && stoppedWorker && !this.workerClosed) {
-      Atomics.store(new Int32Array(this.nativeControl.memory.buffer, this.nativeControl.cancelOffset, 1), 0, 1);
+      if (this.nativeControl.shared !== false && this.nativeControl.memory) Atomics.store(new Int32Array(this.nativeControl.memory.buffer, this.nativeControl.cancelOffset, 1), 0, 1);
       // Let the coordinator close OPFS handles before another run opens them.
       this.stopping = new Promise(resolve => {
         let timer, finished = false;
@@ -121,7 +121,7 @@ export class EclEngine {
         stoppedWorker.onmessage = ({data}) => {if (data.closed) finish();};
         stoppedWorker.onerror = finish;
         timer = setTimeout(finish, 3000);
-        stoppedWorker.postMessage({id: -1, command: 'cancel', backend: 'native'});
+        stoppedWorker.postMessage({id: -1, command: 'cancel', backend: this.backend});
       });
     } else stoppedWorker?.terminate();
     this.nativeControl = null;

@@ -1,6 +1,7 @@
 import { ORDERS, TASKS } from './bergman-syntax.js';
 import { BACKENDS, validMemoryMiB } from './backends.js';
 import { timeoutMilliseconds } from './time-limit.js';
+import { validateFomkyrOptions } from './fomkyr-options.js';
 
 export const SHARE_PREFIX = '#s=';
 const MAX_BYTES = 1048576;
@@ -20,6 +21,7 @@ const FIELDS = [
   ['timeoutMinutes', 0],
   ['monomialPruning', false],
   ['nativeWorkers', 0],
+  ['fomkyrOptions', ''],
 ];
 const CHOICES = {
   ring: ['noncomm', 'comm'], field: ['0', '2', 'p'],
@@ -38,6 +40,7 @@ function validateState(state) {
   if (!validMemoryMiB(state.memoryMiB, state.backend)) throw new Error('share.invalid');
   if (!Number.isInteger(state.nativeWorkers) || state.nativeWorkers < 0 || state.nativeWorkers > 32) throw new Error('share.invalid');
   try { timeoutMilliseconds(state.timeoutMinutes); } catch { throw new Error('share.invalid'); }
+  try { if (state.fomkyrOptions) validateFomkyrOptions(JSON.parse(state.fomkyrOptions)); } catch { throw new Error('share.invalid'); }
   return state;
 }
 
@@ -66,6 +69,7 @@ async function readBytes(stream) {
 }
 
 export async function createShareLink(values, href) {
+  if (values.fomkyrOptions && typeof values.fomkyrOptions === 'object') values = {...values, fomkyrOptions: JSON.stringify(values.fomkyrOptions)};
   const state = validateState(Object.fromEntries(FIELDS.map(([key, fallback]) => [key, values[key] ?? fallback])));
   let mask = 0n;
   const changed = [];
@@ -100,5 +104,7 @@ export async function readShareLink(hash) {
   let offset = 1;
   const state = Object.fromEntries(FIELDS.map(([key, fallback], i) => [key, BigInt(mask) & (1n << BigInt(i)) ? packed[offset++] : fallback]));
   if (offset !== packed.length) throw new Error('share.invalid');
-  return validateState(state);
+  validateState(state);
+  state.fomkyrOptions = state.fomkyrOptions ? JSON.parse(state.fomkyrOptions) : {};
+  return state;
 }

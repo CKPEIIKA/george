@@ -1,5 +1,157 @@
 # Runtime performance assessment
 
+## fomkyr 0.3.0 resource comparison — 2026-10-02
+
+Fresh serial browser runs recompute the submitted 15-generator, 100-relation
+Q presentation through degrees 2–8 with **fomkyr 0.3.0**. Each uses memory64,
+a 2048 MiB allowance, four actual compute workers, pruning enabled,
+checkpoint resume disabled and optional Hilbert output disabled. Firefox
+uses `broker-exclusive` file access; Chromium uses `direct-unsafe`.
+These measurements started after the validation suites finished. An earlier
+timing pilot is excluded. All four prebuilt modules are imported unchanged.
+
+![CPU and physical RAM with fomkyr 0.3](validation/backend-resources-fomkyr-degree8/backend-resources.png)
+
+[PDF](validation/backend-resources-fomkyr-degree8/backend-resources.pdf),
+[SVG](validation/backend-resources-fomkyr-degree8/backend-resources.svg),
+[plotted CSV](validation/backend-resources-fomkyr-degree8/backend-resources-capped.csv),
+[raw CSV](validation/backend-resources-fomkyr-degree8/backend-resources.csv), and
+[report with separate runtime hashes](validation/backend-resources-fomkyr-degree8/report.json)
+are retained. Bergman/SBCL/Singular curves use the earlier same-day serial
+comparison below on the same host. They were not rerun with this integration.
+The final-size vector PDF and a grayscale rendering were inspected for
+legibility, curve distinction and clipping.
+Original Native NC 0.1 curves remain in the historical figure below, and
+are not relabelled as new-core measurements.
+
+| Engine | Degree 7 cold seconds | Degree 8 cold seconds | Degree 8 CPU, core seconds | Degree 8 additional peak PSS, MiB |
+|---|---:|---:|---:|---:|
+| fomkyr 0.3, memory64, Chromium, 4 workers | 1.35 | 3.46 | 11.48 | 68.4 |
+| fomkyr 0.3, memory64, Firefox, 4 workers | 4.45 | 6.81 | 14.81 | 56.4 |
+| C/ECL O3 + LTO, wasm32, earlier run | 28.23 | 73.25 | 79.30 | 333.2 |
+| C/ECL O3 + LTO, memory64, earlier run | 33.54 | 61.90 | 64.14 | 612.3 |
+| Bergman/SBCL, native, earlier run | 7.86 | 44.48 | 44.39 | 854.6 |
+| Singular/Letterplace, native, earlier run | 17.86 | 78.12 | 78.04 | 12.4 |
+
+At degree 8 the Chromium fomkyr run takes about **17.9× less cold wall time**
+than the fastest earlier browser Bergman run; at degree 7 the ratio is
+about **20.9×**. Firefox now retains multicore computation and takes 6.81 s
+at degree 8, versus 46.55 s for the previous single-worker Native adapter.
+The core and host both changed, so this does not isolate the worker-count
+effect. These are one-run local comparisons, not paired repeated estimates.
+Runtime/filesystem caches and background host load can affect timings.
+
+All 14 new fomkyr outputs have matching exact leading-word sets with C/ECL;
+degree 8 returns **990 rules**. The combined
+[consistency audit](validation/backend-resources-fomkyr-degree8/leading-word-audit.json)
+checks all 52 completed outputs. This is not a new full degree-8 critical-pair
+certificate; extensive bounded checks are described in
+[VALIDATION.md](VALIDATION.md#fomkyr-030-integration--2026-10-02).
+
+The CPU panel ends at **120 core seconds**, and every new job has a
+**120-second cold wall deadline**. Unfinished Lisp points are omitted in both
+panels; an upward annotation on the left indicates that they exceed the
+range. Their raw measurements and censored trace values remain in the CSVs.
+Physical RAM means peak process-tree PSS minus idle baseline, sampled every
+0.25 s in browsers and 0.02 s for native CLI. Reserved Wasm capacity is a
+different measurement. Limit scopes and other conditions are described below.
+
+```sh
+node tools/benchmark-backend-resources.mjs --out build/validation/fomkyr-resources-degree8 --configs fomkyr,fomkyr-firefox --degrees 2,3,4,5,6,7,8 --timeout-seconds 120 --memory-mib 2048
+```
+
+The archived combined report and traces regenerate the figure directly with
+`python3 tools/plot-backend-resources.py docs/development/validation/backend-resources-fomkyr-degree8/report.json`.
+
+## CPU and physical RAM through degree 8 — 2026-10-02
+
+The exact submitted 15-generator, 100-relation presentation over Q was
+computed at degrees 2–8 with all five browser engines, Native NC in Firefox,
+native Bergman/SBCL, and native Singular/Letterplace. The comparison uses
+**one serial cold run per configuration and degree**, with a fresh browser
+profile and engine, no checkpoint resume, and no debugger or profiler.
+The host is an Intel Core i5-1135G7 with eight logical CPUs and 15.3 GiB RAM;
+the browsers are Chromium 153 and Firefox 155.
+
+![CPU and additional physical RAM through degree 8](validation/backend-resources-degree8/backend-resources.png)
+
+[Vector PDF](validation/backend-resources-degree8/backend-resources.pdf),
+[SVG](validation/backend-resources-degree8/backend-resources.svg),
+[plotted data](validation/backend-resources-degree8/backend-resources-capped.csv),
+[raw data](validation/backend-resources-degree8/backend-resources.csv), and
+[full report](validation/backend-resources-degree8/report.json) are retained
+with output files and sampled traces.
+
+The CPU panel reports **total user and system CPU in core seconds**, with
+a logarithmic scale ending at **120 core seconds**. It includes engine
+startup, calculation and export; browser launch and initial page rendering
+are excluded. Four busy cores can accumulate four core seconds in one wall
+second. Native CLI CPU totals come from GNU time; browser totals are sampled
+from the Linux process tree. The RAM panel reports **peak physical PSS above
+each run's pre-engine idle baseline**, rather than allocated Wasm capacity.
+PSS accounts proportionally for shared pages. Full PSS, RSS and the idle
+baseline are also retained in the raw data. Browser RAM is sampled every
+0.25 seconds and native CLI RAM every 0.02 seconds, so brief peaks can be missed.
+
+Each remaining cold job was capped at **120 wall seconds**, including engine
+startup. Two degree-6 interpreted pilots had already run longer when the cap
+was requested. Their raw traces are preserved; the censored CSV uses only
+their first 120 seconds. Unfinished Lisp points are omitted from the figure,
+with an upward annotation indicating costs exceeding the range. No higher-degree cost
+is extrapolated. Total CPU can exceed the wall cap with multiple threads;
+the raw CSV keeps those values.
+
+All browser engines use a 2048 MiB allowance. Bergman monomial pruning is
+enabled; Native prunes automatically and selects memory64 with four
+requested workers. Firefox actually uses **one worker** because its file
+access requires the exclusive-access fallback. SBCL uses a 2048 MiB dynamic
+space, while Singular has a 2 GiB virtual-address limit. These limits cover
+different allocations and are not equivalent caps on physical RAM.
+Singular uses `twostd`, `redSB`, `intStrategy`, and the same degree-left-lex
+order, represented by `Dp` with reversed generator order as described in the
+[Singular Letterplace documentation](https://github.com/Singular/Singular/blob/spielwiese/doc/letterplace.doc).
+
+| Engine | Degree 7 cold seconds | Degree 8 cold seconds | Degree 8 additional peak PSS, MiB |
+|---|---:|---:|---:|
+| Lisp / ECL O2 | Timeout at 120 | Timeout at 120 | 60.8 at timeout |
+| Lisp / ECL O3 + LTO | Timeout at 120 | Timeout at 120 | 65.7 at timeout |
+| C / ECL O3 + LTO, wasm32 | 28.23 | 73.25 | 333.2 |
+| C / ECL O3 + LTO, memory64 | 33.54 | 61.90 | 612.3 |
+| Native NC, memory64, Chromium, 4 workers | 3.52 | 5.31 | 320.9 |
+| Native NC, memory64, Firefox, 1 worker | 9.50 | 46.55 | 96.9 |
+| Bergman / SBCL, native | 7.86 | 44.48 | 854.6 |
+| Singular / Letterplace, native | 17.86 | 78.12 | 12.4 |
+
+Every completed degree-8 run returns **990 elements**. A separate
+[consistency audit](validation/backend-resources-degree8/leading-word-audit.json)
+compares exact leading-word sets with C/ECL for all **52 completed runs**;
+all agree. This check does not certify every critical ambiguity or equality
+of the ideals. The previous degree-7 certificate below remains separate.
+
+Native is fastest in this local series; Singular uses much less physical RAM
+at degree 8. Firefox's time differs substantially from Chromium's, with
+both the worker count and browser/storage implementation changing. The
+comparison cannot attribute the difference to workers alone. A reported
+25-second degree-7 Firefox run is plausible on another system, although
+this run took 9.50 seconds. Native reserves about 520.5 MiB of linear memory
+here, including its scratch pool; that value is not live-object memory or
+physical RAM. Host load, cached runtime files, storage and sparse RAM
+sampling limit the precision of this single-run comparison.
+
+Reproduce from the repository root after preparing the existing native
+oracle binaries:
+
+```sh
+node tools/benchmark-backend-resources.mjs --out build/validation/backend-resources-degree8 --degrees 2,3,4,5,6,7,8 --timeout-seconds 120 --memory-mib 2048
+node tools/benchmark-native-resources.mjs --out build/validation/backend-resources-degree8 --timeout-seconds 120
+node tools/audit-backend-resources.mjs build/validation/backend-resources-degree8/report.json
+python3 tools/plot-backend-resources.py build/validation/backend-resources-degree8/report.json
+```
+
+The archived traces also regenerate the figure directly without computing
+new bases. The figure was checked as a final-size PDF and in grayscale.
+These measurements precede the fomkyr 0.3.0 integration reported above.
+
 ## Native NC versus current C/ECL — 2026-10-02
 
 The reference 15-generator, 100-relation Q presentation was computed

@@ -41,6 +41,7 @@ export async function dispatchNative(message,send=postMessage) {
     engine=new NativeEngine({budgetBytes:Number(job.memoryMiB??2048)*1048576,runKey:key,resume,timeoutMs:job.timeoutMs??0,...options,resume,onEvent:event=>{
       if(event.type==='control')send({id,event});
       else if(event.type==='degree'||event.type==='stdout') {
+        if(event.type==='degree')send({id,event});
         const text=event.type==='stdout'?event.text:`Native degree ${event.completedThroughDegree}: ${event.basisSize} rules, ${event.terms} terms, ${event.allocatedBytes} allocated bytes, ${event.diskBytes} bytes on disk.\n`;
         stdout=(stdout+text).slice(-32768);send({id,event:{type:'stdout',text}});
       } else send({id,event});
@@ -49,7 +50,8 @@ export async function dispatchNative(message,send=postMessage) {
     const native=await engine.compute(fixture,target,modulus);
     native.checkpoint=engine.lastCheckpoint;
     const preview=native.preview??'';delete native.preview;
-    const files={'result.gb':preview,'native-result.json':JSON.stringify(native,null,2)};
+    const metadata={...native,elapsedSeconds:native.elapsedMs/1000};delete metadata.elapsedMs;
+    const files={'result.gb':preview,'native-result.json':JSON.stringify(metadata,null,2)};
     send({id,result:{files,native,stdout,connected:true,elapsedMs:native.elapsedMs,memoryBytes:engine.memory.buffer.byteLength}});
   } catch(error) {
     const native=error.native??null;

@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>George 0.6 experimental</title>
-<meta name="description" content="George computes Gröbner bases, Hilbert series, Anick resolutions and Betti numbers for noncommutative and commutative algebras, using bergman and an experimental Native NC engine in your browser.">
+<title>George 0.6</title>
+<meta name="description" content="George computes Gröbner bases, Hilbert series, Anick resolutions and Betti numbers for noncommutative and commutative algebras, using bergman and fomkyr in your browser.">
 <meta name="theme-color" content="#eef2f3" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#111a27" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Cpath d=%22M16 3 29 16 16 29 3 16Z%22 fill=%22%23ffe45c%22 stroke=%22%231b2a4a%22 stroke-width=%222.5%22/%3E%3C/svg%3E">
@@ -17,7 +17,7 @@
 <header class="top">
   <a class="brand" href="#compute" aria-label="George, an interface to bergman and more…">
     <svg class="logo" viewBox="0 0 28 28" aria-hidden="true"><path class="logo-face" d="M14 3 25 14 14 25 3 14Z"/><path class="logo-edge" d="M14 3 25 14 14 25 3 14Z"/><circle cx="14" cy="3.6" r="2"/><circle cx="24.4" cy="14" r="2"/><circle cx="14" cy="24.4" r="2"/><circle cx="3.6" cy="14" r="2"/></svg>
-    <span class="brand-name">George <small class="brand-version">0.6</small> <small class="release-tag" data-i18n="release.experimental">experimental</small></span>
+    <span class="brand-name">George <small class="brand-version">0.6</small></span>
     <span class="brand-sub" data-i18n="brand.sub">an interface to bergman and more…</span>
   </a>
   <nav class="views" aria-label="Views" data-i18n-attr="aria-label:nav.views">
@@ -40,7 +40,7 @@
 </header>
 
 <p class="engine-note" id="engineNote" role="status" data-i18n="engine.loading">
-  Loading bergman… Computations run locally in your browser.
+  Loading computation engine… Computations run locally in your browser.
 </p>
 
 <main id="main">
@@ -129,11 +129,11 @@
       <legend data-i18n="legend.degrees">Degrees</legend>
       <div class="field-row">
         <label for="maxdeg" class="field">
-          <span class="label-row"><span class="label" data-i18n="maxdeg">Maximal degree</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="maxdegHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="maxdegHint" data-i18n="maxdeg.hint">Compute through this degree. A bounded result does not certify an unrestricted Gröbner basis. Blank means unlimited for Bergman; Native NC requires 1–20.</span></span></span>
+          <span class="label-row"><span class="label" data-i18n="maxdeg">Maximal degree</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="maxdegHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="maxdegHint" data-i18n="maxdeg.hint">Compute through this degree. A bounded result does not certify an unrestricted Gröbner basis. Blank requests completion without a chosen degree bound; timeout, memory limits and Stop still apply.</span></span></span>
           <input type="number" id="maxdeg" min="1" placeholder="none" data-i18n-attr="placeholder:maxdeg.none" inputmode="numeric">
         </label>
         <label for="weights" class="field grow">
-          <span class="label-row"><span class="label" data-i18n="weights">Weights (one per generator)</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="weightsHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="weightsHint" data-i18n="weights.hint">Positive generator degrees in the displayed variable order. Blank means all 1. Native NC supports only ordinary degree, so leave this blank.</span></span></span>
+          <span class="label-row"><span class="label" data-i18n="weights">Weights (one per generator)</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="weightsHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="weightsHint" data-i18n="weights.hint">Positive generator degrees in the displayed variable order. Blank means all 1. fomkyr also accepts an explicit list of ones; other weights require Bergman.</span></span></span>
           <input type="text" id="weights" class="code" placeholder="all 1" data-i18n-attr="placeholder:weights.none">
         </label>
       </div>
@@ -149,7 +149,7 @@
           <option value="compiled" data-i18n="backend.compiled">C / ECL O3 + LTO</option>
           <option value="optimized" data-i18n="backend.optimized">Lisp / ECL O3 + LTO</option>
           <option value="standard" data-i18n="backend.standard">Lisp / ECL O2</option>
-          <option value="native" data-i18n="backend.native">Native NC / C O3 + LTO (experimental)</option>
+          <option value="fomkyr" data-i18n="backend.fomkyr">fomkyr / C O3 + LTO (experimental)</option>
         </select>
 
       </label>
@@ -158,6 +158,7 @@
         <input id="nativeWorkers" type="number" min="0" max="32" step="1" value="0" aria-describedby="nativeWorkersHint">
 
       </label>
+      <fieldset id="fomkyrOptions" class="fomkyr-options" hidden><legend data-i18n="fomkyr.settings">fomkyr settings</legend></fieldset>
       <label for="timeoutMinutes" class="field">
         <span class="label-row"><span class="label" data-i18n="timeout.label">Time limit (minutes)</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="timeoutHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="timeoutHint" data-i18n="timeout.hint">0 means unlimited. Applies to computations and console commands. Stop is always available.</span></span></span>
         <input id="timeoutMinutes" type="number" min="0" step="any" value="0" aria-describedby="timeoutHint">
@@ -177,7 +178,7 @@
           <option value="6144" data-memory64 hidden disabled>6 GiB</option>
           <option value="8192" data-memory64 hidden disabled>8 GiB</option>
           <option value="12288" data-memory64 hidden disabled>12 GiB</option>
-          <option value="14304" data-i18n="memory.nativeMax">≈14 GiB (Native NC maximum)</option>
+          <option value="14304" data-i18n="memory.nativeMax">≈14 GiB (Fomkyr maximum)</option>
           <option value="16077" data-memory64 selected>15.7 GiB</option>
           <option value="16384" data-memory64 hidden disabled>16 GiB</option>
           <option value="0" data-memory64 data-i18n="memory.uncapped" hidden disabled>No heap cap (browser limit)</option>
@@ -195,7 +196,7 @@
         </select>
       </label>
       <label for="nonhomog" class="field">
-        <span class="label-row"><span class="label" data-i18n="nonhomog.label">Nonhomogeneous relations</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="nonhomogHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="nonhomogHint" data-i18n="nonhomog.hint">Automatic mode processes nonhomogeneous relations item by item. Degreewise mode is appropriate for homogeneous presentations. Native NC requires homogeneous relations.</span></span></span>
+        <span class="label-row"><span class="label" data-i18n="nonhomog.label">Nonhomogeneous relations</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="nonhomogHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="nonhomogHint" data-i18n="nonhomog.hint">Automatic mode processes nonhomogeneous relations item by item. Degreewise mode is appropriate for homogeneous presentations. Fomkyr requires homogeneous relations.</span></span></span>
         <select id="nonhomog">
           <option value="auto" data-i18n="nonhomog.auto">Process item by item when needed</option>
           <option value="itemwise" data-i18n="nonhomog.itemwise">Always process item by item</option>
@@ -203,7 +204,7 @@
         </select>
       </label>
       <label for="strategy" class="field">
-        <span class="label-row"><span class="label" data-i18n="strategy.label">Strategy</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="strategyHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="strategyHint" data-i18n="strategy.hint">The default completes consecutive degrees. Rabbit changes Bergman’s processing strategy and can help some presentations; its parameters require care. Native NC uses its own degreewise algorithm.</span></span></span>
+        <span class="label-row"><span class="label" data-i18n="strategy.label">Strategy</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="strategyHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="strategyHint" data-i18n="strategy.hint">The default completes consecutive degrees. Rabbit changes Bergman’s processing strategy and can help some presentations; its parameters require care. Fomkyr uses its own degreewise algorithm.</span></span></span>
         <select id="strategy">
           <option value="default" data-i18n="strategy.default">Default (Buchberger, degree by degree)</option>
           <option value="rabbit" data-i18n="strategy.rabbit">Rabbit: jump ahead in degree</option>
@@ -221,7 +222,7 @@
         </select>
       </label>
       <label for="outmode" class="field">
-        <span class="label-row"><span class="label" data-i18n="outmode.label">Output format</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="outmodeHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="outmodeHint" data-i18n="outmode.hint">Algebraic output matches the presentation syntax. Macaulay adds a file in Bergman’s Macaulay format. Native NC exports only algebraic text plus its checkpoint data.</span></span></span>
+        <span class="label-row"><span class="label" data-i18n="outmode.label">Output format</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="outmodeHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="outmodeHint" data-i18n="outmode.hint">Algebraic output matches the presentation syntax. Macaulay adds a file in Bergman’s Macaulay format. Fomkyr exports only algebraic text plus its checkpoint data.</span></span></span>
         <select id="outmode">
           <option value="ALG" data-i18n="outmode.alg">Algebraic, like the input</option>
           <option value="MACAULAY">Macaulay</option>
@@ -262,7 +263,29 @@
       <h2 id="resultsTitle" data-i18n="results">Results</h2>
       <div class="run-info">
         <p class="run-status" id="runStatus" aria-live="polite" data-i18n="status.idle">Nothing computed yet.</p>
-        <span class="memory-usage" id="memoryUsage" hidden data-i18n-attr="title:memory.usageHint"></span>
+        <div class="run-metrics" id="runMetrics" hidden>
+          <span class="help run-metric" id="memoryUsage" hidden>
+            <button type="button" class="help-btn metric-button" id="memoryMetric" aria-expanded="false" aria-controls="memoryUsageHint" aria-describedby="memoryUsageHint" aria-label="Wasm memory" data-i18n-attr="aria-label:monitor.memory">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="6" width="14" height="12" rx="2"/><path d="M9 10v4m6-4v4M8 3v3m4-3v3m4-3v3M8 18v3m4-3v3m4-3v3M2 9h3m-3 6h3m14-6h3m-3 6h3"/></svg>
+              <span id="memoryValue"></span>
+            </button>
+            <span class="help-pop" id="memoryUsageHint" data-i18n="memory.usageHint">Allocated Wasm memory, including reserved workspace. It updates when memory grows. This is not total browser RAM; disk checkpoints are separate.</span>
+          </span>
+          <span class="help run-metric" id="degreeUsage">
+            <button type="button" class="help-btn metric-button" id="degreeMetric" aria-expanded="false" aria-controls="degreeUsageHint" aria-describedby="degreeUsageHint" aria-label="Degree" data-i18n-attr="aria-label:monitor.degree">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5m0 14h16M8 15h4v-4h4V7h4"/></svg>
+              <span id="degreeValue">—</span>
+            </button>
+            <span class="help-pop" id="degreeUsageHint"></span>
+          </span>
+          <span class="help run-metric" id="timeUsage">
+            <button type="button" class="help-btn metric-button" id="timeMetric" aria-expanded="false" aria-controls="timeUsageHint" aria-describedby="timeUsageHint" aria-label="Elapsed time" data-i18n-attr="aria-label:monitor.time">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+              <span id="timeValue"></span>
+            </button>
+            <span class="help-pop" id="timeUsageHint" data-i18n="monitor.timeHint">Elapsed time in seconds, including engine loading.</span>
+          </span>
+        </div>
       </div>
     </div>
     <div class="tabs" role="tablist" aria-label="Result views" data-i18n-attr="aria-label:tabs.aria" id="tabs">

@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import crypto from 'node:crypto';
 const directory='web/engine/native';
 const names=['george32.wasm','george64.wasm','runtime.js','lane.js','engine.js','job-adapter.js',
-  'george-entry.js','result-links.js','worker.js','LICENSE.txt'];
+  'george-entry.js','result-links.js','storage.js','worker.js','LICENSE.txt'];
 const files=Object.fromEntries(names.map(name=>{
   const data=fs.readFileSync(directory+'/'+name);
   return [name,{bytes:data.length,sha256:crypto.createHash('sha256').update(data).digest('hex')}];

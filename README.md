@@ -17,7 +17,7 @@ No installation. Everything runs in your browser; nothing is sent to a server.
 
 ```
 npm ci && npm run serve        open http://127.0.0.1:8000/
-npm run serve:native            local server with isolation for Native NC
+npm run serve:fomkyr           local server with isolation for fomkyr
 npm test                       unit tests
 npm run test:ui                browser checks: examples, EN/RU, themes, /george/
 npm run wasm:build:backends    rebuild all four engines
@@ -32,8 +32,8 @@ Gröbner bases in free associative and commutative algebras over ℚ, 𝔽₂ an
 𝔽ₚ, Hilbert and Poincaré–Betti series, Anick resolutions, Betti numbers of
 algebras and modules, and Hochschild homology. Arithmetic is exact.
 
-**0.6 is an experimental release**, adding an independent Native NC backend
-for homogeneous noncommutative Gröbner bases.
+**George 0.6** adds the independent fomkyr backend
+for homogeneous noncommutative Gröbner bases and optional exact Hilbert coefficients.
 
 ## ARCHITECTURE
 
@@ -58,7 +58,7 @@ static site (GitHub Pages)       web/ → gh-pages
 
 ## DISCLAIMER
 
-THIS SOFTWARE IS VIBE-CODED! The Bergman engines use bergman's mathematics; Native NC is an experimental independent C implementation. The interface is tested against the
+THIS SOFTWARE IS VIBE-CODED! The Bergman engines use bergman's mathematics; fomkyr is an independent C implementation. The interface is tested against the
 original: in legacy mode all 37 stored bergman outputs match byte for byte,
 and results are compared with a native SBCL build, Bergman 2 and Singular
 (*docs/development/VALIDATION.md*). Check results that matter.
@@ -74,19 +74,28 @@ and results are compared with a native SBCL build, Bergman 2 and Singular
   under *More settings*. The “?” buttons explain settings without expanding
   all their help text at once.
 
-**Native NC (experimental)**
-: Select **Native NC / C O3 + LTO** for homogeneous noncommutative Gröbner
-  bases with 1–16 generators, ordinary degree/left lexicographic order and
-  a degree bound of 1–20. It supports ℚ and prime fields, shared workers,
-  automatic pruning and disk checkpoints. **Worker count** accepts 1–32;
-  0 automatically selects up to four. The value is saved and shared.
-  This engine needs browser isolation and local file storage. On the hosted
-  site, a first visit may reload once to enable isolation. It is disabled
-  when the browser cannot provide these features.
-  Its budget is at most 14304 MiB; it selects wasm64 above 4095 MiB.
-  Output is a degree-bounded basis with primitive coefficients; previous
-  polynomial tails are not globally interreduced. Large results have a
-  preview and a full disk download. Unsupported tasks/settings are greyed out.
+**fomkyr**
+: Select **fomkyr / C O3 + LTO** for homogeneous noncommutative Gröbner
+  bases with 1–16 generators, unit generator degrees, ordinary degree/left
+  lexicographic order, ℚ or a prime field. **Worker count** accepts 1–32;
+  0 automatically selects up to four. Unsupported tasks/settings are greyed out.
+  Shared multicore uses browser isolation. Without it, automatic execution
+  uses a genuine single-worker module; denied disk storage can fall back to RAM.
+  Firefox uses a portable I/O owner while compute lanes remain parallel.
+  Runtime information reports actual workers, bitness, storage and fallbacks.
+  A first visit to the hosted site may reload once to enable isolation.
+  Blank **Maximal degree** requests completion without a chosen degree bound;
+  the run still obeys memory and time limits and can be stopped. Long words
+  have variable-length storage rather than the old degree-20 ceiling.
+  The kernel budget is at most 14304 MiB; larger allowances select memory64.
+  Degree checkpoints can resume the same presentation across execution modes.
+  Optional exact Hilbert coefficients appear in **Series**. Blank **Series
+  degree** uses the computed degree; a longer prefix requires a proved complete
+  basis. Integer coefficients stay exact in the page and CSV/JSON downloads.
+  Runtime tuning controls have help under “?” and are saved in Share links.
+  Output has primitive coefficients; earlier polynomial tails are not globally
+  interreduced. Large results have a preview and full disk downloads. Old
+  Native NC form preferences and Share links migrate to fomkyr.
 
 **Memory**
 : The default engine is **C / ECL O3 + LTO (memory64)** with a **15.7 GiB**
@@ -101,8 +110,13 @@ and results are compared with a native SBCL build, Bergman 2 and Singular
   unweighted homogeneous noncommutative Gröbner bases.
   An exhausted heap returns saved basis output as partial and releases the
   worker. A larger limit does not guarantee completion of an unbounded basis.
-  Beside “Computing…” the memory indicator reports allocated Wasm memory
-  as it grows; it does not measure total browser RAM or live Lisp objects.
+  Beside “Computing…”, compact icons show allocated Wasm memory, elapsed
+  seconds, and the current degree when reported by the engine. Hover, focus
+  or tap an icon for details. fomkyr reports each degree; a checkmark marks
+  a completed degree. A dash means the engine has not reported its degree.
+  Memory includes reserved workspace; fomkyr can reserve up to 512 MiB
+  for scratch space. It does not measure total browser RAM or live objects,
+  and disk checkpoints are separate.
 
 **Output**
 : The basis by degree, series, Betti tables, Anick differentials, the raw
@@ -143,7 +157,9 @@ and results are compared with a native SBCL build, Bergman 2 and Singular
 | `npm run test:algebra` | Singular, critical pairs, Hilbert dimensions |
 | `npm run test:backends` | seeded Latin hypercube inputs/settings, exact parity across the four engines |
 | `npm run test:native` | imported kernel tests, bounded FK parity against Bergman and Singular |
-| `npm run test:native:browser` | real OPFS/UI and serial degree-7 comparison with C/ECL |
+| `npm run test:native:browser` | alias for `test:fomkyr:browser` |
+| `npm run test:fomkyr` | imported suites, 48 FK LHS samples and four anchors, all four fomkyr variants, C/ECL and bounded Singular |
+| `npm run test:fomkyr:browser` | Firefox/Chromium, root/project paths, isolated/unshared execution, OPFS, resume, Share, long words and cancellation |
 | `npm run test:fk` | small Fomin–Kirillov LHS cases, all four engines, native SBCL and Singular; degrees 2–4 |
 | `npm run test:upstream` | 90 adapted Singular/Plural, SymPy and GBNP field cases; independent oracles |
 | `npm run test:resolution:names` | long generator names, differentials |
@@ -155,7 +171,7 @@ and results are compared with a native SBCL build, Bergman 2 and Singular
 
 ## VERSION
 
-George **0.6 experimental** adds Native NC, configurable multicore execution,
+George **0.6** includes fomkyr 0.3.0, configurable multicore execution,
 disk checkpoints and full result downloads. Unsupported tasks and settings
 are disabled for this backend. Live allocated Wasm memory appears beside
 the computation status. Settings have expanded EN/RU help under “?”.

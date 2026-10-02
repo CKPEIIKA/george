@@ -1,0 +1,6 @@
+Native degree 1: 0 rules, 0 terms, 545668880 allocated bytes, 0 bytes on disk.
+Native degree 2: 100 rules, 225 terms, 545726224 allocated bytes, 8600 bytes on disk.
+Native degree 3: 176 rules, 446 terms, 545726224 allocated bytes, 16336 bytes on disk.
+Native degree 4: 265 rules, 770 terms, 545726224 allocated bytes, 26960 bytes on disk.
+Native degree 5: 360 rules, 1232 terms, 545726224 allocated bytes, 41088 bytes on disk.
+Native degree 6: 497 rules, 2294 terms, 545742608 allocated bytes, 70960 bytes on disk.

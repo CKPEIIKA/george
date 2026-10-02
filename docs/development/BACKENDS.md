@@ -1,4 +1,4 @@
-# Browser backends in George 0.6 experimental
+# Browser backends in George 0.6
 
 The interface offers these exact labels:
 
@@ -8,7 +8,7 @@ The interface offers these exact labels:
 | Lisp / ECL O3 + LTO | `optimized` | `web/engine/optimized/` | Same bytecode; O3 libraries and final link with LTO |
 | C / ECL O3 + LTO | `compiled` | `web/engine/compiled/` | ECL compiles existing Lisp functions to C, then Emscripten produces Wasm; O3 + LTO |
 | C / ECL O3 + LTO (memory64) | `memory64` | `web/engine/memory64/` | Same compiled functions, 64-bit pointers and GC words; O3 + LTO |
-| Native NC / C O3 + LTO (experimental) | `native` | `web/engine/native/` | Independent homogeneous NC kernel, shared wasm32/wasm64 workers and OPFS |
+| fomkyr / C O3 + LTO (experimental) | `fomkyr` | `web/engine/fomkyr/` | Independent homogeneous NC kernel, shared/unshared wasm32/wasm64, portable OPFS and exact Hilbert coefficients |
 
 `memory64` is the default, with a 16077 MiB allowance (15.7 GiB rounded to
 whole MiB). If memory64 is unsupported, a fresh form selects `compiled`
@@ -24,46 +24,64 @@ package from the root engine directory. Standalone variant directories also
 contain a copy so that Node validation tools can load them independently.
 Each engine manifest records its compiler settings and asset hashes.
 
-## Native NC — 2026-10-02
+## fomkyr 0.3.0 — 2026-10-02
 
-Native NC 0.1.0 is vendored under MIT. Its source archive SHA-256 is
-`a517030392eb2db53fbf919817ce78132a8d45a1afefa907d718decc117ac1c9`.
-`vendor/george-native-0.1.0/` retains the sources, original host, fixtures,
-tests and docs. Bundled historical result files were not imported into the
-source tree or treated as new evidence. The two shipped Wasm modules are
-unchanged; `web/engine/native/` adapts only the host/George bridge.
+Sources, fixtures, tests, original docs and MIT notices are retained under
+`vendor/fomkyr-0.3.0/`. The imported archive SHA-256 is
+`1f616fa6f448c0c3b6feafc9a52a959474c9b61e26ab43a35aa591c3033061f0`.
+All four shipped shared/unshared wasm32/wasm64 modules match the archive;
+`web/engine/fomkyr/` adapts the George dispatcher, progress, public timing and
+localized results. The C kernel is unchanged. `build.json` records all
+runtime asset hashes and the upstream version.
 
-`native` has a separate worker. It never loads ECL or `ecl.data`.
-Its descriptor uses `NATIVE_CAPABILITIES`: homogeneous noncommutative GB,
-ordinary degree-left-lex, up to 16 generators, a required bound 1–20,
-input integers through ±(2^62−1), Q or a supported prime field. Native's
-own pruning is automatic; the Bergman pruning setting is disabled.
-Other tasks, orders, weights, modes and the Lisp console are disabled.
-The basis is primitive and degree bounded; old tails are not globally
-interreduced. UI notices state this, and full OPFS files accompany previews.
+The public backend ID is `fomkyr`. Its dedicated worker does not load ECL.
+Old `native` form preferences and Share links migrate at form restoration.
+The legacy registry entry and old assets remain for reproducible historical
+measurements; the selector exposes only fomkyr. The main form controls field,
+order, generator reversal, unit weights, workers, pruning, degree, memory and
+timeout. Unsupported tasks, orders, nonhomogeneous modes, output formats,
+legacy behavior and the Lisp console are disabled or rejected.
 
-The memory budget accepts 128–14304 MiB (no uncapped value); a fresh API
-job defaults to 512 MiB. Native chooses memory64 above the wasm32 range.
-Worker count is a saved/shared 0–32 setting, with 0 choosing up to four.
-The scratch pool is split among workers, not multiplied. The main thread
-signals cancellation atomically and waits for disk handles to close before
-restarting. Form run generations prevent a stopped result from overwriting
-the status of a replacement run.
+The supported class is homogeneous two-sided NC Gröbner bases, degree-left
+lex, up to 16 generators, Q or a supported prime field. Input integers fit
+±(2^62−1); internal arithmetic is arbitrary precision. There is no fixed
+word-length-20 restriction: long words use ABI-3 variable-length records.
+Degree indices still have a 32-bit representational limit. Blank maximal
+degree requests completion; it does not promise termination or infinite
+memory. The kernel allowance is 128–14304 MiB, with a 512 MiB fresh API default.
 
-`web/isolation-worker.js` adds COOP/COEP to same-origin responses on static
-hosts, including GitHub Pages. The entry module installs it before starting
-the app and reloads once on a first visit. It revalidates assets without an
-offline cache. Browsers without service workers can still use Bergman; Native
-requires isolation and OPFS. `npm run serve:native` also supplies the headers
-directly. `bash tools/build-native-backend.sh` rebuilds from the vendored
-sources and refreshes the native manifest while retaining the adapted host.
+Automatic execution probes actual capabilities. Shared multicore uses direct
+concurrent OPFS handles when supported, or a portable exclusive I/O-owner
+worker otherwise. Non-isolated pages load a genuinely unshared module with
+one compute lane. Denied OPFS can use bounded RAM; lock contention never
+silently switches to a separate RAM computation. Memory64 initialization can
+fall back to wasm32 with an explicit warning and effective-budget report.
+Cancellation waits for file handles to close, with a termination fallback
+for an unshared synchronous reduction. Completed checkpoints are verified
+before reuse across bitness, worker count and storage modes.
 
-`BERGMAN_BACKENDS` keeps full-task/byte-equality ECL validators separate.
-`npm run test:native` runs appropriate imported tests in a build staging
-directory, then compares 16 FK LHS cases, two anchors and the
-155-bit-coefficient fixture against C/ECL and Singular. Native output is
-checked by mutual reductions, critical pairs and normal-word dimensions;
-it is not required to have identical polynomial tails.
+`web/src/fomkyr-options.js` validates persisted tuning and maps it to engine
+options. Settings and Share links contain execution, addressing, spill/resume,
+Hilbert output, heap reduction, cache, hash, batches, scratch/Hilbert workspace
+and I/O mode. Existing version-1 Share fields and defaults retain their order;
+the options JSON is appended as field 33. Unknown keys and invalid ranges
+are rejected before worker execution.
+
+Exact Hilbert output uses decimal strings and a bounded normal-word avoidance
+automaton. Higher prefixes require a proved complete basis. Optional counting
+failure preserves the completed GB. This does not implement Bergman's
+Hilbert/Poincaré–Betti task, Anick resolutions or physics projections.
+Degree progress, allocated Wasm memory and elapsed seconds use George's
+existing compact status icons. Public metadata exports `elapsedSeconds`.
+
+`npm run test:fomkyr` runs nine imported suites in a staging copy, then 48
+seeded FK LHS cases plus four anchors, with four actual WASM variants per
+case, independent exact critical-pair/ideal checks, C/ECL and Singular.
+`npm run test:fomkyr:browser` exercises the production UI in Firefox and
+Chromium, with isolated and plain hosts at root and project paths.
+`npm run test:static` checks existing automatic service-worker isolation on
+a Pages-style host. `bash tools/build-fomkyr-backend.sh` rebuilds all four
+modules and updates their checksum table while retaining George's adapters.
 
 ## ECL compilation
 

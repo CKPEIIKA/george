@@ -1,6 +1,76 @@
 # Validation and verification
 
-## George 0.6 experimental release checks — 2026-10-02
+## fomkyr 0.3.0 integration — 2026-10-02
+
+All four prebuilt shared/unshared wasm32/wasm64 modules match the imported
+source archive. The C kernel is unchanged; George adapts the worker protocol,
+progress, settings, timing units and localized results.
+
+The release version is **0.6.0**; the experimental label appears only in
+fomkyr's engine chooser entry. All **112 unit tests** pass:
+[unit log](validation/fomkyr-unit-tests.log). They include release labels,
+all-option sharing, exact asset hashes, parser/capability boundaries,
+unfinished draft restoration and unshared cancellation.
+
+- **Nine imported suites pass** in a staging copy: native, extra, actual Wasm,
+  release, compatibility, integration, static-host unit tests, and both
+  installer fixture suites. The native library is compiled locally from the
+  imported source. Tests cover actual four-variant execution, independent
+  Fraction checks, pruning negation, long-word compositions at degrees
+  32/33/34/65/130, large exact Hilbert integers, unbounded completion proofs,
+  deadline/cancellation, checkpoint corruption and cross-mode resume.
+  OPFS in these Node suites is emulated, and is not browser evidence.
+- **48 seeded LHS cases plus four anchors / 208 fomkyr runs** all pass against
+  C/ECL and **52 independent bounded Singular checks**. Full FK ranks 3–6
+  cover Q and characteristics 2/3/5/7/101, permutations, sign changes,
+  reversal, pruning, heap/cache and batch options. FK degrees are 2–5,
+  with rank 6 capped at 4. The submitted 15-generator presentation is tested
+  at degrees 3 and 4, and the coefficient anchor produces an actual
+  155-bit internal coefficient. All four shared/unshared widths pass mutual
+  bounded ideal reductions, equal leading-word sets, exact Hilbert prefixes
+  and **80,600 critical ambiguities**. See the
+  [algebra report](validation/fomkyr-03/report.json).
+- The production UI passes **eight real-browser scenarios**, Firefox 155
+  and Chromium 153 at root/project URLs with and without isolation.
+  Both widths, automatic unshared fallback, actual multicore OPFS, mode
+  changes with checkpoint resume, legacy-link migration, all-option sharing,
+  exact Hilbert display, long input words, blank-degree completion,
+  cancellation/restart, progress/RAM/seconds and capability restrictions are
+  covered. The final runs also check release branding, restoration of
+  unfinished numeric drafts, clearing stale series when Hilbert output is
+  disabled, and 390 px help controls in EN/RU. Firefox retains four lanes
+  with `broker-exclusive`; Chromium
+  uses direct file access or an explicitly selected broker. No external
+  requests or page errors occur. Reports:
+  [Firefox](validation/fomkyr-browser-firefox-03/report.json),
+  [Chromium](validation/fomkyr-browser-chromium-03/report.json).
+- Separate **Pages-style tests** serve without isolation response headers,
+  use George's existing service worker and exercise actual fomkyr OPFS in
+  wasm32 and memory64 at both root/project mounts. Two lanes remain available
+  in Firefox. Reload preserves settings; only verified immutable kernel
+  binaries enter the Cache API. Blocking service workers leaves fomkyr's
+  unshared fallback available. Reports:
+  [Firefox static host](validation/fomkyr-static-firefox-03/report.json),
+  [Chromium static host](validation/fomkyr-static-chromium-03/report.json).
+
+An initial validation attempt could not invoke the compiler from the command
+sandbox; compilation and subprocess checks were rerun in the approved local
+environment. The upstream installer fixtures require a `python` executable;
+a staging-only alias to python3 supplies it without source changes. Browser
+pilot failures coincided with temporary quota exhaustion; inactive George
+profiles were moved into the workspace without deletion, and the complete
+browser matrices above were rerun successfully. Pilot failures are not
+reported as passes. No remote deployment is claimed.
+
+Reproduce with `npm run test:fomkyr`, `npm run test:fomkyr:browser`,
+`npm run test:static`, and the Firefox static-host variant
+`node tools/validate-static-isolation.mjs OUTPUT --firefox`.
+Per-computation validation deadlines remain at most 120 seconds.
+
+## Earlier George 0.6 checks before fomkyr 0.3 — 2026-10-02
+
+This section records the earlier Native NC integration. Current release
+branding and backend checks are in the fomkyr section above.
 
 All **97 unit tests** pass: [unit log](validation/unit-tests-06.log).
 The static-host check uses no server isolation headers at either `/` or
@@ -19,7 +89,7 @@ capability restrictions, cancellation/resume and timeout/restart.
 
 ## Native NC integration — 2026-10-02
 
-George **0.6.0 is experimental**, with an explicitly selected `native` backend.
+The initial George **0.6.0** integration used an explicitly selected `native` backend.
 The Native NC 0.1.0 archive's manifest was checked before importing its
 sources, tests and unchanged wasm32/wasm64 modules. MIT notices are retained.
 The stale overlay installer was not applied; George uses a separate worker

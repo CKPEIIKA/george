@@ -89,7 +89,8 @@ async function checkUI(){
    language('en');eq($('.brand-sub').textContent,'an interface to bergman and more…','English interface wording');eq($('.brand-version').textContent,'0.6','application version');
    eq($('#backend').value,'memory64','default backend');eq($('#memoryMiB').value,'16077','default allowance is 15.7 GiB');
    eq($('#timeoutMinutes').value,'0','default time limit is unlimited');
-   eq(all('#backend option').map(o=>o.textContent),['C / ECL O3 + LTO (memory64)','C / ECL O3 + LTO','Lisp / ECL O3 + LTO','Lisp / ECL O2','Native NC / C O3 + LTO (experimental)'],'explicit backend labels');
+   eq(document.title,'George 0.6','release title');ok(!$('.release-tag'),'release has no experimental badge');
+   eq(all('#backend option').map(o=>o.textContent),['C / ECL O3 + LTO (memory64)','C / ECL O3 + LTO','Lisp / ECL O3 + LTO','Lisp / ECL O2','fomkyr / C O3 + LTO (experimental)'],'explicit backend labels');
    ok(!$('#backend option[value="memory64"]').disabled,'memory64 available in this browser');
    ok(!$('#memoryMiB option[value="0"]').disabled,'uncapped heap available in memory64');
    const {applyBackendCapabilities,QUADRATIC_BASIS_CAPABILITIES}=await import(new URL('src/backend-capabilities.js',location.href));

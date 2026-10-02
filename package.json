@@ -1,7 +1,7 @@
 {
   "name": "george",
   "version": "0.6.0",
-  "description": "Gröbner bases, Hilbert series and Anick resolutions in the browser, an interface to bergman and more",
+  "description": "Gr\u00f6bner bases, Hilbert series and Anick resolutions in the browser, an interface to bergman and more",
   "private": true,
   "type": "module",
   "scripts": {
@@ -34,9 +34,13 @@
     "sbcl:test": "ports/sbcl/runtests.sh $(ls -td build/sbcl-* | head -1) run-$(date +%Y%m%d-%H%M%S)",
     "sbcl:test:legacy": "ports/sbcl/runtests.sh $(ls -td build/sbcl-* | head -1) legacy-$(date +%Y%m%d-%H%M%S) legacy",
     "serve:native": "node tools/serve.mjs web 8000 --isolate",
-    "test:native": "node tools/validate-native.mjs",
-    "test:native:browser": "node tools/validate-native-browser.mjs",
-    "test:static": "node tools/validate-static-isolation.mjs"
+    "test:native": "node tools/validate-fomkyr.mjs",
+    "test:native:browser": "node tools/validate-fomkyr-browser.mjs",
+    "test:static": "node tools/validate-static-isolation.mjs",
+    "serve:fomkyr": "node tools/serve.mjs web 8000 --isolate",
+    "test:fomkyr": "node tools/validate-fomkyr.mjs",
+    "test:fomkyr:browser": "node tools/validate-fomkyr-browser.mjs",
+    "wasm:build:fomkyr": "bash tools/build-fomkyr-backend.sh"
   },
   "engines": {
     "node": ">=22.8.0"

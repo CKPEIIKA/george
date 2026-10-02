@@ -35,6 +35,19 @@ test('a native worker which already closed its files terminates immediately',asy
  w.reply(request,{});await p;w.onmessage({data:{closed:true}});e.cancel();
  assert.equal(w.terminated,true);assert.equal(e.stopping,undefined);
 });
+test('unshared fomkyr cancellation works without SharedArrayBuffer and waits for file closure',async()=>{
+ const original=globalThis.SharedArrayBuffer;
+ globalThis.SharedArrayBuffer=undefined;
+ try {
+  const e=new EclEngine({backend:'fomkyr'}),p=e.run({backend:'fomkyr'}),rejected=assert.rejects(p,{name:'AbortError'});
+  await tick();const worker=e.worker,request=worker.messages.at(-1);
+  worker.onmessage({data:{id:request.id,event:{type:'control',shared:false,runKey:'test'}}});
+  e.cancel();await rejected;
+  assert.equal(worker.messages.at(-1).command,'cancel');assert.equal(worker.messages.at(-1).backend,'fomkyr');
+  assert.equal(worker.terminated,undefined);
+  worker.onmessage({data:{closed:true}});await tick();assert.equal(worker.terminated,true);
+ } finally {globalThis.SharedArrayBuffer=original;}
+});
 test('a cancelled initialization cannot mark a replacement command idle',async()=>{
  const e=new EclEngine(),p=e.eval('old'),rejected=assert.rejects(p,{name:'AbortError'});e.cancel();const next=e.eval('new');await rejected;await tick();assert.equal(e.busy,true);e.worker.reply(e.worker.messages.at(-1),{});await next;e.cancel();
 });

@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "fixture": "current-source-shaped executable fixtures, not a full checkout",
+  "formToJobToParser": true,
+  "originalWorkersAndPruning": true,
+  "degreeBeyond10000AndUnbounded": true,
+  "primeFieldAndReversedVariables": true,
+  "strictUnsupportedSettings": true,
+  "noSharedArrayBufferBridge": true,
+  "fourBinaries": true,
+  "idempotentAndRegistryUpgrade": true,
+  "existingServiceWorkerPreserved": true
+}

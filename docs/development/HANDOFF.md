@@ -1,6 +1,42 @@
 # George development handoff
 
-## 0.6 experimental — 2026-10-02
+## Local fomkyr 0.3.0 integration — 2026-10-02
+
+The paused backend upgrade is now completed using `vendor/fomkyr-0.3.0/`.
+All four shared/unshared wasm32/wasm64 modules are imported unchanged; only
+George host adapters change. The UI calls the engine **fomkyr** and migrates
+old `native` saved forms/Share links. The old registry entry and assets remain
+available for historical reproduction but are absent from the selector.
+Version is 0.6.0; only fomkyr's chooser label says experimental. These changes
+are included in the local release commit; remote publication is a user action.
+
+`web/src/fomkyr-options.js` validates persistent, shareable runtime options,
+with localized help controls. The original form controls field/order/reversal,
+unit weights, workers, pruning, GB/Hilbert degree, memory and time limit.
+Blank degree requests completion; ABI-3 long words remove the old fixed
+degree-20 limit. Hilbert coefficients render as exact decimal strings.
+The memory64/15.7 GiB Bergman default is preserved.
+
+Nine imported suites pass. All 48 FK LHS cases and four anchors pass C/ECL
+and Singular comparisons across four actual fomkyr variants: **208 runs,
+52 Singular cases, 80,600 critical ambiguities**. Firefox/Chromium production
+UI checks pass at root/project mounts, isolated/unshared modes, and separate
+Pages-style hosts using the existing isolation worker. Firefox retains four
+compute lanes through the exclusive I/O-owner broker. Reports and commands
+are in [VALIDATION.md](VALIDATION.md#fomkyr-030-integration--2026-10-02).
+All **112 unit tests** pass: [log](validation/fomkyr-unit-tests.log).
+
+`npm run test:fomkyr`, `npm run test:fomkyr:browser` and
+`bash tools/build-fomkyr-backend.sh` are the current commands. Existing
+`test:native` aliases point to the new validator. New runtime assets enter
+the publication verifier, and source packaging includes the MIT notice.
+Release preparation refreshes both source archives and the component notices,
+then regenerates publication refs and `build/publication/publish.sh` with
+`node tools/prepare-publication.mjs --update --fast-forward`. Deployment still
+originates on the permitted `gh-pages` branch. No remote push is performed
+during preparation.
+
+## Earlier 0.6 integration before fomkyr 0.3 — 2026-10-02
 
 George 0.6 integrates Native NC 0.1.0 as an experimental independent C
 backend. Sources, tests, fixtures and MIT notices are in
@@ -41,12 +77,34 @@ project-directory deployment. Native requires isolation, SharedArrayBuffer
 and OPFS; Bergman remains available if these are unavailable.
 `npm run serve:native` supplies isolation headers directly for local work.
 
-Live memory beside Computing reports allocated Wasm linear memory,
-not browser RSS or live Lisp heap. EN/RU setting explanations use accessible
+Live status uses compact memory, degree and time icons with hover/focus/tap
+help in EN/RU. Memory reports allocated Wasm linear memory, including the
+reserved scratch pool, rather than browser RSS or live object memory.
+Elapsed time updates every 250 ms in seconds and includes engine startup.
+Native host events distinguish degree start, progress and completion, including
+restored checkpoints. Bergman Anick degree announcements are forwarded when
+printed; other computations show a dash until a degree is reported.
+Timers stop on completion, errors, time limits and cancellation.
+Public Native result metadata uses `elapsedSeconds`; the UI displays seconds.
+EN/RU setting explanations use accessible
 “?” controls. Worker count is the 32nd version-1 Share field; BigInt masks
 preserve old token meanings.
 
 ### Evidence and commands
+
+The subsequent degree-2–8 resource comparison contains 56 serial cold runs:
+all browser engines, Native in Firefox, native Bergman/SBCL and native
+Singular/Letterplace. Remaining jobs have a 120-second cold wall cap;
+the figure censors the two earlier long degree-6 pilots using their sampled
+traces. CPU is measured in core seconds, and physical RAM is peak process-tree
+PSS above the pre-engine baseline. Native Chromium uses four workers;
+Firefox's storage fallback uses one. Every completed degree-8 run returns
+990 elements, and all 52 completed runs have matching leading-word sets.
+This is a consistency check, not a new full critical-pair certificate.
+Reproduction commands, caveats and artifacts are in
+[PERFORMANCE.md](PERFORMANCE.md#cpu-and-physical-ram-through-degree-8--2026-10-02).
+The subsequent fomkyr 0.3.0 import and expanded tests are completed in the
+section above; this section records the earlier 0.6 integration.
 
 Pre-version-bump integration evidence includes 94 unit tests, imported
 native/extra/Wasm/integration suites, 19 local cases across two Native widths,

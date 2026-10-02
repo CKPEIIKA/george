@@ -12,13 +12,15 @@ import { renderMath } from './math.js';
 import { structuralResolutionDisplay } from './resolution-data.js';
 import { initConsole } from './console.js';
 import { createShareLink, readShareLink, SHARE_PREFIX } from './share.js';
-import { BACKENDS, DEFAULT_BACKEND, validMemoryMiB, memory64Supported, nativeBackendSupported, defaultMemoryMiB, preferredBackend } from './backends.js';
+import { BACKENDS, DEFAULT_BACKEND, validMemoryMiB, memory64Supported, defaultMemoryMiB, preferredBackend } from './backends.js';
 import { applyBackendCapabilities, backendCapabilities } from './backend-capabilities.js';
 import { timeoutMilliseconds } from './time-limit.js';
 import { formatMemorySize } from './memory-monitor.js';
-import { attachNativeResultLinks } from '../engine/native/result-links.js';
+import { attachFomkyrResultLinks, renderFomkyrSeries } from '../engine/fomkyr/result-links.js';
+import {installFomkyrControls, readFomkyrOptions, writeFomkyrOptions} from './fomkyr-options.js';
 
 const $ = (id) => document.getElementById(id);
+installFomkyrControls(document, t);
 const engine = new EclEngine({getBackend: () => $('backend').value,
   getTimeoutMs: () => timeoutMilliseconds($('timeoutMinutes').value), onMemory: updateMemoryUsage, onReady: info => {
   engineInfo = info;
@@ -40,6 +42,10 @@ let statusState = { key: 'status.idle', params: {}, busy: false };
 let guideGeneration = 0;
 let shareGeneration = 0;
 let allocatedMemoryBytes;
+let runStartedAt = null;
+let runTimer;
+let runDegree = null;
+let runDegreeBound = null;
 
 const els = {
   form: $('presentation'), preset: $('preset'), presetN: $('presetN'), presetNField: $('presetNField'),
@@ -55,6 +61,9 @@ const els = {
   moduleFields: $('moduleFields'), nmodgen: $('nmodgen'), nmodgenField: $('nmodgenField'),
   twoModFields: $('twoModFields'), nlmodgen: $('nlmodgen'), nrmodgen: $('nrmodgen'),
   taskList: $('taskList'), go: $('go'), stop: $('stop'), runStatus: $('runStatus'), memoryUsage: $('memoryUsage'),
+  runMetrics: $('runMetrics'), memoryMetric: $('memoryMetric'), memoryValue: $('memoryValue'),
+  degreeMetric: $('degreeMetric'), degreeValue: $('degreeValue'), degreeUsageHint: $('degreeUsageHint'),
+  timeMetric: $('timeMetric'), timeValue: $('timeValue'),
   share: $('share'), sharePanel: $('sharePanel'), shareLink: $('shareLink'), shareStatus: $('shareStatus'),
   tabs: $('tabs'), view: $('view-compute'), resultsDot: $('resultsDot'),
 };
@@ -87,6 +96,7 @@ function readForm() {
     backend: els.backend.value,
     timeoutMinutes: Number(els.timeoutMinutes.value),
     nativeWorkers: Number($('nativeWorkers').value),
+    fomkyrOptions: readFomkyrOptions(document),
     monomialPruning: els.monomialPruning.checked,
     weights: els.weights.value,
     nonhomog: els.nonhomog.value,
@@ -104,7 +114,9 @@ function readForm() {
   };
 }
 
-function writeForm(s) {
+function writeForm(s, {restoreDraft = false} = {}) {
+  if (s.backend === 'native') s = {...s, backend: 'fomkyr'};
+  writeFomkyrOptions(s.fomkyrOptions || {}, document, {strict: !restoreDraft});
   setRadio('ring', s.ring || 'noncomm');
   fillOrders();
   els.vars.value = s.varsText ?? (s.vars || []).join(', ');
@@ -227,8 +239,6 @@ function validate() {
   const f = readForm();
   const problems = [];
   const settingsErrors = validateSettings(f);
-  if (f.backend === 'native' && !nativeBackendSupported()) settingsErrors.push('Native NC requires an isolated browser context with local file storage.');
-  if (f.backend === 'native' && f.memoryMiB > 4095 && !memory64Supported()) settingsErrors.push('This browser does not support the memory64 engine. Select a 32-bit engine.');
   if (f.backend === 'memory64' && !memory64Supported()) settingsErrors.push('This browser does not support the memory64 engine. Select a 32-bit engine.');
   problems.push(...settingsErrors);
   const vv = parseVars(els.vars.value);
@@ -247,7 +257,7 @@ function validate() {
   const rels = splitRelations(f.relsText);
   for (const r of rels) {
     try {
-      const terms = parseRelation(r, vv.names);
+      const terms = parseRelation(r, vv.names, f.backend === 'fomkyr' ? 0xfffffffe : 10000);
       const hom = isHomogeneous(terms, weights);
       if (!hom) anyNonhomog = true;
       html += `<li><span class="rel">${typesetTerms(terms)}${hom ? '' : `<span class="nh">${t('nonhomog')}</span>`}</span></li>`;
@@ -288,14 +298,16 @@ function refresh() {
     option.hidden = option.disabled = !validMemoryMiB(Number(option.value), els.backend.value);
   }
   if (!validMemoryMiB(Number(els.memoryMiB.value), els.backend.value)) els.memoryMiB.value = String(Math.min(Number(els.memoryMiB.value) || BACKENDS[els.backend.value].maximumHeapMiB, BACKENDS[els.backend.value].maximumHeapMiB));
-  $('backendHint').textContent = t(els.backend.value === 'native' ? 'backend.nativeHint' : 'backend.hint');
-  $('nativeWorkersField').hidden = els.backend.value !== 'native';
-  $('memoryHint').textContent = t(els.backend.value === 'native' ? 'native.memoryHint' : 'memory.hint');
+  $('backendHint').textContent = t(els.backend.value === 'fomkyr' ? 'backend.nativeHint' : 'backend.hint');
+  $('nativeWorkersField').hidden = els.backend.value !== 'fomkyr';
+  $('fomkyrOptions').hidden = els.backend.value !== 'fomkyr';
+  for (const input of $('fomkyrOptions').querySelectorAll('input, select')) input.disabled = els.backend.value !== 'fomkyr';
+  $('memoryHint').textContent = t(els.backend.value === 'fomkyr' ? 'native.memoryHint' : 'memory.hint');
   const f = readForm();
   const task = TASK_BY_ID.get(f.task);
   els.matrixField.hidden = f.order !== 'matrix';
   els.rabbitField.hidden = f.strategy !== 'rabbit';
-  els.maxserdegField.hidden = f.task !== 'hilbert';
+  els.maxserdegField.hidden = f.task !== 'hilbert' && f.backend !== 'fomkyr';
   els.moduleFields.hidden = !task.module;
   els.nmodgenField.hidden = task.module === 'two';
   els.twoModFields.hidden = task.module !== 'two';
@@ -315,14 +327,63 @@ function setStatus(key, params = {}, busy = false) {
   const seconds = key === 'status.done' ? new Intl.NumberFormat(getLanguage(), { maximumFractionDigits: 2, useGrouping: false }).format(params.ms / 1000) : undefined;
   els.runStatus.textContent = t(key, { ...params, seconds, msg: translateMessage(params.msg || '') });
   els.runStatus.classList.toggle('busy', busy);
+  els.runMetrics.hidden = !busy;
+  if (!busy) {
+    clearInterval(runTimer);
+    runTimer = undefined;
+    for (const help of els.runMetrics.querySelectorAll('.help')) {
+      help.classList.remove('open');
+      help.querySelector('.help-btn').setAttribute('aria-expanded', 'false');
+    }
+  }
   updateMemoryUsage(allocatedMemoryBytes);
+  updateDegreeUsage();
+  updateElapsedTime();
 }
 
 function updateMemoryUsage(bytes) {
   allocatedMemoryBytes = bytes;
   const size = formatMemorySize(bytes, getLanguage());
   els.memoryUsage.hidden = !statusState.busy || !size;
-  if (size) els.memoryUsage.textContent = t('memory.usage', {...size, unit: t(size.unit === 'GiB' ? 'memory.gib' : 'memory.mib')});
+  if (size) {
+    const unit = t(size.unit === 'GiB' ? 'memory.gib' : 'memory.mib');
+    els.memoryValue.textContent = `${size.amount} ${unit}`;
+    els.memoryMetric.setAttribute('aria-label', t('memory.usage', { ...size, unit }));
+  }
+}
+
+function updateElapsedTime() {
+  if (!statusState.busy || runStartedAt === null) return;
+  const seconds = new Intl.NumberFormat(getLanguage(), { maximumFractionDigits: 1, useGrouping: false })
+    .format(Math.max(0, performance.now() - runStartedAt) / 1000);
+  const value = t('monitor.seconds', { seconds });
+  els.timeValue.textContent = value;
+  els.timeMetric.setAttribute('aria-label', `${t('monitor.time')}: ${value}`);
+}
+
+function updateDegreeUsage() {
+  const degree = runDegree?.degree ?? '—';
+  const limit = runDegreeBound ? t('monitor.degreeLimit', { bound: runDegreeBound }) : '';
+  let progress = t(runDegree ? (runDegree.completed ? 'monitor.degreeCompleted' : 'monitor.degreeCurrent')
+    : (lastJob?.backend === 'fomkyr' ? 'monitor.degreeWaiting' : 'monitor.degreeUnavailable'), { degree, limit });
+  if (runDegree?.phase === 'anick') progress = t('monitor.degreeAnick', { progress });
+  els.degreeValue.textContent = `${degree}${runDegreeBound ? ` / ${runDegreeBound}` : ''}${runDegree?.completed ? ' ✓' : ''}`;
+  els.degreeUsageHint.textContent = progress;
+  els.degreeMetric.setAttribute('aria-label', progress);
+}
+
+function updateDegreeProgress(event) {
+  let degree, completed = false;
+  if (event.type === 'degree-start') degree = Number(event.degree);
+  else if (event.type === 'degree') { degree = Number(event.completedThroughDegree); completed = true; }
+  else if (event.type === 'progress') {
+    const current = Number(event.currentDegree), through = Number(event.completedThroughDegree);
+    if (current > through) degree = current;
+    else { degree = through; completed = true; }
+  } else return;
+  if (!Number.isSafeInteger(degree) || degree < 1) return;
+  runDegree = { degree, completed, phase: event.phase ?? 'basis' };
+  updateDegreeUsage();
 }
 
 function showPane(which) {
@@ -355,8 +416,14 @@ async function compute(ev) {
   lastJob = job;
 
   const generation = ++runGeneration;
+  const t0 = performance.now();
   running = true;
   allocatedMemoryBytes = undefined;
+  runStartedAt = t0;
+  runDegree = null;
+  runDegreeBound = Number(job.degreeBound) > 0 ? Number(job.degreeBound) : null;
+  clearInterval(runTimer);
+  runTimer = setInterval(updateElapsedTime, 250);
   els.go.disabled = true;
   els.stop.hidden = false;
   setStatus('status.busy', {}, true);
@@ -364,10 +431,13 @@ async function compute(ev) {
   const task = TASK_BY_ID.get(job.task);
   prepareTabs(task);
   let stdout = '';
-  const t0 = performance.now();
   renderLog(job, stdout);
   try {
-    const res = await engine.run(job, (e) => { if (generation === runGeneration && e.type === 'stdout') { stdout += e.text; renderLog(job, stdout); } });
+    const res = await engine.run(job, (e) => {
+      if (generation !== runGeneration) return;
+      if (e.type === 'stdout') { stdout += e.text; renderLog(job, stdout); }
+      else updateDegreeProgress(e);
+    });
     if (generation !== runGeneration) return;
     const ms = Math.round(performance.now() - t0);
     renderResults(job, res);
@@ -377,7 +447,7 @@ async function compute(ev) {
     if (e.partialResult) renderResults(job, e.partialResult);
     if (e.code === 'memory-limit') setStatus(job.memoryMiB === 0 ? 'status.memoryUncapped' : 'status.memory', {mib: job.memoryMiB});
     else if (e.code === 'timeout') setStatus('status.timeout');
-    else setStatus(e.name === 'AbortError' ? 'status.stopped' : 'status.error', { msg: e.message });
+    else setStatus(e.name === 'AbortError' ? 'status.stopped' : 'status.error', { engine: job.backend === 'fomkyr' ? 'fomkyr' : 'bergman', msg: e.message });
   } finally {
     if (generation !== runGeneration) return;
     running = false;
@@ -390,7 +460,7 @@ async function compute(ev) {
 
 function prepareTabs(task) {
   const has = (k) => task.out.includes(k);
-  const show = { basis: true, series: has('hs') || has('pb'), betti: has('anick'), resolution: has('anick'), files: true, log: true };
+  const show = { basis: true, series: has('hs') || has('pb') || els.backend.value === 'fomkyr', betti: has('anick'), resolution: has('anick'), files: true, log: true };
   for (const b of els.tabs.querySelectorAll('button')) b.hidden = !show[b.dataset.tab];
   selectTab(has('anick') ? 'betti' : 'basis');
 }
@@ -417,9 +487,10 @@ function renderResults(job, res) {
     let html = `<p class="summary">${(degs.length === 1 ? tn('basis.summary1', n, { a: degs[0] }) : t(degs.length > 1 ? 'basis.summary' : 'basis.summaryFlat', { n, a: degs[0], b: degs.at(-1) }))}${badge(res)}</p>`;
     if (res.interrupted) html += `<p class="notice">${t('basis.interrupted')}</p>`;
     else if (!done) html += `<p class="notice">${t('basis.partial')}</p>`;
+    else if (res.fomkyr?.unrestrictedBasisComplete) html += `<p class="notice">${t('fomkyr.completeBasis')}</p>`;
     else if (job.degreeBound) html += `<p class="notice">${t('basis.bounded', { d: job.degreeBound })}</p>`;
-    if (res.native?.reduced === false) html += `<p class="notice">${t('native.unreduced')}</p>`;
-    if (res.native?.previewTruncated) html += `<p class="notice">${t('native.preview')}</p>`;
+    if (res.fomkyr?.reduced === false) html += `<p class="notice">${t('native.unreduced')}</p>`;
+    if (res.fomkyr?.previewTruncated) html += `<p class="notice">${t('native.preview')}</p>`;
     for (const g of groups) {
       html += `<section class="degree"><h3><span class="d">${t('basis.degree', { d: g.deg })}</span>${tn('basis.count', g.polys.length)}</h3><ol class="polys">`;
       for (const p of g.polys) html += `<li>${typeset(p, { lead: true })}</li>`;
@@ -428,7 +499,9 @@ function renderResults(job, res) {
     $('basisOut').innerHTML = html;
   }
 
-  if (job.outputs.hs || job.outputs.pb) $('seriesOut').innerHTML = renderSeries(files[job.outputs.hs], files[job.outputs.pb], res);
+  if (res.fomkyr?.hilbert) renderFomkyrSeries($('seriesOut'), res.fomkyr.hilbert, t);
+  else if (job.outputs.hs || job.outputs.pb) $('seriesOut').innerHTML = renderSeries(files[job.outputs.hs], files[job.outputs.pb], res);
+  else $('seriesOut').innerHTML = notComputed(t('tab.series'));
   if (job.outputs.anick) {
     const txt = files[job.outputs.anick];
     if (txt === undefined) {
@@ -444,7 +517,7 @@ function renderResults(job, res) {
     }
   }
   renderFiles(job, files);
-  attachNativeResultLinks($('filesOut'), res.native, t);
+  attachFomkyrResultLinks($('filesOut'), res.fomkyr, t);
 }
 
 // Bergman prints series literally (+1*t^0+1*t^1); show them the way one writes them.
@@ -554,11 +627,11 @@ function renderFiles(job, files) {
 
 function renderLog(job, stdout) {
   fileContents.set('input.bg', job.files['input.bg']);
-  if (job.backend === 'native') fileContents.delete('session.lsp');
+  if (job.backend === 'fomkyr') fileContents.delete('session.lsp');
   else fileContents.set('session.lsp', job.script);
   fileContents.set('terminal.txt', stdout);
-  $('logHint').textContent = t(job.backend === 'native' ? 'native.logHint' : 'log.hint');
-  $('logOut').innerHTML = codeBlock('input.bg', job.files['input.bg']) + (job.backend === 'native' ? '' : codeBlock('session.lsp', job.script)) +
+  $('logHint').textContent = t(job.backend === 'fomkyr' ? 'native.logHint' : 'log.hint');
+  $('logOut').innerHTML = codeBlock('input.bg', job.files['input.bg']) + (job.backend === 'fomkyr' ? '' : codeBlock('session.lsp', job.script)) +
     (stdout ? codeBlock('terminal.txt', stdout, { download: false }) : '');
 }
 
@@ -686,8 +759,9 @@ function updateGuide() {
 }
 
 function updateEngineNote() {
-  $('engineNote').textContent = engineInfo ? t('engine.ready', { version: engineInfo.version })
-    : engineError ? t('engine.error', { msg: engineError }) : t('engine.loading');
+  const name=engineInfo?.backend==='fomkyr' ? 'fomkyr' : 'bergman';
+  $('engineNote').textContent = engineInfo ? t('engine.ready', { engine: name, version: engineInfo.version })
+    : engineError ? t('engine.error', { msg: engineError }) : t('engine.loading', {engine: $('backend').value==='fomkyr' ? 'fomkyr' : 'bergman'});
 }
 
 // "?" helpers show on hover or focus (CSS); a tap toggles them, Escape or a tap elsewhere closes them.
@@ -727,7 +801,7 @@ function updateLanguage() {
   fillTasks();
   fillOrders();
   els.backend.querySelector('option[value="memory64"]').disabled = !memory64Supported();
-  els.backend.querySelector('option[value="native"]').disabled = !nativeBackendSupported();
+
   refresh();
   document.documentElement.lang = getLanguage();
   setStatus(statusState.key, statusState.params, statusState.busy);
@@ -754,7 +828,7 @@ async function init() {
   els.backend.value = preferredBackend();
   els.memoryMiB.value = String(defaultMemoryMiB(els.backend.value));
   els.backend.querySelector('option[value="memory64"]').disabled = !memory64Supported();
-  els.backend.querySelector('option[value="native"]').disabled = !nativeBackendSupported();
+
   document.documentElement.lang = getLanguage();
   syncPreferenceControls();
   for (const button of document.querySelectorAll('[data-lang]')) {
@@ -786,7 +860,7 @@ async function init() {
   try {
     const saved = JSON.parse(localStorage.getItem(STORE_KEY) || 'null');
     if (!restored && saved && saved.form) {
-      writeForm(saved.form);
+      writeForm(saved.form, {restoreDraft: true});
       els.preset.value = saved.preset || '';
       els.presetN.value = saved.n || 3;
       els.presetNField.hidden = !els.preset.value.startsWith('family:');
@@ -815,6 +889,7 @@ async function init() {
     refresh();
   });
   els.form.addEventListener('change', (e) => {
+    if (e.target === els.backend && els.backend.value === 'fomkyr') els.maxserdeg.value = '';
     if (e.target === els.preset || e.target === els.presetN) { applyPreset(); return; }
     if (e.target.name === 'ring') fillOrders();
     refresh();

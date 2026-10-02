@@ -1,0 +1,61 @@
+{
+  "variables": [
+    "a",
+    "b",
+    "c"
+  ],
+  "relations": [
+    {
+      "degree": 2,
+      "terms": [
+        {
+          "word": [
+            2,
+            1
+          ],
+          "coefficient": "2251799813685251"
+        },
+        {
+          "word": [
+            1,
+            2
+          ],
+          "coefficient": "-1125899906842631"
+        },
+        {
+          "word": [
+            0,
+            0
+          ],
+          "coefficient": "-1"
+        }
+      ]
+    },
+    {
+      "degree": 2,
+      "terms": [
+        {
+          "word": [
+            1,
+            0
+          ],
+          "coefficient": "4503599627370505"
+        },
+        {
+          "word": [
+            0,
+            1
+          ],
+          "coefficient": "-562949953421323"
+        },
+        {
+          "word": [
+            2,
+            2
+          ],
+          "coefficient": "-1"
+        }
+      ]
+    }
+  ]
+}
