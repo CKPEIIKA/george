@@ -12,12 +12,15 @@ import { renderMath } from './math.js';
 import { structuralResolutionDisplay } from './resolution-data.js';
 import { initConsole } from './console.js';
 import { createShareLink, readShareLink, SHARE_PREFIX } from './share.js';
-import { BACKENDS, DEFAULT_BACKEND, validMemoryMiB, memory64Supported } from './backends.js';
+import { BACKENDS, DEFAULT_BACKEND, validMemoryMiB, memory64Supported, nativeBackendSupported, defaultMemoryMiB, preferredBackend } from './backends.js';
+import { applyBackendCapabilities, backendCapabilities } from './backend-capabilities.js';
 import { timeoutMilliseconds } from './time-limit.js';
+import { formatMemorySize } from './memory-monitor.js';
+import { attachNativeResultLinks } from '../engine/native/result-links.js';
 
 const $ = (id) => document.getElementById(id);
 const engine = new EclEngine({getBackend: () => $('backend').value,
-  getTimeoutMs: () => timeoutMilliseconds($('timeoutMinutes').value), onReady: info => {
+  getTimeoutMs: () => timeoutMilliseconds($('timeoutMinutes').value), onMemory: updateMemoryUsage, onReady: info => {
   engineInfo = info;
   engineError = null;
   updateEngineNote();
@@ -36,6 +39,7 @@ let lastRendered = null;
 let statusState = { key: 'status.idle', params: {}, busy: false };
 let guideGeneration = 0;
 let shareGeneration = 0;
+let allocatedMemoryBytes;
 
 const els = {
   form: $('presentation'), preset: $('preset'), presetN: $('presetN'), presetNField: $('presetNField'),
@@ -50,13 +54,14 @@ const els = {
   lowterms: $('lowterms'), outmode: $('outmode'), legacy: $('legacy'), maxserdeg: $('maxserdeg'), maxserdegField: $('maxserdegField'),
   moduleFields: $('moduleFields'), nmodgen: $('nmodgen'), nmodgenField: $('nmodgenField'),
   twoModFields: $('twoModFields'), nlmodgen: $('nlmodgen'), nrmodgen: $('nrmodgen'),
-  taskList: $('taskList'), go: $('go'), stop: $('stop'), runStatus: $('runStatus'),
+  taskList: $('taskList'), go: $('go'), stop: $('stop'), runStatus: $('runStatus'), memoryUsage: $('memoryUsage'),
   share: $('share'), sharePanel: $('sharePanel'), shareLink: $('shareLink'), shareStatus: $('shareStatus'),
   tabs: $('tabs'), view: $('view-compute'), resultsDot: $('resultsDot'),
 };
 
 let loadedExample = null; // { id, snapshot } while the form still equals a bundled example
 let running = false;
+let runGeneration = 0;
 
 // ------------------------------------------------------------ form state
 
@@ -81,6 +86,7 @@ function readForm() {
     memoryMiB: Number(els.memoryMiB.value),
     backend: els.backend.value,
     timeoutMinutes: Number(els.timeoutMinutes.value),
+    nativeWorkers: Number($('nativeWorkers').value),
     monomialPruning: els.monomialPruning.checked,
     weights: els.weights.value,
     nonhomog: els.nonhomog.value,
@@ -111,9 +117,10 @@ function writeForm(s) {
   if (s.matrix !== undefined) els.matrix.value = s.matrix;
   els.maxdeg.value = s.maxdeg || '';
   els.timeoutMinutes.value = String(s.timeoutMinutes ?? els.timeoutMinutes.value ?? 0);
+  $('nativeWorkers').value = String(s.nativeWorkers ?? $('nativeWorkers').value ?? 0);
   els.monomialPruning.checked = s.monomialPruning ?? els.monomialPruning.checked;
   if (s.backend !== undefined) els.backend.value = Object.hasOwn(BACKENDS, s.backend) ? s.backend : DEFAULT_BACKEND;
-  const memoryMiB = Number(s.memoryMiB ?? els.memoryMiB.value ?? 2048);
+  const memoryMiB = Number(s.memoryMiB ?? (els.memoryMiB.value || defaultMemoryMiB(els.backend.value)));
   if (validMemoryMiB(memoryMiB, els.backend.value) && ![...els.memoryMiB.options].some(o => Number(o.value) === memoryMiB)) {
     els.memoryMiB.add(new Option(`${memoryMiB} MiB`, String(memoryMiB)));
   }
@@ -220,6 +227,8 @@ function validate() {
   const f = readForm();
   const problems = [];
   const settingsErrors = validateSettings(f);
+  if (f.backend === 'native' && !nativeBackendSupported()) settingsErrors.push('Native NC requires an isolated browser context with local file storage.');
+  if (f.backend === 'native' && f.memoryMiB > 4095 && !memory64Supported()) settingsErrors.push('This browser does not support the memory64 engine. Select a 32-bit engine.');
   if (f.backend === 'memory64' && !memory64Supported()) settingsErrors.push('This browser does not support the memory64 engine. Select a 32-bit engine.');
   problems.push(...settingsErrors);
   const vv = parseVars(els.vars.value);
@@ -271,10 +280,17 @@ function refresh() {
   shareGeneration++;
   els.sharePanel.hidden = true;
   els.shareStatus.hidden = true;
+  applyBackendCapabilities(els.form, els.backend.value, {tasks: TASKS, translate: t, onRingChange: fillOrders});
+  const consoleAvailable = backendCapabilities(els.backend.value).console !== false;
+  document.querySelector('[data-view="console"]').setAttribute('aria-disabled', String(!consoleAvailable));
+  consoleView.setEnabled(consoleAvailable);
   for (const option of els.memoryMiB.options) {
     option.hidden = option.disabled = !validMemoryMiB(Number(option.value), els.backend.value);
   }
-  if (!validMemoryMiB(Number(els.memoryMiB.value), els.backend.value)) els.memoryMiB.value = '4095';
+  if (!validMemoryMiB(Number(els.memoryMiB.value), els.backend.value)) els.memoryMiB.value = String(Math.min(Number(els.memoryMiB.value) || BACKENDS[els.backend.value].maximumHeapMiB, BACKENDS[els.backend.value].maximumHeapMiB));
+  $('backendHint').textContent = t(els.backend.value === 'native' ? 'backend.nativeHint' : 'backend.hint');
+  $('nativeWorkersField').hidden = els.backend.value !== 'native';
+  $('memoryHint').textContent = t(els.backend.value === 'native' ? 'native.memoryHint' : 'memory.hint');
   const f = readForm();
   const task = TASK_BY_ID.get(f.task);
   els.matrixField.hidden = f.order !== 'matrix';
@@ -283,20 +299,7 @@ function refresh() {
   els.moduleFields.hidden = !task.module;
   els.nmodgenField.hidden = task.module === 'two';
   els.twoModFields.hidden = task.module !== 'two';
-  for (const lbl of els.taskList.querySelectorAll('.task')) {
-    const availableTask = TASK_BY_ID.get(lbl.dataset.task);
-    const input = lbl.querySelector('input');
-    const note = lbl.querySelector('.t-note');
-    const unavailable = availableTask.ring && availableTask.ring !== f.ring;
-    lbl.classList.toggle('unavailable', !!unavailable);
-    input.disabled = !!unavailable;
-    note.hidden = !unavailable;
-    note.textContent = unavailable ? t(availableTask.ring === 'comm' ? 'task.commOnly' : 'task.noncommOnly') : '';
-  }
-  if (task.ring && task.ring !== f.ring) {
-    document.querySelector('input[name="task"][value="gb"]').checked = true;
-  }
-  els.monomialPruning.disabled = !monomialPruningAvailable(readForm());
+  els.monomialPruning.disabled ||= !monomialPruningAvailable(readForm());
   if (els.monomialPruning.disabled) els.monomialPruning.checked = false;
   els.go.textContent = t('task.' + readForm().task + '.b');
   const tutorial = TUTORIALS.find(item => els.preset.value === 'tutorial:' + item.id);
@@ -312,6 +315,14 @@ function setStatus(key, params = {}, busy = false) {
   const seconds = key === 'status.done' ? new Intl.NumberFormat(getLanguage(), { maximumFractionDigits: 2, useGrouping: false }).format(params.ms / 1000) : undefined;
   els.runStatus.textContent = t(key, { ...params, seconds, msg: translateMessage(params.msg || '') });
   els.runStatus.classList.toggle('busy', busy);
+  updateMemoryUsage(allocatedMemoryBytes);
+}
+
+function updateMemoryUsage(bytes) {
+  allocatedMemoryBytes = bytes;
+  const size = formatMemorySize(bytes, getLanguage());
+  els.memoryUsage.hidden = !statusState.busy || !size;
+  if (size) els.memoryUsage.textContent = t('memory.usage', {...size, unit: t(size.unit === 'GiB' ? 'memory.gib' : 'memory.mib')});
 }
 
 function showPane(which) {
@@ -343,7 +354,9 @@ async function compute(ev) {
   if (loadedExample && loadedExample.snapshot === snapshot()) job.exampleId = loadedExample.id;
   lastJob = job;
 
+  const generation = ++runGeneration;
   running = true;
+  allocatedMemoryBytes = undefined;
   els.go.disabled = true;
   els.stop.hidden = false;
   setStatus('status.busy', {}, true);
@@ -354,16 +367,19 @@ async function compute(ev) {
   const t0 = performance.now();
   renderLog(job, stdout);
   try {
-    const res = await engine.run(job, (e) => { if (e.type === 'stdout') { stdout += e.text; renderLog(job, stdout); } });
+    const res = await engine.run(job, (e) => { if (generation === runGeneration && e.type === 'stdout') { stdout += e.text; renderLog(job, stdout); } });
+    if (generation !== runGeneration) return;
     const ms = Math.round(performance.now() - t0);
     renderResults(job, res);
     setStatus('status.done', { ms });
   } catch (e) {
+    if (generation !== runGeneration) return;
     if (e.partialResult) renderResults(job, e.partialResult);
     if (e.code === 'memory-limit') setStatus(job.memoryMiB === 0 ? 'status.memoryUncapped' : 'status.memory', {mib: job.memoryMiB});
     else if (e.code === 'timeout') setStatus('status.timeout');
     else setStatus(e.name === 'AbortError' ? 'status.stopped' : 'status.error', { msg: e.message });
   } finally {
+    if (generation !== runGeneration) return;
     running = false;
     els.go.disabled = false;
     els.stop.hidden = true;
@@ -402,6 +418,8 @@ function renderResults(job, res) {
     if (res.interrupted) html += `<p class="notice">${t('basis.interrupted')}</p>`;
     else if (!done) html += `<p class="notice">${t('basis.partial')}</p>`;
     else if (job.degreeBound) html += `<p class="notice">${t('basis.bounded', { d: job.degreeBound })}</p>`;
+    if (res.native?.reduced === false) html += `<p class="notice">${t('native.unreduced')}</p>`;
+    if (res.native?.previewTruncated) html += `<p class="notice">${t('native.preview')}</p>`;
     for (const g of groups) {
       html += `<section class="degree"><h3><span class="d">${t('basis.degree', { d: g.deg })}</span>${tn('basis.count', g.polys.length)}</h3><ol class="polys">`;
       for (const p of g.polys) html += `<li>${typeset(p, { lead: true })}</li>`;
@@ -426,6 +444,7 @@ function renderResults(job, res) {
     }
   }
   renderFiles(job, files);
+  attachNativeResultLinks($('filesOut'), res.native, t);
 }
 
 // Bergman prints series literally (+1*t^0+1*t^1); show them the way one writes them.
@@ -535,9 +554,11 @@ function renderFiles(job, files) {
 
 function renderLog(job, stdout) {
   fileContents.set('input.bg', job.files['input.bg']);
-  fileContents.set('session.lsp', job.script);
+  if (job.backend === 'native') fileContents.delete('session.lsp');
+  else fileContents.set('session.lsp', job.script);
   fileContents.set('terminal.txt', stdout);
-  $('logOut').innerHTML = codeBlock('input.bg', job.files['input.bg']) + codeBlock('session.lsp', job.script) +
+  $('logHint').textContent = t(job.backend === 'native' ? 'native.logHint' : 'log.hint');
+  $('logOut').innerHTML = codeBlock('input.bg', job.files['input.bg']) + (job.backend === 'native' ? '' : codeBlock('session.lsp', job.script)) +
     (stdout ? codeBlock('terminal.txt', stdout, { download: false }) : '');
 }
 
@@ -635,6 +656,10 @@ const consoleView = initConsole({
 // ------------------------------------------------------------ views
 
 function route() {
+  if (location.hash === '#console' && backendCapabilities(els.backend.value).console === false) {
+    location.hash = '#compute';
+    return;
+  }
   const v = (location.hash || '#compute').slice(1);
   const view = v.startsWith('guide') ? 'guide' : ['compute', 'console', 'about'].includes(v) ? v : 'compute';
   for (const s of document.querySelectorAll('.view')) s.hidden = s.id !== `view-${view}`;
@@ -702,6 +727,7 @@ function updateLanguage() {
   fillTasks();
   fillOrders();
   els.backend.querySelector('option[value="memory64"]').disabled = !memory64Supported();
+  els.backend.querySelector('option[value="native"]').disabled = !nativeBackendSupported();
   refresh();
   document.documentElement.lang = getLanguage();
   setStatus(statusState.key, statusState.params, statusState.busy);
@@ -725,7 +751,10 @@ document.addEventListener('click', e => {
 
 async function init() {
   applyTranslations();
+  els.backend.value = preferredBackend();
+  els.memoryMiB.value = String(defaultMemoryMiB(els.backend.value));
   els.backend.querySelector('option[value="memory64"]').disabled = !memory64Supported();
+  els.backend.querySelector('option[value="native"]').disabled = !nativeBackendSupported();
   document.documentElement.lang = getLanguage();
   syncPreferenceControls();
   for (const button of document.querySelectorAll('[data-lang]')) {
@@ -793,7 +822,7 @@ async function init() {
   els.form.addEventListener('submit', compute);
   els.share.addEventListener('click', sharePresentation);
   els.shareLink.addEventListener('click', () => els.shareLink.select());
-  els.stop.addEventListener('click', () => { engine.cancel(); running = false; els.go.disabled = false; els.stop.hidden = true; setStatus('status.stopped'); });
+  els.stop.addEventListener('click', () => { runGeneration++; engine.cancel(); running = false; els.go.disabled = false; els.stop.hidden = true; setStatus('status.stopped'); });
   els.tabs.addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) selectTab(b.dataset.tab); });
   els.tabs.addEventListener('keydown', (e) => {
     if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;

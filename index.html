@@ -3,22 +3,22 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>George 0.5</title>
-<meta name="description" content="George computes Gröbner bases, Hilbert series, Anick resolutions and Betti numbers for noncommutative and commutative algebras, by running the original bergman in your browser.">
+<title>George 0.6 experimental</title>
+<meta name="description" content="George computes Gröbner bases, Hilbert series, Anick resolutions and Betti numbers for noncommutative and commutative algebras, using bergman and an experimental Native NC engine in your browser.">
 <meta name="theme-color" content="#eef2f3" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#111a27" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Cpath d=%22M16 3 29 16 16 29 3 16Z%22 fill=%22%23ffe45c%22 stroke=%22%231b2a4a%22 stroke-width=%222.5%22/%3E%3C/svg%3E">
 <link rel="stylesheet" href="style.css">
-<script type="module" src="src/app.js"></script>
+<script type="module" src="src/start.js"></script>
 </head>
 <body>
 <a class="skip" href="#main" data-i18n="skip">Skip to content</a>
 
 <header class="top">
-  <a class="brand" href="#compute" aria-label="George, an interface to bergman">
+  <a class="brand" href="#compute" aria-label="George, an interface to bergman and more…">
     <svg class="logo" viewBox="0 0 28 28" aria-hidden="true"><path class="logo-face" d="M14 3 25 14 14 25 3 14Z"/><path class="logo-edge" d="M14 3 25 14 14 25 3 14Z"/><circle cx="14" cy="3.6" r="2"/><circle cx="24.4" cy="14" r="2"/><circle cx="14" cy="24.4" r="2"/><circle cx="3.6" cy="14" r="2"/></svg>
-    <span class="brand-name">George <small class="brand-version">0.5</small></span>
-    <span class="brand-sub" data-i18n="brand.sub">an interface to bergman</span>
+    <span class="brand-name">George <small class="brand-version">0.6</small> <small class="release-tag" data-i18n="release.experimental">experimental</small></span>
+    <span class="brand-sub" data-i18n="brand.sub">an interface to bergman and more…</span>
   </a>
   <nav class="views" aria-label="Views" data-i18n-attr="aria-label:nav.views">
     <a href="#compute" data-view="compute" data-i18n="nav.compute">Compute</a>
@@ -128,12 +128,12 @@
     <fieldset class="block">
       <legend data-i18n="legend.degrees">Degrees</legend>
       <div class="field-row">
-        <label class="field">
-          <span class="label" data-i18n="maxdeg">Maximal degree</span>
+        <label for="maxdeg" class="field">
+          <span class="label-row"><span class="label" data-i18n="maxdeg">Maximal degree</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="maxdegHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="maxdegHint" data-i18n="maxdeg.hint">Compute through this degree. A bounded result does not certify an unrestricted Gröbner basis. Blank means unlimited for Bergman; Native NC requires 1–20.</span></span></span>
           <input type="number" id="maxdeg" min="1" placeholder="none" data-i18n-attr="placeholder:maxdeg.none" inputmode="numeric">
         </label>
-        <label class="field grow">
-          <span class="label" data-i18n="weights">Weights (one per generator)</span>
+        <label for="weights" class="field grow">
+          <span class="label-row"><span class="label" data-i18n="weights">Weights (one per generator)</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="weightsHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="weightsHint" data-i18n="weights.hint">Positive generator degrees in the displayed variable order. Blank means all 1. Native NC supports only ordinary degree, so leave this blank.</span></span></span>
           <input type="text" id="weights" class="code" placeholder="all 1" data-i18n-attr="placeholder:weights.none">
         </label>
       </div>
@@ -142,27 +142,33 @@
 
     <details class="block advanced">
       <summary data-i18n="advanced">More settings</summary>
-      <label class="field">
-        <span class="label" data-i18n="backend.label">Computation engine</span>
+      <label for="backend" class="field">
+        <span class="label-row"><span class="label" data-i18n="backend.label">Computation engine</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="backendHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="backendHint" data-i18n="backend.hint">The engine selection is saved with your settings and share link.</span></span></span>
         <select id="backend">
-          <option value="compiled" selected data-i18n="backend.compiled">C / ECL O3 + LTO</option>
-          <option value="memory64" data-i18n="backend.memory64">C / ECL O3 + LTO (memory64)</option>
+          <option value="memory64" selected data-i18n="backend.memory64">C / ECL O3 + LTO (memory64)</option>
+          <option value="compiled" data-i18n="backend.compiled">C / ECL O3 + LTO</option>
           <option value="optimized" data-i18n="backend.optimized">Lisp / ECL O3 + LTO</option>
           <option value="standard" data-i18n="backend.standard">Lisp / ECL O2</option>
+          <option value="native" data-i18n="backend.native">Native NC / C O3 + LTO (experimental)</option>
         </select>
-        <span class="hint" data-i18n="backend.hint">The engine selection is saved with your settings and share link.</span>
+
       </label>
-      <label class="field">
-        <span class="label" data-i18n="timeout.label">Time limit (minutes)</span>
+      <label for="nativeWorkers" class="field" id="nativeWorkersField" hidden>
+        <span class="label-row"><span class="label" data-i18n="native.workers">Worker count</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="nativeWorkersHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="nativeWorkersHint" data-i18n="native.workersHint">0 automatically selects up to four workers. Set 1–32 to choose explicitly. The scratch memory budget is shared between workers; more workers may not be faster.</span></span></span>
+        <input id="nativeWorkers" type="number" min="0" max="32" step="1" value="0" aria-describedby="nativeWorkersHint">
+
+      </label>
+      <label for="timeoutMinutes" class="field">
+        <span class="label-row"><span class="label" data-i18n="timeout.label">Time limit (minutes)</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="timeoutHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="timeoutHint" data-i18n="timeout.hint">0 means unlimited. Applies to computations and console commands. Stop is always available.</span></span></span>
         <input id="timeoutMinutes" type="number" min="0" step="any" value="0" aria-describedby="timeoutHint">
-        <span class="hint" id="timeoutHint" data-i18n="timeout.hint">0 means unlimited. Applies to computations and console commands. Stop is always available.</span>
+
       </label>
-      <label class="field">
-        <span class="label" data-i18n="memory.label">Memory limit</span>
+      <label for="memoryMiB" class="field">
+        <span class="label-row"><span class="label" data-i18n="memory.label">Memory limit</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="memoryHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="memoryHint" data-i18n="memory.hint">Memory grows as needed. Larger limits help large presentations; the browser also needs memory for files and results.</span></span></span>
         <select id="memoryMiB" aria-describedby="memoryHint">
           <option value="512">512 MiB</option>
           <option value="1024">1 GiB</option>
-          <option value="2048" selected>2 GiB</option>
+          <option value="2048">2 GiB</option>
           <option value="3072">3 GiB</option>
           <option value="3584">3.5 GiB</option>
           <option value="3789">3.7 GiB</option>
@@ -171,50 +177,51 @@
           <option value="6144" data-memory64 hidden disabled>6 GiB</option>
           <option value="8192" data-memory64 hidden disabled>8 GiB</option>
           <option value="12288" data-memory64 hidden disabled>12 GiB</option>
+          <option value="14304" data-i18n="memory.nativeMax">≈14 GiB (Native NC maximum)</option>
+          <option value="16077" data-memory64 selected>15.7 GiB</option>
           <option value="16384" data-memory64 hidden disabled>16 GiB</option>
           <option value="0" data-memory64 data-i18n="memory.uncapped" hidden disabled>No heap cap (browser limit)</option>
         </select>
-        <span class="hint" id="memoryHint" data-i18n="memory.hint">Memory grows as needed. Larger limits help large presentations; the browser also needs memory for files and results.</span>
+
       </label>
-      <label class="field">
-        <span><input id="monomialPruning" type="checkbox" aria-describedby="pruningHint"> <span data-i18n="pruning.label">Monomial pruning</span></span>
-        <span class="hint" id="pruningHint" data-i18n="pruning.hint">Release stored monomials after each completed degree. Available for unweighted homogeneous noncommutative Gröbner bases with the default degreewise strategy.</span>
+      <label for="monomialPruning" class="field">
+        <span class="label-row"><span><input id="monomialPruning" type="checkbox" aria-describedby="pruningHint"> <span data-i18n="pruning.label">Monomial pruning</span></span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="pruningHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="pruningHint" data-i18n="pruning.hint">Release stored monomials after each completed degree. Available for unweighted homogeneous noncommutative Gröbner bases with the default degreewise strategy.</span></span></span>
       </label>
-      <label class="field">
-        <span class="label" data-i18n="augmentation.label">Augmentation for the Anick resolution</span>
+      <label for="augmentation" class="field">
+        <span class="label-row"><span class="label" data-i18n="augmentation.label">Augmentation for the Anick resolution</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="augmentationHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="augmentationHint" data-i18n="augmentation.hint">Choose the map to the coefficient field used by the Anick resolution. For graded algebras generators map to 0; for monoids and groups they map to 1. Relations must respect this choice.</span></span></span>
         <select id="augmentation">
           <option value="graded" data-i18n="augmentation.graded">Generators map to 0</option>
           <option value="monoid" data-i18n="augmentation.monoid">Generators map to 1 (monoids and groups)</option>
         </select>
       </label>
-      <label class="field">
-        <span class="label" data-i18n="nonhomog.label">Nonhomogeneous relations</span>
+      <label for="nonhomog" class="field">
+        <span class="label-row"><span class="label" data-i18n="nonhomog.label">Nonhomogeneous relations</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="nonhomogHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="nonhomogHint" data-i18n="nonhomog.hint">Automatic mode processes nonhomogeneous relations item by item. Degreewise mode is appropriate for homogeneous presentations. Native NC requires homogeneous relations.</span></span></span>
         <select id="nonhomog">
           <option value="auto" data-i18n="nonhomog.auto">Process item by item when needed</option>
           <option value="itemwise" data-i18n="nonhomog.itemwise">Always process item by item</option>
           <option value="degreewise" data-i18n="nonhomog.degreewise">Always process degree by degree</option>
         </select>
       </label>
-      <label class="field">
-        <span class="label" data-i18n="strategy.label">Strategy</span>
+      <label for="strategy" class="field">
+        <span class="label-row"><span class="label" data-i18n="strategy.label">Strategy</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="strategyHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="strategyHint" data-i18n="strategy.hint">The default completes consecutive degrees. Rabbit changes Bergman’s processing strategy and can help some presentations; its parameters require care. Native NC uses its own degreewise algorithm.</span></span></span>
         <select id="strategy">
           <option value="default" data-i18n="strategy.default">Default (Buchberger, degree by degree)</option>
           <option value="rabbit" data-i18n="strategy.rabbit">Rabbit: jump ahead in degree</option>
         </select>
       </label>
-      <label class="field" id="rabbitField" hidden>
-        <span class="label" data-i18n="rabbit.label">Rabbit parameters</span>
+      <label for="rabbit" class="field" id="rabbitField" hidden>
+        <span class="label-row"><span class="label" data-i18n="rabbit.label">Rabbit parameters</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="rabbitHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="rabbitHint" data-i18n="rabbit.hint">Three positive integers passed to Bergman’s SETRABBIT. See the Bergman manual for their meaning; use the default strategy if you are unsure.</span></span></span>
         <input type="text" id="rabbit" class="code" value="2 2 8">
       </label>
-      <label class="field">
-        <span class="label" data-i18n="lowterms.label">Low terms handling</span>
+      <label for="lowterms" class="field">
+        <span class="label-row"><span class="label" data-i18n="lowterms.label">Low terms handling</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="lowtermsHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="lowtermsHint" data-i18n="lowterms.hint">Quick uses Bergman’s usual reduction handling. Safe is needed for linear relations and some nonhomogeneous jobs. Itemwise processing selects it automatically.</span></span></span>
         <select id="lowterms">
           <option value="quick" data-i18n="lowterms.quick">Quick</option>
           <option value="safe" data-i18n="lowterms.safe">Safe (needed for linear relations)</option>
         </select>
       </label>
-      <label class="field">
-        <span class="label" data-i18n="outmode.label">Output format</span>
+      <label for="outmode" class="field">
+        <span class="label-row"><span class="label" data-i18n="outmode.label">Output format</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="outmodeHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="outmodeHint" data-i18n="outmode.hint">Algebraic output matches the presentation syntax. Macaulay adds a file in Bergman’s Macaulay format. Native NC exports only algebraic text plus its checkpoint data.</span></span></span>
         <select id="outmode">
           <option value="ALG" data-i18n="outmode.alg">Algebraic, like the input</option>
           <option value="MACAULAY">Macaulay</option>
@@ -227,8 +234,8 @@
         </label>
         <span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="legacyHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="legacyHint" data-i18n="legacy.hint">Legacy mode keeps bergman 1.001’s original behaviour. By default George applies its documented fixes.</span></span>
       </div>
-      <label class="field" id="maxserdegField" hidden>
-        <span class="label" data-i18n="maxserdeg">Hilbert series up to degree</span>
+      <label for="maxserdeg" class="field" id="maxserdegField" hidden>
+        <span class="label-row"><span class="label" data-i18n="maxserdeg">Hilbert series up to degree</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="maxserdegHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="maxserdegHint" data-i18n="maxserdeg.hint">Highest power requested in the commutative Hilbert series. This is separate from the Gröbner basis degree bound.</span></span></span>
         <input type="number" id="maxserdeg" min="1" value="7" inputmode="numeric">
       </label>
     </details>
@@ -253,7 +260,10 @@
   <section class="sheet results" id="results" aria-labelledby="resultsTitle">
     <div class="results-head">
       <h2 id="resultsTitle" data-i18n="results">Results</h2>
-      <p class="run-status" id="runStatus" aria-live="polite" data-i18n="status.idle">Nothing computed yet.</p>
+      <div class="run-info">
+        <p class="run-status" id="runStatus" aria-live="polite" data-i18n="status.idle">Nothing computed yet.</p>
+        <span class="memory-usage" id="memoryUsage" hidden data-i18n-attr="title:memory.usageHint"></span>
+      </div>
     </div>
     <div class="tabs" role="tablist" aria-label="Result views" data-i18n-attr="aria-label:tabs.aria" id="tabs">
       <button role="tab" data-tab="basis" data-i18n="tab.basis" aria-selected="true">Gröbner basis</button>
@@ -275,7 +285,7 @@
     <div class="tabpanel" data-panel="resolution" role="tabpanel" hidden><div id="resolutionOut"></div></div>
     <div class="tabpanel" data-panel="files" role="tabpanel" hidden><div id="filesOut"></div></div>
     <div class="tabpanel" data-panel="log" role="tabpanel" hidden>
-      <p class="hint" data-i18n="log.hint">The bergman session for this computation: the input file, the commands, and the terminal output.</p>
+      <p class="hint" id="logHint" data-i18n="log.hint">The bergman session for this computation: the input file, the commands, and the terminal output.</p>
       <div id="logOut"></div>
     </div>
   </section>

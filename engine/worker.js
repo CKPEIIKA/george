@@ -1,11 +1,19 @@
 import { getBackend, memory64Supported } from '../src/backends.js';
 import { runJob, setMemoryLimit } from './runner.js';
+import { observeWasmMemory } from '../src/memory-monitor.js';
 
 let runtime;
 let activeBackend;
 let output = '';
 let pending = '';
 let activeId;
+let reportedMemoryBytes;
+function reportMemory(bytes) {
+  if (activeId !== undefined && bytes !== reportedMemoryBytes) {
+    reportedMemoryBytes = bytes;
+    postMessage({id: activeId, event: {type: 'memory', bytes}});
+  }
+}
 function flush() {
   if (pending && activeId !== undefined) postMessage({ id: activeId, event: { type: 'stdout', text: pending } });
   pending = '';
@@ -19,6 +27,7 @@ function print(line) {
 
 onmessage = async ({ data: { id, command, job, source, backend = 'standard' } }) => {
   activeId = id;
+  reportedMemoryBytes = undefined;
   output = pending = '';
   const start = performance.now();
   try {
@@ -34,7 +43,7 @@ onmessage = async ({ data: { id, command, job, source, backend = 'standard' } })
         if (!response.ok) throw new Error(`Cannot load ${name}: HTTP ${response.status}. Run npm run wasm:build.`);
         return response.arrayBuffer();
       }));
-      runtime = await createGeorgeModule({ print, printErr: print, stdin: () => null, wasmBinary:wasm, getPreloadedPackage:()=>data, locateFile: (p) => new URL(p, assets).href });
+      runtime = await createGeorgeModule(observeWasmMemory({ print, printErr: print, stdin: () => null, wasmBinary:wasm, getPreloadedPackage:()=>data, locateFile: (p) => new URL(p, assets).href }, reportMemory));
       const status = runtime.ccall('george_init', 'number', [], []);
       if (status) throw new Error(`Bergman initialization failed (${status}). ${output}`);
       setMemoryLimit(runtime, undefined, activeBackend);
@@ -46,6 +55,7 @@ onmessage = async ({ data: { id, command, job, source, backend = 'standard' } })
       return;
     }
     if (!runtime) throw new Error('Engine has not initialized.');
+    reportMemory(runtime.HEAPU8.byteLength);
     let result;
     if (job) result = runJob(runtime,{...job, backend: activeBackend});
     else {
