@@ -18,6 +18,7 @@ import { timeoutMilliseconds } from './time-limit.js';
 import { formatMemorySize } from './memory-monitor.js';
 import { attachFomkyrResultLinks, renderFomkyrSeries } from '../engine/fomkyr/result-links.js';
 import {installFomkyrControls, readFomkyrOptions, writeFomkyrOptions} from './fomkyr-options.js';
+import {degreeProgress,degreeLabel} from './degree-progress.js';
 
 const $ = (id) => document.getElementById(id);
 installFomkyrControls(document, t);
@@ -46,6 +47,7 @@ let runStartedAt = null;
 let runTimer;
 let runDegree = null;
 let runDegreeBound = null;
+let fomkyrPruningChoice;
 
 const els = {
   form: $('presentation'), preset: $('preset'), presetN: $('presetN'), presetNField: $('presetNField'),
@@ -97,7 +99,7 @@ function readForm() {
     timeoutMinutes: Number(els.timeoutMinutes.value),
     nativeWorkers: Number($('nativeWorkers').value),
     fomkyrOptions: readFomkyrOptions(document),
-    monomialPruning: els.monomialPruning.checked,
+    monomialPruning: els.backend.value === 'fomkyr' ? fomkyrPruningChoice ?? true : els.monomialPruning.checked,
     weights: els.weights.value,
     nonhomog: els.nonhomog.value,
     augmentation: els.augmentation.value,
@@ -130,7 +132,11 @@ function writeForm(s, {restoreDraft = false} = {}) {
   els.maxdeg.value = s.maxdeg || '';
   els.timeoutMinutes.value = String(s.timeoutMinutes ?? els.timeoutMinutes.value ?? 0);
   $('nativeWorkers').value = String(s.nativeWorkers ?? $('nativeWorkers').value ?? 0);
-  els.monomialPruning.checked = s.monomialPruning ?? els.monomialPruning.checked;
+  const formBackend = s.backend ?? els.backend.value;
+  if (s.monomialPruning !== undefined) {
+    els.monomialPruning.checked = s.monomialPruning;
+    if (formBackend === 'fomkyr') fomkyrPruningChoice = s.monomialPruning;
+  } else if (formBackend === 'fomkyr') els.monomialPruning.checked = fomkyrPruningChoice ?? true;
   if (s.backend !== undefined) els.backend.value = Object.hasOwn(BACKENDS, s.backend) ? s.backend : DEFAULT_BACKEND;
   const memoryMiB = Number(s.memoryMiB ?? (els.memoryMiB.value || defaultMemoryMiB(els.backend.value)));
   if (validMemoryMiB(memoryMiB, els.backend.value) && ![...els.memoryMiB.options].some(o => Number(o.value) === memoryMiB)) {
@@ -313,6 +319,7 @@ function refresh() {
   els.twoModFields.hidden = task.module !== 'two';
   els.monomialPruning.disabled ||= !monomialPruningAvailable(readForm());
   if (els.monomialPruning.disabled) els.monomialPruning.checked = false;
+  else if (els.backend.value === 'fomkyr') els.monomialPruning.checked = fomkyrPruningChoice ?? true;
   els.go.textContent = t('task.' + readForm().task + '.b');
   const tutorial = TUTORIALS.find(item => els.preset.value === 'tutorial:' + item.id);
   $('presetDescription').textContent = tutorial ? tutorial.description[getLanguage()] : t('start.hint');
@@ -364,25 +371,23 @@ function updateElapsedTime() {
 function updateDegreeUsage() {
   const degree = runDegree?.degree ?? '—';
   const limit = runDegreeBound ? t('monitor.degreeLimit', { bound: runDegreeBound }) : '';
-  let progress = t(runDegree ? (runDegree.completed ? 'monitor.degreeCompleted' : 'monitor.degreeCurrent')
-    : (lastJob?.backend === 'fomkyr' ? 'monitor.degreeWaiting' : 'monitor.degreeUnavailable'), { degree, limit });
+  const phaseKey = {checkpoint:'monitor.phaseCheckpoint',hilbert:'monitor.phaseHilbert',export:'monitor.phaseExport'}[runDegree?.phase];
+  let progress = t(phaseKey ?? (runDegree ? (runDegree.completed ? 'monitor.degreeCompleted' : 'monitor.degreeCurrent')
+    : (lastJob?.backend === 'fomkyr' ? 'monitor.degreeWaiting' : 'monitor.degreeUnavailable')), { degree, limit, through:runDegree?.completedThroughDegree ?? 0 });
   if (runDegree?.phase === 'anick') progress = t('monitor.degreeAnick', { progress });
-  els.degreeValue.textContent = `${degree}${runDegreeBound ? ` / ${runDegreeBound}` : ''}${runDegree?.completed ? ' ✓' : ''}`;
+  if (runDegree?.pairs !== undefined) {
+    const format = value => new Intl.NumberFormat(getLanguage()).format(value);
+    progress += ' ' + t('monitor.degreeCounters', {pairs:format(runDegree.pairs),reductions:format(runDegree.reductions ?? 0),rules:format(runDegree.basisSize ?? 0)});
+  }
+  els.degreeValue.textContent = degreeLabel(runDegree,runDegreeBound);
   els.degreeUsageHint.textContent = progress;
   els.degreeMetric.setAttribute('aria-label', progress);
 }
 
 function updateDegreeProgress(event) {
-  let degree, completed = false;
-  if (event.type === 'degree-start') degree = Number(event.degree);
-  else if (event.type === 'degree') { degree = Number(event.completedThroughDegree); completed = true; }
-  else if (event.type === 'progress') {
-    const current = Number(event.currentDegree), through = Number(event.completedThroughDegree);
-    if (current > through) degree = current;
-    else { degree = through; completed = true; }
-  } else return;
-  if (!Number.isSafeInteger(degree) || degree < 1) return;
-  runDegree = { degree, completed, phase: event.phase ?? 'basis' };
+  const next = degreeProgress(event,runDegree);
+  if (!next) return;
+  runDegree = next;
   updateDegreeUsage();
 }
 
@@ -886,10 +891,15 @@ async function init() {
 
   els.form.addEventListener('input', (e) => {
     if (e.target === els.preset || e.target === els.presetN) return;
+    if (e.target === els.monomialPruning && els.backend.value === 'fomkyr') fomkyrPruningChoice = els.monomialPruning.checked;
+    if (e.target === els.backend && els.backend.value === 'fomkyr') els.monomialPruning.checked = fomkyrPruningChoice ?? true;
     refresh();
   });
   els.form.addEventListener('change', (e) => {
-    if (e.target === els.backend && els.backend.value === 'fomkyr') els.maxserdeg.value = '';
+    if (e.target === els.backend && els.backend.value === 'fomkyr') {
+      els.maxserdeg.value = '';
+      els.monomialPruning.checked = fomkyrPruningChoice ?? true;
+    }
     if (e.target === els.preset || e.target === els.presetN) { applyPreset(); return; }
     if (e.target.name === 'ring') fillOrders();
     refresh();

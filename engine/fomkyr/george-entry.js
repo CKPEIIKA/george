@@ -17,9 +17,9 @@ export async function dispatchFomkyr(message,send=postMessage){
     const {fixture,target,modulus}=parseNativeJob(job);
     const options=job.fomkyrOptions??job.nativeOptions??{};
     engine=new FomkyrEngine({budgetBytes:Number(job.memoryMiB??2048)*1048576,timeoutMs:job.timeoutMs??0,...options,onEvent:event=>{
-      if(['degree-start','degree','progress','capabilities'].includes(event.type)&&engine?.memory)send({id,event:{type:'memory',bytes:engine.memory.buffer.byteLength}});
+      if(['degree-start','degree','progress','phase','capabilities'].includes(event.type)&&engine?.memory)send({id,event:{type:'memory',bytes:engine.memory.buffer.byteLength}});
       if(event.type==='degree')send({id,event});
-      if(event.type==='cache'&&event.resumedFromDegree>0)send({id,event:{type:'degree',completedThroughDegree:event.resumedFromDegree}});
+      if(event.type==='cache'&&event.resumedFromDegree>0)send({id,event:{type:'degree',completedThroughDegree:event.resumedFromDegree,source:'checkpoint'}});
       if(event.type==='degree'||event.type==='stdout'){
         const text=event.type==='stdout'?event.text:`fomkyr degree ${event.completedThroughDegree}: ${event.basisSize} rules; ${event.allocatedBytes} allocated bytes; ${event.diskBytes} disk bytes.\n`;
         stdout=(stdout+text).slice(-32768);send({id,event:{type:'stdout',text}});
