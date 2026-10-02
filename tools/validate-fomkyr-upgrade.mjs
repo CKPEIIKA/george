@@ -7,12 +7,15 @@ import {staticServer} from './serve.mjs';
 import {buildJob,readInputFile} from '../web/src/bergman-syntax.js';
 import {algebra} from '../test/support/algebra.mjs';
 
-const out=path.resolve(process.argv[2]||'build/validation/fomkyr-upgrade-04');fs.mkdirSync(out,{recursive:true});
-const report={state:'running',checks:[],method:'Actual 0.3 wasm32 workers write browser OPFS checkpoints; the production 0.4 memory64 UI extends them. Fresh 0.4 output and an independent exact critical-pair checker verify the results. Each computation has a 120-second cap.'};
+const out=path.resolve(process.argv[2]||'build/validation/fomkyr-upgrade');fs.mkdirSync(out,{recursive:true});
+const previousVersion=process.argv.find(arg=>arg.startsWith('--previous='))?.split('=')[1]??'0.3.0';
+assert.ok(['0.3.0','0.4.0'].includes(previousVersion));
+const currentVersion=JSON.parse(fs.readFileSync('web/engine/fomkyr/build.json')).version;
+const report={state:'running',checks:[],method:`Actual ${previousVersion} wasm32 workers write browser OPFS checkpoints; the production ${currentVersion} memory64 UI extends them. Fresh current output and an independent exact critical-pair checker verify the results. Each computation has a 120-second cap.`};
 const save=()=>fs.writeFileSync(path.join(out,'report.json'),JSON.stringify(report,null,2)+'\n');
 const input=JSON.parse(fs.readFileSync('test/fixtures/fomin-kirillov-user.json')).inputText;
 const {vars,rels}=readInputFile('(ALGFORMINPUT)\n'+input);
-const server=staticServer('web','/',{isolate:true}),old=staticServer('vendor/fomkyr-0.3.0/web','/previous-fomkyr/',{isolate:true});
+const server=staticServer('web','/',{isolate:true}),old=staticServer(`vendor/fomkyr-${previousVersion}/web`,'/previous-fomkyr/',{isolate:true});
 const currentHandler=server.listeners('request')[0],oldHandler=old.listeners('request')[0];server.removeAllListeners('request');
 server.on('request',(req,res)=>(req.url.startsWith('/previous-fomkyr/')?oldHandler:currentHandler)(req,res));
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const url=`http://127.0.0.1:${server.address().port}/`;save();
@@ -43,7 +46,7 @@ try{
           maxdeg:'4',memoryMiB:512,nativeWorkers:2,timeoutMinutes:2,monomialPruning:true,
           fomkyrOptions:{bits:'32',hilbert:false,resume:false}};
         const before=await workerRun('/previous-fomkyr/george-worker.js',buildJob(form));
-        assert.equal(before.fomkyr.version,'0.3.0');assert.equal(before.fomkyr.completedThroughDegree,4);
+        assert.equal(before.fomkyr.version,previousVersion);assert.equal(before.fomkyr.completedThroughDegree,4);
         await page.locator(`input[name="field"][value="${prime?'p':'0'}"]`).check();if(prime)await page.locator('#modulus').fill(String(prime));
         await page.locator('#go').click();await page.waitForFunction(()=>document.getElementById('stop').hidden,null,{timeout:125000});
         assert.match(await page.locator('#runStatus').textContent(),/^Computed/);
@@ -51,7 +54,7 @@ try{
           const files=Object.fromEntries([...document.querySelectorAll('#filesOut .file')].map(n=>[n.querySelector('.name').textContent,n.querySelector('pre').textContent]));
           return {meta:JSON.parse(files['fomkyr-result.json']),basis:files['result.gb']};
         });
-        assert.equal(result.meta.version,'0.4.0');assert.equal(result.meta.resumedFromDegree,4);assert.equal(result.meta.completedThroughDegree,5);assert.equal(result.meta.bits,64);
+        assert.equal(result.meta.version,currentVersion);assert.equal(result.meta.resumedFromDegree,4);assert.equal(result.meta.completedThroughDegree,5);assert.equal(result.meta.bits,64);
         const freshJob=buildJob({...form,maxdeg:'5',fomkyrOptions:{bits:'64',hilbert:false,resume:false}});
         freshJob.fomkyrOptions.runKey='upgrade-fresh-'+prime;
         const fresh=await workerRun('/engine/fomkyr/george-worker.js',freshJob);

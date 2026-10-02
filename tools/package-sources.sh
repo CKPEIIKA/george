@@ -19,7 +19,7 @@ ECL 26.5.5 and its bundled GMP 4.2.1: LGPL-2.1-or-later.
 Boehm-Demers-Weiser GC: permissive; see GC-NOTICE.txt for copyright holders.
 Emscripten runtime: MIT or University of Illinois/NCSA.
 MathJax 4.1.3 and New Computer Modern SVG data: Apache-2.0; see ../vendor/mathjax/NOTICE.txt and LICENSE.
-fomkyr 0.4.0: MIT; see ../engine/fomkyr/LICENSE.txt.
+fomkyr 0.6.1: MIT; see ../engine/fomkyr/LICENSE.txt.
 Historical George Native NC 0.1.0: MIT; see ../engine/native/LICENSE.txt.
 
 Full notices and license texts accompany this file.
@@ -30,10 +30,19 @@ EOF
 git -C "$toolchain/ecl-src" archive --format=tar --prefix=ecl/ 59f60e09102961bf5872c672fdd9d200b2e83d6b | gzip -n >"$root/web/sources/ecl-source.tar.gz"
 # Only tracked or staged files belong to the release. Concurrent untracked
 # work stays in the workspace and cannot enter the downloadable archive.
+# Generated upstream benchmark OPFS stores stay in the original Git imports.
+# Sources, tests and the separate checkpoint fixtures used by tests are included.
 git -C "$root" ls-files -z -- \
   README.md LICENSE.md package.json package-lock.json .gitignore .gitattributes .github \
   licenses ports tools test docs vendor web | \
   tar -C "$root" --exclude='web/sources/*' --exclude='web/engine/ecl.*' \
     --exclude='web/engine/*/ecl.*' \
+    --exclude='vendor/fomkyr-*/results/*/storage/*' \
     --null -czf "$root/web/sources/george-source.tar.gz" --files-from=-
+python3 - "$root/web/sources/george-source.tar.gz" <<'PY'
+import pathlib, sys
+archive = pathlib.Path(sys.argv[1])
+if archive.stat().st_size >= 99 * 1024 * 1024:
+    raise SystemExit('George source archive exceeds the 99 MiB publication allowance.')
+PY
 sha256sum "$root/web/sources/"*.tar.gz >"$root/build/source-archives.sha256"

@@ -1,0 +1,231 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "test": "optimization-flags",
+      "flags": 0,
+      "passed": true
+    },
+    {
+      "test": "optimization-flags",
+      "flags": 1,
+      "passed": true
+    },
+    {
+      "test": "optimization-flags",
+      "flags": 2,
+      "passed": true
+    },
+    {
+      "test": "optimization-flags",
+      "flags": 4,
+      "passed": true
+    },
+    {
+      "test": "optimization-flags",
+      "flags": 8,
+      "passed": true
+    },
+    {
+      "test": "optimization-flags",
+      "flags": 16,
+      "passed": true
+    },
+    {
+      "test": "optimization-flags",
+      "flags": 32,
+      "passed": true
+    },
+    {
+      "test": "optimization-flags",
+      "flags": 63,
+      "passed": true
+    },
+    {
+      "test": "matcher-budget-fallback",
+      "passed": true
+    },
+    {
+      "test": "word-cache-size",
+      "entries": 256,
+      "passed": true
+    },
+    {
+      "test": "word-cache-size",
+      "entries": 4096,
+      "passed": true
+    },
+    {
+      "test": "word-cache-size",
+      "entries": 16384,
+      "passed": true
+    },
+    {
+      "test": "word-cache-size",
+      "entries": 65536,
+      "passed": true
+    },
+    {
+      "test": "big-or-nonmonic-heap-fallback",
+      "leading": 1,
+      "q": 1073741827,
+      "passed": true,
+      "termsInRedundantInput": 76,
+      "heapFallbacks": 1,
+      "criticalCompositions": 1
+    },
+    {
+      "test": "big-or-nonmonic-heap-fallback",
+      "leading": 2,
+      "q": 3,
+      "passed": true,
+      "termsInRedundantInput": 76,
+      "heapFallbacks": 1,
+      "criticalCompositions": 1
+    },
+    {
+      "test": "mixed-degree-random",
+      "seed": 4604,
+      "case": 0,
+      "passed": true
+    },
+    {
+      "test": "mixed-degree-random",
+      "seed": 4604,
+      "case": 1,
+      "passed": true
+    },
+    {
+      "test": "mixed-degree-random",
+      "seed": 4604,
+      "case": 2,
+      "passed": true
+    },
+    {
+      "test": "mixed-degree-random",
+      "seed": 4604,
+      "case": 3,
+      "passed": true
+    },
+    {
+      "test": "mixed-degree-random",
+      "seed": 4604,
+      "case": 4,
+      "passed": true
+    },
+    {
+      "test": "mixed-degree-random",
+      "seed": 4604,
+      "case": 5,
+      "passed": true
+    },
+    {
+      "test": "mixed-degree-random",
+      "seed": 4604,
+      "case": 6,
+      "passed": true
+    },
+    {
+      "test": "mixed-degree-random",
+      "seed": 4604,
+      "case": 7,
+      "passed": true
+    },
+    {
+      "test": "mixed-degree-random",
+      "seed": 4604,
+      "case": 8,
+      "passed": true
+    },
+    {
+      "test": "mixed-degree-random",
+      "seed": 4604,
+      "case": 9,
+      "passed": true
+    },
+    {
+      "test": "mixed-degree-random",
+      "seed": 4604,
+      "case": 10,
+      "passed": true
+    },
+    {
+      "test": "mixed-degree-random",
+      "seed": 4604,
+      "case": 11,
+      "passed": true
+    },
+    {
+      "test": "mixed-degree-random",
+      "seed": 4604,
+      "case": 12,
+      "passed": true
+    },
+    {
+      "test": "mixed-degree-random",
+      "seed": 4604,
+      "case": 13,
+      "passed": true
+    },
+    {
+      "test": "mixed-degree-random",
+      "seed": 4604,
+      "case": 14,
+      "passed": true
+    },
+    {
+      "test": "mixed-degree-random",
+      "seed": 4604,
+      "case": 15,
+      "passed": true
+    },
+    {
+      "test": "mixed-degree-random",
+      "seed": 4604,
+      "case": 16,
+      "passed": true
+    },
+    {
+      "test": "mixed-degree-random",
+      "seed": 4604,
+      "case": 17,
+      "passed": true
+    },
+    {
+      "test": "mixed-degree-random",
+      "seed": 4604,
+      "case": 18,
+      "passed": true
+    },
+    {
+      "test": "mixed-degree-random",
+      "seed": 4604,
+      "case": 19,
+      "passed": true
+    },
+    {
+      "test": "mixed-degree-random",
+      "seed": 4604,
+      "case": 20,
+      "passed": true
+    },
+    {
+      "test": "mixed-degree-random",
+      "seed": 4604,
+      "case": 21,
+      "passed": true
+    },
+    {
+      "test": "mixed-degree-random",
+      "seed": 4604,
+      "case": 22,
+      "passed": true
+    },
+    {
+      "test": "mixed-degree-random",
+      "seed": 4604,
+      "case": 23,
+      "passed": true
+    }
+  ]
+}

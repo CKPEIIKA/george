@@ -1,0 +1,57 @@
+chromium / isolated starting
+chromium UI ready
+chromium shared32 / single32 finished {"workers":4,"ioMode":"direct-unsafe","fallbacks":[]}
+chromium 64-bit resume finished
+chromium unbounded finished
+chromium long words finished
+chromium / isolated PASS
+chromium / plain starting
+chromium UI ready
+chromium shared32 / single32 finished {"workers":1,"ioMode":"exclusive","fallbacks":["Shared memory is unavailable: using the non-shared single-worker WASM build."]}
+chromium 64-bit resume finished
+chromium unbounded finished
+chromium long words finished
+chromium / unshared PASS
+chromium /george/ isolated starting
+chromium UI ready
+chromium shared32 / single32 finished {"workers":4,"ioMode":"direct-unsafe","fallbacks":[]}
+chromium 64-bit resume finished
+chromium unbounded finished
+chromium long words finished
+chromium /george/ isolated PASS
+chromium /george/ plain starting
+chromium UI ready
+chromium shared32 / single32 finished {"workers":1,"ioMode":"exclusive","fallbacks":["Shared memory is unavailable: using the non-shared single-worker WASM build."]}
+chromium 64-bit resume finished
+chromium unbounded finished
+chromium long words finished
+chromium /george/ unshared PASS
+firefox / isolated starting
+firefox UI ready
+firefox shared32 / single32 finished {"workers":4,"ioMode":"broker-exclusive","fallbacks":[]}
+firefox 64-bit resume finished
+firefox unbounded finished
+firefox long words finished
+firefox / isolated PASS
+firefox / plain starting
+firefox UI ready
+firefox shared32 / single32 finished {"workers":1,"ioMode":"exclusive","fallbacks":["Shared memory is unavailable: using the non-shared single-worker WASM build."]}
+firefox 64-bit resume finished
+firefox unbounded finished
+firefox long words finished
+firefox / unshared PASS
+firefox /george/ isolated starting
+firefox UI ready
+firefox shared32 / single32 finished {"workers":4,"ioMode":"broker-exclusive","fallbacks":[]}
+firefox 64-bit resume finished
+firefox unbounded finished
+firefox long words finished
+firefox /george/ isolated PASS
+firefox /george/ plain starting
+firefox UI ready
+firefox shared32 / single32 finished {"workers":1,"ioMode":"exclusive","fallbacks":["Shared memory is unavailable: using the non-shared single-worker WASM build."]}
+firefox 64-bit resume finished
+firefox unbounded finished
+firefox long words finished
+firefox /george/ unshared PASS
+build/validation/fomkyr-browser-06 PASS

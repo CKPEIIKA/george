@@ -1,5 +1,75 @@
 # George development handoff
 
+## fomkyr 0.6.1, compact lists and bounded FK6 matrices — 2026-10-03
+
+The production core is now fomkyr 0.6.1. The four shared/unshared wasm32/
+memory64 binaries match the supplied archive byte for byte. All 694 imported
+files match that archive, including the stale embedded 0.6.0 manifest; the
+fresh import audit records every actual hash. Original 0.6.0 and older trees
+and their evidence are retained. George stays 0.6.0, with experimental shown
+only in the fomkyr chooser. Bergman memory64/16077 MiB remains the global default.
+
+The 0.6.1 host awaits all batch lanes before checking the local result and
+exposes exact rational compiled rewrites, enabled by default. George retains
+its progress phases, degree-start/completed-prefix handling, seconds, RAM,
+OPFS downloads, cancellation and checkpoint adapters. There are no George C
+kernel patches. New rational heap/rewrite/cache controls have EN/RU help and
+persist in drafts and Share links under Engine. Mathematical settings remain
+under More settings. Automatic worker selection uses reported logical CPUs
+minus one, clamped to 1–32; explicit counts cover 1–32 and unshared mode uses one.
+
+Relations start expanded in a foldable preview. Both relations and each basis
+degree wrap in compact groups by polynomial term count, preserving original
+numbers. A power's base and exponent occupy one wrapping unit. Whole selected
+expressions copy original source syntax, and partial superscripts serialize
+with carets. Real FK6 output passes 32 Chromium/Firefox layout checks across
+two themes, four widths and two root font sizes; desktop/mobile crops were
+inspected.
+
+Fresh verification passes 132 unit tests, 25 imported suites, 95 comparison
+cases / 380 actual Wasm runs / 95 bounded Singular checks, and 105,376 certified
+critical ambiguities. The expanded FK Latin hypercube has 64 samples and 24
+dimensions. Eight production UI scenarios, both Pages-style isolation matrices
+and eight old-checkpoint extensions from 0.3/0.4 pass. Native tests use fresh
+Clang O3/LTO and UBSan builds; production Wasm binaries are imported prebuilt.
+The compiled-Wasm staging harness gives its thirteen engine jobs and twelve
+Python certificates individual two-minute limits, with aggregate time allowed
+to finish. Vendored tests remain unchanged. The fresh small-case Singular run
+used generic arithmetic fallback; subsequent large degree matrices and resource
+benchmarks load and verify its packaged arithmetic modules explicitly.
+
+`npm run test:fk6` checks eight bounds of the submitted presentation and eight
+bounds of a seeded invertible generator scaling: 16 cases / 64 Wasm runs / 16
+completed Singular oracles. The scaled form is graded-isomorphic and varies
+exact rational coefficients. The original degree-9 Singular attempt is censored
+at 120 seconds. `npm run test:fk6:finite` retains the independently randomized
+coefficient presentation through its first proved zero in degree 6, dimension
+678; it stops there. The two profiles have separate recorded fixtures and
+reports. Degree 1 uses the empty linear ideal prefix for Singular/Bergman,
+whose initial-degree behavior would otherwise compute degree 2. Fomkyr receives
+the full quadratic input. Hilbert prefixes use independent BigInt normal-word
+dynamic programming. Exact critical-pair certificates cover distinct bases
+through degree 4; higher-degree tests compare membership and leading words.
+
+The redundant full baseline repeat was stopped at the user's request. Its
+partial 0.6.1 cold samples through degree 7 are retained as interrupted
+diagnostics. Existing Bergman/SBCL/Singular measurements and resource plots
+remain valid with their original versions and conditions. Future
+`npm run benchmark:fk6` measures updated fomkyr only, on both growing forms
+at bounds 1–9 and with controlled/default-batch worker probes. Each job is
+capped at 120 seconds; audits and plotting follow all measurements. A full
+baseline repeat requires `--all-backends`. CPU is process-tree core-seconds;
+physical memory is sampled PSS, with browser baseline recorded separately. See
+[VALIDATION.md](VALIDATION.md), [BACKENDS.md](BACKENDS.md) and
+[PERFORMANCE.md](PERFORMANCE.md) for evidence and conditions.
+
+Release preparation packages the full corresponding sources, commits the
+integration, and refreshes `build/publication/publish.sh` plus the prepared
+`publish/main` and `publish/gh-pages` refs. Deployment originates on the permitted
+`gh-pages` branch. The user publishes with
+`bash build/publication/publish.sh PATH_TO_SSH_KEY`; preparation performs no
+remote push. The existing local preview is served at `http://127.0.0.1:8000/`.
+
 ## fomkyr 0.4.0 upgrade and settings layout — 2026-10-02
 
 The production backend is now fomkyr 0.4.0, with all 293 imported manifest

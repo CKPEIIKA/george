@@ -1,0 +1,86 @@
+{
+  "name": "P6 homogeneous literature stress",
+  "variables": [
+    "a",
+    "b",
+    "c"
+  ],
+  "relations": [
+    {
+      "degree": 3,
+      "terms": [
+        {
+          "word": [
+            2,
+            2,
+            2
+          ],
+          "coefficient": "1"
+        },
+        {
+          "word": [
+            2,
+            2,
+            1
+          ],
+          "coefficient": "2"
+        },
+        {
+          "word": [
+            2,
+            2,
+            0
+          ],
+          "coefficient": "3"
+        },
+        {
+          "word": [
+            1,
+            2,
+            2
+          ],
+          "coefficient": "5"
+        },
+        {
+          "word": [
+            0,
+            2,
+            0
+          ],
+          "coefficient": "7"
+        }
+      ]
+    },
+    {
+      "degree": 3,
+      "terms": [
+        {
+          "word": [
+            1,
+            2,
+            2
+          ],
+          "coefficient": "1"
+        },
+        {
+          "word": [
+            1,
+            0,
+            1
+          ],
+          "coefficient": "11"
+        },
+        {
+          "word": [
+            0,
+            0,
+            0
+          ],
+          "coefficient": "13"
+        }
+      ]
+    }
+  ],
+  "testDegree": 8,
+  "expectedHilbert": null
+}

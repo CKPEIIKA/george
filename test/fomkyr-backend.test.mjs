@@ -9,14 +9,22 @@ import {FOMKYR_DEFAULTS, FOMKYR_FIELDS, validateFomkyrOptions, writeFomkyrOption
 import {createShareLink, readShareLink} from '../web/src/share.js';
 import {fomkyrSamples, FOMKYR_LHS_DIMENSIONS} from './support/fomkyr-lhs.mjs';
 import {publicationAssets} from '../tools/publication-assets.mjs';
+import {automaticWorkers,computeWorkers} from '../web/engine/fomkyr/worker-count.js';
 
 const form = {task:'gb', backend:'fomkyr', ring:'noncomm', order:'degleftlex', field:'0',
   vars:['a','b'], rels:['a^2','b^2','b*a-a*b'], maxdeg:'4', maxserdeg:'4',
   nonhomog:'degreewise', nativeWorkers:3, monomialPruning:true,fomkyrOptions:{hilbert:true}};
+test('automatic workers scale with available CPU threads up to the engine limit',()=>{
+  for(const [reported,selected] of [[1,1],[2,1],[6,5],[8,7],[16,15],[64,32],[0,1],[null,1],[Infinity,1]])assert.equal(automaticWorkers(reported),selected);
+  assert.equal(computeWorkers(0,{hardwareConcurrency:8}),7);
+  assert.equal(computeWorkers(32,{hardwareConcurrency:8}),32);
+  assert.equal(computeWorkers(0,{hardwareConcurrency:8,shared:false}),1);
+  assert.equal(computeWorkers(8,{hardwareConcurrency:8,execution:'single'}),1);
+});
 test('fomkyr ships all shared/unshared variants with exact asset hashes', () => {
   assert.match(getBackend('fomkyr').worker, /fomkyr\/george-worker\.js$/);
   const manifest = JSON.parse(fs.readFileSync('web/engine/fomkyr/build.json'));
-  assert.equal(manifest.version,'0.4.0'); assert.equal(manifest.provenance.kernelChanged,false);
+  assert.equal(manifest.version,'0.6.1'); assert.equal(manifest.provenance.kernelChanged,false);
   for (const [name, record] of Object.entries(manifest.files)) {
     const bytes = fs.readFileSync('web/engine/fomkyr/' + name);
     assert.equal(bytes.length,record.bytes); assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'),record.sha256,name);
@@ -24,7 +32,7 @@ test('fomkyr ships all shared/unshared variants with exact asset hashes', () => 
   for (const bits of [32,64]) for (const suffix of ['', '-single']) {
     const name = `fomkyr${bits}${suffix}.wasm`;
     assert.ok(manifest.files[name]);
-    assert.deepEqual(fs.readFileSync('web/engine/fomkyr/'+name),fs.readFileSync('vendor/fomkyr-0.4.0/dist/'+name));
+    assert.deepEqual(fs.readFileSync('web/engine/fomkyr/'+name),fs.readFileSync('vendor/fomkyr-0.6.1/dist/'+name));
   }
 });
 test('George form controls are authoritative for fomkyr workers, pruning and Hilbert degree', () => {
@@ -46,7 +54,9 @@ test('new fomkyr jobs default to pruning, disk, resume and heap with optional co
   const options=job.fomkyrOptions;
   assert.equal(options.monomialPruning,true);assert.equal(options.spill,true);assert.equal(options.resume,'auto');
   assert.equal(options.heapReduction,true);assert.equal(options.hilbert,false);assert.equal(options.cachePercent,12);
-  for(const key of ['wordMatcher','chainCriterion','eagerPruning','quadraticRewrite','costScheduling','progress'])assert.equal(options[key],true);
+  for(const key of ['wordMatcher','chainCriterion','eagerPruning','quadraticRewrite','costScheduling','progress','rationalHeap','rationalRewrites','compiledRewrites'])assert.equal(options[key],true);
+  assert.equal(options.rewriteDegree,4);assert.equal(options.rewriteSupport,8);
+  assert.equal(options.rewriteBudgetBytes,undefined);assert.equal(options.sharedReducerCacheBytes,undefined);
   assert.equal(options.wordCacheEntries,256);assert.equal(options.progressIntervalMs,1000);assert.equal(options.matcherBudgetBytes,undefined);
   assert.equal(options.workers,undefined);assert.equal(options.batchPairs,undefined);assert.equal(options.scratchBytes,undefined);
   assert.equal(job.outputs.hs,undefined);
@@ -64,6 +74,18 @@ test('unsupported fomkyr jobs and invalid runtime options are rejected before ex
   }
   assert.equal(validateSettings({...form,rels:['0'],maxdeg:''}).length,0);
   assert.throws(()=>validateFomkyrOptions({runKey:'arbitrary'}));
+});
+test('local rewrite and shared cache controls are bounded, persisted and converted to bytes',async()=>{
+  const fomkyrOptions=validateFomkyrOptions({compiledRewrites:false,rationalHeap:false,rewriteDegree:3,rewriteSupport:1,rewriteMiB:0,sharedCacheMiB:2});
+  const options=buildJob({...form,memoryMiB:128,fomkyrOptions}).fomkyrOptions;
+  assert.equal(options.compiledRewrites,false);assert.equal(options.rationalHeap,false);
+  assert.equal(options.rewriteBudgetBytes,0);assert.equal(options.sharedReducerCacheBytes,2*1048576);
+  assert.equal(options.rewriteMiB,undefined);assert.equal(options.sharedCacheMiB,undefined);
+  const decoded=await readShareLink(new URL(await createShareLink({...form,memoryMiB:128,fomkyrOptions},'https://example.org/')).hash);
+  assert.deepEqual(decoded.fomkyrOptions,fomkyrOptions);
+  for(const change of [{rewriteDegree:5},{rewriteSupport:0},{rewriteMiB:-1},{sharedCacheMiB:257},{rationalHeap:1}])assert.throws(()=>validateFomkyrOptions(change));
+  assert.throws(()=>buildJob({...form,memoryMiB:128,fomkyrOptions:{rewriteMiB:128}}));
+  assert.throws(()=>buildJob({...form,memoryMiB:128,fomkyrOptions:{sharedCacheMiB:128}}));
 });
 test('fomkyr runtime settings round-trip in Share without changing old tokens', async () => {
   const fomkyrOptions = {...FOMKYR_DEFAULTS,execution:'single',bits:'64',resume:false,hilbert:false,
@@ -112,6 +134,10 @@ test('fomkyr LHS is reproducible and covers every declared stratum', () => {
   }
   for (const sample of design.cases) assert.doesNotThrow(()=>buildJob({...form,...sample.form,memoryMiB:128}));
   assert.deepEqual(new Set(design.cases.map(row=>row.rank)),new Set([3,4,5,6]));
+  for(const key of ['rationalHeap','rationalRewrites','compiledRewrites'])assert.deepEqual(new Set(design.cases.map(row=>row.form.fomkyrOptions[key])),new Set([true,false]));
+  assert.deepEqual(new Set(design.cases.map(row=>row.form.fomkyrOptions.rewriteDegree)),new Set([2,3,4]));
+  assert.deepEqual(new Set(design.cases.map(row=>row.form.fomkyrOptions.rewriteSupport)),new Set([1,8,64]));
+  for(const key of ['rewriteMiB','sharedCacheMiB'])assert.deepEqual(new Set(design.cases.map(row=>row.form.fomkyrOptions[key])),new Set([0,1,null]));
 });
 test('publication checks include the complete fomkyr runtime', () => {
   const base=['index.html','style.css','isolation-worker.js','engine/build.json','engine/worker.js','engine/runner.js','sources/george-source.tar.gz'];

@@ -11,7 +11,7 @@ const out = path.resolve(process.argv[2] || 'build/validation/fomkyr-browser');
 fs.mkdirSync(out, {recursive:true});
 const report = {state:'running', startedAt:new Date().toISOString(), checks:[], errors:[],
   method:'Real browsers use the production George form, workers and OPFS. Tests are serial. Every computation has a 120-second deadline.',
-  hashes:Object.fromEntries(['web/index.html','web/style.css','web/src/i18n.js','web/src/app.js','web/src/engine.js','web/src/share.js','web/src/fomkyr-options.js','web/src/degree-progress.js',
+  hashes:Object.fromEntries(['web/index.html','web/style.css','web/src/i18n.js','web/src/app.js','web/src/bergman-syntax.js','web/src/engine.js','web/src/share.js','web/src/fomkyr-options.js','web/src/degree-progress.js','web/src/relation-preview.js','web/src/math-copy.js',
     ...fs.readdirSync('web/engine/fomkyr').map(name=>'web/engine/fomkyr/'+name)].map(file=>
     [file,crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex')]))};
 const save = () => fs.writeFileSync(path.join(out,'report.json'),JSON.stringify(report,null,2)+'\n');
@@ -57,6 +57,19 @@ try {
         page.on('request',request=>{if(new URL(request.url()).origin!==new URL(url).origin)external.push(request.url());});
         try {
           await page.goto(url);await page.locator('#engineNote.live').waitFor({timeout:120000});
+          assert.equal(await page.locator('#relPreviewPanel').evaluate(node=>node.open),true);
+          await page.locator('#vars').fill('a,b,c');
+          await page.locator('#rels').fill('b*a-a*b,a^2,a+b+c,b^2');
+          assert.deepEqual(await page.locator('#relPreview .relation-group').evaluateAll(nodes=>nodes.map(n=>n.dataset.termCount)),['1','2','3']);
+          assert.deepEqual(await page.locator('#relPreview li').evaluateAll(nodes=>nodes.map(n=>n.value)),[2,4,1,3]);
+          await page.locator('#relPreviewPanel > summary').click();
+          assert.equal(await page.locator('#relPreview').isVisible(),false);
+          await page.locator('#rels').fill('b*a-a*b,a^2,a+b+c,b^2,c^2');
+          assert.equal(await page.locator('#relPreviewPanel').evaluate(node=>node.open),false);
+          assert.equal(await page.locator('#relPreviewCount').textContent(),'5');
+          await page.locator('#relPreviewPanel > summary').click();
+          const monomialRows=await page.locator('#relPreview .relation-group[data-term-count="1"] li').evaluateAll(nodes=>nodes.map(n=>n.getBoundingClientRect().top));
+          assert.equal(new Set(monomialRows).size,1);
           await page.locator('details.advanced').evaluate(node=>node.open=true);
           assert.equal(await page.locator('#engineSettings').evaluate(node=>node.open),false);
           assert.equal(await page.locator('details.advanced #backend').count(),0);
@@ -66,13 +79,29 @@ try {
           await page.locator('#engineSettings > summary').click();
           await page.locator('#backend').selectOption('fomkyr');
           assert.equal(await page.locator('#monomialPruning').isChecked(),true);
-          for(const option of ['spill','resume','heapReduction','wordMatcher','chainCriterion','eagerPruning','quadraticRewrite','costScheduling','progress'])assert.equal(await page.locator('#fomkyr-'+option).isChecked(),true);
+          for(const option of ['spill','resume','heapReduction','wordMatcher','chainCriterion','eagerPruning','quadraticRewrite','costScheduling','progress','rationalHeap','rationalRewrites','compiledRewrites'])assert.equal(await page.locator('#fomkyr-'+option).isChecked(),true);
           assert.equal(await page.locator('#fomkyr-hilbert').isChecked(),false);
           assert.equal(await page.locator('#nativeWorkers').inputValue(),'0');
           assert.equal(await page.locator('#fomkyr-batchPairs').inputValue(),'');
           assert.equal(await page.locator('#fomkyr-scratchMiB').inputValue(),'');
           await page.locator('#vars').fill('a,b');
           await page.locator('#rels').fill('a^2,b^2,b*a-a*b');
+          await page.locator('#memoryMiB').selectOption('512');await page.locator('#maxdeg').fill('4');
+          const automatic=await run(page);
+          const expected=isolated?await page.evaluate(()=>Math.min(32,Math.max(1,navigator.hardwareConcurrency-1))):1;
+          assert.equal(automatic.workers,expected);
+          assert.deepEqual(await page.locator('#basisOut .polys').evaluateAll(nodes=>nodes.map(node=>[Number(node.dataset.termCount),node.children.length])),[[1,2],[2,1]]);
+          const copy=await page.evaluate(()=>{
+            const copyNode=node=>{
+              const range=document.createRange();range.selectNodeContents(node);
+              const selection=getSelection();selection.removeAllRanges();selection.addRange(range);
+              const event=new Event('copy',{bubbles:true,cancelable:true});let value='';
+              Object.defineProperty(event,'clipboardData',{value:{setData(type,text){if(type==='text/plain')value=text;}}});
+              document.dispatchEvent(event);selection.removeAllRanges();return {value,handled:event.defaultPrevented};
+            };
+            return {preview:copyNode(document.querySelector('#relPreview .relation-group')),basis:copyNode(document.querySelector('#basisOut .polys'))};
+          });
+          for(const result of Object.values(copy)){assert.equal(result.handled,true);assert.match(result.value,/a\^2/);assert.match(result.value,/b\^2/);assert.doesNotMatch(result.value,/a2|b2/);}
           assert.equal(await page.locator('#monomialPruning').isChecked(),true);
           await page.locator('#monomialPruning').uncheck();
           await page.locator('#backend').selectOption('compiled');await page.locator('#backend').selectOption('fomkyr');
@@ -97,6 +126,7 @@ try {
           assert.equal(await page.locator('#monomialPruning').isDisabled(),false);
           await page.locator('#timeoutMinutes').fill('2');
           await page.locator('#fomkyr-hilbert').check();
+          await page.evaluate(()=>window.__fomkyrPhases=[]);
           const first = await run(page);
           console.log(name,'shared32 / single32 finished',JSON.stringify({workers:first.workers,ioMode:first.ioMode,fallbacks:first.fallbacks}));
           report.latest={browser:name,mount,isolated,first};save();
@@ -106,7 +136,7 @@ try {
           assert.equal(first.monomialPruning,true);
           assert.deepEqual(await page.evaluate(()=>[...new Set(window.__fomkyrPhases)]),['checkpoint','hilbert','export']);
           assert.match(await page.locator('#degreeMetric').getAttribute('aria-label'),/Basis completed through degree/);
-          assert.equal(first.version,'0.4.0');assert.equal(first.progress.phase,'done');
+          assert.equal(first.version,'0.6.1');assert.equal(first.progress.phase,'done');
           await page.locator('#fomkyr-bits').selectOption('64');
           await page.locator('#fomkyr-ioMode').selectOption('broker');
           await page.locator('#maxdeg').fill('5');await page.locator('#maxserdeg').fill('5');
@@ -123,6 +153,12 @@ try {
           assert.equal(unlimited.storage,'memory');assert.equal(unlimited.unrestrictedBasisComplete,true);
           assert.equal(unlimited.monomialPruning,false);assert.equal(unlimited.target,null);
           assert.match(await page.locator('#basisOut').textContent(),/A finite complete Gröbner basis was proved/);
+          await page.locator('#fomkyr-compiledRewrites').uncheck();
+          await page.locator('#fomkyr-rationalHeap').uncheck();
+          await page.locator('#fomkyr-rewriteDegree').fill('3');
+          await page.locator('#fomkyr-rewriteSupport').fill('1');
+          await page.locator('#fomkyr-rewriteMiB').fill('0');
+          await page.locator('#fomkyr-sharedCacheMiB').fill('1');
           await page.locator('#share').click();await page.locator('#sharePanel').waitFor({state:'visible'});
           const share = await page.locator('#shareLink').inputValue();
           const restored = await context.newPage();
@@ -131,7 +167,13 @@ try {
           assert.equal(await restored.locator('#fomkyr-spill').isChecked(),false);
           assert.equal(await restored.locator('#fomkyr-bits').inputValue(),'64');
           assert.equal(await restored.locator('#nativeWorkers').inputValue(),'4');
+          assert.equal(await restored.locator('#fomkyr-compiledRewrites').isChecked(),false);
+          assert.equal(await restored.locator('#fomkyr-rationalHeap').isChecked(),false);
+          for(const [key,value] of [['rewriteDegree','3'],['rewriteSupport','1'],['rewriteMiB','0'],['sharedCacheMiB','1']])assert.equal(await restored.locator('#fomkyr-'+key).inputValue(),value);
           await restored.close();
+          await page.locator('#fomkyr-compiledRewrites').check();await page.locator('#fomkyr-rationalHeap').check();
+          await page.locator('#fomkyr-rewriteDegree').fill('4');await page.locator('#fomkyr-rewriteSupport').fill('8');
+          await page.locator('#fomkyr-rewriteMiB').fill('');await page.locator('#fomkyr-sharedCacheMiB').fill('');
           // Long words cross the former fixed limits using the full UI parser.
           await page.locator('#weights').fill('');await page.locator('#rels').fill('y^33-x^33');
           await page.locator('#maxdeg').fill('34');await page.locator('#maxserdeg').fill('34');
@@ -143,6 +185,16 @@ try {
           const input = fixture.inputText;
           const vars = input.match(/vars\s+([^;]+);/)[1], relations = input.slice(input.indexOf(';')+1).replace(/;\s*$/,'');
           await page.locator('#vars').fill(vars);await page.locator('#rels').fill(relations);
+          const preview=await page.locator('#relPreview').evaluate(node=>({count:node.querySelectorAll('li').length,height:node.getBoundingClientRect().height,
+            groups:[...node.querySelectorAll('.relation-group')].map(group=>[group.dataset.termCount,group.children.length])}));
+          assert.equal(preview.count,100);assert.deepEqual(preview.groups,[['1',15],['2',45],['3',40]]);assert.ok(preview.height<preview.count*20);
+          if(mount==='/'&&isolated){
+            await page.locator('#relPreviewPanel').screenshot({path:path.join(out,name+'-large-relations.png')});
+            await page.setViewportSize({width:390,height:844});
+            assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true);
+            await page.locator('#relPreviewPanel').screenshot({path:path.join(out,name+'-large-relations-mobile.png')});
+            await page.setViewportSize({width:1280,height:720});
+          }
           await page.locator('#maxdeg').fill('');await page.locator('#maxserdeg').fill('');
           await page.locator('#fomkyr-spill').check();await page.locator('#fomkyr-resume').check();
           await page.locator('#go').click();
@@ -181,7 +233,7 @@ try {
           assert.equal(await page.locator('#backend option[value="fomkyr"]').textContent(),'fomkyr / C O3 + LTO (экспериментальный)');
           assert.deepEqual(errors,[]);assert.deepEqual(external,[]);
           await page.screenshot({path:path.join(out,`${name}-${isolated?'isolated':'plain'}-${mount==='/'?'root':'project'}.png`),fullPage:true});
-          report.checks.push({browser:name,version:browser.version(),mount,isolated,first,
+          report.checks.push({browser:name,version:browser.version(),mount,isolated,first,automaticWorkers:automatic.workers,relationPreview:true,resultGrouping:true,mathematicalCopy:true,
             second,unlimited:{completedThroughDegree:unlimited.completedThroughDegree,proved:unlimited.unrestrictedBasisComplete},
             longWord:true,share:true,legacyMigration:true,cancellationAndRestart:true,metrics:true,
             stableReleaseBrand:true,unfinishedDraftRestore:true,noStaleHilbertSeries:true,fastDefaults:true,explicitPhases:true,engineSubmenu:true,

@@ -1,0 +1,236 @@
+{
+  "description": "Matched degree 1\u20138 regression matrix for the submitted FK6 and a fixed-seed invertible generator scaling. The scaled presentation is graded-isomorphic to FK6 and varies exact rational coefficients. Every included Singular oracle finishes within 120 seconds; the FK6 degree-9 attempt is censored and excluded.",
+  "degreeBound": 8,
+  "timeLimitSeconds": 120,
+  "seed": 1179338550,
+  "inputFiles": [
+    {
+      "id": "fk6",
+      "file": "test/fixtures/fomin-kirillov-user.json",
+      "sha256": "557b7a5e2e0b3353b374ee417bc6d435d9b5c4bb80ffd3174135d3a662f7d857"
+    },
+    {
+      "id": "random-fk6",
+      "file": "test/fixtures/random-fk6-growing.json",
+      "sha256": "be9a923671a1f399400a178ce30d25683ef331bec46556d566a4d5d702eb5a34"
+    }
+  ],
+  "expected": [
+    {
+      "id": "fk6",
+      "degree": 1,
+      "rules": 0,
+      "hilbert": [
+        "1",
+        "15"
+      ],
+      "leadingWordsSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "id": "random-fk6",
+      "degree": 1,
+      "rules": 0,
+      "hilbert": [
+        "1",
+        "15"
+      ],
+      "leadingWordsSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "id": "fk6",
+      "degree": 2,
+      "rules": 100,
+      "hilbert": [
+        "1",
+        "15",
+        "125"
+      ],
+      "leadingWordsSha256": "6eb6a876cda87d8886a4c14381d8794a158d01c2c231735abd51025567da568c"
+    },
+    {
+      "id": "random-fk6",
+      "degree": 2,
+      "rules": 100,
+      "hilbert": [
+        "1",
+        "15",
+        "125"
+      ],
+      "leadingWordsSha256": "6eb6a876cda87d8886a4c14381d8794a158d01c2c231735abd51025567da568c"
+    },
+    {
+      "id": "fk6",
+      "degree": 3,
+      "rules": 176,
+      "hilbert": [
+        "1",
+        "15",
+        "125",
+        "765"
+      ],
+      "leadingWordsSha256": "033dfb514903bb8fc82a392d22a77acfc1b0ae9f757158ba075c3b110b8b1154"
+    },
+    {
+      "id": "random-fk6",
+      "degree": 3,
+      "rules": 176,
+      "hilbert": [
+        "1",
+        "15",
+        "125",
+        "765"
+      ],
+      "leadingWordsSha256": "033dfb514903bb8fc82a392d22a77acfc1b0ae9f757158ba075c3b110b8b1154"
+    },
+    {
+      "id": "fk6",
+      "degree": 4,
+      "rules": 265,
+      "hilbert": [
+        "1",
+        "15",
+        "125",
+        "765",
+        "3831"
+      ],
+      "leadingWordsSha256": "a80f0b55398adb5195525cf7271f04219cec073953fd7f11b54c90f624ac4740"
+    },
+    {
+      "id": "random-fk6",
+      "degree": 4,
+      "rules": 265,
+      "hilbert": [
+        "1",
+        "15",
+        "125",
+        "765",
+        "3831"
+      ],
+      "leadingWordsSha256": "a80f0b55398adb5195525cf7271f04219cec073953fd7f11b54c90f624ac4740"
+    },
+    {
+      "id": "fk6",
+      "degree": 5,
+      "rules": 360,
+      "hilbert": [
+        "1",
+        "15",
+        "125",
+        "765",
+        "3831",
+        "16605"
+      ],
+      "leadingWordsSha256": "d4234d940c44e7bdc7fc20e5cd2de2ebbd9bd2eda9afaad7ef1fae9d7399ee28"
+    },
+    {
+      "id": "random-fk6",
+      "degree": 5,
+      "rules": 360,
+      "hilbert": [
+        "1",
+        "15",
+        "125",
+        "765",
+        "3831",
+        "16605"
+      ],
+      "leadingWordsSha256": "d4234d940c44e7bdc7fc20e5cd2de2ebbd9bd2eda9afaad7ef1fae9d7399ee28"
+    },
+    {
+      "id": "fk6",
+      "degree": 6,
+      "rules": 497,
+      "hilbert": [
+        "1",
+        "15",
+        "125",
+        "765",
+        "3831",
+        "16605",
+        "64432"
+      ],
+      "leadingWordsSha256": "f5cd5779f3efd3b4341b11a21da99844bba0e4a9ba99b2c08364805c41f156e8"
+    },
+    {
+      "id": "random-fk6",
+      "degree": 6,
+      "rules": 497,
+      "hilbert": [
+        "1",
+        "15",
+        "125",
+        "765",
+        "3831",
+        "16605",
+        "64432"
+      ],
+      "leadingWordsSha256": "f5cd5779f3efd3b4341b11a21da99844bba0e4a9ba99b2c08364805c41f156e8"
+    },
+    {
+      "id": "fk6",
+      "degree": 7,
+      "rules": 695,
+      "hilbert": [
+        "1",
+        "15",
+        "125",
+        "765",
+        "3831",
+        "16605",
+        "64432",
+        "228855"
+      ],
+      "leadingWordsSha256": "5a55f5ab24d71d12975a3102d1372f7933217c86b0e93dbb95862588a9525bca"
+    },
+    {
+      "id": "random-fk6",
+      "degree": 7,
+      "rules": 695,
+      "hilbert": [
+        "1",
+        "15",
+        "125",
+        "765",
+        "3831",
+        "16605",
+        "64432",
+        "228855"
+      ],
+      "leadingWordsSha256": "5a55f5ab24d71d12975a3102d1372f7933217c86b0e93dbb95862588a9525bca"
+    },
+    {
+      "id": "fk6",
+      "degree": 8,
+      "rules": 990,
+      "hilbert": [
+        "1",
+        "15",
+        "125",
+        "765",
+        "3831",
+        "16605",
+        "64432",
+        "228855",
+        "755777"
+      ],
+      "leadingWordsSha256": "0ccd2b9b8f08a1bac0e9cb7847d00a9efa238a1aa31fe092687c8974b2cedcd0"
+    },
+    {
+      "id": "random-fk6",
+      "degree": 8,
+      "rules": 990,
+      "hilbert": [
+        "1",
+        "15",
+        "125",
+        "765",
+        "3831",
+        "16605",
+        "64432",
+        "228855",
+        "755777"
+      ],
+      "leadingWordsSha256": "0ccd2b9b8f08a1bac0e9cb7847d00a9efa238a1aa31fe092687c8974b2cedcd0"
+    }
+  ]
+}

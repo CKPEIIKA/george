@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "host": "Node with mocked service-worker events; not a browser test",
+  "tests": [
+    "same-origin response headers and cross-origin/POST non-interception",
+    "existing service worker not replaced",
+    "project scope and one-reload guard",
+    "activation timeout is bounded",
+    "insecure-context fallback"
+  ]
+}

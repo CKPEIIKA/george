@@ -1,0 +1,140 @@
+{
+  "description": "Regression anchors from recorded C/ECL bases through degree 8 and fomkyr 0.4 degree 9. Hilbert prefixes independently derived by BigInt automaton DP. Degree 1 is the free linear prefix.",
+  "degrees": [
+    {
+      "degree": 1,
+      "rules": 0,
+      "referenceFile": null,
+      "referenceSha256": null,
+      "leadingWordsSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "hilbert": [
+        "1",
+        "15"
+      ]
+    },
+    {
+      "degree": 2,
+      "rules": 100,
+      "referenceFile": "docs/development/validation/backend-resources-fomkyr-degree8/compiled-d2-t0.gb",
+      "referenceSha256": "d0bb9e92a0741773f9def31b90c53b048b68e8c9016cc58a81d425033357888f",
+      "leadingWordsSha256": "6eb6a876cda87d8886a4c14381d8794a158d01c2c231735abd51025567da568c",
+      "hilbert": [
+        "1",
+        "15",
+        "125"
+      ]
+    },
+    {
+      "degree": 3,
+      "rules": 176,
+      "referenceFile": "docs/development/validation/backend-resources-fomkyr-degree8/compiled-d3-t0.gb",
+      "referenceSha256": "f7c19ee18794c8bf6471950cbc3bbe903ddccfbf3df5fa715d555c13d2f198b5",
+      "leadingWordsSha256": "033dfb514903bb8fc82a392d22a77acfc1b0ae9f757158ba075c3b110b8b1154",
+      "hilbert": [
+        "1",
+        "15",
+        "125",
+        "765"
+      ]
+    },
+    {
+      "degree": 4,
+      "rules": 265,
+      "referenceFile": "docs/development/validation/backend-resources-fomkyr-degree8/compiled-d4-t0.gb",
+      "referenceSha256": "90330a9064c82eed277c35533a9f90e79acebf681d2433c89f970abab2315f2d",
+      "leadingWordsSha256": "a80f0b55398adb5195525cf7271f04219cec073953fd7f11b54c90f624ac4740",
+      "hilbert": [
+        "1",
+        "15",
+        "125",
+        "765",
+        "3831"
+      ]
+    },
+    {
+      "degree": 5,
+      "rules": 360,
+      "referenceFile": "docs/development/validation/backend-resources-fomkyr-degree8/compiled-d5-t0.gb",
+      "referenceSha256": "a0f27af418ac66acb9295855540a4f5944b5bbed0dce77bfa8319c3b2a9dfb34",
+      "leadingWordsSha256": "d4234d940c44e7bdc7fc20e5cd2de2ebbd9bd2eda9afaad7ef1fae9d7399ee28",
+      "hilbert": [
+        "1",
+        "15",
+        "125",
+        "765",
+        "3831",
+        "16605"
+      ]
+    },
+    {
+      "degree": 6,
+      "rules": 497,
+      "referenceFile": "docs/development/validation/backend-resources-fomkyr-degree8/compiled-d6-t0.gb",
+      "referenceSha256": "1d9ba03dcce98570066a58b7b5aee6726b1f9dbfc4056daeea7039ca0d64ba10",
+      "leadingWordsSha256": "f5cd5779f3efd3b4341b11a21da99844bba0e4a9ba99b2c08364805c41f156e8",
+      "hilbert": [
+        "1",
+        "15",
+        "125",
+        "765",
+        "3831",
+        "16605",
+        "64432"
+      ]
+    },
+    {
+      "degree": 7,
+      "rules": 695,
+      "referenceFile": "docs/development/validation/backend-resources-fomkyr-degree8/compiled-d7-t0.gb",
+      "referenceSha256": "eb1b77810dc15ad376f7039bb1063566bd187da4243783ce14b8814604a9aa23",
+      "leadingWordsSha256": "5a55f5ab24d71d12975a3102d1372f7933217c86b0e93dbb95862588a9525bca",
+      "hilbert": [
+        "1",
+        "15",
+        "125",
+        "765",
+        "3831",
+        "16605",
+        "64432",
+        "228855"
+      ]
+    },
+    {
+      "degree": 8,
+      "rules": 990,
+      "referenceFile": "docs/development/validation/backend-resources-fomkyr-degree8/compiled-d8-t0.gb",
+      "referenceSha256": "532ab282709a5567babff6a1caa02132fb8a04b60404cf3e615ed38476406772",
+      "leadingWordsSha256": "0ccd2b9b8f08a1bac0e9cb7847d00a9efa238a1aa31fe092687c8974b2cedcd0",
+      "hilbert": [
+        "1",
+        "15",
+        "125",
+        "765",
+        "3831",
+        "16605",
+        "64432",
+        "228855",
+        "755777"
+      ]
+    },
+    {
+      "degree": 9,
+      "rules": 1451,
+      "referenceFile": "docs/development/validation/fomkyr-04-speed-current/fomkyr-d9-t0.gb",
+      "referenceSha256": "d485b80055ce8a7a3b66d75c5afbe30d83dd5099bd6bee296e9e510b312997c3",
+      "leadingWordsSha256": "8e9923a353f9b90942c986999ef3ac404f73c3be4eeeadcfc62810fbda729357",
+      "hilbert": [
+        "1",
+        "15",
+        "125",
+        "765",
+        "3831",
+        "16605",
+        "64432",
+        "228855",
+        "755777",
+        "2347365"
+      ]
+    }
+  ]
+}

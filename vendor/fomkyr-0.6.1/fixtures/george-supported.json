@@ -1,0 +1,136 @@
+{
+  "scope": "Curated homogeneous, unit-weight, noncommutative subset of George's upstream-cases fixture; not the complete upstream test suites.",
+  "source": "https://raw.githubusercontent.com/CKPEIIKA/george/main/test/fixtures/upstream-cases.json",
+  "singularSourceRevision": "fc93f43aefd9c6fa6a606ce46eb9f34864d8baee",
+  "fields": [
+    0,
+    2,
+    5
+  ],
+  "cases": [
+    {
+      "id": "singular-gb_simple",
+      "vars": [
+        "y",
+        "x"
+      ],
+      "rels": [
+        "x*y+y*x"
+      ],
+      "maxdeg": 4,
+      "expectedBasis": [
+        "x*y+y*x"
+      ]
+    },
+    {
+      "id": "singular-gb_mon1",
+      "vars": [
+        "y",
+        "x"
+      ],
+      "rels": [
+        "x*y*x",
+        "y*x*y"
+      ],
+      "maxdeg": 4,
+      "expectedBasis": [
+        "x*y*x",
+        "y*x*y"
+      ]
+    },
+    {
+      "id": "singular-gb_mon2",
+      "vars": [
+        "y",
+        "x"
+      ],
+      "rels": [
+        "x*x",
+        "x*y*x",
+        "y*x*y"
+      ],
+      "maxdeg": 4,
+      "expectedBasis": [
+        "x*x",
+        "x*y*x",
+        "y*x*y"
+      ]
+    },
+    {
+      "id": "singular-gb_mon3",
+      "vars": [
+        "y",
+        "x"
+      ],
+      "rels": [
+        "x*x",
+        "y*y",
+        "x*y*x",
+        "y*x*y"
+      ],
+      "maxdeg": 4,
+      "expectedBasis": [
+        "x*x",
+        "y*y",
+        "x*y*x",
+        "y*x*y"
+      ]
+    },
+    {
+      "id": "singular-gb_exterior2",
+      "vars": [
+        "x",
+        "y"
+      ],
+      "rels": [
+        "y*x+x*y",
+        "x*x",
+        "y*y"
+      ],
+      "maxdeg": 4,
+      "expectedBasis": [
+        "y*x+x*y",
+        "x*x",
+        "y*y"
+      ]
+    },
+    {
+      "id": "singular-gb_braid3-11",
+      "vars": [
+        "z",
+        "y",
+        "x"
+      ],
+      "rels": [
+        "y*x*y-z*y*z",
+        "x*y*x-z*x*y",
+        "z*x*z-y*z*x",
+        "x*x*x+y*y*y+z*z*z+x*y*z"
+      ],
+      "maxdeg": 6
+    },
+    {
+      "id": "singular-gb_braidXY",
+      "vars": [
+        "z",
+        "y",
+        "x"
+      ],
+      "rels": [
+        "y*x*y-z*y*z",
+        "x*y*x-z*x*y",
+        "z*x*z-y*z*x",
+        "x*x*x-2*y*y*y+3*z*z*z-4*x*y*z+5*x*z*z-6*x*y*y+7*x*x*z-8*x*x*y"
+      ],
+      "maxdeg": 6
+    }
+  ],
+  "excludedCategories": [
+    "commutative rings",
+    "non-unit weights",
+    "nonhomogeneous Weyl/Lie/shift inputs",
+    "Plural quotients not presented as homogeneous free-algebra ideals"
+  ],
+  "note": "expectedBasis entries for the five simple cases are explicit polynomial reference bases, independently certified in this release. They are not recordings of a new Singular or Bergman execution.",
+  "sourceLicense": "Singular test sources: GPL-2.0-only OR GPL-3.0-only; this fixture records adapted mathematical presentations, not CAS implementation code."
+}

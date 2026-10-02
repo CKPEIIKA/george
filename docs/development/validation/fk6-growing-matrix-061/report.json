@@ -1,0 +1,1545 @@
+{
+  "state": "complete",
+  "version": "0.6.1",
+  "requestedDegrees": 9,
+  "timeLimitSeconds": 120,
+  "inputs": [
+    {
+      "id": "fk6",
+      "file": "test/fixtures/fomin-kirillov-user.json",
+      "sha256": "557b7a5e2e0b3353b374ee417bc6d435d9b5c4bb80ffd3174135d3a662f7d857",
+      "fixture": {
+        "description": "Exact submitted 15-generator, 100-relation presentation; low-degree test anchor.",
+        "inputText": "vars a,b,c,d,e,f,g,h,k,m,n,p,q,r,s;\na^2,b^2,c^2,d^2,e^2,f^2,g^2,h^2,k^2,m^2,n^2,p^2,q^2,r^2,s^2,a*c-c*a,a*d-d*a,a*e-e*a,a*k-k*a,a*r-r*a,a*s-s*a,b*d-d*b,b*e-e*b,b*f-f*b,b*h-h*b,b*n-n*b,b*r-r*b,c*e-e*c,c*f-f*c,c*g-g*c,c*n-n*c,c*p-p*c,d*f-f*d,d*g-g*d,d*m-m*d,d*s-s*d,e*h-h*e,e*m-m*e,e*q-q*e,f*k-k*f,f*p-p*f,f*q-q*f,g*h-h*g,g*k-k*g,g*m-m*g,g*n-n*g,h*k-k*h,h*p-p*h,h*s-s*h,k*q-q*k,k*r-r*k,m*p-p*m,m*q-q*m,m*r-r*m,n*q-q*n,n*r-r*n,n*s-s*n,p*r-r*p,p*s-s*p,q*s-s*q,m*n-n*k-k*m,n*m-k*n-m*k,m*a-a*b-b*m,a*m-b*a-m*b,m*h-h*c-c*m,h*m-c*h-m*c,m*f-f*s-s*m,f*m-s*f-m*s,k*p-p*b-b*k,p*k-b*p-k*b,k*d-d*c-c*k,d*k-c*d-k*c,k*e-e*s-s*k,e*k-s*e-k*s,b*q-q*c-c*b,q*b-c*q-b*c,b*g-g*s-s*b,g*b-s*g-b*s,c*r-r*s-s*c,r*c-s*r-c*s,n*p-p*a-a*n,p*n-a*p-n*a,n*d-d*h-h*n,d*n-h*d-n*h,n*e-e*f-f*n,e*n-f*e-n*f,a*q-q*h-h*a,q*a-h*q-a*h,a*g-g*f-f*a,g*a-f*g-a*f,h*r-r*f-f*h,r*h-f*r-h*f,p*q-q*d-d*p,q*p-d*q-p*d,p*g-g*e-e*p,g*p-e*g-p*e,d*r-r*e-e*d,r*d-e*r-d*e,q*r-r*g-g*q,r*q-g*r-q*g;\n"
+      }
+    },
+    {
+      "id": "random-fk6",
+      "file": "test/fixtures/random-fk6-growing.json",
+      "sha256": "be9a923671a1f399400a178ce30d25683ef331bec46556d566a4d5d702eb5a34",
+      "fixture": {
+        "description": "Fixed-seed random invertible generator scalings of the submitted FK6 presentation. Preserves its monomial supports, variable order, graded dimensions and growth through degree 9; varies exact rational coefficient arithmetic. This is a graded-isomorphic FK6 presentation.",
+        "generator": "test/support/random-growing-form.mjs",
+        "seed": 1179338550,
+        "construction": "random-invertible-FK6-generator-scalings",
+        "scalings": {
+          "a": 3,
+          "b": -3,
+          "c": 5,
+          "d": 5,
+          "e": -1,
+          "f": -1,
+          "g": 5,
+          "h": -3,
+          "k": -2,
+          "m": 2,
+          "n": -5,
+          "p": -5,
+          "q": -2,
+          "r": 3,
+          "s": -5
+        },
+        "inputText": "vars a,b,c,d,e,f,g,h,k,m,n,p,q,r,s;\na^2,b^2,c^2,d^2,e^2,f^2,g^2,h^2,k^2,m^2,n^2,p^2,q^2,r^2,s^2,a*c-c*a,a*d-d*a,a*e-e*a,a*k-k*a,a*r-r*a,a*s-s*a,b*d-d*b,b*e-e*b,b*f-f*b,b*h-h*b,b*n-n*b,b*r-r*b,c*e-e*c,c*f-f*c,c*g-g*c,c*n-n*c,c*p-p*c,d*f-f*d,d*g-g*d,d*m-m*d,d*s-s*d,e*h-h*e,e*m-m*e,e*q-q*e,f*k-k*f,f*p-p*f,f*q-q*f,g*h-h*g,g*k-k*g,g*m-m*g,g*n-n*g,h*k-k*h,h*p-p*h,h*s-s*h,k*q-q*k,k*r-r*k,m*p-p*m,m*q-q*m,m*r-r*m,n*q-q*n,n*r-r*n,n*s-s*n,p*r-r*p,p*s-s*p,q*s-s*q,5*m*n+5*n*k-2*k*m,5*n*m+5*k*n-2*m*k,2*m*a+3*a*b+2*b*m,2*a*m+3*b*a+2*m*b,6*m*h-15*h*c+10*c*m,6*h*m-15*c*h+10*m*c,2*m*f+5*f*s-10*s*m,2*f*m+5*s*f-10*m*s,10*k*p-15*p*b-6*b*k,10*p*k-15*b*p-6*k*b,2*k*d+5*d*c-2*c*k,2*d*k+5*c*d-2*k*c,2*k*e-5*e*s-10*s*k,2*e*k-5*s*e-10*k*s,6*b*q+10*q*c+15*c*b,6*q*b+10*c*q+15*b*c,3*b*g-5*g*s+3*s*b,3*g*b-5*s*g+3*b*s,3*c*r+3*r*s+5*s*c,3*r*c+3*s*r+5*c*s,5*n*p+3*p*a+3*a*n,5*p*n+3*a*p+3*n*a,5*n*d-3*d*h+3*h*n,5*d*n-3*h*d+3*n*h,5*n*e-e*f-5*f*n,5*e*n-f*e-5*n*f,2*a*q+2*q*h-3*h*a,2*q*a+2*h*q-3*a*h,15*a*g+5*g*f+3*f*a,15*g*a+5*f*g+3*a*f,3*h*r-r*f+f*h,3*r*h-f*r+h*f,2*p*q+2*q*d+5*d*p,2*q*p+2*d*q+5*p*d,5*p*g-g*e+e*p,5*g*p-e*g+p*e,15*d*r+3*r*e+5*e*d,15*r*d+3*e*r+5*d*e,6*q*r+15*r*g-10*g*q,6*r*q+15*g*r-10*q*g;\n"
+      }
+    }
+  ],
+  "kernelHashes": {
+    "fomkyr32.wasm": "c82d7c239de53b39b714ebf7de48f6f3f1d8c3197ee65407a2d1e677b88d4878",
+    "fomkyr64.wasm": "75eb6f6e765a2c93cb2df0ccc4ad453ae0f48a18c600c8200f48d4c3e4d8aca2",
+    "fomkyr32-single.wasm": "3e95af0fcd6bfd1d4d3b0d9c2b764770defdfcef11c2a91e31d6ada5afcd7b4f",
+    "fomkyr64-single.wasm": "91b23485de2011692578988fe86bb36f968d41ac98c655684636116093263570"
+  },
+  "singularSha256": "9a038df213763358a86e602d1659ab16a10add6e38ac12732bbf04d288839f68",
+  "cases": [
+    {
+      "id": "fk6",
+      "degree": 1,
+      "rules": 0,
+      "hilbert": [
+        "1",
+        "15"
+      ],
+      "singular": {
+        "passed": true,
+        "elapsedSeconds": 0.142064639,
+        "ringDegreeBound": 2,
+        "emptyQuadraticPrefix": true,
+        "leadingWordsSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "engines": [
+        {
+          "bits": 32,
+          "execution": "single",
+          "workers": 1,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 0,
+          "ambiguities": 0,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.18065766500000008
+        },
+        {
+          "bits": 32,
+          "execution": "multicore",
+          "workers": 4,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 0,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.63247172
+        },
+        {
+          "bits": 64,
+          "execution": "single",
+          "workers": 1,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 0,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.1647382379999999
+        },
+        {
+          "bits": 64,
+          "execution": "multicore",
+          "workers": 4,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 0,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.5942415670000001
+        }
+      ],
+      "bergman": {
+        "status": "complete",
+        "passed": true,
+        "leadingWordsMatch": true,
+        "inputMembership": true,
+        "mutualIdealMembership": true,
+        "differingTails": 0,
+        "ambiguities": null,
+        "reusedExactPolynomialCertificate": true,
+        "elapsedSeconds": 0.03884793999999965
+      }
+    },
+    {
+      "id": "random-fk6",
+      "degree": 1,
+      "rules": 0,
+      "hilbert": [
+        "1",
+        "15"
+      ],
+      "singular": {
+        "passed": true,
+        "elapsedSeconds": 0.08781725699999998,
+        "ringDegreeBound": 2,
+        "emptyQuadraticPrefix": true,
+        "leadingWordsSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "engines": [
+        {
+          "bits": 32,
+          "execution": "single",
+          "workers": 1,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 0,
+          "ambiguities": 0,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.2104152130000002
+        },
+        {
+          "bits": 32,
+          "execution": "multicore",
+          "workers": 4,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 0,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.5395560020000003
+        },
+        {
+          "bits": 64,
+          "execution": "single",
+          "workers": 1,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 0,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.15588815000000067
+        },
+        {
+          "bits": 64,
+          "execution": "multicore",
+          "workers": 4,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 0,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.5522224260000003
+        }
+      ],
+      "bergman": {
+        "status": "complete",
+        "passed": true,
+        "leadingWordsMatch": true,
+        "inputMembership": true,
+        "mutualIdealMembership": true,
+        "differingTails": 0,
+        "ambiguities": null,
+        "reusedExactPolynomialCertificate": true,
+        "elapsedSeconds": 0.05371527799999967
+      }
+    },
+    {
+      "id": "fk6",
+      "degree": 2,
+      "rules": 100,
+      "hilbert": [
+        "1",
+        "15",
+        "125"
+      ],
+      "singular": {
+        "passed": true,
+        "elapsedSeconds": 0.11340749800000048,
+        "ringDegreeBound": 2,
+        "emptyQuadraticPrefix": false,
+        "leadingWordsSha256": "6eb6a876cda87d8886a4c14381d8794a158d01c2c231735abd51025567da568c"
+      },
+      "engines": [
+        {
+          "bits": 32,
+          "execution": "single",
+          "workers": 1,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 0,
+          "ambiguities": 200,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.22105216699999983
+        },
+        {
+          "bits": 32,
+          "execution": "multicore",
+          "workers": 4,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 0,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.6718652529999999
+        },
+        {
+          "bits": 64,
+          "execution": "single",
+          "workers": 1,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 0,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.24896140500000002
+        },
+        {
+          "bits": 64,
+          "execution": "multicore",
+          "workers": 4,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 0,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.6813326189999989
+        }
+      ],
+      "bergman": {
+        "status": "complete",
+        "passed": true,
+        "leadingWordsMatch": true,
+        "inputMembership": true,
+        "mutualIdealMembership": true,
+        "differingTails": 0,
+        "ambiguities": null,
+        "reusedExactPolynomialCertificate": true,
+        "elapsedSeconds": 0.15518742400000154
+      }
+    },
+    {
+      "id": "random-fk6",
+      "degree": 2,
+      "rules": 100,
+      "hilbert": [
+        "1",
+        "15",
+        "125"
+      ],
+      "singular": {
+        "passed": true,
+        "elapsedSeconds": 0.10780050499999924,
+        "ringDegreeBound": 2,
+        "emptyQuadraticPrefix": false,
+        "leadingWordsSha256": "6eb6a876cda87d8886a4c14381d8794a158d01c2c231735abd51025567da568c"
+      },
+      "engines": [
+        {
+          "bits": 32,
+          "execution": "single",
+          "workers": 1,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 0,
+          "ambiguities": 200,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.20541741600000024
+        },
+        {
+          "bits": 32,
+          "execution": "multicore",
+          "workers": 4,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 0,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.7054028920000001
+        },
+        {
+          "bits": 64,
+          "execution": "single",
+          "workers": 1,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 0,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.20060849600000075
+        },
+        {
+          "bits": 64,
+          "execution": "multicore",
+          "workers": 4,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 0,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.5368530529999989
+        }
+      ],
+      "bergman": {
+        "status": "complete",
+        "passed": true,
+        "leadingWordsMatch": true,
+        "inputMembership": true,
+        "mutualIdealMembership": true,
+        "differingTails": 0,
+        "ambiguities": null,
+        "reusedExactPolynomialCertificate": true,
+        "elapsedSeconds": 0.1622849490000008
+      }
+    },
+    {
+      "id": "fk6",
+      "degree": 3,
+      "rules": 176,
+      "hilbert": [
+        "1",
+        "15",
+        "125",
+        "765"
+      ],
+      "singular": {
+        "passed": true,
+        "elapsedSeconds": 0.3008552830000008,
+        "ringDegreeBound": 3,
+        "emptyQuadraticPrefix": false,
+        "leadingWordsSha256": "033dfb514903bb8fc82a392d22a77acfc1b0ae9f757158ba075c3b110b8b1154"
+      },
+      "engines": [
+        {
+          "bits": 32,
+          "execution": "single",
+          "workers": 1,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 3,
+          "ambiguities": 818,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.21735019099999772
+        },
+        {
+          "bits": 32,
+          "execution": "multicore",
+          "workers": 4,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 3,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.9155070930000002
+        },
+        {
+          "bits": 64,
+          "execution": "single",
+          "workers": 1,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 3,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.2867038560000001
+        },
+        {
+          "bits": 64,
+          "execution": "multicore",
+          "workers": 4,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 3,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.6945283760000021
+        }
+      ],
+      "bergman": {
+        "status": "complete",
+        "passed": true,
+        "leadingWordsMatch": true,
+        "inputMembership": true,
+        "mutualIdealMembership": true,
+        "differingTails": 0,
+        "ambiguities": 818,
+        "elapsedSeconds": 0.29711176299999714
+      }
+    },
+    {
+      "id": "random-fk6",
+      "degree": 3,
+      "rules": 176,
+      "hilbert": [
+        "1",
+        "15",
+        "125",
+        "765"
+      ],
+      "singular": {
+        "passed": true,
+        "elapsedSeconds": 0.2118415359999999,
+        "ringDegreeBound": 3,
+        "emptyQuadraticPrefix": false,
+        "leadingWordsSha256": "033dfb514903bb8fc82a392d22a77acfc1b0ae9f757158ba075c3b110b8b1154"
+      },
+      "engines": [
+        {
+          "bits": 32,
+          "execution": "single",
+          "workers": 1,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 3,
+          "ambiguities": 818,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.2184579969999977
+        },
+        {
+          "bits": 32,
+          "execution": "multicore",
+          "workers": 4,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 3,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.6161737930000017
+        },
+        {
+          "bits": 64,
+          "execution": "single",
+          "workers": 1,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 3,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.228274899
+        },
+        {
+          "bits": 64,
+          "execution": "multicore",
+          "workers": 4,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 3,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.5956382329999979
+        }
+      ],
+      "bergman": {
+        "status": "complete",
+        "passed": true,
+        "leadingWordsMatch": true,
+        "inputMembership": true,
+        "mutualIdealMembership": true,
+        "differingTails": 0,
+        "ambiguities": 818,
+        "elapsedSeconds": 0.2919895319999996
+      }
+    },
+    {
+      "id": "fk6",
+      "degree": 4,
+      "rules": 265,
+      "hilbert": [
+        "1",
+        "15",
+        "125",
+        "765",
+        "3831"
+      ],
+      "singular": {
+        "passed": true,
+        "elapsedSeconds": 0.5359630810000017,
+        "ringDegreeBound": 4,
+        "emptyQuadraticPrefix": false,
+        "leadingWordsSha256": "a80f0b55398adb5195525cf7271f04219cec073953fd7f11b54c90f624ac4740"
+      },
+      "engines": [
+        {
+          "bits": 32,
+          "execution": "single",
+          "workers": 1,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 4,
+          "ambiguities": 1823,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.4510311919999949
+        },
+        {
+          "bits": 32,
+          "execution": "multicore",
+          "workers": 4,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 4,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.782384944999998
+        },
+        {
+          "bits": 64,
+          "execution": "single",
+          "workers": 1,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 4,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.4112964820000052
+        },
+        {
+          "bits": 64,
+          "execution": "multicore",
+          "workers": 4,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 4,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.6888962809999939
+        }
+      ],
+      "bergman": {
+        "status": "complete",
+        "passed": true,
+        "leadingWordsMatch": true,
+        "inputMembership": true,
+        "mutualIdealMembership": true,
+        "differingTails": 0,
+        "ambiguities": 1823,
+        "elapsedSeconds": 0.671187675000001
+      }
+    },
+    {
+      "id": "random-fk6",
+      "degree": 4,
+      "rules": 265,
+      "hilbert": [
+        "1",
+        "15",
+        "125",
+        "765",
+        "3831"
+      ],
+      "singular": {
+        "passed": true,
+        "elapsedSeconds": 0.7426209180000005,
+        "ringDegreeBound": 4,
+        "emptyQuadraticPrefix": false,
+        "leadingWordsSha256": "a80f0b55398adb5195525cf7271f04219cec073953fd7f11b54c90f624ac4740"
+      },
+      "engines": [
+        {
+          "bits": 32,
+          "execution": "single",
+          "workers": 1,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 4,
+          "ambiguities": 1823,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.3084854150000028
+        },
+        {
+          "bits": 32,
+          "execution": "multicore",
+          "workers": 4,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 4,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.6382842840000013
+        },
+        {
+          "bits": 64,
+          "execution": "single",
+          "workers": 1,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 4,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.32473643199999785
+        },
+        {
+          "bits": 64,
+          "execution": "multicore",
+          "workers": 4,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 4,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.8710122850000044
+        }
+      ],
+      "bergman": {
+        "status": "complete",
+        "passed": true,
+        "leadingWordsMatch": true,
+        "inputMembership": true,
+        "mutualIdealMembership": true,
+        "differingTails": 0,
+        "ambiguities": 1823,
+        "elapsedSeconds": 0.6748898560000016
+      }
+    },
+    {
+      "id": "fk6",
+      "degree": 5,
+      "rules": 360,
+      "hilbert": [
+        "1",
+        "15",
+        "125",
+        "765",
+        "3831",
+        "16605"
+      ],
+      "singular": {
+        "passed": true,
+        "elapsedSeconds": 1.7252373280000028,
+        "ringDegreeBound": 5,
+        "emptyQuadraticPrefix": false,
+        "leadingWordsSha256": "d4234d940c44e7bdc7fc20e5cd2de2ebbd9bd2eda9afaad7ef1fae9d7399ee28"
+      },
+      "engines": [
+        {
+          "bits": 32,
+          "execution": "single",
+          "workers": 1,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 4,
+          "ambiguities": null,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.40487683200000174
+        },
+        {
+          "bits": 32,
+          "execution": "multicore",
+          "workers": 4,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 4,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.7587197490000035
+        },
+        {
+          "bits": 64,
+          "execution": "single",
+          "workers": 1,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 4,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.3913726420000021
+        },
+        {
+          "bits": 64,
+          "execution": "multicore",
+          "workers": 4,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 4,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.693627456000002
+        }
+      ],
+      "bergman": {
+        "status": "complete",
+        "passed": true,
+        "leadingWordsMatch": true,
+        "inputMembership": true,
+        "mutualIdealMembership": true,
+        "differingTails": 0,
+        "ambiguities": null,
+        "elapsedSeconds": 1.691570596000005
+      }
+    },
+    {
+      "id": "random-fk6",
+      "degree": 5,
+      "rules": 360,
+      "hilbert": [
+        "1",
+        "15",
+        "125",
+        "765",
+        "3831",
+        "16605"
+      ],
+      "singular": {
+        "passed": true,
+        "elapsedSeconds": 1.9277219820000027,
+        "ringDegreeBound": 5,
+        "emptyQuadraticPrefix": false,
+        "leadingWordsSha256": "d4234d940c44e7bdc7fc20e5cd2de2ebbd9bd2eda9afaad7ef1fae9d7399ee28"
+      },
+      "engines": [
+        {
+          "bits": 32,
+          "execution": "single",
+          "workers": 1,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 4,
+          "ambiguities": null,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.45745027000000116
+        },
+        {
+          "bits": 32,
+          "execution": "multicore",
+          "workers": 4,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 4,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.7726443389999986
+        },
+        {
+          "bits": 64,
+          "execution": "single",
+          "workers": 1,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 4,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.4610966550000012
+        },
+        {
+          "bits": 64,
+          "execution": "multicore",
+          "workers": 4,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 4,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.7457277819999945
+        }
+      ],
+      "bergman": {
+        "status": "complete",
+        "passed": true,
+        "leadingWordsMatch": true,
+        "inputMembership": true,
+        "mutualIdealMembership": true,
+        "differingTails": 0,
+        "ambiguities": null,
+        "elapsedSeconds": 1.9367460259999933
+      }
+    },
+    {
+      "id": "fk6",
+      "degree": 6,
+      "rules": 497,
+      "hilbert": [
+        "1",
+        "15",
+        "125",
+        "765",
+        "3831",
+        "16605",
+        "64432"
+      ],
+      "singular": {
+        "passed": true,
+        "elapsedSeconds": 4.702751606999998,
+        "ringDegreeBound": 6,
+        "emptyQuadraticPrefix": false,
+        "leadingWordsSha256": "f5cd5779f3efd3b4341b11a21da99844bba0e4a9ba99b2c08364805c41f156e8"
+      },
+      "engines": [
+        {
+          "bits": 32,
+          "execution": "single",
+          "workers": 1,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 9,
+          "ambiguities": null,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.5643368579999951
+        },
+        {
+          "bits": 32,
+          "execution": "multicore",
+          "workers": 4,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 9,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.8930159129999956
+        },
+        {
+          "bits": 64,
+          "execution": "single",
+          "workers": 1,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 9,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.6135073919999995
+        },
+        {
+          "bits": 64,
+          "execution": "multicore",
+          "workers": 4,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 9,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.9623428489999933
+        }
+      ],
+      "bergman": {
+        "status": "complete",
+        "passed": true,
+        "leadingWordsMatch": true,
+        "inputMembership": true,
+        "mutualIdealMembership": true,
+        "differingTails": 0,
+        "ambiguities": null,
+        "elapsedSeconds": 7.1804632679999925
+      }
+    },
+    {
+      "id": "random-fk6",
+      "degree": 6,
+      "rules": 497,
+      "hilbert": [
+        "1",
+        "15",
+        "125",
+        "765",
+        "3831",
+        "16605",
+        "64432"
+      ],
+      "singular": {
+        "passed": true,
+        "elapsedSeconds": 4.624760378000007,
+        "ringDegreeBound": 6,
+        "emptyQuadraticPrefix": false,
+        "leadingWordsSha256": "f5cd5779f3efd3b4341b11a21da99844bba0e4a9ba99b2c08364805c41f156e8"
+      },
+      "engines": [
+        {
+          "bits": 32,
+          "execution": "single",
+          "workers": 1,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 9,
+          "ambiguities": null,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.8152575540000108
+        },
+        {
+          "bits": 32,
+          "execution": "multicore",
+          "workers": 4,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 9,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 1.3860393739999999
+        },
+        {
+          "bits": 64,
+          "execution": "single",
+          "workers": 1,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 9,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.9927258979999897
+        },
+        {
+          "bits": 64,
+          "execution": "multicore",
+          "workers": 4,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 9,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.9694240260000079
+        }
+      ],
+      "bergman": {
+        "status": "complete",
+        "passed": true,
+        "leadingWordsMatch": true,
+        "inputMembership": true,
+        "mutualIdealMembership": true,
+        "differingTails": 0,
+        "ambiguities": null,
+        "elapsedSeconds": 7.100191328999994
+      }
+    },
+    {
+      "id": "fk6",
+      "degree": 7,
+      "rules": 695,
+      "hilbert": [
+        "1",
+        "15",
+        "125",
+        "765",
+        "3831",
+        "16605",
+        "64432",
+        "228855"
+      ],
+      "singular": {
+        "passed": true,
+        "elapsedSeconds": 18.30114538999999,
+        "ringDegreeBound": 7,
+        "emptyQuadraticPrefix": false,
+        "leadingWordsSha256": "5a55f5ab24d71d12975a3102d1372f7933217c86b0e93dbb95862588a9525bca"
+      },
+      "engines": [
+        {
+          "bits": 32,
+          "execution": "single",
+          "workers": 1,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 14,
+          "ambiguities": null,
+          "hilbertMatches": true,
+          "elapsedSeconds": 0.9699358549999888
+        },
+        {
+          "bits": 32,
+          "execution": "multicore",
+          "workers": 4,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 14,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 1.1893710119999887
+        },
+        {
+          "bits": 64,
+          "execution": "single",
+          "workers": 1,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 14,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 1.174009943000012
+        },
+        {
+          "bits": 64,
+          "execution": "multicore",
+          "workers": 4,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 14,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 1.1671375000000117
+        }
+      ],
+      "bergman": {
+        "status": "complete",
+        "passed": true,
+        "leadingWordsMatch": true,
+        "inputMembership": true,
+        "mutualIdealMembership": true,
+        "differingTails": 0,
+        "ambiguities": null,
+        "elapsedSeconds": 27.112814123000017
+      }
+    },
+    {
+      "id": "random-fk6",
+      "degree": 7,
+      "rules": 695,
+      "hilbert": [
+        "1",
+        "15",
+        "125",
+        "765",
+        "3831",
+        "16605",
+        "64432",
+        "228855"
+      ],
+      "singular": {
+        "passed": true,
+        "elapsedSeconds": 17.726351129999994,
+        "ringDegreeBound": 7,
+        "emptyQuadraticPrefix": false,
+        "leadingWordsSha256": "5a55f5ab24d71d12975a3102d1372f7933217c86b0e93dbb95862588a9525bca"
+      },
+      "engines": [
+        {
+          "bits": 32,
+          "execution": "single",
+          "workers": 1,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 14,
+          "ambiguities": null,
+          "hilbertMatches": true,
+          "elapsedSeconds": 1.5932933450000129
+        },
+        {
+          "bits": 32,
+          "execution": "multicore",
+          "workers": 4,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 14,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 1.194881476999988
+        },
+        {
+          "bits": 64,
+          "execution": "single",
+          "workers": 1,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 14,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 1.5809005729999916
+        },
+        {
+          "bits": 64,
+          "execution": "multicore",
+          "workers": 4,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 14,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 1.2634321829999973
+        }
+      ],
+      "bergman": {
+        "status": "complete",
+        "passed": true,
+        "leadingWordsMatch": true,
+        "inputMembership": true,
+        "mutualIdealMembership": true,
+        "differingTails": 0,
+        "ambiguities": null,
+        "elapsedSeconds": 35.77095924499998
+      }
+    },
+    {
+      "id": "fk6",
+      "degree": 8,
+      "rules": 990,
+      "hilbert": [
+        "1",
+        "15",
+        "125",
+        "765",
+        "3831",
+        "16605",
+        "64432",
+        "228855",
+        "755777"
+      ],
+      "singular": {
+        "passed": true,
+        "elapsedSeconds": 77.46617777299997,
+        "ringDegreeBound": 8,
+        "emptyQuadraticPrefix": false,
+        "leadingWordsSha256": "0ccd2b9b8f08a1bac0e9cb7847d00a9efa238a1aa31fe092687c8974b2cedcd0"
+      },
+      "engines": [
+        {
+          "bits": 32,
+          "execution": "single",
+          "workers": 1,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 35,
+          "ambiguities": null,
+          "hilbertMatches": true,
+          "elapsedSeconds": 3.1764191979999885
+        },
+        {
+          "bits": 32,
+          "execution": "multicore",
+          "workers": 4,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 35,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 2.145743450000009
+        },
+        {
+          "bits": 64,
+          "execution": "single",
+          "workers": 1,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 35,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 3.2261495819999837
+        },
+        {
+          "bits": 64,
+          "execution": "multicore",
+          "workers": 4,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 35,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 1.9687074470000225
+        }
+      ],
+      "bergman": {
+        "status": "timeout",
+        "capSeconds": 120
+      }
+    },
+    {
+      "id": "random-fk6",
+      "degree": 8,
+      "rules": 990,
+      "hilbert": [
+        "1",
+        "15",
+        "125",
+        "765",
+        "3831",
+        "16605",
+        "64432",
+        "228855",
+        "755777"
+      ],
+      "singular": {
+        "passed": true,
+        "elapsedSeconds": 82.74724329199996,
+        "ringDegreeBound": 8,
+        "emptyQuadraticPrefix": false,
+        "leadingWordsSha256": "0ccd2b9b8f08a1bac0e9cb7847d00a9efa238a1aa31fe092687c8974b2cedcd0"
+      },
+      "engines": [
+        {
+          "bits": 32,
+          "execution": "single",
+          "workers": 1,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 36,
+          "ambiguities": null,
+          "hilbertMatches": true,
+          "elapsedSeconds": 4.67570404599997
+        },
+        {
+          "bits": 32,
+          "execution": "multicore",
+          "workers": 4,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 36,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 2.3244275030000137
+        },
+        {
+          "bits": 64,
+          "execution": "single",
+          "workers": 1,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 36,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 4.649642150000087
+        },
+        {
+          "bits": 64,
+          "execution": "multicore",
+          "workers": 4,
+          "passed": true,
+          "leadingWordsMatch": true,
+          "inputMembership": true,
+          "mutualIdealMembership": true,
+          "differingTails": 36,
+          "ambiguities": null,
+          "reusedExactPolynomialCertificate": true,
+          "hilbertMatches": true,
+          "elapsedSeconds": 2.653210397000075
+        }
+      ],
+      "bergman": {
+        "status": "timeout",
+        "capSeconds": 120
+      }
+    }
+  ],
+  "attempts": [
+    {
+      "id": "fk6",
+      "degree": 1,
+      "status": "complete",
+      "elapsedSeconds": 0.142064639
+    },
+    {
+      "id": "random-fk6",
+      "degree": 1,
+      "status": "complete",
+      "elapsedSeconds": 0.08781725699999998
+    },
+    {
+      "id": "fk6",
+      "degree": 2,
+      "status": "complete",
+      "elapsedSeconds": 0.11340749800000048
+    },
+    {
+      "id": "random-fk6",
+      "degree": 2,
+      "status": "complete",
+      "elapsedSeconds": 0.10780050499999924
+    },
+    {
+      "id": "fk6",
+      "degree": 3,
+      "status": "complete",
+      "elapsedSeconds": 0.3008552830000008
+    },
+    {
+      "id": "random-fk6",
+      "degree": 3,
+      "status": "complete",
+      "elapsedSeconds": 0.2118415359999999
+    },
+    {
+      "id": "fk6",
+      "degree": 4,
+      "status": "complete",
+      "elapsedSeconds": 0.5359630810000017
+    },
+    {
+      "id": "random-fk6",
+      "degree": 4,
+      "status": "complete",
+      "elapsedSeconds": 0.7426209180000005
+    },
+    {
+      "id": "fk6",
+      "degree": 5,
+      "status": "complete",
+      "elapsedSeconds": 1.7252373280000028
+    },
+    {
+      "id": "random-fk6",
+      "degree": 5,
+      "status": "complete",
+      "elapsedSeconds": 1.9277219820000027
+    },
+    {
+      "id": "fk6",
+      "degree": 6,
+      "status": "complete",
+      "elapsedSeconds": 4.702751606999998
+    },
+    {
+      "id": "random-fk6",
+      "degree": 6,
+      "status": "complete",
+      "elapsedSeconds": 4.624760378000007
+    },
+    {
+      "id": "fk6",
+      "degree": 7,
+      "status": "complete",
+      "elapsedSeconds": 18.30114538999999
+    },
+    {
+      "id": "random-fk6",
+      "degree": 7,
+      "status": "complete",
+      "elapsedSeconds": 17.726351129999994
+    },
+    {
+      "id": "fk6",
+      "degree": 8,
+      "status": "complete",
+      "elapsedSeconds": 77.46617777299997
+    },
+    {
+      "id": "random-fk6",
+      "degree": 8,
+      "status": "complete",
+      "elapsedSeconds": 82.74724329199996
+    },
+    {
+      "id": "fk6",
+      "degree": 9,
+      "status": "timeout",
+      "elapsedSeconds": 120.11223017900006,
+      "capSeconds": 120
+    }
+  ],
+  "method": "Matched bounds 1..n for submitted FK6 and random FK6-shaped coefficients, up to the requested bound. Each included Singular bounded completion finishes within 120 s. All four actual Wasm modules are compared by exact input and mutual ideal membership, leading words and independent normal-word BigInt DP. Distinct bases are certified through degree 4. C/ECL comparison runs until its first 120-second cap. An unfinished oracle degree is retained in attempts and excluded from the matched matrix.",
+  "commonDegreeBound": 8,
+  "summary": {
+    "commonDegreeBound": 8,
+    "cases": 16,
+    "fomkyrRuns": 64,
+    "singularCases": 16
+  },
+  "finishedAt": "2026-10-02T23:08:33.011Z"
+}

@@ -1,0 +1,18 @@
+{
+  "status": "unavailable",
+  "externalVerified": false,
+  "cases": [],
+  "version": "0.6.1",
+  "startedAt": "2026-10-02T21:25:49.786Z",
+  "fomkyrWasmSHA256": "c82d7c239de53b39b714ebf7de48f6f3f1d8c3197ee65407a2d1e677b88d4878",
+  "george": "/mnt/data/george-unavailable",
+  "singular": "/mnt/data/george-unavailable/build/oracles/root/usr/bin/Singular",
+  "missing": [
+    "/mnt/data/george-unavailable/build/oracles/root/usr/bin/Singular",
+    "/mnt/data/george-unavailable/web/src/bergman-syntax.js",
+    "/mnt/data/george-unavailable/test/support/backend-client.mjs",
+    "/mnt/data/george-unavailable/test/support/algebra.mjs",
+    "/mnt/data/george-unavailable/web/engine/compiled/build.json"
+  ],
+  "reason": "Use an initialized George checkout and install its pinned oracle packages. No engine comparison was run."
+}

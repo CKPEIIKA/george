@@ -1,0 +1,119 @@
+{
+  "state": "complete",
+  "method": "Every completed fomkyr cold sample exactly matches the monic polynomial set of its fresh certified Node matrix output. This reuses that identical polynomial certificate. The interrupted full benchmark remains interrupted.",
+  "runs": 14,
+  "results": [
+    {
+      "id": "fomkyr",
+      "degree": 1,
+      "exactMonicPolynomialSetMatches": true,
+      "measuredSha256": "cb1b7bb073e870f03979d8695b98945f462cfc94028d6137c04eae2d3c9b38ec",
+      "referenceFile": "build/validation/fk6-growing-matrix-061/fk6-d1/fomkyr-64-multicore.gb",
+      "referenceSha256": "cb1b7bb073e870f03979d8695b98945f462cfc94028d6137c04eae2d3c9b38ec"
+    },
+    {
+      "id": "fomkyr-firefox",
+      "degree": 1,
+      "exactMonicPolynomialSetMatches": true,
+      "measuredSha256": "cb1b7bb073e870f03979d8695b98945f462cfc94028d6137c04eae2d3c9b38ec",
+      "referenceFile": "build/validation/fk6-growing-matrix-061/fk6-d1/fomkyr-64-multicore.gb",
+      "referenceSha256": "cb1b7bb073e870f03979d8695b98945f462cfc94028d6137c04eae2d3c9b38ec"
+    },
+    {
+      "id": "fomkyr",
+      "degree": 2,
+      "exactMonicPolynomialSetMatches": true,
+      "measuredSha256": "bdf28edb3e41edb10d8bf113f38e1c4a9b13dbf32ef1553f335d1bbf7fc8ed20",
+      "referenceFile": "build/validation/fk6-growing-matrix-061/fk6-d2/fomkyr-64-multicore.gb",
+      "referenceSha256": "bdf28edb3e41edb10d8bf113f38e1c4a9b13dbf32ef1553f335d1bbf7fc8ed20"
+    },
+    {
+      "id": "fomkyr-firefox",
+      "degree": 2,
+      "exactMonicPolynomialSetMatches": true,
+      "measuredSha256": "bdf28edb3e41edb10d8bf113f38e1c4a9b13dbf32ef1553f335d1bbf7fc8ed20",
+      "referenceFile": "build/validation/fk6-growing-matrix-061/fk6-d2/fomkyr-64-multicore.gb",
+      "referenceSha256": "bdf28edb3e41edb10d8bf113f38e1c4a9b13dbf32ef1553f335d1bbf7fc8ed20"
+    },
+    {
+      "id": "fomkyr",
+      "degree": 3,
+      "exactMonicPolynomialSetMatches": true,
+      "measuredSha256": "827f6d52c880722668cc4e9375517d14d6ab553ccb44990045e73912a7ea85fb",
+      "referenceFile": "build/validation/fk6-growing-matrix-061/fk6-d3/fomkyr-64-multicore.gb",
+      "referenceSha256": "827f6d52c880722668cc4e9375517d14d6ab553ccb44990045e73912a7ea85fb"
+    },
+    {
+      "id": "fomkyr-firefox",
+      "degree": 3,
+      "exactMonicPolynomialSetMatches": true,
+      "measuredSha256": "827f6d52c880722668cc4e9375517d14d6ab553ccb44990045e73912a7ea85fb",
+      "referenceFile": "build/validation/fk6-growing-matrix-061/fk6-d3/fomkyr-64-multicore.gb",
+      "referenceSha256": "827f6d52c880722668cc4e9375517d14d6ab553ccb44990045e73912a7ea85fb"
+    },
+    {
+      "id": "fomkyr",
+      "degree": 4,
+      "exactMonicPolynomialSetMatches": true,
+      "measuredSha256": "1481416a8b47466e8c95882b180e17111671f5301b2ed7adf7ea2d970fb88768",
+      "referenceFile": "build/validation/fk6-growing-matrix-061/fk6-d4/fomkyr-64-multicore.gb",
+      "referenceSha256": "1481416a8b47466e8c95882b180e17111671f5301b2ed7adf7ea2d970fb88768"
+    },
+    {
+      "id": "fomkyr-firefox",
+      "degree": 4,
+      "exactMonicPolynomialSetMatches": true,
+      "measuredSha256": "1481416a8b47466e8c95882b180e17111671f5301b2ed7adf7ea2d970fb88768",
+      "referenceFile": "build/validation/fk6-growing-matrix-061/fk6-d4/fomkyr-64-multicore.gb",
+      "referenceSha256": "1481416a8b47466e8c95882b180e17111671f5301b2ed7adf7ea2d970fb88768"
+    },
+    {
+      "id": "fomkyr-firefox",
+      "degree": 5,
+      "exactMonicPolynomialSetMatches": true,
+      "measuredSha256": "23d132f0ab139853389183395b751d5d3b74d3769548376fd359b923a528d124",
+      "referenceFile": "build/validation/fk6-growing-matrix-061/fk6-d5/fomkyr-64-multicore.gb",
+      "referenceSha256": "23d132f0ab139853389183395b751d5d3b74d3769548376fd359b923a528d124"
+    },
+    {
+      "id": "fomkyr",
+      "degree": 5,
+      "exactMonicPolynomialSetMatches": true,
+      "measuredSha256": "23d132f0ab139853389183395b751d5d3b74d3769548376fd359b923a528d124",
+      "referenceFile": "build/validation/fk6-growing-matrix-061/fk6-d5/fomkyr-64-multicore.gb",
+      "referenceSha256": "23d132f0ab139853389183395b751d5d3b74d3769548376fd359b923a528d124"
+    },
+    {
+      "id": "fomkyr",
+      "degree": 6,
+      "exactMonicPolynomialSetMatches": true,
+      "measuredSha256": "9edd7893afd845e8367e9493d768f40dd858638f2fe7dbe1738d31ad4a38bf5c",
+      "referenceFile": "build/validation/fk6-growing-matrix-061/fk6-d6/fomkyr-64-multicore.gb",
+      "referenceSha256": "9edd7893afd845e8367e9493d768f40dd858638f2fe7dbe1738d31ad4a38bf5c"
+    },
+    {
+      "id": "fomkyr-firefox",
+      "degree": 6,
+      "exactMonicPolynomialSetMatches": true,
+      "measuredSha256": "9edd7893afd845e8367e9493d768f40dd858638f2fe7dbe1738d31ad4a38bf5c",
+      "referenceFile": "build/validation/fk6-growing-matrix-061/fk6-d6/fomkyr-64-multicore.gb",
+      "referenceSha256": "9edd7893afd845e8367e9493d768f40dd858638f2fe7dbe1738d31ad4a38bf5c"
+    },
+    {
+      "id": "fomkyr",
+      "degree": 7,
+      "exactMonicPolynomialSetMatches": true,
+      "measuredSha256": "6f1d47f6c55532e7a87ed697c45cc47699548c3f78da9fa731ebd7e2395ef169",
+      "referenceFile": "build/validation/fk6-growing-matrix-061/fk6-d7/fomkyr-64-multicore.gb",
+      "referenceSha256": "6f1d47f6c55532e7a87ed697c45cc47699548c3f78da9fa731ebd7e2395ef169"
+    },
+    {
+      "id": "fomkyr-firefox",
+      "degree": 7,
+      "exactMonicPolynomialSetMatches": true,
+      "measuredSha256": "6f1d47f6c55532e7a87ed697c45cc47699548c3f78da9fa731ebd7e2395ef169",
+      "referenceFile": "build/validation/fk6-growing-matrix-061/fk6-d7/fomkyr-64-multicore.gb",
+      "referenceSha256": "6f1d47f6c55532e7a87ed697c45cc47699548c3f78da9fa731ebd7e2395ef169"
+    }
+  ]
+}

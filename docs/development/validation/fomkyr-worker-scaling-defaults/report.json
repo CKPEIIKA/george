@@ -1,0 +1,2642 @@
+{
+  "state": "complete",
+  "startedAt": "2026-10-02T18:45:57.057Z",
+  "version": "0.6.0",
+  "inputFile": "test/fixtures/fomin-kirillov-user.json",
+  "inputSha256": "557b7a5e2e0b3353b374ee417bc6d435d9b5c4bb80ffd3174135d3a662f7d857",
+  "variables": 15,
+  "relations": 100,
+  "machine": {
+    "cpu": "11th Gen Intel(R) Core(TM) i5-1135G7 @ 2.40GHz",
+    "logicalCpus": 8,
+    "totalRamMiB": 15708.30859375,
+    "platform": "linux"
+  },
+  "sourceHashes": {
+    "tools/benchmark-backend-resources.mjs": "6e9d57f73fad51bce43795023c5a01a8a826452a5f0fe99221182965c10439af",
+    "web/src/bergman-syntax.js": "19b7dcfd5fbce06d0dfb94703e5d360d6c70b5a31c492284e825428e0103a830",
+    "web/src/fomkyr-options.js": "86ac3c928d05ee41bd3c3bf5c2b75d05e174212b9f000be06e28a2f6595ce492",
+    "web/src/engine.js": "08cd678a6240de4184e3b07faba6b7fbb0eccf28f5ba09d2b5b753008a965df7",
+    "web/engine/worker.js": "3fdea89eb03fb85b0e5b5c8d441c074a4f56bd4adc70a120991e3be4e3c90e51",
+    "web/engine/native/engine.js": "ae2bc3ebee16931d2cb09d11a2d0b237da6ad1896082f5cd80833bed273736a6",
+    "web/engine/native/runtime.js": "7001ae15868fe7566bb94fad6232a55794e276fc05b8ee58164c2556cfe72aa6",
+    "web/engine/native/george-entry.js": "7c2cb00318dee77ae274b1aa12620f86b92e37914b6d85c736c7ad1933961b1a",
+    "web/engine/native/storage.js": "f89ae6a9eff1e0bf6dfe3926ca7908868a60e07ea2fa659c01b8ab559a872535",
+    "web/engine/native/george32.wasm": "a4c06634c05c5091c878eb227d9873add25c3f5690d69fe4642eaaa5ed0ab083",
+    "web/engine/native/george64.wasm": "5cd17a791b98ff24d4123e03cbe79d7bbfdb05c9a8e50a5db5f72d0ebc2fe035",
+    "web/engine/ecl.wasm": "b90c140372df3f8857e535fd8a8de3406ba57d27a40b6cf2e62b51a123a26585",
+    "web/engine/optimized/ecl.wasm": "221a268e3aac9bf1a7167f1e613eb51f600437f8c65596c2b0dfbbff0677786c",
+    "web/engine/compiled/ecl.wasm": "8bd7c0b8be173025c741e9cb90718de0210be7eb6a0537725b06bd702f8d687d",
+    "web/engine/memory64/ecl.wasm": "56a55b5829bb678eb65c35eee34eb6ecb91b714d0b057eba045367774e85960d",
+    "web/engine/ecl.data": "dce742ded7cc24a6ace543505cad50b4699d7acdb9c51fef8dbae01905871ece",
+    "web/engine/fomkyr/backend-capabilities.js": "a2b5b4518f3ff684e2e7a6837e60f654a8d0f94dbe08cfbd72344acebf859214",
+    "web/engine/fomkyr/build-info.js": "038c67f65834be55c8be5f87297f064913b4ce12e07512dd49b816065ffa1f20",
+    "web/engine/fomkyr/capabilities.js": "526e19b4f53f89c32135917d036d3f7ed7740197300bae9345cd5669fe0c9ccc",
+    "web/engine/fomkyr/controls.js": "27a37a1fd5896c9f52541712a241f7d5b016d6270ad5461fe25cb20351e48b60",
+    "web/engine/fomkyr/demo-worker.js": "18e7e077a8f6e9ba46b3c86b80a6e225d03cc0f488342decee7c30b9daba6dda",
+    "web/engine/fomkyr/demo.js": "4805cdd611774acdff74583661be3723774eaeca60b926bccdbfcb8c012ba3aa",
+    "web/engine/fomkyr/engine.js": "5f5faa6c3496c8fd992566e943614dac9db81d42014c47160c423bdd2483b753",
+    "web/engine/fomkyr/fomkyr-isolation-worker.js": "41bf71ff70c5e98858ace8dc2a9168911bf38f591307e2254f7314eb30ac49dc",
+    "web/engine/fomkyr/fomkyr32-single.wasm": "4100c0f57c49598c1fa327ef7819197f1ab53710d105f10057745db85210154a",
+    "web/engine/fomkyr/fomkyr32.wasm": "0f559a417dcdea967bb93443a18e4a88be138ce108183fd80bc27e3a702a92d2",
+    "web/engine/fomkyr/fomkyr64-single.wasm": "ee25551bc114b751a11af325176d8ab119abf64c89d7c4785393c810c56928a3",
+    "web/engine/fomkyr/fomkyr64.wasm": "0ea15fc3684b9b2cf1b9be32f03d83f5e82cc4eae3bbe266a01bd348e438cc98",
+    "web/engine/fomkyr/form-options.js": "c0aaa8109ceb5a767474ae0e82412875342d8d6a2c18c1d5405042be06ebf55c",
+    "web/engine/fomkyr/george-entry.js": "889ebc5bdbc6ca1549b1453a964a2ff90a970b246d28b40d52f04db2645b3dd9",
+    "web/engine/fomkyr/george-worker.js": "cc022686354ef6d5b82a54e3a2a442deb8372be70c0a544e5a64b75cc7248309",
+    "web/engine/fomkyr/hilbert.js": "2d61495ae34d3d121e437b34890e6f83a6df8be1e5a5bc59bc98d915da80c5b3",
+    "web/engine/fomkyr/io-broker.js": "8563ff332b073f75b8c4fac7d515293897016f2a489454a92bad1bc22cf2ecd6",
+    "web/engine/fomkyr/io-worker.js": "4078fc305789c5eaff6aaa8fc7c3c54cf55a9ab5c13bf68594adc9f7fe38735d",
+    "web/engine/fomkyr/isolation.js": "d16612ad79c3019392b3b46deaedd492b3c702a55e0e8e711a8470b217a8d4dc",
+    "web/engine/fomkyr/job-adapter.js": "cb31beb366a2b398df4e5be246a03f8ddc20256c9299d1be06161275e33fb0dc",
+    "web/engine/fomkyr/lane.js": "a506839398c3569fec0590b95c1e50416680c5c161a638808da6634e65b7db75",
+    "web/engine/fomkyr/module-cache.js": "c620c5bf208ed576cd2731bc6e51f01ff81727d4f9b8ea2ccdc957ef0b98cfcd",
+    "web/engine/fomkyr/progress-view.js": "f847737c6b9647911517db8248ca791e6f8deebee5b8765b86133807fdf7481e",
+    "web/engine/fomkyr/progress.js": "96b6b379166fc21d64ff824467fd9acdd10c447eaf50811685c27c6bf1efba5e",
+    "web/engine/fomkyr/result-links.js": "0bcdc961b8eab820736846ed99bb722573e41f58514af9d278e18efda38a2ec8",
+    "web/engine/fomkyr/runtime.js": "c66f6076a4d82bc793d8621085379b79d902fc5cd6c22338c830562ab220ea7e",
+    "web/engine/fomkyr/storage.js": "0c4c7f8c2338768c6d836cb80fd681731cab255119446c9fd5ebe415410d659f",
+    "web/engine/fomkyr/worker-count.js": "5e9a64ce4bfcbed2e1c7ac4969896a6ea5f7c05656ad4b09aa90ec2a24570137"
+  },
+  "memoryMiB": 2048,
+  "sampleIntervalSeconds": 0.25,
+  "method": {
+    "cpu": "Sum of process-tree user and system CPU time during engine startup, computation and result delivery; core-seconds, not wall seconds. Linux /proc/<pid>/stat, no debugger or CPU profiler.",
+    "ram": "Peak sum of browser-process proportional set sizes (PSS). Shared pages are proportionally counted. Includes browser baseline; allocated Wasm capacity is recorded separately. Sampled every 0.25 seconds, so very brief peaks may be missed.",
+    "jobs": "Fresh browser profile and fresh engine per point. No OPFS resume. Serial runs. Bergman and fomkyr use monomial pruning. Specialized engines select memory64 and Hilbert disabled. Each row records requested and actual compute workers; requested zero selects automatically. Fomkyr uses the portable OPFS broker in Firefox. The scratch pool is shared across lanes. The optional batchPairs setting fixes epoch size; automatic epochs otherwise scale with worker count.",
+    "wall": "Cold engine wall time includes engine startup, calculation, export and result transfer; browser startup and HTML rendering are excluded.",
+    "uncertainty": "One cold run per point unless multiple trials are requested. Host load and filesystem/browser caches can affect timings. No claim of cross-machine performance."
+  },
+  "rows": [
+    {
+      "id": "fomkyr-firefox-w6",
+      "backend": "fomkyr",
+      "browser": "firefox",
+      "degree": 9,
+      "trial": 0,
+      "memoryMiB": 2048,
+      "timeLimitSeconds": 120,
+      "requestedWorkers": 6,
+      "environment": {
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:155.0) Gecko/20100101 Firefox/155.0",
+        "hardwareConcurrency": 8,
+        "isolated": true
+      },
+      "hostLoadAtStart": [
+        4.34,
+        5.81,
+        6.08
+      ],
+      "status": "complete",
+      "coldWallSeconds": 13.34618,
+      "engineStartupSeconds": 0.19653999999999996,
+      "jobWallSeconds": 13.14964,
+      "allocatedWasmMiB": 521.875,
+      "peakAllocatedWasmMiB": 521.875,
+      "native": {
+        "basisSize": 1451,
+        "completedThroughDegree": 9,
+        "workers": 6,
+        "bits": 64,
+        "storageAccess": "broker-exclusive",
+        "shared": true,
+        "version": "0.4.0",
+        "storage": "opfs",
+        "scheduler": {
+          "epochs": 544,
+          "dispatchedPairs": 25914,
+          "rpcMessages": 2731,
+          "reduceMs": 8408.120000000004,
+          "commitMs": 997.2400000000057,
+          "fallbacks": 0
+        },
+        "lanePairs": [
+          4923,
+          4503,
+          4409,
+          4089,
+          4191,
+          3799
+        ],
+        "previewTruncated": true,
+        "kernelWallSeconds": 12.17948
+      },
+      "lastDegree": {
+        "type": "degree",
+        "basisSize": 1451,
+        "terms": 29332,
+        "completedThroughDegree": 9,
+        "currentDegree": 0,
+        "allocatedBytes": 547210096,
+        "budgetBytes": 2147483648,
+        "diskBytes": 750400,
+        "pairs": 25914,
+        "monomialPairsPruned": 15,
+        "zeroCommits": 24563,
+        "workers": 6,
+        "prefixNodes": 8525,
+        "peakAllocatedBytes": 547210096,
+        "monomialPruning": true,
+        "heapReduction": true,
+        "reductions": 9107288,
+        "monomialTermsPruned": 3620420,
+        "diskReads": 7642,
+        "diskReadBytes": 3502712,
+        "reducerCacheHits": 9098296,
+        "costScheduling": true,
+        "wordCacheEntries": 256,
+        "wordCacheBytes": 0,
+        "chainPairsPruned": 378,
+        "matcherNodes": 1474,
+        "matcherAllocatedBytes": 1290240,
+        "matcherBuilds": 7,
+        "matcherFallbacks": 0,
+        "hashProbes": 66935,
+        "matcherQueries": 8842672,
+        "matcherCharacters": 66336691,
+        "wordCacheHits": 326686,
+        "heapAttempts": 16917,
+        "heapSuccesses": 16917,
+        "heapFallbacks": 0,
+        "insertionPrunes": 3567242,
+        "commutingPrunes": 1050187,
+        "quadraticSwaps": 9472693,
+        "elapsedMs": 12178.859999999999,
+        "scheduler": {
+          "epochs": 544,
+          "dispatchedPairs": 25914,
+          "rpcMessages": 2731,
+          "reduceMs": 8408.120000000004,
+          "commitMs": 997.2400000000057,
+          "fallbacks": 0
+        }
+      },
+      "lastProgress": {
+        "type": "progress",
+        "engine": "fomkyr",
+        "phase": "done",
+        "target": 9,
+        "currentDegree": 9,
+        "completedThroughDegree": 9,
+        "elapsedMs": 13133.46,
+        "degreeElapsedMs": 7578.299999999999,
+        "overlaps": {
+          "total": "10975",
+          "resolved": "10975",
+          "enumerated": "10975",
+          "scheduled": "10732",
+          "committed": "10732",
+          "monomialSkipped": "0",
+          "chainSkipped": "243",
+          "fraction": 1,
+          "kind": "overlap-count-not-time",
+          "replay": 0
+        },
+        "activity": {
+          "activeLanes": 0,
+          "maxActiveRowTerms": "0",
+          "sampledReductions": "9107288",
+          "sampledReductionsPerSecond": 0,
+          "sampleIsApproximate": true
+        },
+        "eta": {
+          "currentDegreeSeconds": null,
+          "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+          "reason": "Current phase is not overlap reduction."
+        },
+        "forecast": {
+          "targetSeconds": null,
+          "recentDegreeGrowth": [
+            1.720670967741935,
+            2.43157957885896,
+            4.085006908121978
+          ],
+          "reason": "Target is outside the two-degree forecasting horizon."
+        },
+        "history": [
+          {
+            "degree": 2,
+            "elapsedMs": 194.53999999999996,
+            "candidates": "0",
+            "scheduled": "0"
+          },
+          {
+            "degree": 3,
+            "elapsedMs": 263.8800000000001,
+            "candidates": "466",
+            "scheduled": "451"
+          },
+          {
+            "degree": 4,
+            "elapsedMs": 252.07999999999993,
+            "candidates": "827",
+            "scheduled": "827"
+          },
+          {
+            "degree": 5,
+            "elapsedMs": 322.5,
+            "candidates": "1447",
+            "scheduled": "1447"
+          },
+          {
+            "degree": 6,
+            "elapsedMs": 387.5,
+            "candidates": "2280",
+            "scheduled": "2271"
+          },
+          {
+            "degree": 7,
+            "elapsedMs": 666.7599999999998,
+            "candidates": "3840",
+            "scheduled": "3815"
+          },
+          {
+            "degree": 8,
+            "elapsedMs": 1621.2799999999997,
+            "candidates": "6472",
+            "scheduled": "6371"
+          },
+          {
+            "degree": 9,
+            "elapsedMs": 6622.9400000000005,
+            "candidates": "10975",
+            "scheduled": "10732"
+          }
+        ]
+      },
+      "cpuSeconds": 41.29,
+      "measuredWallSeconds": 13.557950096,
+      "averageCpuPercent": 304.54456394688884,
+      "peakPssMiB": 486.8876953125,
+      "peakRssMiB": 846.65234375,
+      "baselinePssMiB": 428.4990234375,
+      "basisSize": 1451,
+      "outputHasDone": true,
+      "basisFile": "fomkyr-firefox-w6-d9-t0.gb",
+      "samplesFile": "fomkyr-firefox-w6-d9-t0.samples.json"
+    },
+    {
+      "id": "fomkyr-firefox-w8",
+      "backend": "fomkyr",
+      "browser": "firefox",
+      "degree": 9,
+      "trial": 0,
+      "memoryMiB": 2048,
+      "timeLimitSeconds": 120,
+      "requestedWorkers": 8,
+      "environment": {
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:155.0) Gecko/20100101 Firefox/155.0",
+        "hardwareConcurrency": 8,
+        "isolated": true
+      },
+      "hostLoadAtStart": [
+        5.17,
+        5.9,
+        6.11
+      ],
+      "status": "complete",
+      "coldWallSeconds": 15.63658,
+      "engineStartupSeconds": 0.5719000000000001,
+      "jobWallSeconds": 15.064680000000001,
+      "allocatedWasmMiB": 521.875,
+      "peakAllocatedWasmMiB": 521.875,
+      "native": {
+        "basisSize": 1451,
+        "completedThroughDegree": 9,
+        "workers": 8,
+        "bits": 64,
+        "storageAccess": "broker-exclusive",
+        "shared": true,
+        "version": "0.4.0",
+        "storage": "opfs",
+        "scheduler": {
+          "epochs": 408,
+          "dispatchedPairs": 25914,
+          "rpcMessages": 2866,
+          "reduceMs": 7180.819999999996,
+          "commitMs": 934.4200000000155,
+          "fallbacks": 0
+        },
+        "lanePairs": [
+          3817,
+          3265,
+          3420,
+          3430,
+          3242,
+          3171,
+          2841,
+          2728
+        ],
+        "previewTruncated": true,
+        "kernelWallSeconds": 13.7141
+      },
+      "lastDegree": {
+        "type": "degree",
+        "basisSize": 1451,
+        "terms": 29332,
+        "completedThroughDegree": 9,
+        "currentDegree": 0,
+        "allocatedBytes": 547210096,
+        "budgetBytes": 2147483648,
+        "diskBytes": 750400,
+        "pairs": 25914,
+        "monomialPairsPruned": 15,
+        "zeroCommits": 24563,
+        "workers": 8,
+        "prefixNodes": 8525,
+        "peakAllocatedBytes": 547210096,
+        "monomialPruning": true,
+        "heapReduction": true,
+        "reductions": 9107422,
+        "monomialTermsPruned": 3620495,
+        "diskReads": 9803,
+        "diskReadBytes": 4264288,
+        "reducerCacheHits": 9096270,
+        "costScheduling": true,
+        "wordCacheEntries": 256,
+        "wordCacheBytes": 0,
+        "chainPairsPruned": 378,
+        "matcherNodes": 1474,
+        "matcherAllocatedBytes": 1290240,
+        "matcherBuilds": 7,
+        "matcherFallbacks": 0,
+        "hashProbes": 67074,
+        "matcherQueries": 8843697,
+        "matcherCharacters": 66344656,
+        "wordCacheHits": 326042,
+        "heapAttempts": 16922,
+        "heapSuccesses": 16922,
+        "heapFallbacks": 0,
+        "insertionPrunes": 3567318,
+        "commutingPrunes": 1050212,
+        "quadraticSwaps": 9472862,
+        "elapsedMs": 13713.62,
+        "scheduler": {
+          "epochs": 408,
+          "dispatchedPairs": 25914,
+          "rpcMessages": 2866,
+          "reduceMs": 7180.819999999996,
+          "commitMs": 934.4200000000155,
+          "fallbacks": 0
+        }
+      },
+      "lastProgress": {
+        "type": "progress",
+        "engine": "fomkyr",
+        "phase": "done",
+        "target": 9,
+        "currentDegree": 9,
+        "completedThroughDegree": 9,
+        "elapsedMs": 15050.220000000001,
+        "degreeElapsedMs": 6965.780000000001,
+        "overlaps": {
+          "total": "10975",
+          "resolved": "10975",
+          "enumerated": "10975",
+          "scheduled": "10732",
+          "committed": "10732",
+          "monomialSkipped": "0",
+          "chainSkipped": "243",
+          "fraction": 1,
+          "kind": "overlap-count-not-time",
+          "replay": 0
+        },
+        "activity": {
+          "activeLanes": 0,
+          "maxActiveRowTerms": "0",
+          "sampledReductions": "9107422",
+          "sampledReductionsPerSecond": 0,
+          "sampleIsApproximate": true
+        },
+        "eta": {
+          "currentDegreeSeconds": null,
+          "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+          "reason": "Current phase is not overlap reduction."
+        },
+        "forecast": {
+          "targetSeconds": null,
+          "recentDegreeGrowth": [
+            1.5135564288833303,
+            1.9923415862358358,
+            3.7048075404138805
+          ],
+          "reason": "Target is outside the two-degree forecasting horizon."
+        },
+        "history": [
+          {
+            "degree": 2,
+            "elapsedMs": 429.5,
+            "candidates": "0",
+            "scheduled": "0"
+          },
+          {
+            "degree": 3,
+            "elapsedMs": 447.46000000000004,
+            "candidates": "466",
+            "scheduled": "451"
+          },
+          {
+            "degree": 4,
+            "elapsedMs": 496.8800000000001,
+            "candidates": "827",
+            "scheduled": "827"
+          },
+          {
+            "degree": 5,
+            "elapsedMs": 447.77999999999975,
+            "candidates": "1447",
+            "scheduled": "1447"
+          },
+          {
+            "degree": 6,
+            "elapsedMs": 503.8200000000006,
+            "candidates": "2280",
+            "scheduled": "2271"
+          },
+          {
+            "degree": 7,
+            "elapsedMs": 762.5600000000004,
+            "candidates": "3840",
+            "scheduled": "3815"
+          },
+          {
+            "degree": 8,
+            "elapsedMs": 1519.2799999999997,
+            "candidates": "6472",
+            "scheduled": "6371"
+          },
+          {
+            "degree": 9,
+            "elapsedMs": 5628.639999999999,
+            "candidates": "10975",
+            "scheduled": "10732"
+          }
+        ]
+      },
+      "cpuSeconds": 42.63,
+      "measuredWallSeconds": 15.787087642000003,
+      "averageCpuPercent": 270.03080597707617,
+      "peakPssMiB": 480.2158203125,
+      "peakRssMiB": 841.5234375,
+      "baselinePssMiB": 419.2724609375,
+      "basisSize": 1451,
+      "outputHasDone": true,
+      "basisFile": "fomkyr-firefox-w8-d9-t0.gb",
+      "samplesFile": "fomkyr-firefox-w8-d9-t0.samples.json"
+    },
+    {
+      "id": "fomkyr-firefox-wauto",
+      "backend": "fomkyr",
+      "browser": "firefox",
+      "degree": 9,
+      "trial": 0,
+      "memoryMiB": 2048,
+      "timeLimitSeconds": 120,
+      "requestedWorkers": 0,
+      "environment": {
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:155.0) Gecko/20100101 Firefox/155.0",
+        "hardwareConcurrency": 8,
+        "isolated": true
+      },
+      "hostLoadAtStart": [
+        5.44,
+        5.92,
+        6.11
+      ],
+      "status": "complete",
+      "coldWallSeconds": 14.31342,
+      "engineStartupSeconds": 0.5805200000000003,
+      "jobWallSeconds": 13.7329,
+      "allocatedWasmMiB": 521.875,
+      "peakAllocatedWasmMiB": 521.875,
+      "native": {
+        "basisSize": 1451,
+        "completedThroughDegree": 9,
+        "workers": 7,
+        "bits": 64,
+        "storageAccess": "broker-exclusive",
+        "shared": true,
+        "version": "0.4.0",
+        "storage": "opfs",
+        "scheduler": {
+          "epochs": 466,
+          "dispatchedPairs": 25914,
+          "rpcMessages": 2805,
+          "reduceMs": 7310.400000000019,
+          "commitMs": 886.4000000000124,
+          "fallbacks": 0
+        },
+        "lanePairs": [
+          4362,
+          3828,
+          3745,
+          3562,
+          3541,
+          3504,
+          3372
+        ],
+        "previewTruncated": true,
+        "kernelWallSeconds": 12.84636
+      },
+      "lastDegree": {
+        "type": "degree",
+        "basisSize": 1451,
+        "terms": 29332,
+        "completedThroughDegree": 9,
+        "currentDegree": 0,
+        "allocatedBytes": 547210096,
+        "budgetBytes": 2147483648,
+        "diskBytes": 750400,
+        "pairs": 25914,
+        "monomialPairsPruned": 15,
+        "zeroCommits": 24563,
+        "workers": 7,
+        "prefixNodes": 8525,
+        "peakAllocatedBytes": 547210096,
+        "monomialPruning": true,
+        "heapReduction": true,
+        "reductions": 9107473,
+        "monomialTermsPruned": 3620528,
+        "diskReads": 8700,
+        "diskReadBytes": 3849672,
+        "reducerCacheHits": 9097424,
+        "costScheduling": true,
+        "wordCacheEntries": 256,
+        "wordCacheBytes": 0,
+        "chainPairsPruned": 378,
+        "matcherNodes": 1474,
+        "matcherAllocatedBytes": 1290240,
+        "matcherBuilds": 7,
+        "matcherFallbacks": 0,
+        "hashProbes": 67266,
+        "matcherQueries": 8843624,
+        "matcherCharacters": 66344427,
+        "wordCacheHits": 326325,
+        "heapAttempts": 16924,
+        "heapSuccesses": 16924,
+        "heapFallbacks": 0,
+        "insertionPrunes": 3567351,
+        "commutingPrunes": 1050228,
+        "quadraticSwaps": 9472935,
+        "elapsedMs": 12846,
+        "scheduler": {
+          "epochs": 466,
+          "dispatchedPairs": 25914,
+          "rpcMessages": 2805,
+          "reduceMs": 7310.400000000019,
+          "commitMs": 886.4000000000124,
+          "fallbacks": 0
+        }
+      },
+      "lastProgress": {
+        "type": "progress",
+        "engine": "fomkyr",
+        "phase": "done",
+        "target": 9,
+        "currentDegree": 9,
+        "completedThroughDegree": 9,
+        "elapsedMs": 13714.22,
+        "degreeElapsedMs": 6651.98,
+        "overlaps": {
+          "total": "10975",
+          "resolved": "10975",
+          "enumerated": "10975",
+          "scheduled": "10732",
+          "committed": "10732",
+          "monomialSkipped": "0",
+          "chainSkipped": "243",
+          "fraction": 1,
+          "kind": "overlap-count-not-time",
+          "replay": 0
+        },
+        "activity": {
+          "activeLanes": 0,
+          "maxActiveRowTerms": "0",
+          "sampledReductions": "9107473",
+          "sampledReductionsPerSecond": 0,
+          "sampleIsApproximate": true
+        },
+        "eta": {
+          "currentDegreeSeconds": null,
+          "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+          "reason": "Current phase is not overlap reduction."
+        },
+        "forecast": {
+          "targetSeconds": null,
+          "recentDegreeGrowth": [
+            1.0911838983699391,
+            2.4370726233474764,
+            4.16058016058016
+          ],
+          "reason": "Target is outside the two-degree forecasting horizon."
+        },
+        "history": [
+          {
+            "degree": 2,
+            "elapsedMs": 443.8800000000001,
+            "candidates": "0",
+            "scheduled": "0"
+          },
+          {
+            "degree": 3,
+            "elapsedMs": 399.02000000000044,
+            "candidates": "466",
+            "scheduled": "451"
+          },
+          {
+            "degree": 4,
+            "elapsedMs": 383.3000000000002,
+            "candidates": "827",
+            "scheduled": "827"
+          },
+          {
+            "degree": 5,
+            "elapsedMs": 414.2400000000007,
+            "candidates": "1447",
+            "scheduled": "1447"
+          },
+          {
+            "degree": 6,
+            "elapsedMs": 522.6800000000003,
+            "candidates": "2280",
+            "scheduled": "2271"
+          },
+          {
+            "degree": 7,
+            "elapsedMs": 570.3400000000001,
+            "candidates": "3840",
+            "scheduled": "3815"
+          },
+          {
+            "degree": 8,
+            "elapsedMs": 1389.96,
+            "candidates": "6472",
+            "scheduled": "6371"
+          },
+          {
+            "degree": 9,
+            "elapsedMs": 5783.039999999999,
+            "candidates": "10975",
+            "scheduled": "10732"
+          }
+        ]
+      },
+      "cpuSeconds": 40.81,
+      "measuredWallSeconds": 14.456099901000002,
+      "averageCpuPercent": 282.3029743809184,
+      "peakPssMiB": 491.05859375,
+      "peakRssMiB": 851.95703125,
+      "baselinePssMiB": 417.83203125,
+      "basisSize": 1451,
+      "outputHasDone": true,
+      "basisFile": "fomkyr-firefox-wauto-d9-t0.gb",
+      "samplesFile": "fomkyr-firefox-wauto-d9-t0.samples.json"
+    },
+    {
+      "id": "fomkyr-w1",
+      "backend": "fomkyr",
+      "browser": "chromium",
+      "degree": 9,
+      "trial": 0,
+      "memoryMiB": 2048,
+      "timeLimitSeconds": 120,
+      "requestedWorkers": 1,
+      "environment": {
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.0.0 Safari/537.36",
+        "hardwareConcurrency": 8,
+        "isolated": true
+      },
+      "hostLoadAtStart": [
+        6.06,
+        6.03,
+        6.14
+      ],
+      "status": "complete",
+      "coldWallSeconds": 20.891330000013113,
+      "engineStartupSeconds": 0.09056499999761582,
+      "jobWallSeconds": 20.8007650000155,
+      "allocatedWasmMiB": 521.875,
+      "peakAllocatedWasmMiB": 521.875,
+      "native": {
+        "basisSize": 1451,
+        "completedThroughDegree": 9,
+        "workers": 1,
+        "bits": 64,
+        "storageAccess": "exclusive",
+        "shared": true,
+        "version": "0.4.0",
+        "storage": "opfs",
+        "scheduler": {
+          "epochs": 3242,
+          "dispatchedPairs": 25914,
+          "rpcMessages": 0,
+          "reduceMs": 18630.73500022292,
+          "commitMs": 143.06999891996384,
+          "fallbacks": 0
+        },
+        "lanePairs": [
+          25914
+        ],
+        "previewTruncated": true,
+        "kernelWallSeconds": 20.552689999997614
+      },
+      "lastDegree": {
+        "type": "degree",
+        "basisSize": 1451,
+        "terms": 29332,
+        "completedThroughDegree": 9,
+        "currentDegree": 0,
+        "allocatedBytes": 547210096,
+        "budgetBytes": 2147483648,
+        "diskBytes": 750400,
+        "pairs": 25914,
+        "monomialPairsPruned": 15,
+        "zeroCommits": 24563,
+        "workers": 1,
+        "prefixNodes": 8525,
+        "peakAllocatedBytes": 547210096,
+        "monomialPruning": true,
+        "heapReduction": true,
+        "reductions": 9107011,
+        "monomialTermsPruned": 3620319,
+        "diskReads": 1450,
+        "diskReadBytes": 748232,
+        "reducerCacheHits": 9104197,
+        "costScheduling": true,
+        "wordCacheEntries": 256,
+        "wordCacheBytes": 0,
+        "chainPairsPruned": 378,
+        "matcherNodes": 1474,
+        "matcherAllocatedBytes": 1290240,
+        "matcherBuilds": 7,
+        "matcherFallbacks": 0,
+        "hashProbes": 64228,
+        "matcherQueries": 8839298,
+        "matcherCharacters": 66311828,
+        "wordCacheHits": 328851,
+        "heapAttempts": 16903,
+        "heapSuccesses": 16903,
+        "heapFallbacks": 0,
+        "insertionPrunes": 3567127,
+        "commutingPrunes": 1050137,
+        "quadraticSwaps": 9472318,
+        "elapsedMs": 20552.034999996424,
+        "scheduler": {
+          "epochs": 3242,
+          "dispatchedPairs": 25914,
+          "rpcMessages": 0,
+          "reduceMs": 18630.73500022292,
+          "commitMs": 143.06999891996384,
+          "fallbacks": 0
+        }
+      },
+      "lastProgress": {
+        "type": "progress",
+        "engine": "fomkyr",
+        "phase": "done",
+        "target": 9,
+        "currentDegree": 9,
+        "completedThroughDegree": 9,
+        "elapsedMs": 20790.04500001669,
+        "degreeElapsedMs": 16626.444999992847,
+        "overlaps": {
+          "total": "10975",
+          "resolved": "10975",
+          "enumerated": "10975",
+          "scheduled": "10732",
+          "committed": "10732",
+          "monomialSkipped": "0",
+          "chainSkipped": "243",
+          "fraction": 1,
+          "kind": "overlap-count-not-time",
+          "replay": 0
+        },
+        "activity": {
+          "activeLanes": 0,
+          "maxActiveRowTerms": "0",
+          "sampledReductions": "9107011",
+          "sampledReductionsPerSecond": 0,
+          "sampleIsApproximate": true
+        },
+        "eta": {
+          "currentDegreeSeconds": null,
+          "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+          "reason": "Current phase is not overlap reduction."
+        },
+        "forecast": {
+          "targetSeconds": null,
+          "recentDegreeGrowth": [
+            2.844960293248432,
+            5.0774886197441225,
+            5.54422739909848
+          ],
+          "reason": "Target is outside the two-degree forecasting horizon."
+        },
+        "history": [
+          {
+            "degree": 2,
+            "elapsedMs": 32.9549999833107,
+            "candidates": "0",
+            "scheduled": "0"
+          },
+          {
+            "degree": 3,
+            "elapsedMs": 52.935000002384186,
+            "candidates": "466",
+            "scheduled": "451"
+          },
+          {
+            "degree": 4,
+            "elapsedMs": 47.99000000953674,
+            "candidates": "827",
+            "scheduled": "827"
+          },
+          {
+            "degree": 5,
+            "elapsedMs": 99.47499999403954,
+            "candidates": "1447",
+            "scheduled": "1447"
+          },
+          {
+            "degree": 6,
+            "elapsedMs": 204.625,
+            "candidates": "2280",
+            "scheduled": "2271"
+          },
+          {
+            "degree": 7,
+            "elapsedMs": 582.1500000059605,
+            "candidates": "3840",
+            "scheduled": "3815"
+          },
+          {
+            "degree": 8,
+            "elapsedMs": 2955.860000014305,
+            "candidates": "6472",
+            "scheduled": "6371"
+          },
+          {
+            "degree": 9,
+            "elapsedMs": 16387.959999978542,
+            "candidates": "10975",
+            "scheduled": "10732"
+          }
+        ]
+      },
+      "cpuSeconds": 22.15,
+      "measuredWallSeconds": 21.07966002499999,
+      "averageCpuPercent": 105.0775960035912,
+      "peakPssMiB": 478.31640625,
+      "peakRssMiB": 1232.640625,
+      "baselinePssMiB": 419.6298828125,
+      "basisSize": 1451,
+      "outputHasDone": true,
+      "basisFile": "fomkyr-w1-d9-t0.gb",
+      "samplesFile": "fomkyr-w1-d9-t0.samples.json"
+    },
+    {
+      "id": "fomkyr-w2",
+      "backend": "fomkyr",
+      "browser": "chromium",
+      "degree": 9,
+      "trial": 0,
+      "memoryMiB": 2048,
+      "timeLimitSeconds": 120,
+      "requestedWorkers": 2,
+      "environment": {
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.0.0 Safari/537.36",
+        "hardwareConcurrency": 8,
+        "isolated": true
+      },
+      "hostLoadAtStart": [
+        4.88,
+        5.75,
+        6.04
+      ],
+      "status": "complete",
+      "coldWallSeconds": 11.35697000002861,
+      "engineStartupSeconds": 0.08830500000715255,
+      "jobWallSeconds": 11.268665000021457,
+      "allocatedWasmMiB": 521.875,
+      "peakAllocatedWasmMiB": 521.875,
+      "native": {
+        "basisSize": 1451,
+        "completedThroughDegree": 9,
+        "workers": 2,
+        "bits": 64,
+        "storageAccess": "direct-unsafe",
+        "shared": true,
+        "version": "0.4.0",
+        "storage": "opfs",
+        "scheduler": {
+          "epochs": 1623,
+          "dispatchedPairs": 25914,
+          "rpcMessages": 1625,
+          "reduceMs": 10263.900000274181,
+          "commitMs": 138.67999950051308,
+          "fallbacks": 0
+        },
+        "lanePairs": [
+          13426,
+          12488
+        ],
+        "previewTruncated": true,
+        "kernelWallSeconds": 11.01497999998927
+      },
+      "lastDegree": {
+        "type": "degree",
+        "basisSize": 1451,
+        "terms": 29332,
+        "completedThroughDegree": 9,
+        "currentDegree": 0,
+        "allocatedBytes": 547210096,
+        "budgetBytes": 2147483648,
+        "diskBytes": 750400,
+        "pairs": 25914,
+        "monomialPairsPruned": 15,
+        "zeroCommits": 24563,
+        "workers": 2,
+        "prefixNodes": 8525,
+        "peakAllocatedBytes": 547210096,
+        "monomialPruning": true,
+        "heapReduction": true,
+        "reductions": 9107162,
+        "monomialTermsPruned": 3620359,
+        "diskReads": 2844,
+        "diskReadBytes": 1448232,
+        "reducerCacheHits": 9102954,
+        "costScheduling": true,
+        "wordCacheEntries": 256,
+        "wordCacheBytes": 0,
+        "chainPairsPruned": 378,
+        "matcherNodes": 1474,
+        "matcherAllocatedBytes": 1290240,
+        "matcherBuilds": 7,
+        "matcherFallbacks": 0,
+        "hashProbes": 65748,
+        "matcherQueries": 8840694,
+        "matcherCharacters": 66321979,
+        "wordCacheHits": 327838,
+        "heapAttempts": 16907,
+        "heapSuccesses": 16907,
+        "heapFallbacks": 0,
+        "insertionPrunes": 3567167,
+        "commutingPrunes": 1050148,
+        "quadraticSwaps": 9472433,
+        "elapsedMs": 11014.25,
+        "scheduler": {
+          "epochs": 1623,
+          "dispatchedPairs": 25914,
+          "rpcMessages": 1625,
+          "reduceMs": 10263.900000274181,
+          "commitMs": 138.67999950051308,
+          "fallbacks": 0
+        }
+      },
+      "lastProgress": {
+        "type": "progress",
+        "engine": "fomkyr",
+        "phase": "done",
+        "target": 9,
+        "currentDegree": 9,
+        "completedThroughDegree": 9,
+        "elapsedMs": 11253.530000001192,
+        "degreeElapsedMs": 8549.520000010729,
+        "overlaps": {
+          "total": "10975",
+          "resolved": "10975",
+          "enumerated": "10975",
+          "scheduled": "10732",
+          "committed": "10732",
+          "monomialSkipped": "0",
+          "chainSkipped": "243",
+          "fraction": 1,
+          "kind": "overlap-count-not-time",
+          "replay": 0
+        },
+        "activity": {
+          "activeLanes": 0,
+          "maxActiveRowTerms": "0",
+          "sampledReductions": "9107162",
+          "sampledReductionsPerSecond": 0,
+          "sampleIsApproximate": true
+        },
+        "eta": {
+          "currentDegreeSeconds": null,
+          "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+          "reason": "Current phase is not overlap reduction."
+        },
+        "forecast": {
+          "targetSeconds": null,
+          "recentDegreeGrowth": [
+            3.377368378431834,
+            3.8372623212729056,
+            5.169589588234768
+          ],
+          "reason": "Target is outside the two-degree forecasting horizon."
+        },
+        "history": [
+          {
+            "degree": 2,
+            "elapsedMs": 35.83500000834465,
+            "candidates": "0",
+            "scheduled": "0"
+          },
+          {
+            "degree": 3,
+            "elapsedMs": 49.45999997854233,
+            "candidates": "466",
+            "scheduled": "451"
+          },
+          {
+            "degree": 4,
+            "elapsedMs": 52.82499998807907,
+            "candidates": "827",
+            "scheduled": "827"
+          },
+          {
+            "degree": 5,
+            "elapsedMs": 85.3449999988079,
+            "candidates": "1447",
+            "scheduled": "1447"
+          },
+          {
+            "degree": 6,
+            "elapsedMs": 124.0300000011921,
+            "candidates": "2280",
+            "scheduled": "2271"
+          },
+          {
+            "degree": 7,
+            "elapsedMs": 418.8949999809265,
+            "candidates": "3840",
+            "scheduled": "3815"
+          },
+          {
+            "degree": 8,
+            "elapsedMs": 1607.4099999964237,
+            "candidates": "6472",
+            "scheduled": "6371"
+          },
+          {
+            "degree": 9,
+            "elapsedMs": 8309.65000000596,
+            "candidates": "10975",
+            "scheduled": "10732"
+          }
+        ]
+      },
+      "cpuSeconds": 22.85,
+      "measuredWallSeconds": 11.550719713000014,
+      "averageCpuPercent": 197.82317091707247,
+      "peakPssMiB": 494.8046875,
+      "peakRssMiB": 1249.13671875,
+      "baselinePssMiB": 426.8173828125,
+      "basisSize": 1451,
+      "outputHasDone": true,
+      "basisFile": "fomkyr-w2-d9-t0.gb",
+      "samplesFile": "fomkyr-w2-d9-t0.samples.json"
+    },
+    {
+      "id": "fomkyr-w4",
+      "backend": "fomkyr",
+      "browser": "chromium",
+      "degree": 9,
+      "trial": 0,
+      "memoryMiB": 2048,
+      "timeLimitSeconds": 120,
+      "requestedWorkers": 4,
+      "environment": {
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.0.0 Safari/537.36",
+        "hardwareConcurrency": 8,
+        "isolated": true
+      },
+      "hostLoadAtStart": [
+        5.03,
+        5.72,
+        6.03
+      ],
+      "status": "complete",
+      "coldWallSeconds": 8.573875,
+      "engineStartupSeconds": 0.08587999999523163,
+      "jobWallSeconds": 8.48799500000477,
+      "allocatedWasmMiB": 521.875,
+      "peakAllocatedWasmMiB": 521.875,
+      "native": {
+        "basisSize": 1451,
+        "completedThroughDegree": 9,
+        "workers": 4,
+        "bits": 64,
+        "storageAccess": "direct-unsafe",
+        "shared": true,
+        "version": "0.4.0",
+        "storage": "opfs",
+        "scheduler": {
+          "epochs": 814,
+          "dispatchedPairs": 25914,
+          "rpcMessages": 2446,
+          "reduceMs": 7412.844999819994,
+          "commitMs": 141.83500018715858,
+          "fallbacks": 0
+        },
+        "lanePairs": [
+          6465,
+          7127,
+          6402,
+          5920
+        ],
+        "previewTruncated": true,
+        "kernelWallSeconds": 8.243480000019073
+      },
+      "lastDegree": {
+        "type": "degree",
+        "basisSize": 1451,
+        "terms": 29332,
+        "completedThroughDegree": 9,
+        "currentDegree": 0,
+        "allocatedBytes": 547210096,
+        "budgetBytes": 2147483648,
+        "diskBytes": 750400,
+        "pairs": 25914,
+        "monomialPairsPruned": 15,
+        "zeroCommits": 24563,
+        "workers": 4,
+        "prefixNodes": 8525,
+        "peakAllocatedBytes": 547210096,
+        "monomialPruning": true,
+        "heapReduction": true,
+        "reductions": 9107348,
+        "monomialTermsPruned": 3620403,
+        "diskReads": 5349,
+        "diskReadBytes": 2580216,
+        "reducerCacheHits": 9100635,
+        "costScheduling": true,
+        "wordCacheEntries": 256,
+        "wordCacheBytes": 0,
+        "chainPairsPruned": 378,
+        "matcherNodes": 1474,
+        "matcherAllocatedBytes": 1290240,
+        "matcherBuilds": 7,
+        "matcherFallbacks": 0,
+        "hashProbes": 66673,
+        "matcherQueries": 8842114,
+        "matcherCharacters": 66332115,
+        "wordCacheHits": 326918,
+        "heapAttempts": 16912,
+        "heapSuccesses": 16912,
+        "heapFallbacks": 0,
+        "insertionPrunes": 3567211,
+        "commutingPrunes": 1050164,
+        "quadraticSwaps": 9472607,
+        "elapsedMs": 8242.630000025034,
+        "scheduler": {
+          "epochs": 814,
+          "dispatchedPairs": 25914,
+          "rpcMessages": 2446,
+          "reduceMs": 7412.844999819994,
+          "commitMs": 141.83500018715858,
+          "fallbacks": 0
+        }
+      },
+      "lastProgress": {
+        "type": "progress",
+        "engine": "fomkyr",
+        "phase": "done",
+        "target": 9,
+        "currentDegree": 9,
+        "completedThroughDegree": 9,
+        "elapsedMs": 8476.425000011921,
+        "degreeElapsedMs": 6256.830000013113,
+        "overlaps": {
+          "total": "10975",
+          "resolved": "10975",
+          "enumerated": "10975",
+          "scheduled": "10732",
+          "committed": "10732",
+          "monomialSkipped": "0",
+          "chainSkipped": "243",
+          "fraction": 1,
+          "kind": "overlap-count-not-time",
+          "replay": 0
+        },
+        "activity": {
+          "activeLanes": 0,
+          "maxActiveRowTerms": "0",
+          "sampledReductions": "9107348",
+          "sampledReductionsPerSecond": 0,
+          "sampleIsApproximate": true
+        },
+        "eta": {
+          "currentDegreeSeconds": null,
+          "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+          "reason": "Current phase is not overlap reduction."
+        },
+        "forecast": {
+          "targetSeconds": null,
+          "recentDegreeGrowth": [
+            2.6134105205386655,
+            4.199658137603025,
+            5.002512677679877
+          ],
+          "reason": "Target is outside the two-degree forecasting horizon."
+        },
+        "history": [
+          {
+            "degree": 2,
+            "elapsedMs": 33.08000001311302,
+            "candidates": "0",
+            "scheduled": "0"
+          },
+          {
+            "degree": 3,
+            "elapsedMs": 57.55500000715256,
+            "candidates": "466",
+            "scheduled": "451"
+          },
+          {
+            "degree": 4,
+            "elapsedMs": 42.96500000357628,
+            "candidates": "827",
+            "scheduled": "827"
+          },
+          {
+            "degree": 5,
+            "elapsedMs": 65.15999999642372,
+            "candidates": "1447",
+            "scheduled": "1447"
+          },
+          {
+            "degree": 6,
+            "elapsedMs": 109.68999999761581,
+            "candidates": "2280",
+            "scheduled": "2271"
+          },
+          {
+            "degree": 7,
+            "elapsedMs": 286.66499999165535,
+            "candidates": "3840",
+            "scheduled": "3815"
+          },
+          {
+            "degree": 8,
+            "elapsedMs": 1203.8949999809265,
+            "candidates": "6472",
+            "scheduled": "6371"
+          },
+          {
+            "degree": 9,
+            "elapsedMs": 6022.5,
+            "candidates": "10975",
+            "scheduled": "10732"
+          }
+        ]
+      },
+      "cpuSeconds": 30.57,
+      "measuredWallSeconds": 8.805199649999995,
+      "averageCpuPercent": 347.18122490272003,
+      "peakPssMiB": 506.673828125,
+      "peakRssMiB": 1260.8828125,
+      "baselinePssMiB": 422.2265625,
+      "basisSize": 1451,
+      "outputHasDone": true,
+      "basisFile": "fomkyr-w4-d9-t0.gb",
+      "samplesFile": "fomkyr-w4-d9-t0.samples.json"
+    },
+    {
+      "id": "fomkyr-w6",
+      "backend": "fomkyr",
+      "browser": "chromium",
+      "degree": 9,
+      "trial": 0,
+      "memoryMiB": 2048,
+      "timeLimitSeconds": 120,
+      "requestedWorkers": 6,
+      "environment": {
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.0.0 Safari/537.36",
+        "hardwareConcurrency": 8,
+        "isolated": true
+      },
+      "hostLoadAtStart": [
+        4.86,
+        5.66,
+        6
+      ],
+      "status": "complete",
+      "coldWallSeconds": 8.017765000015498,
+      "engineStartupSeconds": 0.09456999999284744,
+      "jobWallSeconds": 7.92319500002265,
+      "allocatedWasmMiB": 521.875,
+      "peakAllocatedWasmMiB": 521.875,
+      "native": {
+        "basisSize": 1451,
+        "completedThroughDegree": 9,
+        "workers": 6,
+        "bits": 64,
+        "storageAccess": "direct-unsafe",
+        "shared": true,
+        "version": "0.4.0",
+        "storage": "opfs",
+        "scheduler": {
+          "epochs": 544,
+          "dispatchedPairs": 25914,
+          "rpcMessages": 2730,
+          "reduceMs": 6811.809999406338,
+          "commitMs": 140.42499959468842,
+          "fallbacks": 0
+        },
+        "lanePairs": [
+          4505,
+          4629,
+          4574,
+          4435,
+          4098,
+          3673
+        ],
+        "previewTruncated": true,
+        "kernelWallSeconds": 7.674495000004768
+      },
+      "lastDegree": {
+        "type": "degree",
+        "basisSize": 1451,
+        "terms": 29332,
+        "completedThroughDegree": 9,
+        "currentDegree": 0,
+        "allocatedBytes": 547210096,
+        "budgetBytes": 2147483648,
+        "diskBytes": 750400,
+        "pairs": 25914,
+        "monomialPairsPruned": 15,
+        "zeroCommits": 24563,
+        "workers": 6,
+        "prefixNodes": 8525,
+        "peakAllocatedBytes": 547210096,
+        "monomialPruning": true,
+        "heapReduction": true,
+        "reductions": 9107288,
+        "monomialTermsPruned": 3620420,
+        "diskReads": 7636,
+        "diskReadBytes": 3463928,
+        "reducerCacheHits": 9098302,
+        "costScheduling": true,
+        "wordCacheEntries": 256,
+        "wordCacheBytes": 0,
+        "chainPairsPruned": 378,
+        "matcherNodes": 1474,
+        "matcherAllocatedBytes": 1290240,
+        "matcherBuilds": 7,
+        "matcherFallbacks": 0,
+        "hashProbes": 66851,
+        "matcherQueries": 8842956,
+        "matcherCharacters": 66338416,
+        "wordCacheHits": 326402,
+        "heapAttempts": 16917,
+        "heapSuccesses": 16917,
+        "heapFallbacks": 0,
+        "insertionPrunes": 3567242,
+        "commutingPrunes": 1050187,
+        "quadraticSwaps": 9472693,
+        "elapsedMs": 7673.569999992847,
+        "scheduler": {
+          "epochs": 544,
+          "dispatchedPairs": 25914,
+          "rpcMessages": 2730,
+          "reduceMs": 6811.809999406338,
+          "commitMs": 140.42499959468842,
+          "fallbacks": 0
+        }
+      },
+      "lastProgress": {
+        "type": "progress",
+        "engine": "fomkyr",
+        "phase": "done",
+        "target": 9,
+        "currentDegree": 9,
+        "completedThroughDegree": 9,
+        "elapsedMs": 7911.665000021458,
+        "degreeElapsedMs": 5845.215000003576,
+        "overlaps": {
+          "total": "10975",
+          "resolved": "10975",
+          "enumerated": "10975",
+          "scheduled": "10732",
+          "committed": "10732",
+          "monomialSkipped": "0",
+          "chainSkipped": "243",
+          "fraction": 1,
+          "kind": "overlap-count-not-time",
+          "replay": 0
+        },
+        "activity": {
+          "activeLanes": 0,
+          "maxActiveRowTerms": "0",
+          "sampledReductions": "9107288",
+          "sampledReductionsPerSecond": 0,
+          "sampleIsApproximate": true
+        },
+        "eta": {
+          "currentDegreeSeconds": null,
+          "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+          "reason": "Current phase is not overlap reduction."
+        },
+        "forecast": {
+          "targetSeconds": null,
+          "recentDegreeGrowth": [
+            2.2953279224354484,
+            3.9413439851015886,
+            5.437379678875169
+          ],
+          "reason": "Target is outside the two-degree forecasting horizon."
+        },
+        "history": [
+          {
+            "degree": 2,
+            "elapsedMs": 38.939999997615814,
+            "candidates": "0",
+            "scheduled": "0"
+          },
+          {
+            "degree": 3,
+            "elapsedMs": 51.03499999642372,
+            "candidates": "466",
+            "scheduled": "451"
+          },
+          {
+            "degree": 4,
+            "elapsedMs": 43.445000022649765,
+            "candidates": "827",
+            "scheduled": "827"
+          },
+          {
+            "degree": 5,
+            "elapsedMs": 67.36999997496605,
+            "candidates": "1447",
+            "scheduled": "1447"
+          },
+          {
+            "degree": 6,
+            "elapsedMs": 113.97500002384186,
+            "candidates": "2280",
+            "scheduled": "2271"
+          },
+          {
+            "degree": 7,
+            "elapsedMs": 261.6100000143051,
+            "candidates": "3840",
+            "scheduled": "3815"
+          },
+          {
+            "degree": 8,
+            "elapsedMs": 1031.094999998808,
+            "candidates": "6472",
+            "scheduled": "6371"
+          },
+          {
+            "degree": 9,
+            "elapsedMs": 5606.454999983311,
+            "candidates": "10975",
+            "scheduled": "10732"
+          }
+        ]
+      },
+      "cpuSeconds": 36.85,
+      "measuredWallSeconds": 8.259884209000012,
+      "averageCpuPercent": 446.1321619962669,
+      "peakPssMiB": 510.0810546875,
+      "peakRssMiB": 1267.12109375,
+      "baselinePssMiB": 421.66015625,
+      "basisSize": 1451,
+      "outputHasDone": true,
+      "basisFile": "fomkyr-w6-d9-t0.gb",
+      "samplesFile": "fomkyr-w6-d9-t0.samples.json"
+    },
+    {
+      "id": "fomkyr-w8",
+      "backend": "fomkyr",
+      "browser": "chromium",
+      "degree": 9,
+      "trial": 0,
+      "memoryMiB": 2048,
+      "timeLimitSeconds": 120,
+      "requestedWorkers": 8,
+      "environment": {
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.0.0 Safari/537.36",
+        "hardwareConcurrency": 8,
+        "isolated": true
+      },
+      "hostLoadAtStart": [
+        5.5,
+        5.77,
+        6.04
+      ],
+      "status": "complete",
+      "coldWallSeconds": 7.705030000001192,
+      "engineStartupSeconds": 0.10846999999880791,
+      "jobWallSeconds": 7.596560000002384,
+      "allocatedWasmMiB": 521.875,
+      "peakAllocatedWasmMiB": 521.875,
+      "native": {
+        "basisSize": 1451,
+        "completedThroughDegree": 9,
+        "workers": 8,
+        "bits": 64,
+        "storageAccess": "direct-unsafe",
+        "shared": true,
+        "version": "0.4.0",
+        "storage": "opfs",
+        "scheduler": {
+          "epochs": 408,
+          "dispatchedPairs": 25914,
+          "rpcMessages": 2865,
+          "reduceMs": 6360.049999892712,
+          "commitMs": 141.64999970793724,
+          "fallbacks": 0
+        },
+        "lanePairs": [
+          3475,
+          3869,
+          3748,
+          3541,
+          3536,
+          3088,
+          2468,
+          2189
+        ],
+        "previewTruncated": true,
+        "kernelWallSeconds": 7.33672499999404
+      },
+      "lastDegree": {
+        "type": "degree",
+        "basisSize": 1451,
+        "terms": 29332,
+        "completedThroughDegree": 9,
+        "currentDegree": 0,
+        "allocatedBytes": 547210096,
+        "budgetBytes": 2147483648,
+        "diskBytes": 750400,
+        "pairs": 25914,
+        "monomialPairsPruned": 15,
+        "zeroCommits": 24563,
+        "workers": 8,
+        "prefixNodes": 8525,
+        "peakAllocatedBytes": 547210096,
+        "monomialPruning": true,
+        "heapReduction": true,
+        "reductions": 9107422,
+        "monomialTermsPruned": 3620495,
+        "diskReads": 9771,
+        "diskReadBytes": 4211040,
+        "reducerCacheHits": 9096302,
+        "costScheduling": true,
+        "wordCacheEntries": 256,
+        "wordCacheBytes": 0,
+        "chainPairsPruned": 378,
+        "matcherNodes": 1474,
+        "matcherAllocatedBytes": 1290240,
+        "matcherBuilds": 7,
+        "matcherFallbacks": 0,
+        "hashProbes": 67061,
+        "matcherQueries": 8843787,
+        "matcherCharacters": 66345271,
+        "wordCacheHits": 325952,
+        "heapAttempts": 16922,
+        "heapSuccesses": 16922,
+        "heapFallbacks": 0,
+        "insertionPrunes": 3567318,
+        "commutingPrunes": 1050212,
+        "quadraticSwaps": 9472862,
+        "elapsedMs": 7335.694999992847,
+        "scheduler": {
+          "epochs": 408,
+          "dispatchedPairs": 25914,
+          "rpcMessages": 2865,
+          "reduceMs": 6360.049999892712,
+          "commitMs": 141.64999970793724,
+          "fallbacks": 0
+        }
+      },
+      "lastProgress": {
+        "type": "progress",
+        "engine": "fomkyr",
+        "phase": "done",
+        "target": 9,
+        "currentDegree": 9,
+        "completedThroughDegree": 9,
+        "elapsedMs": 7581.454999983311,
+        "degreeElapsedMs": 5326.444999992847,
+        "overlaps": {
+          "total": "10975",
+          "resolved": "10975",
+          "enumerated": "10975",
+          "scheduled": "10732",
+          "committed": "10732",
+          "monomialSkipped": "0",
+          "chainSkipped": "243",
+          "fraction": 1,
+          "kind": "overlap-count-not-time",
+          "replay": 0
+        },
+        "activity": {
+          "activeLanes": 0,
+          "maxActiveRowTerms": "0",
+          "sampledReductions": "9107422",
+          "sampledReductionsPerSecond": 0,
+          "sampleIsApproximate": true
+        },
+        "eta": {
+          "currentDegreeSeconds": null,
+          "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+          "reason": "Current phase is not overlap reduction."
+        },
+        "forecast": {
+          "targetSeconds": null,
+          "recentDegreeGrowth": [
+            2.5567442734076957,
+            4.024405980183179,
+            4.653659765509456
+          ],
+          "reason": "Target is outside the two-degree forecasting horizon."
+        },
+        "history": [
+          {
+            "degree": 2,
+            "elapsedMs": 31.08500000834465,
+            "candidates": "0",
+            "scheduled": "0"
+          },
+          {
+            "degree": 3,
+            "elapsedMs": 55.229999989271164,
+            "candidates": "466",
+            "scheduled": "451"
+          },
+          {
+            "degree": 4,
+            "elapsedMs": 43.40499997138977,
+            "candidates": "827",
+            "scheduled": "827"
+          },
+          {
+            "degree": 5,
+            "elapsedMs": 60.43000000715256,
+            "candidates": "1447",
+            "scheduled": "1447"
+          },
+          {
+            "degree": 6,
+            "elapsedMs": 106.09000000357628,
+            "candidates": "2280",
+            "scheduled": "2271"
+          },
+          {
+            "degree": 7,
+            "elapsedMs": 271.24499997496605,
+            "candidates": "3840",
+            "scheduled": "3815"
+          },
+          {
+            "degree": 8,
+            "elapsedMs": 1091.5999999940395,
+            "candidates": "6472",
+            "scheduled": "6371"
+          },
+          {
+            "degree": 9,
+            "elapsedMs": 5079.935000002384,
+            "candidates": "10975",
+            "scheduled": "10732"
+          }
+        ]
+      },
+      "cpuSeconds": 38.37,
+      "measuredWallSeconds": 7.925539034000016,
+      "averageCpuPercent": 484.1311087535541,
+      "peakPssMiB": 517.9375,
+      "peakRssMiB": 1273.32421875,
+      "baselinePssMiB": 422.4560546875,
+      "basisSize": 1451,
+      "outputHasDone": true,
+      "basisFile": "fomkyr-w8-d9-t0.gb",
+      "samplesFile": "fomkyr-w8-d9-t0.samples.json"
+    },
+    {
+      "id": "fomkyr-wauto",
+      "backend": "fomkyr",
+      "browser": "chromium",
+      "degree": 9,
+      "trial": 0,
+      "memoryMiB": 2048,
+      "timeLimitSeconds": 120,
+      "requestedWorkers": 0,
+      "environment": {
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.0.0 Safari/537.36",
+        "hardwareConcurrency": 8,
+        "isolated": true
+      },
+      "hostLoadAtStart": [
+        5.76,
+        5.82,
+        6.05
+      ],
+      "status": "complete",
+      "coldWallSeconds": 7.714890000015497,
+      "engineStartupSeconds": 0.08845000001788139,
+      "jobWallSeconds": 7.626439999997616,
+      "allocatedWasmMiB": 521.875,
+      "peakAllocatedWasmMiB": 521.875,
+      "native": {
+        "basisSize": 1451,
+        "completedThroughDegree": 9,
+        "workers": 7,
+        "bits": 64,
+        "storageAccess": "direct-unsafe",
+        "shared": true,
+        "version": "0.4.0",
+        "storage": "opfs",
+        "scheduler": {
+          "epochs": 466,
+          "dispatchedPairs": 25914,
+          "rpcMessages": 2804,
+          "reduceMs": 6431.059999614954,
+          "commitMs": 131.5599998831749,
+          "fallbacks": 0
+        },
+        "lanePairs": [
+          4060,
+          3948,
+          4045,
+          4073,
+          3645,
+          3399,
+          2744
+        ],
+        "previewTruncated": true,
+        "kernelWallSeconds": 7.384185000002384
+      },
+      "lastDegree": {
+        "type": "degree",
+        "basisSize": 1451,
+        "terms": 29332,
+        "completedThroughDegree": 9,
+        "currentDegree": 0,
+        "allocatedBytes": 547210096,
+        "budgetBytes": 2147483648,
+        "diskBytes": 750400,
+        "pairs": 25914,
+        "monomialPairsPruned": 15,
+        "zeroCommits": 24563,
+        "workers": 7,
+        "prefixNodes": 8525,
+        "peakAllocatedBytes": 547210096,
+        "monomialPruning": true,
+        "heapReduction": true,
+        "reductions": 9107473,
+        "monomialTermsPruned": 3620528,
+        "diskReads": 8712,
+        "diskReadBytes": 3860376,
+        "reducerCacheHits": 9097412,
+        "costScheduling": true,
+        "wordCacheEntries": 256,
+        "wordCacheBytes": 0,
+        "chainPairsPruned": 378,
+        "matcherNodes": 1474,
+        "matcherAllocatedBytes": 1290240,
+        "matcherBuilds": 7,
+        "matcherFallbacks": 0,
+        "hashProbes": 67307,
+        "matcherQueries": 8843745,
+        "matcherCharacters": 66345176,
+        "wordCacheHits": 326204,
+        "heapAttempts": 16924,
+        "heapSuccesses": 16924,
+        "heapFallbacks": 0,
+        "insertionPrunes": 3567351,
+        "commutingPrunes": 1050228,
+        "quadraticSwaps": 9472935,
+        "elapsedMs": 7383.564999997616,
+        "scheduler": {
+          "epochs": 466,
+          "dispatchedPairs": 25914,
+          "rpcMessages": 2804,
+          "reduceMs": 6431.059999614954,
+          "commitMs": 131.5599998831749,
+          "fallbacks": 0
+        }
+      },
+      "lastProgress": {
+        "type": "progress",
+        "engine": "fomkyr",
+        "phase": "done",
+        "target": 9,
+        "currentDegree": 9,
+        "completedThroughDegree": 9,
+        "elapsedMs": 7611.530000001192,
+        "degreeElapsedMs": 5517.270000010729,
+        "overlaps": {
+          "total": "10975",
+          "resolved": "10975",
+          "enumerated": "10975",
+          "scheduled": "10732",
+          "committed": "10732",
+          "monomialSkipped": "0",
+          "chainSkipped": "243",
+          "fraction": 1,
+          "kind": "overlap-count-not-time",
+          "replay": 0
+        },
+        "activity": {
+          "activeLanes": 0,
+          "maxActiveRowTerms": "0",
+          "sampledReductions": "9107473",
+          "sampledReductionsPerSecond": 0,
+          "sampleIsApproximate": true
+        },
+        "eta": {
+          "currentDegreeSeconds": null,
+          "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+          "reason": "Current phase is not overlap reduction."
+        },
+        "forecast": {
+          "targetSeconds": null,
+          "recentDegreeGrowth": [
+            2.7662115099497075,
+            3.985670890209135,
+            5.303682904129019
+          ],
+          "reason": "Target is outside the two-degree forecasting horizon."
+        },
+        "history": [
+          {
+            "degree": 2,
+            "elapsedMs": 31.060000002384186,
+            "candidates": "0",
+            "scheduled": "0"
+          },
+          {
+            "degree": 3,
+            "elapsedMs": 52.2049999833107,
+            "candidates": "466",
+            "scheduled": "451"
+          },
+          {
+            "degree": 4,
+            "elapsedMs": 44.349999994039536,
+            "candidates": "827",
+            "scheduled": "827"
+          },
+          {
+            "degree": 5,
+            "elapsedMs": 75.99000000953674,
+            "candidates": "1447",
+            "scheduled": "1447"
+          },
+          {
+            "degree": 6,
+            "elapsedMs": 90.44499999284744,
+            "candidates": "2280",
+            "scheduled": "2271"
+          },
+          {
+            "degree": 7,
+            "elapsedMs": 250.1899999976158,
+            "candidates": "3840",
+            "scheduled": "3815"
+          },
+          {
+            "degree": 8,
+            "elapsedMs": 997.1750000119209,
+            "candidates": "6472",
+            "scheduled": "6371"
+          },
+          {
+            "degree": 9,
+            "elapsedMs": 5288.699999988079,
+            "candidates": "10975",
+            "scheduled": "10732"
+          }
+        ]
+      },
+      "cpuSeconds": 37.35,
+      "measuredWallSeconds": 7.938450430999976,
+      "averageCpuPercent": 470.4948443608933,
+      "peakPssMiB": 516.953125,
+      "peakRssMiB": 1271.796875,
+      "baselinePssMiB": 425.248046875,
+      "basisSize": 1451,
+      "outputHasDone": true,
+      "basisFile": "fomkyr-wauto-d9-t0.gb",
+      "samplesFile": "fomkyr-wauto-d9-t0.samples.json"
+    },
+    {
+      "id": "fomkyr-firefox-w1",
+      "backend": "fomkyr",
+      "browser": "firefox",
+      "degree": 9,
+      "trial": 0,
+      "memoryMiB": 2048,
+      "timeLimitSeconds": 120,
+      "requestedWorkers": 1,
+      "environment": {
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:155.0) Gecko/20100101 Firefox/155.0",
+        "hardwareConcurrency": 8,
+        "isolated": true
+      },
+      "hostLoadAtStart": [
+        6,
+        5.87,
+        6.06
+      ],
+      "status": "complete",
+      "coldWallSeconds": 23.422679999999996,
+      "engineStartupSeconds": 0.2443599999999999,
+      "jobWallSeconds": 23.17832,
+      "allocatedWasmMiB": 521.875,
+      "peakAllocatedWasmMiB": 521.875,
+      "native": {
+        "basisSize": 1451,
+        "completedThroughDegree": 9,
+        "workers": 1,
+        "bits": 64,
+        "storageAccess": "exclusive",
+        "shared": true,
+        "version": "0.4.0",
+        "storage": "opfs",
+        "scheduler": {
+          "epochs": 3242,
+          "dispatchedPairs": 25914,
+          "rpcMessages": 0,
+          "reduceMs": 18843.160000000007,
+          "commitMs": 649.3599999999735,
+          "fallbacks": 0
+        },
+        "lanePairs": [
+          25914
+        ],
+        "previewTruncated": true,
+        "kernelWallSeconds": 22.605900000000002
+      },
+      "lastDegree": {
+        "type": "degree",
+        "basisSize": 1451,
+        "terms": 29332,
+        "completedThroughDegree": 9,
+        "currentDegree": 0,
+        "allocatedBytes": 547210096,
+        "budgetBytes": 2147483648,
+        "diskBytes": 750400,
+        "pairs": 25914,
+        "monomialPairsPruned": 15,
+        "zeroCommits": 24563,
+        "workers": 1,
+        "prefixNodes": 8525,
+        "peakAllocatedBytes": 547210096,
+        "monomialPruning": true,
+        "heapReduction": true,
+        "reductions": 9107011,
+        "monomialTermsPruned": 3620319,
+        "diskReads": 1450,
+        "diskReadBytes": 748232,
+        "reducerCacheHits": 9104197,
+        "costScheduling": true,
+        "wordCacheEntries": 256,
+        "wordCacheBytes": 0,
+        "chainPairsPruned": 378,
+        "matcherNodes": 1474,
+        "matcherAllocatedBytes": 1290240,
+        "matcherBuilds": 7,
+        "matcherFallbacks": 0,
+        "hashProbes": 64228,
+        "matcherQueries": 8839298,
+        "matcherCharacters": 66311828,
+        "wordCacheHits": 328851,
+        "heapAttempts": 16903,
+        "heapSuccesses": 16903,
+        "heapFallbacks": 0,
+        "insertionPrunes": 3567127,
+        "commutingPrunes": 1050137,
+        "quadraticSwaps": 9472318,
+        "elapsedMs": 22605.3,
+        "scheduler": {
+          "epochs": 3242,
+          "dispatchedPairs": 25914,
+          "rpcMessages": 0,
+          "reduceMs": 18843.160000000007,
+          "commitMs": 649.3599999999735,
+          "fallbacks": 0
+        }
+      },
+      "lastProgress": {
+        "type": "progress",
+        "engine": "fomkyr",
+        "phase": "done",
+        "target": 9,
+        "currentDegree": 9,
+        "completedThroughDegree": 9,
+        "elapsedMs": 23164.04,
+        "degreeElapsedMs": 17450.480000000003,
+        "overlaps": {
+          "total": "10975",
+          "resolved": "10975",
+          "enumerated": "10975",
+          "scheduled": "10732",
+          "committed": "10732",
+          "monomialSkipped": "0",
+          "chainSkipped": "243",
+          "fraction": 1,
+          "kind": "overlap-count-not-time",
+          "replay": 0
+        },
+        "activity": {
+          "activeLanes": 0,
+          "maxActiveRowTerms": "0",
+          "sampledReductions": "9107011",
+          "sampledReductionsPerSecond": 0,
+          "sampleIsApproximate": true
+        },
+        "eta": {
+          "currentDegreeSeconds": null,
+          "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+          "reason": "Current phase is not overlap reduction."
+        },
+        "forecast": {
+          "targetSeconds": null,
+          "recentDegreeGrowth": [
+            2.3279515640766917,
+            4.013105892552079,
+            5.366033420166465
+          ],
+          "reason": "Target is outside the two-degree forecasting horizon."
+        },
+        "history": [
+          {
+            "degree": 2,
+            "elapsedMs": 156.79999999999995,
+            "candidates": "0",
+            "scheduled": "0"
+          },
+          {
+            "degree": 3,
+            "elapsedMs": 133.36000000000013,
+            "candidates": "466",
+            "scheduled": "451"
+          },
+          {
+            "degree": 4,
+            "elapsedMs": 140.6400000000001,
+            "candidates": "827",
+            "scheduled": "827"
+          },
+          {
+            "degree": 5,
+            "elapsedMs": 169.91999999999985,
+            "candidates": "1447",
+            "scheduled": "1447"
+          },
+          {
+            "degree": 6,
+            "elapsedMs": 336.9399999999998,
+            "candidates": "2280",
+            "scheduled": "2271"
+          },
+          {
+            "degree": 7,
+            "elapsedMs": 784.3800000000001,
+            "candidates": "3840",
+            "scheduled": "3815"
+          },
+          {
+            "degree": 8,
+            "elapsedMs": 3147.7999999999997,
+            "candidates": "6472",
+            "scheduled": "6371"
+          },
+          {
+            "degree": 9,
+            "elapsedMs": 16891.199999999997,
+            "candidates": "10975",
+            "scheduled": "10732"
+          }
+        ]
+      },
+      "cpuSeconds": 23.57,
+      "measuredWallSeconds": 23.77782425200002,
+      "averageCpuPercent": 99.12597448026584,
+      "peakPssMiB": 476.416015625,
+      "peakRssMiB": 835.32421875,
+      "baselinePssMiB": 419.4580078125,
+      "basisSize": 1451,
+      "outputHasDone": true,
+      "basisFile": "fomkyr-firefox-w1-d9-t0.gb",
+      "samplesFile": "fomkyr-firefox-w1-d9-t0.samples.json"
+    },
+    {
+      "id": "fomkyr-firefox-w2",
+      "backend": "fomkyr",
+      "browser": "firefox",
+      "degree": 9,
+      "trial": 0,
+      "memoryMiB": 2048,
+      "timeLimitSeconds": 120,
+      "requestedWorkers": 2,
+      "environment": {
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:155.0) Gecko/20100101 Firefox/155.0",
+        "hardwareConcurrency": 8,
+        "isolated": true
+      },
+      "hostLoadAtStart": [
+        4.45,
+        5.5,
+        5.93
+      ],
+      "status": "complete",
+      "coldWallSeconds": 15.914280000000002,
+      "engineStartupSeconds": 0.11379999999999996,
+      "jobWallSeconds": 15.800480000000002,
+      "allocatedWasmMiB": 521.875,
+      "peakAllocatedWasmMiB": 521.875,
+      "native": {
+        "basisSize": 1451,
+        "completedThroughDegree": 9,
+        "workers": 2,
+        "bits": 64,
+        "storageAccess": "broker-exclusive",
+        "shared": true,
+        "version": "0.4.0",
+        "storage": "opfs",
+        "scheduler": {
+          "epochs": 1623,
+          "dispatchedPairs": 25914,
+          "rpcMessages": 1626,
+          "reduceMs": 11437.920000000002,
+          "commitMs": 1037.5200000000052,
+          "fallbacks": 0
+        },
+        "lanePairs": [
+          13471,
+          12443
+        ],
+        "previewTruncated": true,
+        "kernelWallSeconds": 14.88704
+      },
+      "lastDegree": {
+        "type": "degree",
+        "basisSize": 1451,
+        "terms": 29332,
+        "completedThroughDegree": 9,
+        "currentDegree": 0,
+        "allocatedBytes": 547210096,
+        "budgetBytes": 2147483648,
+        "diskBytes": 750400,
+        "pairs": 25914,
+        "monomialPairsPruned": 15,
+        "zeroCommits": 24563,
+        "workers": 2,
+        "prefixNodes": 8525,
+        "peakAllocatedBytes": 547210096,
+        "monomialPruning": true,
+        "heapReduction": true,
+        "reductions": 9107162,
+        "monomialTermsPruned": 3620359,
+        "diskReads": 2852,
+        "diskReadBytes": 1448344,
+        "reducerCacheHits": 9102946,
+        "costScheduling": true,
+        "wordCacheEntries": 256,
+        "wordCacheBytes": 0,
+        "chainPairsPruned": 378,
+        "matcherNodes": 1474,
+        "matcherAllocatedBytes": 1290240,
+        "matcherBuilds": 7,
+        "matcherFallbacks": 0,
+        "hashProbes": 65447,
+        "matcherQueries": 8840425,
+        "matcherCharacters": 66320305,
+        "wordCacheHits": 328107,
+        "heapAttempts": 16907,
+        "heapSuccesses": 16907,
+        "heapFallbacks": 0,
+        "insertionPrunes": 3567167,
+        "commutingPrunes": 1050148,
+        "quadraticSwaps": 9472433,
+        "elapsedMs": 14886.7,
+        "scheduler": {
+          "epochs": 1623,
+          "dispatchedPairs": 25914,
+          "rpcMessages": 1626,
+          "reduceMs": 11437.920000000002,
+          "commitMs": 1037.5200000000052,
+          "fallbacks": 0
+        }
+      },
+      "lastProgress": {
+        "type": "progress",
+        "engine": "fomkyr",
+        "phase": "done",
+        "target": 9,
+        "currentDegree": 9,
+        "completedThroughDegree": 9,
+        "elapsedMs": 15781.119999999999,
+        "degreeElapsedMs": 10295.14,
+        "overlaps": {
+          "total": "10975",
+          "resolved": "10975",
+          "enumerated": "10975",
+          "scheduled": "10732",
+          "committed": "10732",
+          "monomialSkipped": "0",
+          "chainSkipped": "243",
+          "fraction": 1,
+          "kind": "overlap-count-not-time",
+          "replay": 0
+        },
+        "activity": {
+          "activeLanes": 0,
+          "maxActiveRowTerms": "0",
+          "sampledReductions": "9107162",
+          "sampledReductionsPerSecond": 0,
+          "sampleIsApproximate": true
+        },
+        "eta": {
+          "currentDegreeSeconds": null,
+          "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+          "reason": "Current phase is not overlap reduction."
+        },
+        "forecast": {
+          "targetSeconds": null,
+          "recentDegreeGrowth": [
+            1.991623273715191,
+            3.0179606684096845,
+            4.425891747335116
+          ],
+          "reason": "Target is outside the two-degree forecasting horizon."
+        },
+        "history": [
+          {
+            "degree": 2,
+            "elapsedMs": 174.57999999999993,
+            "candidates": "0",
+            "scheduled": "0"
+          },
+          {
+            "degree": 3,
+            "elapsedMs": 197.27999999999997,
+            "candidates": "466",
+            "scheduled": "451"
+          },
+          {
+            "degree": 4,
+            "elapsedMs": 197.37999999999988,
+            "candidates": "827",
+            "scheduled": "827"
+          },
+          {
+            "degree": 5,
+            "elapsedMs": 254.23999999999978,
+            "candidates": "1447",
+            "scheduled": "1447"
+          },
+          {
+            "degree": 6,
+            "elapsedMs": 353.3600000000001,
+            "candidates": "2280",
+            "scheduled": "2271"
+          },
+          {
+            "degree": 7,
+            "elapsedMs": 703.7600000000002,
+            "candidates": "3840",
+            "scheduled": "3815"
+          },
+          {
+            "degree": 8,
+            "elapsedMs": 2123.92,
+            "candidates": "6472",
+            "scheduled": "6371"
+          },
+          {
+            "degree": 9,
+            "elapsedMs": 9400.24,
+            "candidates": "10975",
+            "scheduled": "10732"
+          }
+        ]
+      },
+      "cpuSeconds": 27.12,
+      "measuredWallSeconds": 16.095209430999997,
+      "averageCpuPercent": 168.4973414994267,
+      "peakPssMiB": 470.8720703125,
+      "peakRssMiB": 830.16015625,
+      "baselinePssMiB": 431.3779296875,
+      "basisSize": 1451,
+      "outputHasDone": true,
+      "basisFile": "fomkyr-firefox-w2-d9-t0.gb",
+      "samplesFile": "fomkyr-firefox-w2-d9-t0.samples.json"
+    },
+    {
+      "id": "fomkyr-firefox-w4",
+      "backend": "fomkyr",
+      "browser": "firefox",
+      "degree": 9,
+      "trial": 0,
+      "memoryMiB": 2048,
+      "timeLimitSeconds": 120,
+      "requestedWorkers": 4,
+      "environment": {
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:155.0) Gecko/20100101 Firefox/155.0",
+        "hardwareConcurrency": 8,
+        "isolated": true
+      },
+      "hostLoadAtStart": [
+        4.09,
+        5.34,
+        5.87
+      ],
+      "status": "complete",
+      "coldWallSeconds": 12.57668,
+      "engineStartupSeconds": 0.27596000000000004,
+      "jobWallSeconds": 12.30072,
+      "allocatedWasmMiB": 521.875,
+      "peakAllocatedWasmMiB": 521.875,
+      "native": {
+        "basisSize": 1451,
+        "completedThroughDegree": 9,
+        "workers": 4,
+        "bits": 64,
+        "storageAccess": "broker-exclusive",
+        "shared": true,
+        "version": "0.4.0",
+        "storage": "opfs",
+        "scheduler": {
+          "epochs": 814,
+          "dispatchedPairs": 25914,
+          "rpcMessages": 2447,
+          "reduceMs": 7916.699999999982,
+          "commitMs": 879.4800000000182,
+          "fallbacks": 0
+        },
+        "lanePairs": [
+          6907,
+          6470,
+          6403,
+          6134
+        ],
+        "previewTruncated": true,
+        "kernelWallSeconds": 11.428600000000001
+      },
+      "lastDegree": {
+        "type": "degree",
+        "basisSize": 1451,
+        "terms": 29332,
+        "completedThroughDegree": 9,
+        "currentDegree": 0,
+        "allocatedBytes": 547210096,
+        "budgetBytes": 2147483648,
+        "diskBytes": 750400,
+        "pairs": 25914,
+        "monomialPairsPruned": 15,
+        "zeroCommits": 24563,
+        "workers": 4,
+        "prefixNodes": 8525,
+        "peakAllocatedBytes": 547210096,
+        "monomialPruning": true,
+        "heapReduction": true,
+        "reductions": 9107348,
+        "monomialTermsPruned": 3620403,
+        "diskReads": 5359,
+        "diskReadBytes": 2577272,
+        "reducerCacheHits": 9100625,
+        "costScheduling": true,
+        "wordCacheEntries": 256,
+        "wordCacheBytes": 0,
+        "chainPairsPruned": 378,
+        "matcherNodes": 1474,
+        "matcherAllocatedBytes": 1290240,
+        "matcherBuilds": 7,
+        "matcherFallbacks": 0,
+        "hashProbes": 66517,
+        "matcherQueries": 8842108,
+        "matcherCharacters": 66332746,
+        "wordCacheHits": 326924,
+        "heapAttempts": 16912,
+        "heapSuccesses": 16912,
+        "heapFallbacks": 0,
+        "insertionPrunes": 3567211,
+        "commutingPrunes": 1050164,
+        "quadraticSwaps": 9472607,
+        "elapsedMs": 11428.199999999999,
+        "scheduler": {
+          "epochs": 814,
+          "dispatchedPairs": 25914,
+          "rpcMessages": 2447,
+          "reduceMs": 7916.699999999982,
+          "commitMs": 879.4800000000182,
+          "fallbacks": 0
+        }
+      },
+      "lastProgress": {
+        "type": "progress",
+        "engine": "fomkyr",
+        "phase": "done",
+        "target": 9,
+        "currentDegree": 9,
+        "completedThroughDegree": 9,
+        "elapsedMs": 12281.460000000001,
+        "degreeElapsedMs": 7323.000000000001,
+        "overlaps": {
+          "total": "10975",
+          "resolved": "10975",
+          "enumerated": "10975",
+          "scheduled": "10732",
+          "committed": "10732",
+          "monomialSkipped": "0",
+          "chainSkipped": "243",
+          "fraction": 1,
+          "kind": "overlap-count-not-time",
+          "replay": 0
+        },
+        "activity": {
+          "activeLanes": 0,
+          "maxActiveRowTerms": "0",
+          "sampledReductions": "9107348",
+          "sampledReductionsPerSecond": 0,
+          "sampleIsApproximate": true
+        },
+        "eta": {
+          "currentDegreeSeconds": null,
+          "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+          "reason": "Current phase is not overlap reduction."
+        },
+        "forecast": {
+          "targetSeconds": null,
+          "recentDegreeGrowth": [
+            1.8328910662039861,
+            2.855668572277081,
+            4.204651223253517
+          ],
+          "reason": "Target is outside the two-degree forecasting horizon."
+        },
+        "history": [
+          {
+            "degree": 2,
+            "elapsedMs": 192.0999999999999,
+            "candidates": "0",
+            "scheduled": "0"
+          },
+          {
+            "degree": 3,
+            "elapsedMs": 218.1800000000003,
+            "candidates": "466",
+            "scheduled": "451"
+          },
+          {
+            "degree": 4,
+            "elapsedMs": 198.3199999999997,
+            "candidates": "827",
+            "scheduled": "827"
+          },
+          {
+            "degree": 5,
+            "elapsedMs": 227.13999999999987,
+            "candidates": "1447",
+            "scheduled": "1447"
+          },
+          {
+            "degree": 6,
+            "elapsedMs": 293.94000000000005,
+            "candidates": "2280",
+            "scheduled": "2271"
+          },
+          {
+            "degree": 7,
+            "elapsedMs": 538.7599999999998,
+            "candidates": "3840",
+            "scheduled": "3815"
+          },
+          {
+            "degree": 8,
+            "elapsedMs": 1538.5199999999995,
+            "candidates": "6472",
+            "scheduled": "6371"
+          },
+          {
+            "degree": 9,
+            "elapsedMs": 6468.94,
+            "candidates": "10975",
+            "scheduled": "10732"
+          }
+        ]
+      },
+      "cpuSeconds": 34.44,
+      "measuredWallSeconds": 12.908937875999982,
+      "averageCpuPercent": 266.79189512585776,
+      "peakPssMiB": 477.1552734375,
+      "peakRssMiB": 836.58203125,
+      "baselinePssMiB": 418.67578125,
+      "basisSize": 1451,
+      "outputHasDone": true,
+      "basisFile": "fomkyr-firefox-w4-d9-t0.gb",
+      "samplesFile": "fomkyr-firefox-w4-d9-t0.samples.json"
+    }
+  ],
+  "errors": [],
+  "configurations": [
+    {
+      "id": "fomkyr-w1",
+      "backend": "fomkyr",
+      "browser": "chromium",
+      "label": "fomkyr 0.4.0 (memory64, chromium, 1 workers)",
+      "workers": 1
+    },
+    {
+      "id": "fomkyr-w2",
+      "backend": "fomkyr",
+      "browser": "chromium",
+      "label": "fomkyr 0.4.0 (memory64, chromium, 2 workers)",
+      "workers": 2
+    },
+    {
+      "id": "fomkyr-w4",
+      "backend": "fomkyr",
+      "browser": "chromium",
+      "label": "fomkyr 0.4.0 (memory64, chromium, 4 workers)",
+      "workers": 4
+    },
+    {
+      "id": "fomkyr-w6",
+      "backend": "fomkyr",
+      "browser": "chromium",
+      "label": "fomkyr 0.4.0 (memory64, chromium, 6 workers)",
+      "workers": 6
+    },
+    {
+      "id": "fomkyr-w8",
+      "backend": "fomkyr",
+      "browser": "chromium",
+      "label": "fomkyr 0.4.0 (memory64, chromium, 8 workers)",
+      "workers": 8
+    },
+    {
+      "id": "fomkyr-wauto",
+      "backend": "fomkyr",
+      "browser": "chromium",
+      "label": "fomkyr 0.4.0 (memory64, chromium, automatic workers)",
+      "workers": 0
+    },
+    {
+      "id": "fomkyr-firefox-w1",
+      "backend": "fomkyr",
+      "browser": "firefox",
+      "label": "fomkyr 0.4.0 (memory64, firefox, 1 workers)",
+      "workers": 1
+    },
+    {
+      "id": "fomkyr-firefox-w2",
+      "backend": "fomkyr",
+      "browser": "firefox",
+      "label": "fomkyr 0.4.0 (memory64, firefox, 2 workers)",
+      "workers": 2
+    },
+    {
+      "id": "fomkyr-firefox-w4",
+      "backend": "fomkyr",
+      "browser": "firefox",
+      "label": "fomkyr 0.4.0 (memory64, firefox, 4 workers)",
+      "workers": 4
+    },
+    {
+      "id": "fomkyr-firefox-w6",
+      "backend": "fomkyr",
+      "browser": "firefox",
+      "label": "fomkyr 0.4.0 (memory64, firefox, 6 workers)",
+      "workers": 6
+    },
+    {
+      "id": "fomkyr-firefox-w8",
+      "backend": "fomkyr",
+      "browser": "firefox",
+      "label": "fomkyr 0.4.0 (memory64, firefox, 8 workers)",
+      "workers": 8
+    },
+    {
+      "id": "fomkyr-firefox-wauto",
+      "backend": "fomkyr",
+      "browser": "firefox",
+      "label": "fomkyr 0.4.0 (memory64, firefox, automatic workers)",
+      "workers": 0
+    }
+  ],
+  "degrees": [
+    9
+  ],
+  "requestedTrials": 1,
+  "timeLimitSeconds": 120,
+  "workerCounts": [
+    1,
+    2,
+    4,
+    6,
+    8,
+    0
+  ],
+  "batchPairs": null,
+  "finishedAt": "2026-10-02T18:49:39.458Z"
+}

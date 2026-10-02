@@ -1,0 +1,20 @@
+fk6 1 Singular PASS 0.15 s
+random-fk6 1 Singular PASS 0.10 s
+fk6 1 32 single PASS
+fk6 1 32 multicore PASS
+fk6 1 64 single PASS
+fk6 1 64 multicore PASS
+random-fk6 1 32 single PASS
+random-fk6 1 32 multicore PASS
+random-fk6 1 64 single PASS
+random-fk6 1 64 multicore PASS
+fk6 2 Singular PASS 0.13 s
+random-fk6 2 Singular PASS 0.10 s
+fk6 2 32 single PASS
+fk6 2 32 multicore PASS
+fk6 2 64 single PASS
+fk6 2 64 multicore PASS
+random-fk6 2 32 single PASS
+random-fk6 2 32 multicore PASS
+random-fk6 2 64 single PASS
+random-fk6 2 64 multicore PASS

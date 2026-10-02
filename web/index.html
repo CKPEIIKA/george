@@ -94,7 +94,10 @@
     <fieldset class="block">
       <legend><span data-i18n="legend.relations">Relations</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="relsHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="relsHint" data-i18n-html="rels.hint">One per line or separated by commas, with integer coefficients: <code>4*x*x-3*y*x</code>. Single-letter generators can be written together: <code>xyx-yxy</code>.</span></span></legend>
       <textarea id="rels" class="code" rows="3" aria-describedby="relsHint"></textarea>
-      <ol class="preview" id="relPreview" aria-label="Relations as read" data-i18n-attr="aria-label:rels.preview"></ol>
+      <details id="relPreviewPanel" class="relation-preview" open>
+        <summary><span data-i18n="rels.preview">Relations as read</span> <span class="preview-count" id="relPreviewCount"></span></summary>
+        <div class="preview" id="relPreview" aria-label="Relations as read" data-i18n-attr="aria-label:rels.preview"></div>
+      </details>
     </fieldset>
 
     <fieldset class="block">
@@ -154,7 +157,7 @@
 
       </label>
       <label for="nativeWorkers" class="field" id="nativeWorkersField" hidden>
-        <span class="label-row"><span class="label" data-i18n="native.workers">Worker count</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="nativeWorkersHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="nativeWorkersHint" data-i18n="native.workersHint">0 automatically selects up to four workers. Set 1–32 to choose explicitly. The scratch memory budget is shared between workers; more workers may not be faster.</span></span></span>
+        <span class="label-row"><span class="label" data-i18n="native.workers">Worker count</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="nativeWorkersHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="nativeWorkersHint" data-i18n="native.workersHint">0 uses the browser's reported CPU thread count minus one, within 1–32. Set 1–32 explicitly to use a chosen count. The scratch memory budget is shared between workers. Compare counts for your presentation; speed depends on the workload. Single-worker execution uses one.</span></span></span>
         <input id="nativeWorkers" type="number" min="0" max="32" step="1" value="0" aria-describedby="nativeWorkersHint">
 
       </label>

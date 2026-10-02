@@ -19,6 +19,8 @@ import { formatMemorySize } from './memory-monitor.js';
 import { attachFomkyrResultLinks, renderFomkyrSeries } from '../engine/fomkyr/result-links.js';
 import {installFomkyrControls, readFomkyrOptions, writeFomkyrOptions} from './fomkyr-options.js';
 import {degreeProgress,degreeLabel} from './degree-progress.js';
+import {groupRelations, polynomialTermCount} from './relation-preview.js';
+import {copyMathSelection} from './math-copy.js';
 
 const $ = (id) => document.getElementById(id);
 installFomkyrControls(document, t);
@@ -258,22 +260,24 @@ function validate() {
   if (wl.length && wl.length !== vv.names.length) problems.push('weights');
   wl.forEach((w, i) => weights.set(vv.names[i], Number(w)));
 
-  let html = '';
+  const previewRows = [];
   let anyNonhomog = false;
   const rels = splitRelations(f.relsText);
-  for (const r of rels) {
+  for (const [index,r] of rels.entries()) {
     try {
       const terms = parseRelation(r, vv.names, f.backend === 'fomkyr' ? 0xfffffffe : 10000);
       const hom = isHomogeneous(terms, weights);
       if (!hom) anyNonhomog = true;
-      html += `<li><span class="rel">${typesetTerms(terms)}${hom ? '' : `<span class="nh">${t('nonhomog')}</span>`}</span></li>`;
+      previewRows.push({index,termCount:terms.length,html:`<li value="${index+1}"><span class="rel"><span class="math-expression" data-math-source="${esc(toBergman(terms))}">${typesetTerms(terms)}</span>${hom ? '' : `<span class="nh">${t('nonhomog')}</span>`}</span></li>`});
     } catch (e) {
-      html += `<li class="bad"><span class="rel"><code>${esc(r)}</code>: ${esc(translateMessage(e.message))}</span></li>`;
+      previewRows.push({index,html:`<li class="bad" value="${index+1}"><span class="rel"><code>${esc(r)}</code>: ${esc(translateMessage(e.message))}</span></li>`});
       problems.push('relations');
     }
   }
   if (rels.length === 0) problems.push('relations');
-  els.relPreview.innerHTML = html;
+  els.relPreview.innerHTML = groupRelations(previewRows).map(group=>`<ol class="relation-group" data-term-count="${group.termCount}">${group.relations.map(row=>row.html).join('')}</ol>`).join('');
+  $('relPreviewPanel').hidden = rels.length === 0;
+  $('relPreviewCount').textContent = String(rels.length);
   els.rels.setAttribute('aria-invalid', String(problems.includes('relations') && rels.length > 0));
 
   els.pField.hidden = f.field !== 'p';
@@ -507,9 +511,14 @@ function renderResults(job, res) {
     if (res.fomkyr?.reduced === false) html += `<p class="notice">${t('native.unreduced')}</p>`;
     if (res.fomkyr?.previewTruncated) html += `<p class="notice">${t('native.preview')}</p>`;
     for (const g of groups) {
-      html += `<section class="degree"><h3><span class="d">${t('basis.degree', { d: g.deg })}</span>${tn('basis.count', g.polys.length)}</h3><ol class="polys">`;
-      for (const p of g.polys) html += `<li>${typeset(p, { lead: true })}</li>`;
-      html += '</ol></section>';
+      html += `<section class="degree"><h3><span class="d">${t('basis.degree', { d: g.deg })}</span>${tn('basis.count', g.polys.length)}</h3><div class="polynomial-groups">`;
+      const rows = g.polys.map((source, index) => ({source, index, termCount: polynomialTermCount(source)}));
+      for (const group of groupRelations(rows)) {
+        html += `<ol class="polys" data-term-count="${group.termCount}">`;
+        for (const {source, index} of group.relations) html += `<li value="${index+1}"><span class="math-expression" data-math-source="${esc(source)}">${typeset(source, { lead: true })}</span></li>`;
+        html += '</ol>';
+      }
+      html += '</div></section>';
     }
     $('basisOut').innerHTML = html;
   }
@@ -651,6 +660,8 @@ function renderLog(job, stdout) {
 }
 
 // ------------------------------------------------------------ copy and download
+
+document.addEventListener('copy', copyMathSelection);
 
 function shareMessage(key) {
   els.shareStatus.textContent = t(key);

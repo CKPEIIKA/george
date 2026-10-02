@@ -1,0 +1,11 @@
+LIB "freegb.lib";
+ring gn_r=7,(gn_var_5,gn_var_4,gn_var_3,gn_var_2,gn_var_1,gn_var_0),Dp;
+def gn_a=freeAlgebra(gn_r,2);
+setring gn_a;
+ideal I=gn_var_1^2,gn_var_2^2,gn_var_3^2,gn_var_0^2,gn_var_5^2,gn_var_4^2,gn_var_1*gn_var_4-gn_var_4*gn_var_1,gn_var_2*gn_var_5-gn_var_5*gn_var_2,gn_var_3*gn_var_0-gn_var_0*gn_var_3,gn_var_1*gn_var_0-gn_var_0*gn_var_2-gn_var_2*gn_var_1,gn_var_0*gn_var_1-gn_var_2*gn_var_0-gn_var_1*gn_var_2,gn_var_1*gn_var_5-gn_var_5*gn_var_3-gn_var_3*gn_var_1,gn_var_5*gn_var_1-gn_var_3*gn_var_5-gn_var_1*gn_var_3,gn_var_2*gn_var_4-gn_var_4*gn_var_3-gn_var_3*gn_var_2,gn_var_4*gn_var_2-gn_var_3*gn_var_4-gn_var_2*gn_var_3,gn_var_0*gn_var_4-gn_var_4*gn_var_5-gn_var_5*gn_var_0,gn_var_4*gn_var_0-gn_var_5*gn_var_4-gn_var_0*gn_var_5;
+ideal B=gn_var_1^2,gn_var_2^2,gn_var_3^2,gn_var_0^2,gn_var_5^2,gn_var_4^2,gn_var_4*gn_var_1+6*gn_var_1*gn_var_4,gn_var_5*gn_var_2+6*gn_var_2*gn_var_5,gn_var_3*gn_var_0+6*gn_var_0*gn_var_3,gn_var_2*gn_var_1+6*gn_var_1*gn_var_0+gn_var_0*gn_var_2,gn_var_2*gn_var_0+gn_var_1*gn_var_2+6*gn_var_0*gn_var_1,gn_var_5*gn_var_3+gn_var_3*gn_var_1+6*gn_var_1*gn_var_5,gn_var_5*gn_var_1+6*gn_var_3*gn_var_5+6*gn_var_1*gn_var_3,gn_var_4*gn_var_3+gn_var_3*gn_var_2+6*gn_var_2*gn_var_4,gn_var_4*gn_var_2+6*gn_var_3*gn_var_4+6*gn_var_2*gn_var_3,gn_var_5*gn_var_0+gn_var_4*gn_var_5+6*gn_var_0*gn_var_4,gn_var_5*gn_var_4+6*gn_var_4*gn_var_0+gn_var_0*gn_var_5;
+ideal G=twostd(I);
+ideal H=twostd(B);
+print("ORACLE:"+string(size(reduce(B,G)))+":"+string(size(reduce(I,H))));
+for(int j=1;j<=size(G);j++){print("LEAD:"+string(lead(G[j])));}
+quit;

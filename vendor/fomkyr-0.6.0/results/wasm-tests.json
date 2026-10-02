@@ -1,0 +1,761 @@
+[
+  {
+    "test": "actual-WASM-shared-workers",
+    "host": "Node22; OPFS emulated by node:fs",
+    "basisSize": 695,
+    "terms": 4808,
+    "completedThroughDegree": 7,
+    "currentDegree": 0,
+    "allocatedBytes": 48096624,
+    "budgetBytes": 134217728,
+    "diskBytes": 0,
+    "pairs": 8811,
+    "monomialPairsPruned": 15,
+    "zeroCommits": 8216,
+    "workers": 1,
+    "prefixNodes": 2772,
+    "peakAllocatedBytes": 48374192,
+    "monomialPruning": true,
+    "heapReduction": true,
+    "reductions": 318169,
+    "monomialTermsPruned": 72526,
+    "diskReads": 0,
+    "diskReadBytes": 0,
+    "reducerCacheHits": 0,
+    "sharedReducerCacheBytes": 0,
+    "sharedReducerCacheUsedBytes": 0,
+    "rewriteDegree": 4,
+    "rewriteUsedBytes": 1819872,
+    "rewriteBudgetBytes": 8388608,
+    "rewriteEntries": 46534,
+    "rewriteDeclined": 260,
+    "rewriteTableStatus": 1,
+    "rewriteSnapshot": 265,
+    "costScheduling": true,
+    "wordCacheEntries": 256,
+    "wordCacheBytes": 0,
+    "chainPairsPruned": 34,
+    "matcherNodes": 673,
+    "matcherAllocatedBytes": 634880,
+    "matcherBuilds": 5,
+    "matcherFallbacks": 0,
+    "hashProbes": 9815,
+    "matcherQueries": 199566,
+    "matcherCharacters": 836434,
+    "wordCacheHits": 2727,
+    "heapAttempts": 3241,
+    "heapSuccesses": 3241,
+    "heapFallbacks": 0,
+    "insertionPrunes": 49815,
+    "commutingPrunes": 12629,
+    "quadraticSwaps": 152443,
+    "rationalHeapAttempts": 0,
+    "rationalHeapSuccesses": 0,
+    "rationalHeapFallbacks": 0,
+    "pinnedReducerHits": 0,
+    "localRewriteHits": 175973,
+    "integerHeapSteps": 184272,
+    "rationalHeapSteps": 0,
+    "engine": "fomkyr",
+    "version": "0.6.0",
+    "storage": "memory",
+    "complete": true,
+    "unrestrictedBasisComplete": false,
+    "reduced": false,
+    "target": 7,
+    "modulus": 0,
+    "order": "degleftlex",
+    "runKey": "wasm32-1",
+    "identity": "17c5a3b13bbae1fd6e03ece75139f297d437bda2ae062b093d77a92f091b88bf",
+    "bits": 32,
+    "shared": true,
+    "ioMode": "memory",
+    "executionMode": "wasm32-shared",
+    "fallbacks": [],
+    "requestedBudgetBytes": 134217728,
+    "hostMailboxBytes": 0,
+    "linearMemoryBytes": 48431104,
+    "resumedFromDegree": 0,
+    "cacheHit": false,
+    "hilbert": {
+      "grading": "total-word-degree; all generators degree 1",
+      "field": "Q",
+      "coefficients": [
+        "1",
+        "15",
+        "125",
+        "765",
+        "3831",
+        "16605",
+        "64432",
+        "228855"
+      ],
+      "certifiedThroughDegree": 7,
+      "finiteDimensionalProved": false,
+      "dimension": null,
+      "rationalFunction": null,
+      "extrapolated": false,
+      "automatonStates": 994,
+      "temporaryBytes": 277600,
+      "algorithm": "leading-word avoidance automaton + exact dynamically sized limb arithmetic",
+      "validity": "Exact coefficient prefix from the certified leading-word basis; not a guessed rational series or a gauge/trace projection.",
+      "basisCompletionProved": false,
+      "certification": "degree-truncated-basis"
+    },
+    "scheduler": {
+      "epochs": 1103,
+      "dispatchedPairs": 8811,
+      "rpcMessages": 0,
+      "reduceMs": 95.98922700000004,
+      "commitMs": 2.163372000000095,
+      "fallbacks": 0
+    },
+    "lanePairs": [
+      8811
+    ],
+    "elapsedMs": 160.20087700000002,
+    "previewTruncated": false,
+    "textBytes": 0,
+    "fullBasisPath": null,
+    "degreeTimings": [
+      {
+        "degree": 1,
+        "elapsedMs": 1.230119000000002,
+        "candidates": "0",
+        "scheduled": "0"
+      },
+      {
+        "degree": 2,
+        "elapsedMs": 3.0683930000000004,
+        "candidates": "0",
+        "scheduled": "0"
+      },
+      {
+        "degree": 3,
+        "elapsedMs": 3.0100340000000045,
+        "candidates": "466",
+        "scheduled": "451"
+      },
+      {
+        "degree": 4,
+        "elapsedMs": 6.835285000000013,
+        "candidates": "827",
+        "scheduled": "827"
+      },
+      {
+        "degree": 5,
+        "elapsedMs": 17.250051,
+        "candidates": "1447",
+        "scheduled": "1447"
+      },
+      {
+        "degree": 6,
+        "elapsedMs": 20.510463000000016,
+        "candidates": "2280",
+        "scheduled": "2271"
+      },
+      {
+        "degree": 7,
+        "elapsedMs": 63.89751799999999,
+        "candidates": "3840",
+        "scheduled": "3815"
+      }
+    ],
+    "progressError": null,
+    "progress": {
+      "engine": "fomkyr",
+      "phase": "done",
+      "target": 7,
+      "currentDegree": 7,
+      "completedThroughDegree": 7,
+      "elapsedMs": 174.196677,
+      "degreeElapsedMs": 79.25195,
+      "overlaps": {
+        "total": "3840",
+        "resolved": "3840",
+        "enumerated": "3840",
+        "scheduled": "3815",
+        "committed": "3815",
+        "monomialSkipped": "0",
+        "chainSkipped": "25",
+        "fraction": 1,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "318169",
+        "sampledReductionsPerSecond": 0,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.230119000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 3.0683930000000004,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 3.0100340000000045,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.835285000000013,
+          "candidates": "827",
+          "scheduled": "827"
+        },
+        {
+          "degree": 5,
+          "elapsedMs": 17.250051,
+          "candidates": "1447",
+          "scheduled": "1447"
+        },
+        {
+          "degree": 6,
+          "elapsedMs": 20.510463000000016,
+          "candidates": "2280",
+          "scheduled": "2271"
+        },
+        {
+          "degree": 7,
+          "elapsedMs": 63.89751799999999,
+          "candidates": "3840",
+          "scheduled": "3815"
+        }
+      ]
+    }
+  },
+  {
+    "test": "actual-WASM-shared-workers",
+    "host": "Node22; OPFS emulated by node:fs",
+    "basisSize": 695,
+    "terms": 4808,
+    "completedThroughDegree": 7,
+    "currentDegree": 0,
+    "allocatedBytes": 56347600,
+    "budgetBytes": 134217728,
+    "diskBytes": 137632,
+    "pairs": 8811,
+    "monomialPairsPruned": 15,
+    "zeroCommits": 8216,
+    "workers": 4,
+    "prefixNodes": 2772,
+    "peakAllocatedBytes": 56625168,
+    "monomialPruning": true,
+    "heapReduction": true,
+    "reductions": 318170,
+    "monomialTermsPruned": 72526,
+    "diskReads": 0,
+    "diskReadBytes": 0,
+    "reducerCacheHits": 0,
+    "sharedReducerCacheBytes": 8388608,
+    "sharedReducerCacheUsedBytes": 137632,
+    "rewriteDegree": 4,
+    "rewriteUsedBytes": 1819872,
+    "rewriteBudgetBytes": 8388608,
+    "rewriteEntries": 46534,
+    "rewriteDeclined": 260,
+    "rewriteTableStatus": 1,
+    "rewriteSnapshot": 265,
+    "costScheduling": true,
+    "wordCacheEntries": 256,
+    "wordCacheBytes": 0,
+    "chainPairsPruned": 34,
+    "matcherNodes": 673,
+    "matcherAllocatedBytes": 634880,
+    "matcherBuilds": 5,
+    "matcherFallbacks": 0,
+    "hashProbes": 11416,
+    "matcherQueries": 201388,
+    "matcherCharacters": 847023,
+    "wordCacheHits": 995,
+    "heapAttempts": 3241,
+    "heapSuccesses": 3241,
+    "heapFallbacks": 0,
+    "insertionPrunes": 49815,
+    "commutingPrunes": 12629,
+    "quadraticSwaps": 152443,
+    "rationalHeapAttempts": 0,
+    "rationalHeapSuccesses": 0,
+    "rationalHeapFallbacks": 0,
+    "pinnedReducerHits": 185837,
+    "localRewriteHits": 175972,
+    "integerHeapSteps": 184270,
+    "rationalHeapSteps": 0,
+    "engine": "fomkyr",
+    "version": "0.6.0",
+    "storage": "opfs",
+    "complete": true,
+    "unrestrictedBasisComplete": false,
+    "reduced": false,
+    "target": 7,
+    "modulus": 0,
+    "order": "degleftlex",
+    "runKey": "wasm32-4",
+    "identity": "17c5a3b13bbae1fd6e03ece75139f297d437bda2ae062b093d77a92f091b88bf",
+    "bits": 32,
+    "shared": true,
+    "ioMode": "direct-unsafe",
+    "executionMode": "wasm32-shared",
+    "fallbacks": [],
+    "requestedBudgetBytes": 134217728,
+    "hostMailboxBytes": 0,
+    "linearMemoryBytes": 56688640,
+    "resumedFromDegree": 0,
+    "cacheHit": false,
+    "hilbert": {
+      "grading": "total-word-degree; all generators degree 1",
+      "field": "Q",
+      "coefficients": [
+        "1",
+        "15",
+        "125",
+        "765",
+        "3831",
+        "16605",
+        "64432",
+        "228855"
+      ],
+      "certifiedThroughDegree": 7,
+      "finiteDimensionalProved": false,
+      "dimension": null,
+      "rationalFunction": null,
+      "extrapolated": false,
+      "automatonStates": 994,
+      "temporaryBytes": 277600,
+      "algorithm": "leading-word avoidance automaton + exact dynamically sized limb arithmetic",
+      "validity": "Exact coefficient prefix from the certified leading-word basis; not a guessed rational series or a gauge/trace projection.",
+      "basisCompletionProved": false,
+      "certification": "degree-truncated-basis"
+    },
+    "scheduler": {
+      "epochs": 278,
+      "dispatchedPairs": 8811,
+      "rpcMessages": 839,
+      "reduceMs": 58.42238100000043,
+      "commitMs": 4.9090859999994905,
+      "fallbacks": 0
+    },
+    "lanePairs": [
+      1330,
+      3020,
+      2635,
+      1826
+    ],
+    "elapsedMs": 215.93668,
+    "previewTruncated": false,
+    "textBytes": 58182,
+    "fullBasisPath": "fomkyr/wasm32-4/result.gb",
+    "degreeTimings": [
+      {
+        "degree": 1,
+        "elapsedMs": 1.003247999999985,
+        "candidates": "0",
+        "scheduled": "0"
+      },
+      {
+        "degree": 2,
+        "elapsedMs": 1.0285559999999805,
+        "candidates": "0",
+        "scheduled": "0"
+      },
+      {
+        "degree": 3,
+        "elapsedMs": 4.938584999999989,
+        "candidates": "466",
+        "scheduled": "451"
+      },
+      {
+        "degree": 4,
+        "elapsedMs": 4.058109999999999,
+        "candidates": "827",
+        "scheduled": "827"
+      },
+      {
+        "degree": 5,
+        "elapsedMs": 12.10659099999998,
+        "candidates": "1447",
+        "scheduled": "1447"
+      },
+      {
+        "degree": 6,
+        "elapsedMs": 14.655211000000008,
+        "candidates": "2280",
+        "scheduled": "2271"
+      },
+      {
+        "degree": 7,
+        "elapsedMs": 38.334903,
+        "candidates": "3840",
+        "scheduled": "3815"
+      }
+    ],
+    "progressError": null,
+    "progress": {
+      "engine": "fomkyr",
+      "phase": "done",
+      "target": 7,
+      "currentDegree": 7,
+      "completedThroughDegree": 7,
+      "elapsedMs": 224.04559999999998,
+      "degreeElapsedMs": 46.873118999999974,
+      "overlaps": {
+        "total": "3840",
+        "resolved": "3840",
+        "enumerated": "3840",
+        "scheduled": "3815",
+        "committed": "3815",
+        "monomialSkipped": "0",
+        "chainSkipped": "25",
+        "fraction": 1,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "318170",
+        "sampledReductionsPerSecond": 0,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.003247999999985,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 1.0285559999999805,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 4.938584999999989,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 4.058109999999999,
+          "candidates": "827",
+          "scheduled": "827"
+        },
+        {
+          "degree": 5,
+          "elapsedMs": 12.10659099999998,
+          "candidates": "1447",
+          "scheduled": "1447"
+        },
+        {
+          "degree": 6,
+          "elapsedMs": 14.655211000000008,
+          "candidates": "2280",
+          "scheduled": "2271"
+        },
+        {
+          "degree": 7,
+          "elapsedMs": 38.334903,
+          "candidates": "3840",
+          "scheduled": "3815"
+        }
+      ]
+    }
+  },
+  {
+    "test": "actual-WASM-shared-workers",
+    "host": "Node22; OPFS emulated by node:fs",
+    "basisSize": 695,
+    "terms": 4808,
+    "completedThroughDegree": 7,
+    "currentDegree": 0,
+    "allocatedBytes": 56347600,
+    "budgetBytes": 134217728,
+    "diskBytes": 137632,
+    "pairs": 8811,
+    "monomialPairsPruned": 15,
+    "zeroCommits": 8216,
+    "workers": 3,
+    "prefixNodes": 2772,
+    "peakAllocatedBytes": 56625168,
+    "monomialPruning": true,
+    "heapReduction": true,
+    "reductions": 318169,
+    "monomialTermsPruned": 72526,
+    "diskReads": 0,
+    "diskReadBytes": 0,
+    "reducerCacheHits": 0,
+    "sharedReducerCacheBytes": 8388608,
+    "sharedReducerCacheUsedBytes": 137632,
+    "rewriteDegree": 4,
+    "rewriteUsedBytes": 1819872,
+    "rewriteBudgetBytes": 8388608,
+    "rewriteEntries": 46534,
+    "rewriteDeclined": 260,
+    "rewriteTableStatus": 1,
+    "rewriteSnapshot": 265,
+    "costScheduling": true,
+    "wordCacheEntries": 256,
+    "wordCacheBytes": 0,
+    "chainPairsPruned": 34,
+    "matcherNodes": 673,
+    "matcherAllocatedBytes": 634880,
+    "matcherBuilds": 5,
+    "matcherFallbacks": 0,
+    "hashProbes": 11209,
+    "matcherQueries": 201086,
+    "matcherCharacters": 845370,
+    "wordCacheHits": 1341,
+    "heapAttempts": 3242,
+    "heapSuccesses": 3242,
+    "heapFallbacks": 0,
+    "insertionPrunes": 49815,
+    "commutingPrunes": 12629,
+    "quadraticSwaps": 152443,
+    "rationalHeapAttempts": 0,
+    "rationalHeapSuccesses": 0,
+    "rationalHeapFallbacks": 0,
+    "pinnedReducerHits": 185836,
+    "localRewriteHits": 175972,
+    "integerHeapSteps": 184268,
+    "rationalHeapSteps": 0,
+    "engine": "fomkyr",
+    "version": "0.6.0",
+    "storage": "opfs",
+    "complete": true,
+    "unrestrictedBasisComplete": false,
+    "reduced": false,
+    "target": 7,
+    "modulus": 0,
+    "order": "degleftlex",
+    "runKey": "wasm64-3",
+    "identity": "17c5a3b13bbae1fd6e03ece75139f297d437bda2ae062b093d77a92f091b88bf",
+    "bits": 64,
+    "shared": true,
+    "ioMode": "direct-unsafe",
+    "executionMode": "wasm64-shared",
+    "fallbacks": [],
+    "requestedBudgetBytes": 134217728,
+    "hostMailboxBytes": 0,
+    "linearMemoryBytes": 56688640,
+    "resumedFromDegree": 0,
+    "cacheHit": false,
+    "hilbert": {
+      "grading": "total-word-degree; all generators degree 1",
+      "field": "Q",
+      "coefficients": [
+        "1",
+        "15",
+        "125",
+        "765",
+        "3831",
+        "16605",
+        "64432",
+        "228855"
+      ],
+      "certifiedThroughDegree": 7,
+      "finiteDimensionalProved": false,
+      "dimension": null,
+      "rationalFunction": null,
+      "extrapolated": false,
+      "automatonStates": 994,
+      "temporaryBytes": 277600,
+      "algorithm": "leading-word avoidance automaton + exact dynamically sized limb arithmetic",
+      "validity": "Exact coefficient prefix from the certified leading-word basis; not a guessed rational series or a gauge/trace projection.",
+      "basisCompletionProved": false,
+      "certification": "degree-truncated-basis"
+    },
+    "scheduler": {
+      "epochs": 369,
+      "dispatchedPairs": 8811,
+      "rpcMessages": 742,
+      "reduceMs": 88.18675800000108,
+      "commitMs": 4.515256000000818,
+      "fallbacks": 0
+    },
+    "lanePairs": [
+      3267,
+      3008,
+      2536
+    ],
+    "elapsedMs": 207.89856699999996,
+    "previewTruncated": false,
+    "textBytes": 58182,
+    "fullBasisPath": "fomkyr/wasm64-3/result.gb",
+    "degreeTimings": [
+      {
+        "degree": 1,
+        "elapsedMs": 1.1732829999999694,
+        "candidates": "0",
+        "scheduled": "0"
+      },
+      {
+        "degree": 2,
+        "elapsedMs": 2.149520999999936,
+        "candidates": "0",
+        "scheduled": "0"
+      },
+      {
+        "degree": 3,
+        "elapsedMs": 10.795129000000088,
+        "candidates": "466",
+        "scheduled": "451"
+      },
+      {
+        "degree": 4,
+        "elapsedMs": 9.123695999999995,
+        "candidates": "827",
+        "scheduled": "827"
+      },
+      {
+        "degree": 5,
+        "elapsedMs": 19.629870000000096,
+        "candidates": "1447",
+        "scheduled": "1447"
+      },
+      {
+        "degree": 6,
+        "elapsedMs": 16.63555800000006,
+        "candidates": "2280",
+        "scheduled": "2271"
+      },
+      {
+        "degree": 7,
+        "elapsedMs": 53.824299999999994,
+        "candidates": "3840",
+        "scheduled": "3815"
+      }
+    ],
+    "progressError": null,
+    "progress": {
+      "engine": "fomkyr",
+      "phase": "done",
+      "target": 7,
+      "currentDegree": 7,
+      "completedThroughDegree": 7,
+      "elapsedMs": 216.44041800000002,
+      "degreeElapsedMs": 63.35676999999998,
+      "overlaps": {
+        "total": "3840",
+        "resolved": "3840",
+        "enumerated": "3840",
+        "scheduled": "3815",
+        "committed": "3815",
+        "monomialSkipped": "0",
+        "chainSkipped": "25",
+        "fraction": 1,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "318169",
+        "sampledReductionsPerSecond": 0,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.1732829999999694,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.149520999999936,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 10.795129000000088,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 9.123695999999995,
+          "candidates": "827",
+          "scheduled": "827"
+        },
+        {
+          "degree": 5,
+          "elapsedMs": 19.629870000000096,
+          "candidates": "1447",
+          "scheduled": "1447"
+        },
+        {
+          "degree": 6,
+          "elapsedMs": 16.63555800000006,
+          "candidates": "2280",
+          "scheduled": "2271"
+        },
+        {
+          "degree": 7,
+          "elapsedMs": 53.824299999999994,
+          "candidates": "3840",
+          "scheduled": "3815"
+        }
+      ]
+    }
+  },
+  {
+    "test": "WASM-arbitrary-precision-155-bits",
+    "bits": 32,
+    "passed": true
+  },
+  {
+    "test": "WASM-arbitrary-precision-155-bits",
+    "bits": 64,
+    "passed": true
+  },
+  {
+    "test": "wasm-cancel",
+    "passed": true,
+    "checkpoint": 4
+  },
+  {
+    "test": "cross-ABI-resume",
+    "passed": true
+  }
+]

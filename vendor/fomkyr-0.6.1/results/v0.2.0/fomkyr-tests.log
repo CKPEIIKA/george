@@ -1,0 +1,17 @@
+Hilbert-polynomial-ring
+Hilbert-exterior
+Hilbert-FK3
+Hilbert-homogenized-Weyl
+coefficient-field-labels-and-finite-dimension
+80-bit-Hilbert-coefficients
+higher-degree-input-relation
+reject-invalid-direct-fixture
+cross-ABI-resume-and-nondestructive-lower-target
+discard-uncommitted-tail
+metadata-checksum-fallback
+record-checksum-fallback
+identity-mismatch-preserves-cache
+cache-lock-list-and-protected-deletion
+Hilbert-budget-failure-preserves-GB-and-checkpoint
+bounded-small-scratch
+independent-Fraction-oracle-on-batched-WASM

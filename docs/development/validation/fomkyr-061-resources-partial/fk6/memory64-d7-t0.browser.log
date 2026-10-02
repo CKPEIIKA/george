@@ -1,0 +1,5 @@
+[1292874:1292893:1003/022353.525209:ERROR:pto/nss_util.cc:377] After loading Root Certs, loaded==false: NSS error code: -8018
+[1292874:1292898:1003/022356.160943:ERROR:gle_apis/gcm/engine/registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT
+[1292874:1292898:1003/022356.449854:ERROR:gle_apis/gcm/engine/mcs_client.cc:702]   Error code: 401  Error message: Authentication Failed: wrong_secret
+[1292874:1292898:1003/022356.449898:ERROR:gle_apis/gcm/engine/mcs_client.cc:704] Failed to log in to GCM, resetting connection.
+[1292874:1292898:1003/022423.552875:ERROR:gle_apis/gcm/engine/registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT

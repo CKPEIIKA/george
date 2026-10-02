@@ -1,0 +1,49 @@
+{
+  "kind": "canonical-normalization-not-Groebner-certification",
+  "independentGroebnerCertificate": false,
+  "degree": 11,
+  "modulus": 0,
+  "variables": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "k",
+    "m",
+    "n",
+    "p",
+    "q",
+    "r",
+    "s"
+  ],
+  "files": [
+    {
+      "path": "/mnt/data/work061/fomkyr/results/0.6.1/baseline-d12/storage/fomkyr/alg-17c5a3b13bbae1fd6e03ece75139f297d437bda2ae062b093d77a92f091b88bf/basis.gnb",
+      "rules": 3232,
+      "canonicalSHA256": "bb76f2b9d0c0ff5103accd1faff5efeba9cf14e6ed807c43b3548ece2272dcd2",
+      "properSubwordChecks": 236305,
+      "matcherStates": 5421,
+      "minimalLeaders": true,
+      "tailReduced": true,
+      "monic": true
+    },
+    {
+      "path": "/mnt/data/work061/fomkyr/results/0.6.1/rational-macros-d12-resume/storage/fomkyr/alg-17c5a3b13bbae1fd6e03ece75139f297d437bda2ae062b093d77a92f091b88bf/basis.gnb",
+      "rules": 3232,
+      "canonicalSHA256": "bb76f2b9d0c0ff5103accd1faff5efeba9cf14e6ed807c43b3548ece2272dcd2",
+      "properSubwordChecks": 236294,
+      "matcherStates": 5421,
+      "minimalLeaders": true,
+      "tailReduced": true,
+      "monic": true
+    }
+  ],
+  "canonicalEqual": true,
+  "comparison": "exact canonical byte-stream comparison, not hash-only",
+  "passed": true,
+  "elapsedSeconds": 5.066752016999999
+}

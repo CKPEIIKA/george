@@ -1,0 +1,135 @@
+{
+  "passed": true,
+  "mode": "Actual WASM; node:fs emulates browser storage",
+  "reports": [
+    {
+      "test": "live-progress-inside-single-worker-WASM",
+      "passed": true,
+      "events": 85,
+      "activeReductionEvents": 18,
+      "sample": {
+        "type": "progress",
+        "engine": "fomkyr",
+        "phase": "reducing",
+        "target": 9,
+        "currentDegree": 9,
+        "completedThroughDegree": 8,
+        "elapsedMs": 9046.318617,
+        "degreeElapsedMs": 6791.472278,
+        "overlaps": {
+          "total": "10975",
+          "resolved": "5772",
+          "enumerated": "5780",
+          "scheduled": "5768",
+          "committed": "5760",
+          "monomialSkipped": "0",
+          "chainSkipped": "12",
+          "fraction": 0.525922,
+          "kind": "overlap-count-not-time",
+          "replay": 0
+        },
+        "activity": {
+          "activeLanes": 1,
+          "maxActiveRowTerms": "14",
+          "sampledReductions": "4990523",
+          "sampledReductionsPerSecond": 574544.1209059271,
+          "sampleIsApproximate": true
+        },
+        "eta": {
+          "currentDegreeSeconds": null,
+          "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+          "reason": "Observed overlap costs are too heterogeneous for an informative time estimate."
+        },
+        "forecast": {
+          "targetSeconds": null,
+          "conditionalNextDegrees": {
+            "fromDegree": 9,
+            "throughDegree": 9,
+            "centralSeconds": 4.760527846278809,
+            "scenarioSeconds": [
+              1.1995111110311376,
+              15.701306121360226
+            ],
+            "label": "Conditional extrapolation; not a completion-time bound."
+          },
+          "recentDegreeGrowth": [
+            1.5125802343084593,
+            3.0015063049171817,
+            4.949826031953153
+          ]
+        },
+        "history": [
+          {
+            "degree": 1,
+            "elapsedMs": 5.188533999999947,
+            "candidates": "0",
+            "scheduled": "0"
+          },
+          {
+            "degree": 2,
+            "elapsedMs": 7.300319000000002,
+            "candidates": "0",
+            "scheduled": "0"
+          },
+          {
+            "degree": 3,
+            "elapsedMs": 15.17736199999996,
+            "candidates": "466",
+            "scheduled": "451"
+          },
+          {
+            "degree": 4,
+            "elapsedMs": 33.81185099999999,
+            "candidates": "827",
+            "scheduled": "827"
+          },
+          {
+            "degree": 5,
+            "elapsedMs": 70.57781899999998,
+            "candidates": "1447",
+            "scheduled": "1447"
+          },
+          {
+            "degree": 6,
+            "elapsedMs": 106.754614,
+            "candidates": "2280",
+            "scheduled": "2271"
+          },
+          {
+            "degree": 7,
+            "elapsedMs": 320.42464700000005,
+            "candidates": "3840",
+            "scheduled": "3815"
+          },
+          {
+            "degree": 8,
+            "elapsedMs": 1586.046259,
+            "candidates": "6472",
+            "scheduled": "6371"
+          }
+        ]
+      }
+    },
+    {
+      "test": "progress-listener-error-cannot-corrupt-algebra",
+      "passed": true
+    },
+    {
+      "test": "actual-v0.3-records-restored-in-v0.4-memory64-unshared",
+      "passed": true,
+      "throughDegree": 9,
+      "metadataEnvelope": "reconstructed from actual old result via unchanged checkpoint writer; old polynomial bytes unchanged"
+    },
+    {
+      "test": "extend-old-v0.3-degree4-checkpoint-to-degree5",
+      "passed": true,
+      "identicalToFreshNewBinaryBasis": true,
+      "hilbert5": "16605"
+    },
+    {
+      "test": "telemetry-on-off-identical-degree10-WASM-binary-basis",
+      "passed": true,
+      "bytes": 1941464
+    }
+  ]
+}

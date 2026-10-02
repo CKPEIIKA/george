@@ -63,7 +63,7 @@ try {
       assert.equal(await page.locator('#backend').inputValue(), 'fomkyr');
       assert.equal(await page.locator('#nativeWorkers').inputValue(), '2');
       assert.equal(await page.evaluate(async () => (await fetch('./index.html')).headers.get('cross-origin-opener-policy')), 'same-origin');
-      assert.deepEqual(await page.evaluate(() => caches.keys()), ['fomkyr-kernel-0.4.0']);
+      assert.deepEqual(await page.evaluate(() => caches.keys()), ['fomkyr-kernel-0.6.1']);
       await page.locator('[data-lang="ru"]').click();
       assert.equal(await page.locator('.release-tag').count(), 0);
       assert.equal(await page.locator('#backend option[value="fomkyr"]').textContent(), 'fomkyr / C O3 + LTO (экспериментальный)');

@@ -20,15 +20,24 @@ const memoryMiB = Number(arg('--memory-mib', '2048'));
 const trials = Number(arg('--trials', '1'));
 const sampleMs = 250;
 if (process.platform !== 'linux') throw new Error('Resource sampling requires Linux /proc.');
-if (degrees.some(d => !Number.isInteger(d) || d < 2 || d > 12)) throw new Error('Choose degrees 2..12.');
+if (degrees.some(d => !Number.isInteger(d) || d < 1 || d > 12)) throw new Error('Choose degrees 1..12.');
 if (!Number.isInteger(trials) || trials < 1 || trials > 20) throw new Error('Choose 1..20 trials.');
 fs.mkdirSync(out, {recursive: true});
 const temporary = path.join(out, 'browser-profiles');
 fs.mkdirSync(temporary, {recursive: true});
 const clockTicks = Number(execFileSync('getconf', ['CLK_TCK'], {encoding: 'utf8'}));
-const inputFile = 'test/fixtures/fomin-kirillov-user.json';
+const inputFile = arg('--input-file', 'test/fixtures/fomin-kirillov-user.json');
 const inputText = JSON.parse(fs.readFileSync(inputFile)).inputText;
 const {vars, rels} = readInputFile('(ALGFORMINPUT)\n' + inputText);
+const finiteCertificateFile='test/fixtures/fk6-matrix.json';
+let finiteCertificate=null;
+if(fs.existsSync(finiteCertificateFile)){
+  const certificate=JSON.parse(fs.readFileSync(finiteCertificateFile));
+  const inputHash=crypto.createHash('sha256').update(fs.readFileSync(inputFile)).digest('hex');
+  const recorded=certificate.inputFiles.find(input=>input.sha256===inputHash);
+  const zero=recorded&&certificate.expected.find(row=>row.id===recorded.id&&row.hilbert.at(-1)==='0');
+  if(zero)finiteCertificate={file:finiteCertificateFile,firstZeroDegree:zero.degree,dimension:zero.hilbert.reduce((sum,n)=>sum+BigInt(n),0n).toString()};
+}
 const fomkyrVersion = JSON.parse(fs.readFileSync('web/engine/fomkyr/build.json')).version;
 const configurations = [
   {id: 'standard', backend: 'standard', browser: 'chromium', label: 'Lisp / ECL O2'},
@@ -41,23 +50,34 @@ const configurations = [
   {id: 'fomkyr-firefox', backend: 'fomkyr', browser: 'firefox', label: `fomkyr ${fomkyrVersion} (memory64, Firefox, 4 workers)`, workers: 4},
 ];
 const selected = arg('--configs', configurations.map(c => c.id).join(',')).split(',');
-const configs = selected.map(id => {
+let configs = selected.map(id => {
   const c = configurations.find(c => c.id === id);
   if (!c) throw new Error('Unknown configuration: ' + id);
   return c;
 });
+const workerCounts = arg('--workers',null)?.split(',').map(value=>value==='auto'?0:Number(value));
+if(workerCounts){
+  if(!workerCounts.length||workerCounts.some(value=>!Number.isInteger(value)||value<0||value>32)
+    ||new Set(workerCounts).size!==workerCounts.length)throw new Error('Choose distinct worker counts 1..32 or auto.');
+  configs=configs.flatMap(config=>config.backend==='fomkyr'?workerCounts.map(workers=>({...config,
+    workers,id:config.id+'-w'+(workers||'auto'),label:`fomkyr ${fomkyrVersion} (memory64, ${config.browser}, ${workers||'automatic'} workers)`})):config);
+}
+const batchPairs=arg('--batch-pairs',null)===null?null:Number(arg('--batch-pairs',null));
+if(batchPairs!==null&&(!Number.isInteger(batchPairs)||batchPairs<0||batchPairs>512))throw new Error('Choose batch size 0..512.');
 const reportFile = path.join(out, 'report.json');
 const previous = process.argv.includes('--resume') && fs.existsSync(reportFile)
   ? JSON.parse(fs.readFileSync(reportFile)) : null;
 const sha = file => crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
-const sourceFiles = ['web/src/engine.js', 'web/engine/worker.js', 'web/engine/native/engine.js',
+const sourceFiles = ['tools/benchmark-backend-resources.mjs','web/src/bergman-syntax.js','web/src/fomkyr-options.js','web/src/engine.js', 'web/engine/worker.js', 'web/engine/native/engine.js',
   'web/engine/native/runtime.js', 'web/engine/native/george-entry.js', 'web/engine/native/storage.js',
   'web/engine/native/george32.wasm', 'web/engine/native/george64.wasm', 'web/engine/ecl.wasm',
   'web/engine/optimized/ecl.wasm', 'web/engine/compiled/ecl.wasm', 'web/engine/memory64/ecl.wasm', 'web/engine/ecl.data',
   ...fs.readdirSync('web/engine/fomkyr').filter(name=>/\.(?:js|wasm)$/.test(name)).map(name=>'web/engine/fomkyr/'+name)];
+if(fs.existsSync(finiteCertificateFile))sourceFiles.push(finiteCertificateFile);
 const sourceHashes = Object.fromEntries(sourceFiles.map(file => [file, sha(file)]));
 if (previous && (JSON.stringify(previous.sourceHashes) !== JSON.stringify(sourceHashes)
-  || previous.memoryMiB !== memoryMiB)) throw new Error('Cannot resume across source or memory-setting changes.');
+  || previous.memoryMiB !== memoryMiB || previous.batchPairs !== batchPairs || previous.inputSha256 !== sha(inputFile)
+  || JSON.stringify(previous.configurations)!==JSON.stringify(configs))) throw new Error('Cannot resume across source, memory or scheduling changes.');
 const report = previous ?? {
   state: 'running', startedAt: new Date().toISOString(), version: JSON.parse(fs.readFileSync('package.json')).version,
   inputFile, inputSha256: sha(inputFile), variables: vars.length, relations: rels.length,
@@ -67,8 +87,9 @@ const report = previous ?? {
   method: {
     cpu: 'Sum of process-tree user and system CPU time during engine startup, computation and result delivery; core-seconds, not wall seconds. Linux /proc/<pid>/stat, no debugger or CPU profiler.',
     ram: 'Peak sum of browser-process proportional set sizes (PSS). Shared pages are proportionally counted. Includes browser baseline; allocated Wasm capacity is recorded separately. Sampled every 0.25 seconds, so very brief peaks may be missed.',
-    jobs: 'Fresh browser profile and fresh engine per point. No OPFS resume. Serial runs. Bergman and fomkyr use monomial pruning. Specialized engines select memory64 with four requested workers and Hilbert disabled. Legacy Native may fall back to one Firefox worker; fomkyr uses the portable OPFS broker.',
+    jobs: 'Fresh browser profile and fresh engine per point. No OPFS resume. Serial runs. Bergman and fomkyr use monomial pruning. Specialized engines select memory64 and Hilbert disabled. Each row records requested and actual compute workers; requested zero selects automatically. Fomkyr uses the portable OPFS broker in Firefox. The scratch pool is shared across lanes. The optional batchPairs setting fixes epoch size; automatic epochs otherwise scale with worker count.',
     wall: 'Cold engine wall time includes engine startup, calculation, export and result transfer; browser startup and HTML rendering are excluded.',
+    degreeOne: 'All inputs are quadratic. Degree 1 is the empty linear prefix. Bergman always loads the initial degree, so its degree-1 job uses the zero relation. Fomkyr receives the full quadratic input and stops before loading it.',
     uncertainty: 'One cold run per point unless multiple trials are requested. Host load and filesystem/browser caches can affect timings. No claim of cross-machine performance.',
   }, rows: [], errors: [],
 };
@@ -77,6 +98,9 @@ report.configurations = configs;
 report.degrees = degrees;
 report.requestedTrials = trials;
 report.timeLimitSeconds = timeoutSeconds;
+report.workerCounts = workerCounts??null;
+report.batchPairs = batchPairs;
+report.finiteCertificate=finiteCertificate;
 const save = () => fs.writeFileSync(reportFile, JSON.stringify(report, null, 2) + '\n');
 save();
 
@@ -165,8 +189,13 @@ async function browserJob() {
       engineStartupSeconds: (initialized - start) / 1000, jobWallSeconds: (end - initialized) / 1000,
       allocatedWasmMiB: result.memoryBytes / 1048576, peakAllocatedWasmMiB: Math.max(...memory) / 1048576,
       native: native ? {basisSize: native.basisSize, completedThroughDegree: native.completedThroughDegree,
+        unrestrictedBasisComplete:native.unrestrictedBasisComplete,
         workers: native.workers, bits: native.bits, storageAccess: native.ioMode ?? native.storageAccess,
         shared: native.shared, version: native.version, storage: native.storage,
+        scheduler: native.scheduler, lanePairs: native.lanePairs,
+        localRewriteHits:native.localRewriteHits, rewriteEntries:native.rewriteEntries,
+        rewriteUsedBytes:native.rewriteUsedBytes, pinnedReducerHits:native.pinnedReducerHits,
+        sharedReducerCacheUsedBytes:native.sharedReducerCacheUsedBytes,
         previewTruncated: !!native.previewTruncated, kernelWallSeconds: native.elapsedMs / 1000} : null,
       basis, stdout: result.stdout, lastDegree, lastProgress});
   } catch (error) {
@@ -178,11 +207,13 @@ async function browserJob() {
 }
 
 async function run(config, degree, trial) {
-  const job = buildJob({task: 'gb', ring: 'noncomm', order: 'degleftlex', field: '0', vars, rels,
+  const job = buildJob({task: 'gb', ring: 'noncomm', order: 'degleftlex', field: '0', vars,
+    rels:degree===1&&['standard','optimized','compiled','memory64'].includes(config.backend)?['0']:rels,
     maxdeg: String(degree), memoryMiB, backend: config.backend, lowterms: 'quick', nonhomog: 'degreewise',
     monomialPruning: config.backend !== 'native', timeoutMinutes: timeoutSeconds / 60});
   if (config.backend === 'native') job.nativeOptions = {workers: config.workers, bits: 64, resume: false};
   if (config.backend === 'fomkyr') job.fomkyrOptions = {...job.fomkyrOptions, workers: config.workers, bits: '64', resume: false, hilbert: false};
+  if(config.backend==='fomkyr'&&batchPairs!==null)job.fomkyrOptions.batchPairs=batchPairs;
   const key = `${config.id}-d${degree}-t${trial}`;
   let finish, browser, sampler, row, watchdog;
   const done = new Promise(resolve => {finish = resolve;});
@@ -203,6 +234,7 @@ async function run(config, degree, trial) {
         if (req.url === '/__resource/start') {
           sampler = new Sampler(browser.pid); sampler.start();
           row = {id: config.id, backend: config.backend, browser: config.browser, degree, trial,
+            emptyQuadraticPrefix:degree===1,
             memoryMiB, timeLimitSeconds: timeoutSeconds, requestedWorkers: config.workers ?? 1, environment: value, hostLoadAtStart: os.loadavg()};
           console.log(key, 'started');
         } else if (req.url === '/__resource/end') {
@@ -269,12 +301,19 @@ async function run(config, degree, trial) {
 try {
   // Firefox degree 7 first gives a quick comparison to the reported 25 s.
   const first = configs.find(c => c.id === 'native-firefox');
-  if (first && degrees.includes(7) && !report.rows.some(r => r.id === first.id && r.degree === 7 && r.trial === 0)) await run(first, 7, 0);
+  if (first && degrees.includes(7) && (!finiteCertificate||7<=finiteCertificate.firstZeroDegree)
+    && !report.rows.some(r => r.id === first.id && r.degree === 7 && r.trial === 0)) await run(first, 7, 0);
   for (let trial = 0; trial < trials; trial++) for (const degree of degrees) {
-    const rotated = [...configs.slice(degree % configs.length), ...configs.slice(0, degree % configs.length)];
+    if(finiteCertificate&&degree>finiteCertificate.firstZeroDegree){
+      report.skipped??=[];report.skipped.push({degree,trial,reason:'A checked zero Hilbert coefficient proves finite dimension; higher bounds add no graded information.'});save();continue;
+    }
+    const rotation=(degree+trial)%configs.length;
+    const rotated = [...configs.slice(rotation), ...configs.slice(0, rotation)];
     for (const config of rotated) {
       if (report.rows.some(r => r.id === config.id && r.degree === degree && r.trial === trial)) continue;
-      if (process.argv.includes('--skip-censored') && report.rows.some(r=>r.id===config.id&&r.degree===degree&&['timeout','oom'].includes(r.status))) continue;
+      if (process.argv.includes('--skip-censored') && report.rows.some(r=>r.id===config.id&&r.degree<=degree&&['timeout','oom'].includes(r.status))) {
+        report.skipped ??= [];report.skipped.push({id:config.id,degree,trial,reason:'A lower or equal degree reached the time or memory limit.'});save();continue;
+      }
       await run(config, degree, trial);
     }
   }

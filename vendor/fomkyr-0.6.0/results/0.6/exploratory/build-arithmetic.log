@@ -1,0 +1,20 @@
+src/kernel.c:391:133: warning: missing field 'pinned' initializer [-Wmissing-field-initializers]
+  391 |  u32 id=++S.nrules,b=hash(leading,p.degree);Rule*r=rule(id);*r=(Rule){leading,location,(u32)size,p.n,p.degree,PTR(u32,S.lm_heads)[b]};PTR(u32,S.lm_heads)[b]=id;
+      |                                                                                                                                     ^
+1 warning generated.
+src/kernel.c:391:133: warning: missing field 'pinned' initializer [-Wmissing-field-initializers]
+  391 |  u32 id=++S.nrules,b=hash(leading,p.degree);Rule*r=rule(id);*r=(Rule){leading,location,(u32)size,p.n,p.degree,PTR(u32,S.lm_heads)[b]};PTR(u32,S.lm_heads)[b]=id;
+      |                                                                                                                                     ^
+1 warning generated.
+src/kernel.c:391:133: warning: missing field 'pinned' initializer [-Wmissing-field-initializers]
+  391 |  u32 id=++S.nrules,b=hash(leading,p.degree);Rule*r=rule(id);*r=(Rule){leading,location,(u32)size,p.n,p.degree,PTR(u32,S.lm_heads)[b]};PTR(u32,S.lm_heads)[b]=id;
+      |                                                                                                                                     ^
+1 warning generated.
+src/kernel.c:391:133: warning: missing field 'pinned' initializer [-Wmissing-field-initializers]
+  391 |  u32 id=++S.nrules,b=hash(leading,p.degree);Rule*r=rule(id);*r=(Rule){leading,location,(u32)size,p.n,p.degree,PTR(u32,S.lm_heads)[b]};PTR(u32,S.lm_heads)[b]=id;
+      |                                                                                                                                     ^
+1 warning generated.
+src/kernel.c:391:133: warning: missing field 'pinned' initializer [-Wmissing-field-initializers]
+  391 |  u32 id=++S.nrules,b=hash(leading,p.degree);Rule*r=rule(id);*r=(Rule){leading,location,(u32)size,p.n,p.degree,PTR(u32,S.lm_heads)[b]};PTR(u32,S.lm_heads)[b]=id;
+      |                                                                                                                                     ^
+1 warning generated.

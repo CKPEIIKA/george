@@ -1,0 +1,19 @@
+{
+  "name": "fomkyr",
+  "version": "0.3.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "description": "Exact homogeneous NC Groebner bases and Hilbert coefficients; adaptive shared/unshared WASM and bounded browser persistence",
+  "scripts": {
+    "build": "bash tools/build.sh",
+    "test:wasm": "node --experimental-wasm-memory64 tests/test_wasm.mjs",
+    "test:release": "node --experimental-wasm-memory64 tests/test_fomkyr.mjs",
+    "test:integration": "node --experimental-wasm-memory64 tests/test_integration.mjs",
+    "benchmark": "node --experimental-wasm-memory64 tests/benchmark_fomkyr.mjs 3 8",
+    "test:compatibility": "node --experimental-wasm-memory64 tests/test_compatibility.mjs",
+    "test:static-host": "node tests/test_static_host.mjs",
+    "test:browsers": "python3 tests/test_browsers.py --browser all",
+    "test:installer": "python3 tests/test_installer.py && python3 tests/test_installer_modern.py"
+  }
+}

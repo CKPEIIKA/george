@@ -1,0 +1,246 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "test": "different-unreduced-tails-same-canonical-basis",
+      "passed": true
+    },
+    {
+      "test": "same-leading-words-not-enough",
+      "passed": true
+    },
+    {
+      "test": "canonical-normalization-in-Q-and-prime-fields",
+      "passed": true
+    },
+    {
+      "test": "reject-proper-subword-precondition-failure",
+      "passed": true
+    },
+    {
+      "test": "canonical-digest-is-not-a-Groebner-certificate",
+      "passed": true
+    },
+    {
+      "test": "field-identity-and-characteristic-dependent-leading-words",
+      "passed": true
+    },
+    {
+      "test": "independent-record-checksum-rejects-corruption",
+      "passed": true
+    }
+  ],
+  "georgeHomogeneousCases": [
+    {
+      "case": "singular-gb_simple",
+      "modulus": 0,
+      "degree": 4,
+      "passed": true,
+      "basisSize": 1,
+      "independentCriticalCompositions": 1,
+      "canonicalEqual": true,
+      "externalEngineExecuted": false
+    },
+    {
+      "case": "singular-gb_simple",
+      "modulus": 2,
+      "degree": 4,
+      "passed": true,
+      "basisSize": 1,
+      "independentCriticalCompositions": 1,
+      "canonicalEqual": true,
+      "externalEngineExecuted": false
+    },
+    {
+      "case": "singular-gb_simple",
+      "modulus": 5,
+      "degree": 4,
+      "passed": true,
+      "basisSize": 1,
+      "independentCriticalCompositions": 1,
+      "canonicalEqual": true,
+      "externalEngineExecuted": false
+    },
+    {
+      "case": "singular-gb_mon1",
+      "modulus": 0,
+      "degree": 4,
+      "passed": true,
+      "basisSize": 2,
+      "independentCriticalCompositions": 4,
+      "canonicalEqual": true,
+      "externalEngineExecuted": false
+    },
+    {
+      "case": "singular-gb_mon1",
+      "modulus": 2,
+      "degree": 4,
+      "passed": true,
+      "basisSize": 2,
+      "independentCriticalCompositions": 4,
+      "canonicalEqual": true,
+      "externalEngineExecuted": false
+    },
+    {
+      "case": "singular-gb_mon1",
+      "modulus": 5,
+      "degree": 4,
+      "passed": true,
+      "basisSize": 2,
+      "independentCriticalCompositions": 4,
+      "canonicalEqual": true,
+      "externalEngineExecuted": false
+    },
+    {
+      "case": "singular-gb_mon2",
+      "modulus": 0,
+      "degree": 4,
+      "passed": true,
+      "basisSize": 3,
+      "independentCriticalCompositions": 8,
+      "canonicalEqual": true,
+      "externalEngineExecuted": false
+    },
+    {
+      "case": "singular-gb_mon2",
+      "modulus": 2,
+      "degree": 4,
+      "passed": true,
+      "basisSize": 3,
+      "independentCriticalCompositions": 8,
+      "canonicalEqual": true,
+      "externalEngineExecuted": false
+    },
+    {
+      "case": "singular-gb_mon2",
+      "modulus": 5,
+      "degree": 4,
+      "passed": true,
+      "basisSize": 3,
+      "independentCriticalCompositions": 8,
+      "canonicalEqual": true,
+      "externalEngineExecuted": false
+    },
+    {
+      "case": "singular-gb_mon3",
+      "modulus": 0,
+      "degree": 4,
+      "passed": true,
+      "basisSize": 4,
+      "independentCriticalCompositions": 12,
+      "canonicalEqual": true,
+      "externalEngineExecuted": false
+    },
+    {
+      "case": "singular-gb_mon3",
+      "modulus": 2,
+      "degree": 4,
+      "passed": true,
+      "basisSize": 4,
+      "independentCriticalCompositions": 12,
+      "canonicalEqual": true,
+      "externalEngineExecuted": false
+    },
+    {
+      "case": "singular-gb_mon3",
+      "modulus": 5,
+      "degree": 4,
+      "passed": true,
+      "basisSize": 4,
+      "independentCriticalCompositions": 12,
+      "canonicalEqual": true,
+      "externalEngineExecuted": false
+    },
+    {
+      "case": "singular-gb_exterior2",
+      "modulus": 0,
+      "degree": 4,
+      "passed": true,
+      "basisSize": 3,
+      "independentCriticalCompositions": 7,
+      "canonicalEqual": true,
+      "externalEngineExecuted": false
+    },
+    {
+      "case": "singular-gb_exterior2",
+      "modulus": 2,
+      "degree": 4,
+      "passed": true,
+      "basisSize": 3,
+      "independentCriticalCompositions": 7,
+      "canonicalEqual": true,
+      "externalEngineExecuted": false
+    },
+    {
+      "case": "singular-gb_exterior2",
+      "modulus": 5,
+      "degree": 4,
+      "passed": true,
+      "basisSize": 3,
+      "independentCriticalCompositions": 7,
+      "canonicalEqual": true,
+      "externalEngineExecuted": false
+    },
+    {
+      "case": "singular-gb_braid3-11",
+      "modulus": 0,
+      "degree": 6,
+      "passed": true,
+      "basisSize": 24,
+      "independentCriticalCompositions": 61,
+      "canonicalEqual": true,
+      "externalEngineExecuted": false
+    },
+    {
+      "case": "singular-gb_braid3-11",
+      "modulus": 2,
+      "degree": 6,
+      "passed": true,
+      "basisSize": 24,
+      "independentCriticalCompositions": 61,
+      "canonicalEqual": true,
+      "externalEngineExecuted": false
+    },
+    {
+      "case": "singular-gb_braid3-11",
+      "modulus": 5,
+      "degree": 6,
+      "passed": true,
+      "basisSize": 24,
+      "independentCriticalCompositions": 61,
+      "canonicalEqual": true,
+      "externalEngineExecuted": false
+    },
+    {
+      "case": "singular-gb_braidXY",
+      "modulus": 0,
+      "degree": 6,
+      "passed": true,
+      "basisSize": 24,
+      "independentCriticalCompositions": 60,
+      "canonicalEqual": true,
+      "externalEngineExecuted": false
+    },
+    {
+      "case": "singular-gb_braidXY",
+      "modulus": 2,
+      "degree": 6,
+      "passed": true,
+      "basisSize": 24,
+      "independentCriticalCompositions": 60,
+      "canonicalEqual": true,
+      "externalEngineExecuted": false
+    },
+    {
+      "case": "singular-gb_braidXY",
+      "modulus": 5,
+      "degree": 6,
+      "passed": true,
+      "basisSize": 24,
+      "independentCriticalCompositions": 61,
+      "canonicalEqual": true,
+      "externalEngineExecuted": false
+    }
+  ],
+  "scope": "Independent exact completion of adapted presentations, not fresh Singular/Bergman execution."
+}

@@ -1,0 +1,7 @@
+{
+  "description": "Fixed-seed random FK6-shaped presentation: 15 generators, 15 squares, 45 disjoint-pair binomials and 40 oriented-triangle trinomials. First listed term has coefficient 1; other coefficients sampled independently from {-2,-1,1,2} over Q. Canonical FK6 monomial supports are preserved.",
+  "generator": "test/support/random-big-form.mjs",
+  "seed": 1195520054,
+  "construction": "random-FK6-shaped-coefficients",
+  "inputText": "vars a,b,c,d,e,f,g,h,k,m,n,p,q,r,s;\na^2,b^2,c^2,d^2,e^2,f^2,g^2,h^2,k^2,m^2,n^2,p^2,q^2,r^2,s^2,a*m-2*m*a,a*n-n*a,a*p-2*p*a,a*q-q*a,a*r+r*a,a*s-s*a,b*g+2*g*b,b*h+2*h*b,b*k+2*k*b,b*q-2*q*b,b*r+r*b,b*s-s*b,c*f+2*f*c,c*h-h*c,c*k+k*c,c*n-2*n*c,c*p+p*c,c*s+2*s*c,d*f+2*f*d,d*g-2*g*d,d*k+2*k*d,d*m-m*d,d*p+2*p*d,d*r+r*d,e*f+2*f*e,e*g+2*g*e,e*h-h*e,e*m-m*e,e*n+2*n*e,e*q+2*q*e,f*q+q*f,f*r+r*f,f*s-2*s*f,g*n+2*n*g,g*p+2*p*g,g*s+2*s*g,h*m+2*m*h,h*p-p*h,h*r+2*r*h,k*m+2*m*k,k*n-n*k,k*q+q*k,m*s+2*s*m,n*r+r*n,p*q-q*p,a*f+2*f*b-b*a,f*a+2*b*f-a*b,a*g-g*c+c*a,g*a+c*g-a*c,a*h+h*d+2*d*a,h*a+d*h-2*a*d,a*k+2*k*e+e*a,k*a-e*k-2*a*e,b*m-2*m*c+2*c*b,m*b-c*m+b*c,b*n+2*n*d-2*d*b,n*b-d*n+b*d,b*p-p*e-2*e*b,p*b-e*p-2*b*e,c*q-2*q*d+2*d*c,q*c-d*q-c*d,c*r-2*r*e-e*c,r*c-e*r-c*e,d*s-s*e+2*e*d,s*d+e*s+2*d*e,f*m+m*g-2*g*f,m*f-g*m+2*f*g,f*n+n*h+h*f,n*f+2*h*n+2*f*h,f*p+2*p*k-k*f,p*f+k*p+2*f*k,g*q-2*q*h-2*h*g,q*g+h*q+g*h,g*r+2*r*k+2*k*g,r*g+k*r+2*g*k,h*s-s*k+k*h,s*h-k*s-2*h*k,m*q-2*q*n-n*m,q*m+n*q+2*m*n,m*r-2*r*p-p*m,r*m+p*r+m*p,n*s-2*s*p+p*n,s*n-2*p*s-2*n*p,q*s+2*s*r-2*r*q,s*q-2*r*s+2*q*r;\n"
+}

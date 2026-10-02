@@ -1,0 +1,101 @@
+Upstream native PASS
+Upstream extra PASS
+Upstream wasm PASS
+Upstream release PASS
+Upstream compatibility PASS
+Upstream integration PASS
+Upstream static-host-unit PASS
+Upstream installer PASS
+Upstream installer-modern PASS
+Upstream optimizer-edge PASS
+Upstream physics-matrix PASS
+Upstream physics-wasm-matrix PASS
+Upstream progress-unit PASS
+Upstream progress-integration PASS
+Upstream rational-arithmetic PASS
+Upstream rational-cases PASS
+Upstream compiled-edge PASS
+Upstream compiled-fk6-certificate PASS
+Upstream compiled-wasm PASS
+Upstream direct-controls PASS
+Upstream modular-compatibility PASS
+Upstream ubsan PASS
+fomkyr-lhs-001 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-002 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-003 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-004 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-005 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-006 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-007 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-008 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-009 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-010 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-011 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-012 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-013 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-014 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-015 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-016 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-017 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-018 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-019 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-020 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-021 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-022 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-023 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-024 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-025 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-026 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-027 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-028 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-029 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-030 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-031 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-032 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-033 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-034 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-035 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-036 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-037 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-038 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-039 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-040 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-041 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-042 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-043 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-044 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-045 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-046 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-047 four WASM variants + Bergman + Singular PASS
+fomkyr-lhs-048 four WASM variants + Bergman + Singular PASS
+fk-E3-degree4 four WASM variants + Bergman + Singular PASS
+submitted-degree3 four WASM variants + Bergman + Singular PASS
+submitted-degree4 four WASM variants + Bergman + Singular PASS
+archive-155-bit-coefficients four WASM variants + Bergman + Singular PASS
+physics-commuting-polynomial-4-p0 four WASM variants + Bergman + Singular PASS
+physics-commuting-polynomial-4-p2 four WASM variants + Bergman + Singular PASS
+physics-commuting-polynomial-4-p101 four WASM variants + Bergman + Singular PASS
+physics-exterior-6-p0 four WASM variants + Bergman + Singular PASS
+physics-exterior-6-p2 four WASM variants + Bergman + Singular PASS
+physics-exterior-6-p101 four WASM variants + Bergman + Singular PASS
+physics-homogenized-Weyl-1-mode-p0 four WASM variants + Bergman + Singular PASS
+physics-homogenized-Weyl-1-mode-p2 four WASM variants + Bergman + Singular PASS
+physics-homogenized-Weyl-1-mode-p101 four WASM variants + Bergman + Singular PASS
+physics-homogenized-Weyl-2-mode-p0 four WASM variants + Bergman + Singular PASS
+physics-homogenized-Weyl-2-mode-p2 four WASM variants + Bergman + Singular PASS
+physics-homogenized-Weyl-2-mode-p101 four WASM variants + Bergman + Singular PASS
+physics-homogenized-Clifford-4-p0 four WASM variants + Bergman + Singular PASS
+physics-homogenized-Clifford-4-p2 four WASM variants + Bergman + Singular PASS
+physics-homogenized-Clifford-4-p101 four WASM variants + Bergman + Singular PASS
+physics-homogenized-sl2-p0 four WASM variants + Bergman + Singular PASS
+physics-homogenized-sl2-p2 four WASM variants + Bergman + Singular PASS
+physics-homogenized-sl2-p101 four WASM variants + Bergman + Singular PASS
+physics-homogenized-q-oscillator-2-p0 four WASM variants + Bergman + Singular PASS
+physics-homogenized-q-oscillator-2-p2 four WASM variants + Bergman + Singular PASS
+physics-homogenized-q-oscillator-2-p101 four WASM variants + Bergman + Singular PASS
+physics-homogenized-q-oscillator-1073741827-p0 four WASM variants + Bergman + Singular PASS
+physics-homogenized-q-oscillator-1073741827-p2 four WASM variants + Bergman + Singular PASS
+physics-homogenized-q-oscillator-1073741827-p101 four WASM variants + Bergman + Singular PASS
+physics-homogeneous-braid-3-p0 four WASM variants + Bergman + Singular PASS
+physics-homogeneous-braid-3-p2 four WASM variants + Bergman + Singular PASS
+physics-homogeneous-braid-3-p101 four WASM variants + Bergman + Singular PASS

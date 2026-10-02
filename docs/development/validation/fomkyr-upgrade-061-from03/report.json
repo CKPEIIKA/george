@@ -1,0 +1,62 @@
+{
+  "state": "complete",
+  "checks": [
+    {
+      "browser": "chromium",
+      "browserVersion": "153.0.8010.52",
+      "modulus": 0,
+      "oldVersion": "0.3.0",
+      "newVersion": "0.6.1",
+      "resumedFromDegree": 4,
+      "completedThroughDegree": 5,
+      "bits": 64,
+      "workers": 2,
+      "rules": 360,
+      "ambiguities": 3460,
+      "mutualReduction": true
+    },
+    {
+      "browser": "chromium",
+      "browserVersion": "153.0.8010.52",
+      "modulus": 101,
+      "oldVersion": "0.3.0",
+      "newVersion": "0.6.1",
+      "resumedFromDegree": 4,
+      "completedThroughDegree": 5,
+      "bits": 64,
+      "workers": 2,
+      "rules": 360,
+      "ambiguities": 3460,
+      "mutualReduction": true
+    },
+    {
+      "browser": "firefox",
+      "browserVersion": "155.0",
+      "modulus": 0,
+      "oldVersion": "0.3.0",
+      "newVersion": "0.6.1",
+      "resumedFromDegree": 4,
+      "completedThroughDegree": 5,
+      "bits": 64,
+      "workers": 2,
+      "rules": 360,
+      "ambiguities": 3460,
+      "mutualReduction": true
+    },
+    {
+      "browser": "firefox",
+      "browserVersion": "155.0",
+      "modulus": 101,
+      "oldVersion": "0.3.0",
+      "newVersion": "0.6.1",
+      "resumedFromDegree": 4,
+      "completedThroughDegree": 5,
+      "bits": 64,
+      "workers": 2,
+      "rules": 360,
+      "ambiguities": 3460,
+      "mutualReduction": true
+    }
+  ],
+  "method": "Actual 0.3.0 wasm32 workers write browser OPFS checkpoints; the production 0.6.1 memory64 UI extends them. Fresh current output and an independent exact critical-pair checker verify the results. Each computation has a 120-second cap."
+}

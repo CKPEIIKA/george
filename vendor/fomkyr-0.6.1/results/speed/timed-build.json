@@ -1,0 +1,14 @@
+{
+  "wasmSHA256": {
+    "fomkyr32-single.wasm": "4100c0f57c49598c1fa327ef7819197f1ab53710d105f10057745db85210154a",
+    "fomkyr64.wasm": "0ea15fc3684b9b2cf1b9be32f03d83f5e82cc4eae3bbe266a01bd348e438cc98",
+    "fomkyr64-single.wasm": "ee25551bc114b751a11af325176d8ab119abf64c89d7c4785393c810c56928a3",
+    "fomkyr32.wasm": "0f559a417dcdea967bb93443a18e4a88be138ce108183fd80bc27e3a702a92d2"
+  },
+  "hostSHA256": {
+    "web/engine.js": "a69225b42da0802fc3333e5a649977a824e71bf490b627e2f823fd74524a9db2",
+    "web/runtime.js": "c66f6076a4d82bc793d8621085379b79d902fc5cd6c22338c830562ab220ea7e",
+    "web/progress.js": "96b6b379166fc21d64ff824467fd9acdd10c447eaf50811685c27c6bf1efba5e"
+  },
+  "note": "Final round uses the accepted-pulse throttle fix. Timed arithmetic WASM hashes equal all packaged release binaries."
+}

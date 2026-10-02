@@ -1,0 +1,15 @@
+RUN core-suite
+PASS core-suite
+RUN compiled-edge-tests
+PASS compiled-edge-tests
+RUN compiled-fk6-certificate
+PASS compiled-fk6-certificate
+RUN compiled-wasm-tests
+PASS compiled-wasm-tests
+RUN rational-arithmetic
+PASS rational-arithmetic
+RUN rational-cases
+PASS rational-cases
+RUN modular-compatibility
+PASS modular-compatibility
+DIRECT RELEASE SUITE PASSED

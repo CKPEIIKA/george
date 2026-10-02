@@ -1,0 +1,280 @@
+{
+  "passed": true,
+  "cases": [
+    {
+      "name": "commuting-polynomial-4",
+      "degree": 5,
+      "passed": true,
+      "identicalBasis": true,
+      "mutualExactReduction": true,
+      "independentOracle": true,
+      "attempts": 0,
+      "successes": 0,
+      "fallbacks": 0
+    },
+    {
+      "name": "exterior-6",
+      "degree": 5,
+      "passed": true,
+      "identicalBasis": true,
+      "mutualExactReduction": true,
+      "independentOracle": true,
+      "attempts": 0,
+      "successes": 0,
+      "fallbacks": 0
+    },
+    {
+      "name": "homogenized-Weyl-1-mode",
+      "degree": 5,
+      "passed": true,
+      "identicalBasis": true,
+      "mutualExactReduction": true,
+      "independentOracle": true,
+      "attempts": 0,
+      "successes": 0,
+      "fallbacks": 0
+    },
+    {
+      "name": "homogenized-Weyl-2-mode",
+      "degree": 5,
+      "passed": true,
+      "identicalBasis": true,
+      "mutualExactReduction": true,
+      "independentOracle": true,
+      "attempts": 0,
+      "successes": 0,
+      "fallbacks": 0
+    },
+    {
+      "name": "homogenized-Clifford-4",
+      "degree": 5,
+      "passed": true,
+      "identicalBasis": true,
+      "mutualExactReduction": true,
+      "independentOracle": true,
+      "attempts": 0,
+      "successes": 0,
+      "fallbacks": 0
+    },
+    {
+      "name": "homogenized-sl2",
+      "degree": 5,
+      "passed": true,
+      "identicalBasis": true,
+      "mutualExactReduction": true,
+      "independentOracle": true,
+      "attempts": 0,
+      "successes": 0,
+      "fallbacks": 0
+    },
+    {
+      "name": "homogenized-q-oscillator-2",
+      "degree": 5,
+      "passed": true,
+      "identicalBasis": true,
+      "mutualExactReduction": true,
+      "independentOracle": true,
+      "attempts": 0,
+      "successes": 0,
+      "fallbacks": 0
+    },
+    {
+      "name": "homogenized-q-oscillator-1073741827",
+      "degree": 5,
+      "passed": true,
+      "identicalBasis": true,
+      "mutualExactReduction": true,
+      "independentOracle": true,
+      "attempts": 0,
+      "successes": 0,
+      "fallbacks": 0
+    },
+    {
+      "name": "FK3",
+      "degree": 5,
+      "passed": true,
+      "identicalBasis": true,
+      "mutualExactReduction": true,
+      "independentOracle": true,
+      "attempts": 0,
+      "successes": 0,
+      "fallbacks": 0
+    },
+    {
+      "name": "FK4",
+      "degree": 5,
+      "passed": true,
+      "identicalBasis": true,
+      "mutualExactReduction": true,
+      "independentOracle": true,
+      "attempts": 0,
+      "successes": 0,
+      "fallbacks": 0
+    },
+    {
+      "name": "FK6-original-order",
+      "degree": 4,
+      "passed": true,
+      "identicalBasis": true,
+      "mutualExactReduction": true,
+      "independentOracle": true,
+      "attempts": 0,
+      "successes": 0,
+      "fallbacks": 0
+    },
+    {
+      "name": "homogeneous-braid-3",
+      "degree": 5,
+      "passed": true,
+      "identicalBasis": true,
+      "mutualExactReduction": true,
+      "independentOracle": true,
+      "attempts": 0,
+      "successes": 0,
+      "fallbacks": 0
+    },
+    {
+      "name": "long-word-33",
+      "degree": 34,
+      "passed": true,
+      "identicalBasis": true,
+      "mutualExactReduction": true,
+      "independentOracle": true,
+      "attempts": 0,
+      "successes": 0,
+      "fallbacks": 0
+    },
+    {
+      "name": "nonmonic-random-0",
+      "degree": 4,
+      "passed": true,
+      "identicalBasis": true,
+      "mutualExactReduction": true,
+      "independentOracle": true,
+      "attempts": 1,
+      "successes": 1,
+      "fallbacks": 0
+    },
+    {
+      "name": "nonmonic-random-1",
+      "degree": 4,
+      "passed": true,
+      "identicalBasis": true,
+      "mutualExactReduction": true,
+      "independentOracle": true,
+      "attempts": 5,
+      "successes": 5,
+      "fallbacks": 0
+    },
+    {
+      "name": "nonmonic-random-2",
+      "degree": 4,
+      "passed": true,
+      "identicalBasis": true,
+      "mutualExactReduction": true,
+      "independentOracle": true,
+      "attempts": 4,
+      "successes": 4,
+      "fallbacks": 0
+    },
+    {
+      "name": "nonmonic-random-3",
+      "degree": 4,
+      "passed": true,
+      "identicalBasis": true,
+      "mutualExactReduction": true,
+      "independentOracle": true,
+      "attempts": 2,
+      "successes": 2,
+      "fallbacks": 0
+    },
+    {
+      "name": "nonmonic-random-4",
+      "degree": 4,
+      "passed": true,
+      "identicalBasis": true,
+      "mutualExactReduction": true,
+      "independentOracle": true,
+      "attempts": 5,
+      "successes": 5,
+      "fallbacks": 0
+    },
+    {
+      "name": "nonmonic-random-5",
+      "degree": 4,
+      "passed": true,
+      "identicalBasis": true,
+      "mutualExactReduction": true,
+      "independentOracle": true,
+      "attempts": 5,
+      "successes": 5,
+      "fallbacks": 0
+    },
+    {
+      "name": "nonmonic-random-6",
+      "degree": 4,
+      "passed": true,
+      "identicalBasis": true,
+      "mutualExactReduction": true,
+      "independentOracle": true,
+      "attempts": 2,
+      "successes": 2,
+      "fallbacks": 0
+    },
+    {
+      "name": "nonmonic-random-7",
+      "degree": 4,
+      "passed": true,
+      "identicalBasis": true,
+      "mutualExactReduction": true,
+      "independentOracle": true,
+      "attempts": 3,
+      "successes": 3,
+      "fallbacks": 0
+    },
+    {
+      "name": "nonmonic-random-8",
+      "degree": 4,
+      "passed": true,
+      "identicalBasis": true,
+      "mutualExactReduction": true,
+      "independentOracle": true,
+      "attempts": 0,
+      "successes": 0,
+      "fallbacks": 0
+    },
+    {
+      "name": "nonmonic-random-9",
+      "degree": 4,
+      "passed": true,
+      "identicalBasis": true,
+      "mutualExactReduction": true,
+      "independentOracle": true,
+      "attempts": 3,
+      "successes": 3,
+      "fallbacks": 0
+    },
+    {
+      "name": "nonmonic-random-10",
+      "degree": 4,
+      "passed": true,
+      "identicalBasis": true,
+      "mutualExactReduction": true,
+      "independentOracle": true,
+      "attempts": 5,
+      "successes": 5,
+      "fallbacks": 0
+    },
+    {
+      "name": "nonmonic-random-11",
+      "degree": 4,
+      "passed": true,
+      "identicalBasis": true,
+      "mutualExactReduction": true,
+      "independentOracle": true,
+      "attempts": 4,
+      "successes": 4,
+      "fallbacks": 0
+    }
+  ]
+}

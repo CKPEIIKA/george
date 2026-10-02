@@ -1,8 +1,9 @@
 import {latinHypercube} from './backend-lhs.mjs';
 import {fominKirillov} from './fomin-kirillov.mjs';
 export const FOMKYR_LHS_DIMENSIONS = ['rank', 'field', 'degree', 'generatorOrder', 'signs', 'reverse', 'pruning', 'heap', 'cache', 'batch',
-  'matcher','chains','eager','quadratic','scheduling','wordCache','matcherBudget'];
-export function fomkyrSamples(count = 48, seed = 0x464b3034) {
+  'matcher','chains','eager','quadratic','scheduling','wordCache','matcherBudget',
+  'rationalHeap','compiledRewrites','rewriteLength','rewriteSupport','rewriteBudget','sharedCache','rationalRewrites'];
+export function fomkyrSamples(count = 64, seed = 0x464b3036) {
   const samples = latinHypercube(count, FOMKYR_LHS_DIMENSIONS, seed);
   const fields = [0, 2, 3, 5, 7, 101];
   return {seed, count, dimensions: FOMKYR_LHS_DIMENSIONS, samples,
@@ -20,6 +21,12 @@ export function fomkyrSamples(count = 48, seed = 0x464b3034) {
             wordMatcher:sample.matcher>=0.5,chainCriterion:sample.chains>=0.5,eagerPruning:sample.eager>=0.5,
             quadraticRewrite:sample.quadratic>=0.5,costScheduling:sample.scheduling>=0.5,
             wordCacheEntries:[256,1024,4096,16384][Math.floor(sample.wordCache*4)],matcherMiB:sample.matcherBudget<0.25?0:null,
+            rationalHeap:sample.rationalHeap>=0.5,compiledRewrites:sample.compiledRewrites>=0.5,
+            rationalRewrites:sample.rationalRewrites>=0.5,
+            rewriteDegree:[2,3,4][Math.floor(sample.rewriteLength*3)],
+            rewriteSupport:[1,8,64][Math.floor(sample.rewriteSupport*3)],
+            rewriteMiB:[0,1,null][Math.floor(sample.rewriteBudget*3)],
+            sharedCacheMiB:[0,1,null][Math.floor(sample.sharedCache*3)],
             batchPairs: sample.batch < 0.25 ? 0 : [1, 8, 64][Math.min(2, Math.floor((sample.batch - 0.25) * 4))]}}};
     })};
 }

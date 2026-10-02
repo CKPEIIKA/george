@@ -1,0 +1,3 @@
+fomkyr runtime: wasm64, shared, 4 CPU lane(s), direct-unsafe; budget 2147483648 bytes.
+fomkyr degree 1: 0 rules; 621193456 allocated bytes; 0 disk bytes.
+fomkyr degree 2: 100 rules; 621279472 allocated bytes; 8600 disk bytes.

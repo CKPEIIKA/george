@@ -1,0 +1,6 @@
+[1288385:1288405:1003/021344.426086:ERROR:pto/nss_util.cc:377] After loading Root Certs, loaded==false: NSS error code: -8018
+[1288385:1288410:1003/021347.280142:ERROR:gle_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR
+[1288385:1288410:1003/021347.289802:ERROR:gle_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR
+[1288385:1288410:1003/021347.290803:ERROR:gle_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR
+[1288385:1288410:1003/021347.644209:ERROR:gle_apis/gcm/engine/mcs_client.cc:702]   Error code: 401  Error message: Authentication Failed: wrong_secret
+[1288385:1288410:1003/021347.644253:ERROR:gle_apis/gcm/engine/mcs_client.cc:704] Failed to log in to GCM, resetting connection.

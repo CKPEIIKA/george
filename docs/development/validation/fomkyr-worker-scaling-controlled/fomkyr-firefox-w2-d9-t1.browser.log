@@ -1,0 +1,4 @@
+*** You are running in headless mode.
+JavaScript warning: resource://services-settings/Utils.sys.mjs, line 125: unreachable code after return statement
+JavaScript error: chrome://juggler/content/Helper.js, line 82: NS_ERROR_FAILURE: Component returned failure code: 0x80004005 (NS_ERROR_FAILURE) [nsIWebProgress.removeProgressListener]
+JavaScript error: , line 0: SyntaxError: JSON.parse: unexpected end of data at line 1 column 1 of the JSON data

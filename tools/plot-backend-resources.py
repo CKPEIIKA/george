@@ -90,7 +90,8 @@ with plt.rc_context(STYLE):
     handles, labels = [], []
     for config in report["configurations"]:
         ident = config["id"]
-        label, color, linestyle, marker = CURVES[ident]
+        _, color, linestyle, marker = CURVES[ident]
+        label = config['label']
         cpu, ram = [], []
         for degree in degrees:
             matches = [r for r in plot_rows if r["id"] == ident and r["degree"] == degree and r["status"] == "complete"]
@@ -127,8 +128,9 @@ with plt.rc_context(STYLE):
     axes[0].set_yticks(ticks + [limit])
     axes[0].yaxis.set_major_formatter(FuncFormatter(lambda value, _: f"{value:g}"))
     axes[0].yaxis.set_minor_formatter(NullFormatter())
-    if any(row['id'] in {'standard', 'optimized'} and row['status'] != 'complete' for row in plot_rows):
-        axes[0].text(0.04, 0.91, "Lisp / ECL exceeds 120 s\nat degrees 6–8", transform=axes[0].transAxes,
+    lisp_censored = [row['degree'] for row in plot_rows if row['id'] in {'standard', 'optimized'} and row['status'] != 'complete']
+    if lisp_censored:
+        axes[0].text(0.04, 0.91, f"Lisp / ECL: {limit:g} s wall cap\nfrom degree {min(lisp_censored)}", transform=axes[0].transAxes,
                      fontsize=7, va='top')
         axes[0].annotate('', xy=(0.67, 1.035), xytext=(0.67, 0.86), xycoords='axes fraction',
                          arrowprops={'arrowstyle': '-|>', 'color': '#222222', 'lw': 1.0}, annotation_clip=False)
@@ -140,19 +142,18 @@ with plt.rc_context(STYLE):
         ax.set_xticks(degrees)
         ax.set_xlim(min(degrees) - 0.15, max(degrees) + 0.25)
         ax.spines[["right", "top"]].set_visible(False)
-    fig.suptitle(f"Fomin–Kirillov case: {report['variables']} generators, {report['relations']} relations over Q",
+    case_name = 'Randomly scaled FK6 case' if 'random-fk6-growing' in report['inputFile'] else 'Random FK6-like case' if 'random-big' in report['inputFile'] else 'Fomin–Kirillov case'
+    fig.suptitle(f"{case_name}: {report['variables']} generators, {report['relations']} relations over Q",
                  y=0.98, fontsize=10, fontweight="bold")
     fig.subplots_adjust(left=0.085, right=0.985, top=0.89, bottom=0.41, wspace=0.30)
     fig.legend(handles, labels, loc="lower center", bbox_to_anchor=(0.5, 0.16), ncol=2,
                columnspacing=2, handlelength=2.7, labelspacing=0.6)
-    repetitions = sorted(set(sum(r['id'] == c['id'] and r['degree'] == d
-                                  for r in rows) for c in report['configurations'] for d in degrees))
-    trial_note = "One cold run per point." if repetitions == [1] else "Median of available cold runs; see CSV for trial counts."
-    fig.text(0.085, 0.125, f"Serial cold jobs; {limit:g} s cap. Browser budgets: {report['memoryMiB'] / 1024:g} GiB. Bergman pruning enabled.", fontsize=7)
+    trial_note = "One cold trial per attempted point." if report.get('requestedTrials', 1) == 1 else "Median of available cold runs; see CSV for trial counts."
+    fig.text(0.085, 0.125, f"Serial cold jobs; {limit:g} s cap. Browser budgets: {report['memoryMiB'] / 1024:g} GiB. Pruning enabled.", fontsize=7)
     fig.text(0.085, 0.094, "CPU includes engine startup, computation and export. PSS subtracts each run’s pre-engine baseline.", fontsize=7)
-    fig.text(0.085, 0.063, "RAM sampling: browsers 0.25 s, native CLI 0.02 s. Unfinished Lisp points are omitted; ↑ indicates the limit.", fontsize=7)
+    fig.text(0.085, 0.063, f"RAM: browsers 0.25 s, CLI 0.02 s. × unfinished; ▲ CPU > {limit:g} core s. Unfinished Lisp points omitted (↑).", fontsize=7)
     fig.text(0.085, 0.032, trial_note + " Browser curves use Chromium except the labelled Firefox curve.", fontsize=7)
-    provenance_note = "Bergman/CLI curves: earlier same-day runs; fomkyr 0.3 curves: new serial runs on the same host." if 'fomkyrProvenance' in report else "Raw traces are retained; native CLI has no browser overhead. Earlier long Lisp pilots are preserved separately."
+    provenance_note = "Raw traces and version hashes are retained. Higher degrees after a time or memory limit are skipped."
     fig.text(0.085, 0.011, provenance_note, fontsize=7)
     for extension in ["pdf", "svg", "png"]:
         fig.savefig(out / ("backend-resources." + extension))

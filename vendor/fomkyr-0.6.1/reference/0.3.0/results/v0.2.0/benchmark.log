@@ -1,0 +1,47 @@
+[
+  {
+    "workers": 4,
+    "batchPairs": 0,
+    "medianElapsedMs": 833.908328,
+    "medianReduceMs": 700.7681259999936,
+    "medianEpochs": 3830,
+    "medianRpcMessages": 11493,
+    "medianDiskReads": 3572
+  },
+  {
+    "workers": 1,
+    "batchPairs": 8,
+    "medianElapsedMs": 866.385734,
+    "medianReduceMs": 844.5918830000069,
+    "medianEpochs": 1916,
+    "medianRpcMessages": 0,
+    "medianDiskReads": 982
+  },
+  {
+    "workers": 2,
+    "batchPairs": 16,
+    "medianElapsedMs": 544.2983459999998,
+    "medianReduceMs": 489.72060400000237,
+    "medianEpochs": 960,
+    "medianRpcMessages": 962,
+    "medianDiskReads": 1904
+  },
+  {
+    "workers": 4,
+    "batchPairs": 32,
+    "medianElapsedMs": 404.8528769999998,
+    "medianReduceMs": 284.79169000000275,
+    "medianEpochs": 482,
+    "medianRpcMessages": 1451,
+    "medianDiskReads": 3571
+  },
+  {
+    "workers": 8,
+    "batchPairs": 64,
+    "medianElapsedMs": 523.7734909999999,
+    "medianReduceMs": 267.600304999989,
+    "medianEpochs": 242,
+    "medianRpcMessages": 1703,
+    "medianDiskReads": 6438
+  }
+]

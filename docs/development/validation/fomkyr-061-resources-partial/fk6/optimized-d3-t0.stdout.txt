@@ -1,0 +1,6 @@
+algebraic form input> 
+T  - All is OK (I hope). Now you may (e. g.):
+   - kill bergman with (QUIT); or
+   - interrupt bergman with ^Z; or
+   - clear the memory with (CLEARIDEAL), and run a new (SIMPLE).
+Cleaning the variables

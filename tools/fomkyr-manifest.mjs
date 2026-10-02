@@ -7,11 +7,12 @@ const files = Object.fromEntries(names.map(name => {
   return [name, {bytes: bytes.length, sha256: crypto.createHash('sha256').update(bytes).digest('hex')}];
 }));
 fs.writeFileSync(directory + '/build.json', JSON.stringify({
-  backend: 'fomkyr', name: 'fomkyr', upstreamName: 'fomkyr', version: '0.4.0',
+  backend: 'fomkyr', name: 'fomkyr', upstreamName: 'fomkyr', version: '0.6.1',
   appVersion: JSON.parse(fs.readFileSync('package.json')).version, license: 'MIT',
   compiler: {language: 'C', libraryOptimization: 'O3', linkOptimization: 'O3', lto: true},
   variants: ['wasm32-shared', 'wasm32-single', 'wasm64-shared', 'wasm64-single'],
   memory: {defaultHeapMiB: 512, maximumHeapMiB: 14304},
-  provenance: {archiveSha256: 'd6feec734d25a1901d2cb3c582caa150d0e91bdfb22b541f1c2da06e9739c20a', kernelChanged: false, hostAdapted: true},
+  provenance: {archiveSha256: 'ee286ecc55dea5275f7568abfd721bb380cc57b9df9772ab4348aad7ca411492', kernelChanged: false, hostAdapted: true,
+    upstreamManifestStale:true,importAudit:'docs/development/validation/fomkyr-061-import.json'},
   files,
 }, null, 2) + '\n');

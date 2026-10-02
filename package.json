@@ -41,7 +41,12 @@
     "test:fomkyr": "node tools/validate-fomkyr.mjs",
     "test:fomkyr:browser": "node tools/validate-fomkyr-browser.mjs",
     "wasm:build:fomkyr": "bash tools/build-fomkyr-backend.sh",
-    "test:fomkyr:upgrade": "node tools/validate-fomkyr-upgrade.mjs"
+    "test:fomkyr:upgrade": "node tools/validate-fomkyr-upgrade.mjs",
+    "test:fk6": "node tools/validate-fk6-matrix.mjs",
+    "test:fk6:finite": "node tools/validate-fk6-matrix.mjs build/validation/fk6-finite --finite",
+    "test:fk6:prefixes": "node tools/validate-fk6-degrees.mjs",
+    "benchmark:resources": "node tools/benchmark-backend-resources.mjs --degrees 1,2,3,4,5,6,7,8,9 --configs fomkyr,fomkyr-firefox --skip-censored",
+    "benchmark:fk6": "node tools/benchmark-fk6-suite.mjs"
   },
   "engines": {
     "node": ">=22.8.0"

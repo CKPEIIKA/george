@@ -1,0 +1,72 @@
+{
+  "release": "0.3.0",
+  "date": "2026-10-02",
+  "kernelBuild": "clang 17 -O3 -flto; four real WASM binaries and native shared library",
+  "passedChecks": {
+    "native-tests": {
+      "report": "results/native-tests.json",
+      "passed": true,
+      "numberOfChecks": 13
+    },
+    "extra-tests": {
+      "report": "results/extra-tests.json",
+      "passed": true,
+      "numberOfChecks": 3
+    },
+    "wasm-tests": {
+      "report": "results/wasm-tests.json",
+      "passed": true,
+      "numberOfChecks": 7
+    },
+    "fomkyr-tests": {
+      "report": "results/fomkyr-tests.json",
+      "passed": true,
+      "numberOfChecks": 17
+    },
+    "integration-tests": {
+      "report": "results/integration-tests.json",
+      "passed": true
+    },
+    "compatibility-tests": {
+      "report": "results/compatibility-tests.json",
+      "passed": true,
+      "numberOfChecks": 24
+    },
+    "installer-tests": {
+      "report": "results/installer-tests.json",
+      "passed": true
+    },
+    "installer-modern-tests": {
+      "report": "results/installer-modern-tests.json",
+      "passed": true
+    },
+    "static-host-unit-tests": {
+      "report": "results/static-host-unit-tests.json",
+      "passed": true
+    },
+    "ubsan": {
+      "passed": true,
+      "report": "results/ubsan-tests.log",
+      "compiler": "clang 17; native UBSAN; baseline and degree 31/32/33/64/129 inputs"
+    }
+  },
+  "browserVerification": {
+    "passed": false,
+    "report": "results/browser-tests.json",
+    "firefox": "not run: executable absent",
+    "chromium": "launched, navigation blocked by environment policy",
+    "remoteCIExecuted": false
+  },
+  "sourceIntegration": "executable old/current source-shape fixtures; not a complete checkout",
+  "fullFK6Degree20Run": false,
+  "remoteGeorgeSiteModified": false,
+  "remoteRepositoryModified": false,
+  "limitations": [
+    "Kernel limit is not a browser RSS limit",
+    "Single active row and metadata must fit in RAM",
+    "Degree indices and records remain 32-bit",
+    "Long-word fast heap reduction is not implemented",
+    "Hilbert is not a gauge/trace projection or Betti series",
+    "Previous-version timing reports are historical, not 0.3 benchmarks"
+  ]
+}

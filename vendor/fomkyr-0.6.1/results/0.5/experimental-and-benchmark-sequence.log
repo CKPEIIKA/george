@@ -1,0 +1,49 @@
+RUN rational-arithmetic
+PASS rational-arithmetic
+RUN rational-cases
+PASS rational-cases
+RUN modular-tests
+PASS modular-tests
+RUN modular-matrix
+PASS modular-matrix
+RUN signature-reference-tests
+PASS signature-reference-tests
+RUN physics-wasm-matrix
+PASS physics-wasm-matrix
+RUN progress-integration
+PASS progress-integration
+RUN static-host
+PASS static-host
+RUN installer
+PASS installer
+RUN installer-modern
+PASS installer-modern
+RUN ubsan
+PASS ubsan
+FK6 9 baseline-0.4 0 1260.06 
+FK6 9 exact-rational-heap 0 1251.4 
+FK6 9 modular-default 0 3894.18 
+FK6 9 baseline-0.4 1 1300.38 
+FK6 9 exact-rational-heap 1 1291.16 
+FK6 9 modular-default 1 3847.57 
+FK6 9 baseline-0.4 2 1248.13 
+FK6 9 exact-rational-heap 2 1245.98 
+FK6 9 modular-default 2 4298.31 
+P6 12 baseline-0.4 0 702.1 
+P6 12 exact-rational-heap 0 251.71 
+P6 12 modular-default 0 832.84 
+P6 12 baseline-0.4 1 737.94 
+P6 12 exact-rational-heap 1 240.5 
+P6 12 modular-default 1 816.75 
+P6 12 baseline-0.4 2 686.59 
+P6 12 exact-rational-heap 2 243.99 
+P6 12 modular-default 2 829.93 
+FK6 10 baseline-0.4 0 11333.73 
+FK6 10 exact-rational-heap 0 6349.24 
+FK6 10 modular-default 0 20678.02 
+FK6 10 baseline-0.4 1 11720.29 
+FK6 10 exact-rational-heap 1 6521.73 
+FK6 10 modular-default 1 20110.45 
+FK6 10 baseline-0.4 2 11997.8 
+FK6 10 exact-rational-heap 2 7131.09 
+FK6 10 modular-default 2 20997.41 

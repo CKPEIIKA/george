@@ -1,0 +1,5 @@
+[1216204:1216223:1002/213220.598530:ERROR:pto/nss_util.cc:377] After loading Root Certs, loaded==false: NSS error code: -8018
+[1216261:1216267:1002/213236.510611:ERROR:/socket/ssl_client_socket_impl.cc:949] handshake failed; returned -1, SSL error code 1, net_error -100
+[1216204:1216226:1002/213238.187958:ERROR:gle_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR
+[1216204:1216226:1002/213238.193003:ERROR:gle_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR
+[1216204:1216226:1002/213238.212362:ERROR:gle_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR

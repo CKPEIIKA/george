@@ -1,0 +1,435 @@
+{
+  "degree": 9,
+  "before": 29332,
+  "after": 28723,
+  "ms": 9.794141999999965,
+  "changed": 71,
+  "rows": [
+    {
+      "id": 142,
+      "d": 3,
+      "before": 5,
+      "after": 4
+    },
+    {
+      "id": 160,
+      "d": 3,
+      "before": 5,
+      "after": 4
+    },
+    {
+      "id": 172,
+      "d": 3,
+      "before": 5,
+      "after": 4
+    },
+    {
+      "id": 186,
+      "d": 4,
+      "before": 7,
+      "after": 5
+    },
+    {
+      "id": 365,
+      "d": 6,
+      "before": 6,
+      "after": 12
+    },
+    {
+      "id": 366,
+      "d": 6,
+      "before": 6,
+      "after": 12
+    },
+    {
+      "id": 455,
+      "d": 6,
+      "before": 5,
+      "after": 2
+    },
+    {
+      "id": 474,
+      "d": 6,
+      "before": 6,
+      "after": 4
+    },
+    {
+      "id": 518,
+      "d": 7,
+      "before": 10,
+      "after": 8
+    },
+    {
+      "id": 522,
+      "d": 7,
+      "before": 11,
+      "after": 18
+    },
+    {
+      "id": 523,
+      "d": 7,
+      "before": 10,
+      "after": 18
+    },
+    {
+      "id": 580,
+      "d": 7,
+      "before": 5,
+      "after": 2
+    },
+    {
+      "id": 654,
+      "d": 7,
+      "before": 24,
+      "after": 30
+    },
+    {
+      "id": 702,
+      "d": 8,
+      "before": 56,
+      "after": 51
+    },
+    {
+      "id": 704,
+      "d": 8,
+      "before": 42,
+      "after": 48
+    },
+    {
+      "id": 708,
+      "d": 8,
+      "before": 14,
+      "after": 12
+    },
+    {
+      "id": 730,
+      "d": 8,
+      "before": 63,
+      "after": 22
+    },
+    {
+      "id": 733,
+      "d": 8,
+      "before": 22,
+      "after": 58
+    },
+    {
+      "id": 735,
+      "d": 8,
+      "before": 57,
+      "after": 39
+    },
+    {
+      "id": 738,
+      "d": 8,
+      "before": 13,
+      "after": 11
+    },
+    {
+      "id": 740,
+      "d": 8,
+      "before": 9,
+      "after": 17
+    },
+    {
+      "id": 741,
+      "d": 8,
+      "before": 10,
+      "after": 17
+    },
+    {
+      "id": 742,
+      "d": 8,
+      "before": 37,
+      "after": 54
+    },
+    {
+      "id": 747,
+      "d": 8,
+      "before": 115,
+      "after": 74
+    },
+    {
+      "id": 755,
+      "d": 8,
+      "before": 14,
+      "after": 28
+    },
+    {
+      "id": 771,
+      "d": 8,
+      "before": 21,
+      "after": 24
+    },
+    {
+      "id": 775,
+      "d": 8,
+      "before": 14,
+      "after": 3
+    },
+    {
+      "id": 790,
+      "d": 8,
+      "before": 45,
+      "after": 44
+    },
+    {
+      "id": 791,
+      "d": 8,
+      "before": 47,
+      "after": 22
+    },
+    {
+      "id": 798,
+      "d": 8,
+      "before": 13,
+      "after": 4
+    },
+    {
+      "id": 819,
+      "d": 8,
+      "before": 49,
+      "after": 24
+    },
+    {
+      "id": 858,
+      "d": 8,
+      "before": 79,
+      "after": 48
+    },
+    {
+      "id": 974,
+      "d": 8,
+      "before": 44,
+      "after": 41
+    },
+    {
+      "id": 1002,
+      "d": 9,
+      "before": 23,
+      "after": 39
+    },
+    {
+      "id": 1013,
+      "d": 9,
+      "before": 20,
+      "after": 17
+    },
+    {
+      "id": 1027,
+      "d": 9,
+      "before": 95,
+      "after": 89
+    },
+    {
+      "id": 1029,
+      "d": 9,
+      "before": 57,
+      "after": 49
+    },
+    {
+      "id": 1036,
+      "d": 9,
+      "before": 55,
+      "after": 58
+    },
+    {
+      "id": 1048,
+      "d": 9,
+      "before": 62,
+      "after": 40
+    },
+    {
+      "id": 1051,
+      "d": 9,
+      "before": 19,
+      "after": 30
+    },
+    {
+      "id": 1056,
+      "d": 9,
+      "before": 19,
+      "after": 27
+    },
+    {
+      "id": 1057,
+      "d": 9,
+      "before": 169,
+      "after": 100
+    },
+    {
+      "id": 1058,
+      "d": 9,
+      "before": 38,
+      "after": 22
+    },
+    {
+      "id": 1100,
+      "d": 9,
+      "before": 83,
+      "after": 68
+    },
+    {
+      "id": 1115,
+      "d": 9,
+      "before": 58,
+      "after": 77
+    },
+    {
+      "id": 1171,
+      "d": 9,
+      "before": 71,
+      "after": 85
+    },
+    {
+      "id": 1174,
+      "d": 9,
+      "before": 61,
+      "after": 58
+    },
+    {
+      "id": 1188,
+      "d": 9,
+      "before": 44,
+      "after": 50
+    },
+    {
+      "id": 1193,
+      "d": 9,
+      "before": 19,
+      "after": 7
+    },
+    {
+      "id": 1205,
+      "d": 9,
+      "before": 143,
+      "after": 128
+    },
+    {
+      "id": 1208,
+      "d": 9,
+      "before": 44,
+      "after": 31
+    },
+    {
+      "id": 1218,
+      "d": 9,
+      "before": 85,
+      "after": 63
+    },
+    {
+      "id": 1226,
+      "d": 9,
+      "before": 73,
+      "after": 80
+    },
+    {
+      "id": 1229,
+      "d": 9,
+      "before": 156,
+      "after": 49
+    },
+    {
+      "id": 1239,
+      "d": 9,
+      "before": 62,
+      "after": 47
+    },
+    {
+      "id": 1244,
+      "d": 9,
+      "before": 71,
+      "after": 44
+    },
+    {
+      "id": 1247,
+      "d": 9,
+      "before": 125,
+      "after": 110
+    },
+    {
+      "id": 1255,
+      "d": 9,
+      "before": 136,
+      "after": 117
+    },
+    {
+      "id": 1261,
+      "d": 9,
+      "before": 170,
+      "after": 95
+    },
+    {
+      "id": 1264,
+      "d": 9,
+      "before": 100,
+      "after": 98
+    },
+    {
+      "id": 1287,
+      "d": 9,
+      "before": 35,
+      "after": 33
+    },
+    {
+      "id": 1300,
+      "d": 9,
+      "before": 16,
+      "after": 10
+    },
+    {
+      "id": 1308,
+      "d": 9,
+      "before": 32,
+      "after": 27
+    },
+    {
+      "id": 1312,
+      "d": 9,
+      "before": 44,
+      "after": 13
+    },
+    {
+      "id": 1315,
+      "d": 9,
+      "before": 77,
+      "after": 56
+    },
+    {
+      "id": 1321,
+      "d": 9,
+      "before": 20,
+      "after": 13
+    },
+    {
+      "id": 1332,
+      "d": 9,
+      "before": 62,
+      "after": 72
+    },
+    {
+      "id": 1336,
+      "d": 9,
+      "before": 62,
+      "after": 14
+    },
+    {
+      "id": 1381,
+      "d": 9,
+      "before": 61,
+      "after": 78
+    },
+    {
+      "id": 1385,
+      "d": 9,
+      "before": 41,
+      "after": 12
+    },
+    {
+      "id": 1418,
+      "d": 9,
+      "before": 9,
+      "after": 7
+    }
+  ]
+}

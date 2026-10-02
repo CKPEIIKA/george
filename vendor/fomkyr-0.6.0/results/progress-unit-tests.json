@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "checks": [
+    "previous-degree counters hidden during input/indexing",
+    "exact count fraction not time fraction",
+    "ETA warmup",
+    "stall withdraws ETA while reductions remain active",
+    "replay resets ETA",
+    "BigInt counters beyond 2^53",
+    "no far-future or unconditional total ETA"
+  ]
+}

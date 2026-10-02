@@ -1,0 +1,15 @@
+PASS BigInt rational reconstruction and exact long/big-coefficient record roundtrip
+PASS CRT missing coefficient support treated as zero; rational denominator retained
+PASS Aggressive heap threshold 1 cannot prune a canonical rule by itself
+PASS Denominator clearing cannot allocate beyond its coefficient workspace
+PASS Certified shared WASM32, complete primitive candidate with exact certificate
+PASS Certified WASM32 single
+PASS Certified WASM64 single
+PASS Certified WASM64 multicore
+PASS Bad rational candidate rejected without completion or checkpoint
+PASS Nested/duplicate leading words rejected by exact checker
+PASS Unlucky leading-ideal shape and incorrect small lifts rejected; larger lift certified
+PASS Prime budget exhaustion is not Q certification; explicit baseline fallback
+PASS Sequential prime checkpoints are reused across calls
+PASS Unbounded and explicitly selected finite field retain original engine
+PASS Invalid prime lists rejected and deadline cancellation does not certify

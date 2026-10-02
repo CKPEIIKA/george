@@ -1,0 +1,81 @@
+{
+  "passed": true,
+  "environment": "Node OPFS adapter, not browser conformance",
+  "tests": [
+    {
+      "name": "BigInt rational reconstruction and exact long/big-coefficient record roundtrip",
+      "passed": true,
+      "ms": 3.0497649999999936
+    },
+    {
+      "name": "CRT missing coefficient support treated as zero; rational denominator retained",
+      "passed": true,
+      "ms": 0.9638080000000002
+    },
+    {
+      "name": "Aggressive heap threshold 1 cannot prune a canonical rule by itself",
+      "passed": true,
+      "ms": 339.21124499999996
+    },
+    {
+      "name": "Denominator clearing cannot allocate beyond its coefficient workspace",
+      "passed": true,
+      "ms": 0.7415320000000065
+    },
+    {
+      "name": "Certified shared WASM32, complete primitive candidate with exact certificate",
+      "passed": true,
+      "ms": 276.74549499999995
+    },
+    {
+      "name": "Certified WASM32 single",
+      "passed": true,
+      "ms": 20.956696999999963
+    },
+    {
+      "name": "Certified WASM64 single",
+      "passed": true,
+      "ms": 24.764761999999905
+    },
+    {
+      "name": "Certified WASM64 multicore",
+      "passed": true,
+      "ms": 276.67825099999993
+    },
+    {
+      "name": "Bad rational candidate rejected without completion or checkpoint",
+      "passed": true,
+      "ms": 134.24042200000008
+    },
+    {
+      "name": "Nested/duplicate leading words rejected by exact checker",
+      "passed": true,
+      "ms": 132.00845299999992
+    },
+    {
+      "name": "Unlucky leading-ideal shape and incorrect small lifts rejected; larger lift certified",
+      "passed": true,
+      "ms": 1063.298405
+    },
+    {
+      "name": "Prime budget exhaustion is not Q certification; explicit baseline fallback",
+      "passed": true,
+      "ms": 665.1056159999998
+    },
+    {
+      "name": "Sequential prime checkpoints are reused across calls",
+      "passed": true,
+      "ms": 277.544496
+    },
+    {
+      "name": "Unbounded and explicitly selected finite field retain original engine",
+      "passed": true,
+      "ms": 270.9310360000004
+    },
+    {
+      "name": "Invalid prime lists rejected and deadline cancellation does not certify",
+      "passed": true,
+      "ms": 132.48713699999962
+    }
+  ]
+}

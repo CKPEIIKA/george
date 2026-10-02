@@ -1,0 +1,9 @@
+% 2
+f*t+t*f,
+   h*t+t*h,
+   h*f+f*h,
+   e*t+t*e,
+   e*f+f*e+t*h,
+   e*h+h*e,
+   
+Done

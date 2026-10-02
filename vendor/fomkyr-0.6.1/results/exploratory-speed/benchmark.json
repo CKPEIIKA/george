@@ -1,0 +1,138 @@
+{
+  "case": "FK6 original 15-generator, 100-relation presentation over Q, degree9",
+  "conditions": "O3/LTO builds from both roots on same host; genuine shared WASM32; module/worker initialization excluded; fs adapter, NOT browser OPFS; no Hilbert/text export; 128MiB budget/32MiB scratch, batch8*workers",
+  "summary": [
+    {
+      "variant": "baseline",
+      "workers": 1,
+      "progress": true,
+      "trials": 3,
+      "medianMs": 6282.785003,
+      "minMs": 6110.894753,
+      "maxMs": 6353.131494,
+      "medianReduceMs": 6079.093093999988,
+      "medianCommitMs": 22.644418000012166
+    },
+    {
+      "variant": "optimized",
+      "workers": 1,
+      "progress": true,
+      "trials": 3,
+      "medianMs": 3215.638168,
+      "minMs": 3201.932424,
+      "maxMs": 3308.17379,
+      "medianReduceMs": 3094.4000090000054,
+      "medianCommitMs": 14.811831999998546
+    },
+    {
+      "variant": "baseline",
+      "workers": 4,
+      "progress": true,
+      "trials": 3,
+      "medianMs": 2013.3924809999999,
+      "minMs": 1973.325295,
+      "maxMs": 2044.1799720000001,
+      "medianReduceMs": 1921.5986819999996,
+      "medianCommitMs": 22.47383399999879
+    },
+    {
+      "variant": "optimized",
+      "workers": 4,
+      "progress": true,
+      "trials": 3,
+      "medianMs": 1187.4563039999998,
+      "minMs": 1136.573846,
+      "maxMs": 1200.010167,
+      "medianReduceMs": 1114.6449909999992,
+      "medianCommitMs": 18.055426999999668
+    },
+    {
+      "variant": "optimized",
+      "workers": 4,
+      "progress": false,
+      "trials": 3,
+      "medianMs": 1204.171231,
+      "minMs": 1151.844049,
+      "maxMs": 1249.878119,
+      "medianReduceMs": 1134.5782109999996,
+      "medianCommitMs": 15.997400000000283
+    }
+  ],
+  "trials": [
+    {
+      "file": "results/speed/d9-baseline-w1-p1-r0.json",
+      "variant": "baseline",
+      "repeat": 0
+    },
+    {
+      "file": "results/speed/d9-optimized-w1-p1-r0.json",
+      "variant": "optimized",
+      "repeat": 0
+    },
+    {
+      "file": "results/speed/d9-baseline-w4-p1-r0.json",
+      "variant": "baseline",
+      "repeat": 0
+    },
+    {
+      "file": "results/speed/d9-optimized-w4-p1-r0.json",
+      "variant": "optimized",
+      "repeat": 0
+    },
+    {
+      "file": "results/speed/d9-optimized-w4-p0-r0.json",
+      "variant": "optimized",
+      "repeat": 0
+    },
+    {
+      "file": "results/speed/d9-optimized-w4-p0-r1.json",
+      "variant": "optimized",
+      "repeat": 1
+    },
+    {
+      "file": "results/speed/d9-optimized-w4-p1-r1.json",
+      "variant": "optimized",
+      "repeat": 1
+    },
+    {
+      "file": "results/speed/d9-baseline-w4-p1-r1.json",
+      "variant": "baseline",
+      "repeat": 1
+    },
+    {
+      "file": "results/speed/d9-optimized-w1-p1-r1.json",
+      "variant": "optimized",
+      "repeat": 1
+    },
+    {
+      "file": "results/speed/d9-baseline-w1-p1-r1.json",
+      "variant": "baseline",
+      "repeat": 1
+    },
+    {
+      "file": "results/speed/d9-baseline-w1-p1-r2.json",
+      "variant": "baseline",
+      "repeat": 2
+    },
+    {
+      "file": "results/speed/d9-optimized-w1-p1-r2.json",
+      "variant": "optimized",
+      "repeat": 2
+    },
+    {
+      "file": "results/speed/d9-baseline-w4-p1-r2.json",
+      "variant": "baseline",
+      "repeat": 2
+    },
+    {
+      "file": "results/speed/d9-optimized-w4-p1-r2.json",
+      "variant": "optimized",
+      "repeat": 2
+    },
+    {
+      "file": "results/speed/d9-optimized-w4-p0-r2.json",
+      "variant": "optimized",
+      "repeat": 2
+    }
+  ]
+}

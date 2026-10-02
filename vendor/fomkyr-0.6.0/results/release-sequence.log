@@ -1,0 +1,150 @@
+{"version":"0.3.0","target":9,"workers":1,"progress":true,"elapsedMs":6633.396856,"rules":1451,"terms":29317,"progressEvents":7}
+{"version":"0.4.0","target":9,"workers":1,"progress":true,"elapsedMs":3608.475869,"rules":1451,"terms":29332,"progressEvents":48}
+{"version":"0.3.0","target":9,"workers":4,"progress":true,"elapsedMs":2313.36279,"rules":1451,"terms":29317,"progressEvents":2}
+{"version":"0.4.0","target":9,"workers":4,"progress":true,"elapsedMs":1147.309798,"rules":1451,"terms":29332,"progressEvents":46}
+{"version":"0.4.0","target":9,"workers":4,"progress":false,"elapsedMs":1073.745511,"rules":1451,"terms":29332,"progressEvents":0}
+{"version":"0.4.0","target":9,"workers":4,"progress":false,"elapsedMs":1068.2743189999999,"rules":1451,"terms":29332,"progressEvents":0}
+{"version":"0.4.0","target":9,"workers":4,"progress":true,"elapsedMs":1179.3657950000002,"rules":1451,"terms":29332,"progressEvents":46}
+{"version":"0.3.0","target":9,"workers":4,"progress":true,"elapsedMs":2041.9892900000002,"rules":1451,"terms":29317,"progressEvents":2}
+{"version":"0.4.0","target":9,"workers":1,"progress":true,"elapsedMs":3397.576467,"rules":1451,"terms":29332,"progressEvents":48}
+{"version":"0.3.0","target":9,"workers":1,"progress":true,"elapsedMs":5929.144655,"rules":1451,"terms":29317,"progressEvents":6}
+{"version":"0.3.0","target":9,"workers":1,"progress":true,"elapsedMs":6059.638638,"rules":1451,"terms":29317,"progressEvents":6}
+{"version":"0.4.0","target":9,"workers":1,"progress":true,"elapsedMs":3344.5410009999996,"rules":1451,"terms":29332,"progressEvents":48}
+{"version":"0.3.0","target":9,"workers":4,"progress":true,"elapsedMs":2133.185775,"rules":1451,"terms":29317,"progressEvents":2}
+{"version":"0.4.0","target":9,"workers":4,"progress":true,"elapsedMs":1133.456868,"rules":1451,"terms":29332,"progressEvents":46}
+{"version":"0.4.0","target":9,"workers":4,"progress":false,"elapsedMs":1071.857483,"rules":1451,"terms":29332,"progressEvents":0}
+[
+  {
+    "variant": "baseline",
+    "workers": 1,
+    "progress": true,
+    "trials": 3,
+    "medianMs": 6059.638638,
+    "minMs": 5929.144655,
+    "maxMs": 6633.396856,
+    "medianReduceMs": 5865.980445000018,
+    "medianCommitMs": 21.62396599999613
+  },
+  {
+    "variant": "optimized",
+    "workers": 1,
+    "progress": true,
+    "trials": 3,
+    "medianMs": 3397.576467,
+    "minMs": 3344.5410009999996,
+    "maxMs": 3608.475869,
+    "medianReduceMs": 3270.314832000003,
+    "medianCommitMs": 16.051260000007446
+  },
+  {
+    "variant": "baseline",
+    "workers": 4,
+    "progress": true,
+    "trials": 3,
+    "medianMs": 2133.185775,
+    "minMs": 2041.9892900000002,
+    "maxMs": 2313.36279,
+    "medianReduceMs": 2031.6531569999988,
+    "medianCommitMs": 25.111056000000985
+  },
+  {
+    "variant": "optimized",
+    "workers": 4,
+    "progress": true,
+    "trials": 3,
+    "medianMs": 1147.309798,
+    "minMs": 1133.456868,
+    "maxMs": 1179.3657950000002,
+    "medianReduceMs": 1074.75158,
+    "medianCommitMs": 19.043192999998922
+  },
+  {
+    "variant": "optimized",
+    "workers": 4,
+    "progress": false,
+    "trials": 3,
+    "medianMs": 1071.857483,
+    "minMs": 1068.2743189999999,
+    "maxMs": 1073.745511,
+    "medianReduceMs": 1005.144264000002,
+    "medianCommitMs": 16.401478999998602
+  }
+]
+{"version":"0.3.0","target":10,"workers":4,"progress":true,"elapsedMs":18501.303595,"rules":2155,"terms":77956,"progressEvents":17}
+{"version":"0.4.0","target":10,"workers":4,"progress":true,"elapsedMs":12292.338977,"rules":2155,"terms":78021,"progressEvents":61}
+{"version":"0.4.0","target":10,"workers":4,"progress":false,"elapsedMs":12982.444284000001,"rules":2155,"terms":78021,"progressEvents":0}
+{"version":"0.4.0","target":10,"workers":4,"progress":false,"elapsedMs":12512.01454,"rules":2155,"terms":78021,"progressEvents":0}
+{"version":"0.4.0","target":10,"workers":4,"progress":true,"elapsedMs":11354.129303,"rules":2155,"terms":78021,"progressEvents":60}
+{"version":"0.3.0","target":10,"workers":4,"progress":true,"elapsedMs":18621.215925999997,"rules":2155,"terms":77956,"progressEvents":16}
+{"version":"0.3.0","target":10,"workers":4,"progress":true,"elapsedMs":18356.033847,"rules":2155,"terms":77956,"progressEvents":16}
+{"version":"0.4.0","target":10,"workers":4,"progress":true,"elapsedMs":11701.566053999999,"rules":2155,"terms":78021,"progressEvents":61}
+{"version":"0.4.0","target":10,"workers":4,"progress":false,"elapsedMs":11873.851555000001,"rules":2155,"terms":78021,"progressEvents":0}
+[
+  {
+    "variant": "baseline",
+    "workers": 4,
+    "progress": true,
+    "trials": 3,
+    "medianMs": 18501.303595,
+    "minMs": 18356.033847,
+    "maxMs": 18621.215925999997,
+    "medianReduceMs": 18194.625818000008,
+    "medianCommitMs": 54.099597000036056
+  },
+  {
+    "variant": "optimized",
+    "workers": 4,
+    "progress": true,
+    "trials": 3,
+    "medianMs": 11701.566053999999,
+    "minMs": 11354.129303,
+    "maxMs": 12292.338977,
+    "medianReduceMs": 11471.491823999997,
+    "medianCommitMs": 36.21580599998546
+  },
+  {
+    "variant": "optimized",
+    "workers": 4,
+    "progress": false,
+    "trials": 3,
+    "medianMs": 12512.01454,
+    "minMs": 11873.851555000001,
+    "maxMs": 12982.444284000001,
+    "medianReduceMs": 12291.455189999986,
+    "medianCommitMs": 39.82459200000545
+  }
+]
+RUN build
+PASS build
+RUN native-tests
+PASS native-tests
+RUN extra-tests
+PASS extra-tests
+RUN optimizer-edge-tests
+PASS optimizer-edge-tests
+RUN physics-matrix
+PASS physics-matrix
+RUN wasm-tests
+PASS wasm-tests
+RUN fomkyr-tests
+PASS fomkyr-tests
+RUN compatibility-tests
+PASS compatibility-tests
+RUN integration-tests
+PASS integration-tests
+RUN physics-wasm-matrix
+PASS physics-wasm-matrix
+RUN progress-unit-tests
+PASS progress-unit-tests
+RUN progress-integration-tests
+PASS progress-integration-tests
+RUN static-host-unit-tests
+PASS static-host-unit-tests
+RUN installer-tests
+PASS installer-tests
+RUN installer-modern-tests
+PASS installer-modern-tests
+RUN ubsan-tests
+PASS ubsan-tests
+CORE RELEASE SUITE PASSED
+ALL_FINAL_CHECKS_PASSED

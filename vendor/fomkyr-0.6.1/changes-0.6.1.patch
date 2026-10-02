@@ -1,0 +1,1519 @@
+--- a/README.md
++++ b/README.md
+@@ -1,76 +1,94 @@
+-# fomkyr 0.6.0
+-
+-A specialized exact C/WASM backend for George: homogeneous noncommutative Groebner
+-bases, shared-memory multicore reduction, recoverable browser storage and certified
+-Hilbert coefficients. Four prebuilt shared/unshared WASM32/WASM64 modules are included.
+-No Lisp/ECL runtime or Emscripten filesystem is required.
+-
+-**New: compiled exact short-context rewrites**, backed by a bounded shared cache of
+-immutable reducers. Direct Q computation retains the compact integer, checked rational
+-and arbitrary-precision fallback tiers. No speculative finite-field result is used in
+-the default path; no production signature/F5 algorithm is claimed.
+-
+-With three alternating same-host fresh-process trials on the exact supplied FK6 form,
+-0.5 -> 0.6 improves degree 9 from **1.309 to 0.871 s (1.50x)** and degree 10 from
+-**6.880 to 3.978 s (1.73x)**. P6 coefficient stress is effectively unchanged. These are
+-four-worker real-WASM Node measurements with an OPFS filesystem adapter, not browser
+-timings. Startup, compilation of the rewrite table and checkpoints are included.
+-Read [the algorithm/proof and release report](docs/DIRECT_REWRITE_CACHE.md),
+-[raw timings](results/0.6/benchmarks/summary.json) and
+-[validation manifest](results/0.6/release-validation.json).
+-
+-**Accuracy:** all 46,534 compiled identities for FK6 were independently checked with
+-Fraction. Independent full completion extends through degree 5; degree 9/10 comparisons
+-are differential against 0.5. Their leading words agree and changed tails mutually
+-reduce to zero. The result remains `reduced:false`, not a canonical reduced basis.
+-
+-The normal George controls now expose only direct arithmetic. The previous, slower
+-verified modular API remains explicitly opt-in for backwards-compatible research;
+-a saved UI modular selection is reset to exact. Existing pruning, worker, memory,
+-field/order, deadline, degree, Hilbert, progress and storage settings remain authoritative.
+-
+-## Defaults and disabling the new optimizations
++# fomkyr 0.6.1
++
++A specialized direct-exact C/WASM backend for George: homogeneous noncommutative
++Groebner bases, multicore reduction, recoverable OPFS storage and graded Hilbert
++coefficients. Four prebuilt shared/unshared WASM32/WASM64 modules are included.
++
++This is a **0.6.x polishing release focused on degree 12 and correctness**. It keeps
++the production direct solver, compact integer and rational heaps, and the exact
++arbitrary-precision fallback. No signature scheduler, speculative modular result,
++change of input ordering, or finite-field replacement of Q is introduced.
++
++The isolated degree-12 continuation finished in **132.563 s**; the same checkpoint
++with rational compiled rewrites disabled hit a **240.238 s deadline** without
++finishing. This is a single sequential ablation, not a measured median speedup.
++Degree 13 still stalled in its bounded diagnostic probe.
++
++## High-degree change
++
++The existing compiled exact short-word identities can now run inside the rational
++heap. This prevents the observed FK6 degree-12 arithmetic fallback stall in the
++successful test, instead of merely shaving seconds off degrees 9-10. Every scalar
++operation is checked; unsupported cases restart the original exact reducer.
++
++Deep trials, including deadlines and incomplete runs, are retained under
++`results/0.6.1/`. Read [the full report](docs/DEEP_DEGREES_AND_CORRECTNESS.md) and
++[the release manifest](results/0.6.1/release-validation.json). The earlier
++[0.6.0 report](docs/DIRECT_REWRITE_CACHE.md) and small-degree benchmarks are historical.
++Do not substitute them for current high-degree evidence.
++
++Defaults include:
+ 
+ ```javascript
+ {
+   arithmeticMode: 'exact',
+   rationalHeap: true,
+   compiledRewrites: true,
+-  rewriteDegree: 4,       // local cache word length, NOT the calculation degree
+-  rewriteSupport: 8      // decline larger expansions; never truncate them
++  rationalRewrites: true, // new: use the proved local identities in the rational heap
++  rewriteDegree: 4,      // cache word length, NOT a bound on computation degree
++  rewriteSupport: 8     // decline larger expansions, never truncate a polynomial
+ }
+ ```
+ 
+-Automatic kernel API budgets are `min(totalBudget/16, 8 MiB)` for rewrites and
+-`min(totalBudget/16, 64 MiB)` for shared immutable reducers. George also exposes explicit
+-MiB fields. Each cache is one shared allocation, not a copy per worker. In the 128 MiB
+-benchmark both reserve 8 MiB; measured kernel allocation is 58.6 MB versus 41.8 MB before.
+-Setting `compiledRewrites:false` disables block compilation; setting
+-`sharedReducerCacheBytes:0` also disables the new shared-record cache. Budget exhaustion,
+-large coefficients and unsupported fast-path words retain the original exact reducer.
+-
+-There is no new computation-degree cutoff. Length 4 is only a small optimization table;
+-variable-length words and blank/null-target requests are retained. All JS and all four
+-WASM binaries must be upgraded together. Checkpoint ABI 3 and algebra identities remain
+-compatible; compiled tables are rebuilt from the restored exact basis.
+-
+-## Evidence and limitations
+-
+-`bash tools/verify_direct.sh` runs the full existing suite and the added direct checks.
+-This includes 37 existing algebra/field combinations, 44 extra edge/algebra checks,
+-all four actual WASM variants, 17 new WASM cache checks, independent serialized-output
+-checking, checkpoints, Hilbert, progress, installer fixtures and UndefinedBehaviorSanitizer.
+-Counts overlap; they are not counts of independent physical theories.
+-
+-Real Firefox/OPFS/GitHub Pages execution was not performed this turn. The supplied
+-browser test matrix and CI remain available; prior failed browser attempts are retained
+-as historical evidence, not relabelled successful. The remote repository and live George
+-site were not modified. FK6 degrees 15-20 were not run. The measured gain reduces
+-repeated local work; it does not prove that high-degree growth has become polynomial.
+-
+-Live progress retains per-degree overlap counts, sampled lane activity and explicitly
+-heuristic/withdrawable estimates. No whole-job percentage or degree-20 ETA is inferred
+-from the degree number. Current on/off timings do not establish zero reporting overhead.
++Use `rationalRewrites:false` for the isolated old-rational-path ablation. Existing
++George controls for workers, monomial pruning, memory, field/order, degree, deadline,
++Hilbert, storage and caches remain in effect. Arbitrary-length words and null/blank
++maximal degree are retained. The 15,000,000,000-byte kernel ceiling is unchanged;
++it does not bound browser RSS or make every active row fit memory.
++
++## Stronger audits, explicit limits
++
++The native field matrix has been corrected to actually pass each requested prime
++to the kernel and assert the observed field. Seven compatible mathematical
++presentations from George's upstream set are checked independently in Q,F2,F5,
++including exact completion, critical compositions and canonical equality.
++
++`tools/canonical_audit.py` independently checks and monic-tail-normalizes basis
++records and compares canonical byte streams. Matching counts or leading words are
++not accepted as proof of equality. Canonical normalization itself is explicitly
++**not** a Groebner certificate; all bounded critical compositions are a separate
++obligation. High-degree differential evidence does not become external validation.
++
++Actual Singular/Bergman execution was unavailable in this environment. The new
++`tools/check_george_oracles.mjs` is a strict runner for an initialized George
++checkout, with source/engine hashes, matched field/order/degree and real external
++computations. Missing tools return exit 77 with `externalVerified:false`.
++Real Firefox/OPFS/GitHub Pages execution was not repeated here; actual four-variant
++WASM and capability paths were tested in Node. Your deployed site was not modified.
++
++## Reproduce the checks and deep profiles
++
++```bash
++bash tools/build.sh
++bash tools/verify_061.sh
++python3 tests/benchmark_deep.py --degree 12 --seconds 900 --trials 1 \
++  --baseline /path/to/pristine/rebuilt/fomkyr-0.6.0 --out results/deep-comparison
++```
++
++Use `--resume-storage /path/to/degree11/storage --ablate-rational-rewrites`
++instead of `--baseline` to compare the new switch from identical checkpoints.
++The harness stores incomplete runs; do not divide a timeout by a completed time
++and call it a measured completion-time speedup.
++
++```bash
++node --experimental-wasm-memory64 tools/check_george_oracles.mjs \
++  --george /absolute/path/to/george --fk-degree 5 --out results/external-parity
++```
++
++Progress now identifies arithmetic tiers and problematic pairs from sparse live
++snapshots. Stalled or invalidated historical forecasts are withdrawn. A current-
++degree overlap fraction is not a whole-job runtime percentage. Reporting cost was
++not separately benchmarked in this release.
+ 
+ ## Install or upgrade the existing George frontend
+ 
+@@ -82,7 +100,7 @@
+ ```
+ 
+ The installer validates source edits before writing, backs up changed source files with
+-`.before-fomkyr-0.6.0`, updates recognized earlier fomkyr overlays, and refuses required
++`.before-fomkyr-0.6.1`, updates recognized earlier fomkyr overlays, and refuses required
+ source-shape mismatches. It preserves an existing George isolation service worker.
+ Current-style registry/worker/control integration and older source shapes are tested
+ with executable fixtures; this does not replace a full-checkout integration test.
+--- a/README_RU.md
++++ b/README_RU.md
+@@ -1,67 +1,42 @@
+-# fomkyr 0.6.0
++# fomkyr 0.6.1
+ 
+-Специализированный C/WASM-бэкенд для George: точные базисы Грёбнера однородных
+-некоммутативных алгебр, многопоточность, OPFS и точные коэффициенты ряда Гильберта.
+-В архиве четыре готовых модуля: WASM32/WASM64, с общей памятью и без неё.
++Продолжение прямой точной ветки 0.6.x. Главные изменения относятся к степени 12 и
++проверке результатов, а не к коротким тестам степени 9-10. В архиве исходники,
++четыре готовых WASM-модуля, установщик George и воспроизводимые проверки.
+ 
+-## Что изменено
++Ранее скомпилированные точные локальные тождества теперь применяются и в
++рациональной разреженной редукции. Все операции проверяются; переполнение или
++неподдерживаемый случай возвращают вычисление к исходному полиному и прежней
++точной арифметике произвольной разрядности. Ни приближений, ни подмены Q конечным
++полем, ни нового сигнатурного алгоритма в основном пути нет.
+ 
+-Основной алгоритм остался прямым и точным. Добавлена предварительная компиляция
+-коротких точных тождеств из уже построенной части базиса: вместо многократного
+-повторения нескольких элементарных редукций можно применить одно сохранённое
+-следствие. По умолчанию длина блока равна 4, предел промежуточной/конечной поддержки
+-равен 8. Превышение предела означает отказ от оптимизации, а не усечение полинома.
+-Большие коэффициенты и неподдерживаемые случаи обрабатываются прежним точным методом.
++Для сравнения старого и нового пути используйте `rationalRewrites:false/true`.
++`compiledRewrites:false` отключает локальные таблицы вообще. Длина локального блока
++4 по умолчанию не ограничивает степень вычисления.
+ 
+-Общий ограниченный кэш хранит одну копию неизменяемых редукторов для всех потоков.
+-Непоместившиеся записи читаются старым способом. Кэши учитываются в общем бюджете.
+-Предел длины оптимизируемого блока не является пределом степени вычисления.
++Исправлен тестовый цикл по полям: модуль теперь действительно передаётся ядру и
++проверяется в результате. Совместимые однородные примеры George независимо
++проверяются в Q, F2 и F5. Новый отдельный инструмент сравнивает точные канонические
++базисы, а не только число правил или старшие слова. Приведение хвостов не заменяет
++проверки всех критических композиций; в отчётах эти виды свидетельств разделены.
+ 
+-На исходной форме FK6 из 15 генераторов и 100 соотношений, без изменения порядка,
+-медианы трёх парных запусков WASM с четырьмя потоками составили:
+-
+-| Степень | 0.5.0 | 0.6.0 | Ускорение |
+-|---|---:|---:|---:|
+-| 9 | 1.309 с | 0.871 с | 1.50 раза |
+-| 10 | 6.880 с | 3.978 с | 1.73 раза |
+-
+-Это исполнение настоящего WASM в Node с файловым адаптером OPFS, не измерение Firefox.
+-Инициализация, построение таблицы и контрольные точки включены; вывод текста, ряд
+-Гильберта и подробный прогресс выключены. На P6 существенного ускорения нет.
+-
+-Все 46 534 скомпилированных тождества FK6 независимо проверены точной арифметикой
+-Fraction. Независимое построение базиса проверено до степени 5. Для степеней 9/10
+-сравнены старшие слова и выполнена взаимная точная редукция с результатом 0.5.0:
+-хвосты некоторых неприведённых правил отличаются, поэтому побайтного совпадения
+-старой и новой версий здесь нет. Результат по-прежнему помечен `reduced:false`.
+-
+-## Подключение
++Запуск Singular/Bergman в этом окружении недоступен. Добавлен строгий сценарий
++для установленного George: отсутствие внешних программ даёт статус unavailable
++и код 77, а не успешную проверку. Реальный Firefox/OPFS здесь повторно не проверен.
+ 
+ ```bash
+ python3 tools/install.py /absolute/path/to/george --dry-run
+ python3 tools/install.py /absolute/path/to/george
++bash tools/verify_061.sh
+ ```
+ 
+-Обновить нужно JavaScript и все четыре WASM-файла вместе. Сериализация ABI 3 и
+-контрольные точки совместимы; таблица тождеств перестраивается из восстановленного
+-точного базиса. Для честного замера нового вычисления отключите повторное использование
+-контрольной точки, иначе уже готовый результат не потребует пересчёта.
++Обновляйте JavaScript и все четыре WASM вместе. Контрольные точки ABI 3 сохранены.
++Предел памяти ядра 15 000 000 000 байт не является ограничением памяти всего браузера;
++отдельная активная строка должна помещаться в RAM. Нулевой расход на диагностику
++не заявляется. Прогноз времени снимается, когда накопленные измерения перестают
++описывать текущую работу; доля перекрытий не выдаётся за долю времени всей задачи.
+ 
+-В обычном интерфейсе оставлена только прямая арифметика; старый экспериментальный
+-модулярный API сохранён отдельно, но не предлагается как ускорение. Старые настройки
+-потоков, отсечения мономов, памяти, поля, порядка, времени, степени, Гильберта и
+-хранилища сохранены. `compiledRewrites:false` отключает новую компиляцию;
+-`sharedReducerCacheBytes:0` отключает общий кэш записей.
+-
+-Подробный отчёт и доказательство: `docs/DIRECT_REWRITE_CACHE.md`.
+-Проверки: `bash tools/verify_direct.sh`.
+-Воспроизводимые измерения: `tests/benchmark_direct.py`, результаты в `results/0.6/`.
+-
+-Удалённый репозиторий и опубликованный сайт не изменялись. Firefox/OPFS на реальном
+-сайте в этой версии не проверялись; проверены варианты WASM и отказы возможностей
+-в Node. Степени FK6 15-20 не вычислялись. Оптимизация уменьшает повторную работу,
+-но не устраняет возможный комбинаторный рост. Память всего процесса браузера не
+-ограничивается аллокатором ядра; отдельная активная строка должна помещаться в RAM.
+-
+-Полные инструкции по API, GitHub Pages, аварийному однопоточному режиму и ограничениям
+-приведены в `README.md` и `docs/BROWSER_COMPATIBILITY.md`.
++Подробности: `docs/DEEP_DEGREES_AND_CORRECTNESS.md`, `README.md`,
++`results/0.6.1/release-validation.json`. Прерванные и завершённые измерения сохранены
++раздельно. Старые отчёты 0.6.0 являются историческими. Удалённый репозиторий и
++опубликованный сайт не изменены.
+--- /dev/null
++++ b/docs/DEEP_DEGREES_AND_CORRECTNESS.md
+@@ -0,0 +1,258 @@
++# fomkyr 0.6.1: high-degree direct reduction and result auditing
++
++## Release scope
++
++This stays on the 0.6.x direct-exact branch. It does not introduce a signature
++scheduler, a new modular algorithm, floating-point coefficients, or a different
++presentation/order. The supplied FK6 input has 15 generators and 100 relations;
++all deep runs use its original order, degleftlex, unit generator degrees and Q.
++
++The main change is deliberately small: the compiled exact local identities already
++used by the compact integer heap can now be used by the compact rational heap.
++The general arbitrary-precision reducer remains the correctness fallback. The
++new option `rationalRewrites` defaults to true; false supplies a direct ablation.
++`compiledRewrites:false` disables both integer and rational uses of that table.
++
++## What changed at degree 12
++
++The expensive behavior was not explained by rule count alone. The original 0.6.0
++path reached degree 11, then stalled on an early degree-12 reduction after leaving
++the compact rational tier. A single arbitrary-precision reduction held the batch
++barrier while the other lanes were idle. The measured row continued growing.
++
++The new path reduces some of that coefficient/support growth before it triggers
++fallback. It uses the exact existing integer identity w = sum(c_i v_i), with the
++same left/right context and multiplies each c_i by the active exact rational
++coefficient. Each multiplication and addition is checked. Unsupported coefficients,
++space exhaustion or overflow discard the attempted fast reduction and restart from
++the unchanged original row. No term is dropped because it is inconvenient.
++
++In particular, this does not mean arbitrary precision is unnecessary: other inputs
++and higher degrees may still require it. No guarantee is made for degrees 13-20.
++The unchanged local table degree (four by default) is not a computation-degree cap.
++
++## Recorded high-degree outcome
++
++| Final sequential same-checkpoint trial | Outcome | Wall time |
++|---|---|---:|
++| 0.6.1 with rational compiled rewrites disabled | Deadline in degree 12; 3,104 / 53,542 overlaps resolved | 240.238 s (censored) |
++| 0.6.1 with rational compiled rewrites enabled | Degree 12 completed | 132.563 s |
++
++Both restore the identical old 0.6.0 degree-11 record prefix. This is one trial per
++setting, not a median. The disabled path's completion time is unknown; no exact
++speedup ratio is asserted. The original, separately profiled 0.6.0 also failed to
++complete degree 12 within 900 seconds, but that exploratory run had CPU contention.
++
++The completed degree-12 output has **4,872 rules**, **790,423 stored terms**,
++and **19,126,056 record bytes**. The kernel allocated 185,411,824 bytes within its
++536,870,912-byte budget. There were 3,373 rational attempts, all successful,
++with zero general fallbacks, and 14,312 rational table-growth retries. The
++last counter includes restarted work and identifies remaining avoidable cost; it
++is not a count of distinct mathematical reductions.
++
++Independent canonicalization of two completed degree-12 outputs obtained from
++canonically equivalent but byte-different degree-11 checkpoints gives the same
++exact canonical stream (SHA256
++`622bfae0312c262eeab7319f5e9ebd4daf7e811a489cc71aa2ab663224ee72b9`).
++Both sides' proper-subword irreducibility/minimal-leader preconditions passed. This
++is independent normalization and differential equality, not an external full
++Gröbner computation through degree 12.
++
++The C and independently implemented Python Hilbert counters agree on the computed
++basis through degree 12:
++
++    1, 15, 125, 765, 3831, 16605, 64432, 228855,
++    755777, 2347365, 6916867, 19468980, 52632322
++
++These are invariants derived from the computed leading ideal, not a second proof
++of its Gröbner property. See `results/0.6.1/deep-hilbert.json`.
++
++A separate degree-13 diagnostic probe stopped at its 120.289-second deadline,
++with 3,200 / 89,834 overlaps resolved. One general fallback was again holding the
++batch (internal rules 48 and 4842, overlap length 1). Only degree 12 is completed;
++the 6,169 temporarily stored rules are **not** a completed degree-13 basis. The
++probe overlapped independent audit work and is not a clean timing benchmark. No
++runtime extrapolation to degree 20 is made.
++
++## Correctness argument for the extension
++
++Suppose an existing compiled identity has w - sum(c_i v_i) in I, with every v_i < w.
++For a rational coefficient q and words a,b,
++
++    q a w b - sum(q c_i a v_i b) is in I.
++
++The same admissible order makes every replacement smaller. Rational arithmetic is
++exact and checked. Hence the additional reductions preserve the ideal and strict
++word decrease; they are redundant shortcuts, not assumptions about FK algebras.
++The table is immutable during each batch, rebuilt from the restored exact basis,
++and never loaded from an unverified rewrite-cache artifact. Compiled reduction is
++not used while excluding a rule for canonical tail reduction (`skip_rule`).
++
++The preexisting independent checks of all 46,534 default FK6 table identities were
++rerun. Dedicated arithmetic tests force the new rational path in shared/unshared
++WASM32/WASM64 builds; they do not merely test that the new switch is accepted.
++
++## Timing protocol and evidence
++
++See `results/0.6.1/isolated-d12/summary.json` for the final sequential trial(s).
++The trial harness preserves reports on timeouts. A timeout is right-censored, not
++a completed time and not a basis certified through the requested degree.
++
++The isolated comparison uses the final four-worker shared-memory WASM32 build,
++Node 22, the filesystem OPFS adapter, 512 MiB kernel budget, 128 MiB aggregate
++scratch, detailed progress every five seconds, no Hilbert computation and no text
++export. Each side restores the same 0.6.0 degree-11 checkpoint. Initialization,
++restoration, table rebuilding, degree-12 computation and checkpoint writing are
++included; the already completed degrees 1-11 are excluded. No test workload runs
++concurrently. The switch `rationalRewrites:false/true` is the only algorithmic
++ablation. This is not a browser timing and not a many-trial median.
++
++Earlier directories `baseline-d12`, `rational-macros-d12-exploratory` and
++`rational-macros-d12-resume` are exploratory. The original run hit its 900-second
++deadline in degree 12; the revised exploratory resume completed degree 12. Those
++runs overlapped in CPU use and are not used to assert a speedup ratio. The initial
++modified resume used a different, canonically equal, degree-11 checkpoint. Final
++isolated trials instead use identical old checkpoint bytes.
++
++## What different tails do and do not mean
++
++Primitive integer rows with unreduced tails are not a canonical presentation of a
++Groebner basis. Changing an exact reduction route can alter those tails. The
++following checks must not be confused:
++
++1. Equal rule counts, leading words or Hilbert coefficients alone do not prove
++   equal ideals. For example, <x> and <x-y> have the same leading ideal for x > y.
++2. Exact mutual reductions establish the two inclusions of the generated ideals
++   when the reductions succeed. They do not by themselves prove a Groebner basis.
++3. Input membership plus all critical overlap/inclusion compositions through D
++   establishes the bounded Groebner property for homogeneous data (provided the
++   output's membership in the input ideal is established separately, by an oracle,
++   derivation, or independent construction).
++4. Monic, fully tail-reduced canonical rows should match in the same field and
++   order. This is much stricter than comparing the raw primitive rows or hashes.
++
++`tools/canonical_audit.py` is independent of the C matcher and arithmetic. It reads
++and checks serialized records, verifies minimal leading words and that every tail
++has no reducible proper subword, and then performs exact triangular same-degree
++normalization. If those preconditions fail, it refuses the shortcut; it does not
++silently produce an incomplete normal form. Two outputs are compared as exact
++canonical byte streams. SHA256 values are retained for provenance, not used in
++place of that equality check.
++
++This tool explicitly reports `independentGroebnerCertificate:false`: normalization
++is not a proof that all critical compositions vanish. The test suite includes a
++counterexample which passes normalization but fails an independent composition
++check. It also rejects a different ideal with the same leading words.
++
++The old/new FK6 degree-11 outputs canonically agree. Degree-12 results are audited
++separately. These high-degree comparisons do not substitute for an independent
++Singular/Bergman computation through degree 12. The engine continues to export
++`reduced:false` unless a separately requested canonical artifact is produced.
++
++## A genuine test-harness correction
++
++`tests/test_physics_matrix.py` previously iterated p=0,2,101, but its native Engine
++calls did not receive `modulus=prime`. That invalidated the intended native
++cross-field coverage; it is not evidence that the kernel itself used the wrong
++field on normal API calls. George's validator already fixed this in its staging
++copy [1]. The correction is now in this branch, with an explicit assertion of the
++kernel's actual characteristic. A characteristic-sensitive fixture prevents a
++future all-Q substitution from passing accidentally. The corrected 37 native
++algebra/field combinations pass. Actual WASM field tests are separate checks.
++
++Do not retroactively read the earlier native-matrix count as verified coverage of
++all three fields. The corrected fresh results are in this release's manifest.
++
++## Singular, Bergman and the actual verification boundary
++
++George's upstream fixture contains 30 presentations across Q,F2,F5 [2,3]. Only
++seven are homogeneous, noncommutative and unit-weight, the current scope of this
++engine. They are the Letterplace simple, monomial, exterior and braid examples.
++Their mathematical inputs were adapted with explicit variable-order conventions
++and are tested here in 21 case/field combinations. Braid bounds are the bounded
++George adaptation, not a claim to run the original degree-11 Singular test.
++
++These 21 cases pass independent exact completion, all bounded critical
++compositions, mutual reduction and canonical comparison. Homogenized oscillator,
++Clifford, sl2 and other physics-oriented fixtures remain in the larger matrix.
++These are tests of algebraic machinery, not validation against experiments.
++
++**Neither a live Singular executable nor George's compiled Bergman runtime was
++available in this environment. No fresh external-engine agreement is claimed.**
++George publishes its own validation evidence [3,4], but it belongs to the engines
++and hashes recorded there, not automatically to fomkyr 0.6.1.
++
++`tools/check_george_oracles.mjs` runs this release against those actual external
++engines on an initialized George checkout. It compares original-input membership,
++both ideal inclusions, bounded compositions, Hilbert coefficients and canonical
++monic rows. Singular uses the free-algebra/Letterplace interface, not an ordinary
++commutative polynomial ring. Reversed generator declarations match its Dp order
++to fomkyr's last-variable-largest degree-left-lex convention. Coefficients are
++parsed as exact integers/fractions without eval. Field and degree are recorded.
++
++Missing tools return exit 77 and `externalVerified:false`. An error, timeout,
++nonzero remainder or canonical mismatch is a failure, not a skipped pass. The
++runner's format/parser/preflight have tests; its full external invocation remains
++unexecuted here. Source/engine manifests are recorded when that invocation runs.
++
++## Diagnostics and cancellation
++
++The sampled live snapshot now includes each active lane's arithmetic tier, active
++row size, fallback count, and critical-pair rule IDs/overlap. It is published at
++existing sparse safe points; the UI does not copy active polynomials or scan the
++basis. Allocation, coefficient/arithmetic misses and rational table retries
++are aggregated after worker barriers, not polled as racing non-atomic counters.
++These diagnostic categories are not an exhaustive partition of fallback reasons;
++in particular a table-growth limit can be reached without an allocation attempt.
++
++Current-degree overlap counts remain counts, not percentages of total runtime.
++Historical degree forecasts are withdrawn if the current degree outgrows them or
++its observed costs become too heterogeneous. They must not keep displaying an
++89-second scenario while one unresolved reduction has already consumed minutes.
++Cancellation drains already dispatched reductions before checkpoint/error cleanup
++in the normal local-cancellation path. The last completed degree, not partial new
++rules, determines the resumable/certified construction boundary.
++
++## Reproduce
++
++    bash tools/build.sh
++    bash tools/verify_061.sh
++
++    python3 tests/benchmark_deep.py --degree 12 --seconds 900 --trials 1 \
++      --baseline /path/to/pristine/rebuilt/fomkyr-0.6.0 \
++      --out results/my-deep-comparison
++
++A same-checkpoint ablation can instead use:
++
++    python3 tests/benchmark_deep.py --degree 12 --seconds 900 \
++      --resume-storage /path/to/degree11/storage \
++      --ablate-rational-rewrites --out results/my-ablation
++
++For external engines, first initialize George's own oracle packages and compiled
++Bergman runtime using its setup documentation. From this fomkyr directory:
++
++    node --experimental-wasm-memory64 tools/check_george_oracles.mjs \
++      --george /absolute/path/to/george --fk-degree 5 \
++      --out results/external-parity
++
++A higher `--fk-degree` is explicit; do not label bounded degree-5 external evidence
++as degree-12 parity. The tool accepts `--singular /path/to/Singular` where required.
++
++Install with `tools/install.py` as before. Deploy JS and all four WASM binaries
++together. ABI-3 basis/checkpoint records are unchanged; new diagnostics and options
++require the matching JS/module pair. The original pruning, memory, worker, field,
++degree, Hilbert and browser-storage controls remain. Direct exact is the default;
++slower research mechanisms are not introduced into that default.
++
++## Sources and limitations
++
++[1] https://raw.githubusercontent.com/CKPEIIKA/george/main/tools/validate-fomkyr.mjs
++[2] https://raw.githubusercontent.com/CKPEIIKA/george/main/test/fixtures/upstream-cases.json
++[3] https://raw.githubusercontent.com/CKPEIIKA/george/main/docs/development/UPSTREAM-TESTS.md
++[4] https://raw.githubusercontent.com/CKPEIIKA/george/main/docs/development/validation/upstream.json
++
++Real Firefox/OPFS/GitHub Pages end-to-end execution was not performed in this
++release. The four real WASM builds and capability fallbacks were exercised in
++Node. The kernel's 15,000,000,000-byte ceiling is not a browser-process RSS limit;
++an individual active row and basis metadata must still fit the budget. Public
++site/repository files were not modified. No degree-20 runtime is extrapolated.
+--- /dev/null
++++ b/fixtures/george-supported.json
+@@ -0,0 +1,136 @@
++{
++  "scope": "Curated homogeneous, unit-weight, noncommutative subset of George's upstream-cases fixture; not the complete upstream test suites.",
++  "source": "https://raw.githubusercontent.com/CKPEIIKA/george/main/test/fixtures/upstream-cases.json",
++  "singularSourceRevision": "fc93f43aefd9c6fa6a606ce46eb9f34864d8baee",
++  "fields": [
++    0,
++    2,
++    5
++  ],
++  "cases": [
++    {
++      "id": "singular-gb_simple",
++      "vars": [
++        "y",
++        "x"
++      ],
++      "rels": [
++        "x*y+y*x"
++      ],
++      "maxdeg": 4,
++      "expectedBasis": [
++        "x*y+y*x"
++      ]
++    },
++    {
++      "id": "singular-gb_mon1",
++      "vars": [
++        "y",
++        "x"
++      ],
++      "rels": [
++        "x*y*x",
++        "y*x*y"
++      ],
++      "maxdeg": 4,
++      "expectedBasis": [
++        "x*y*x",
++        "y*x*y"
++      ]
++    },
++    {
++      "id": "singular-gb_mon2",
++      "vars": [
++        "y",
++        "x"
++      ],
++      "rels": [
++        "x*x",
++        "x*y*x",
++        "y*x*y"
++      ],
++      "maxdeg": 4,
++      "expectedBasis": [
++        "x*x",
++        "x*y*x",
++        "y*x*y"
++      ]
++    },
++    {
++      "id": "singular-gb_mon3",
++      "vars": [
++        "y",
++        "x"
++      ],
++      "rels": [
++        "x*x",
++        "y*y",
++        "x*y*x",
++        "y*x*y"
++      ],
++      "maxdeg": 4,
++      "expectedBasis": [
++        "x*x",
++        "y*y",
++        "x*y*x",
++        "y*x*y"
++      ]
++    },
++    {
++      "id": "singular-gb_exterior2",
++      "vars": [
++        "x",
++        "y"
++      ],
++      "rels": [
++        "y*x+x*y",
++        "x*x",
++        "y*y"
++      ],
++      "maxdeg": 4,
++      "expectedBasis": [
++        "y*x+x*y",
++        "x*x",
++        "y*y"
++      ]
++    },
++    {
++      "id": "singular-gb_braid3-11",
++      "vars": [
++        "z",
++        "y",
++        "x"
++      ],
++      "rels": [
++        "y*x*y-z*y*z",
++        "x*y*x-z*x*y",
++        "z*x*z-y*z*x",
++        "x*x*x+y*y*y+z*z*z+x*y*z"
++      ],
++      "maxdeg": 6
++    },
++    {
++      "id": "singular-gb_braidXY",
++      "vars": [
++        "z",
++        "y",
++        "x"
++      ],
++      "rels": [
++        "y*x*y-z*y*z",
++        "x*y*x-z*x*y",
++        "z*x*z-y*z*x",
++        "x*x*x-2*y*y*y+3*z*z*z-4*x*y*z+5*x*z*z-6*x*y*y+7*x*x*z-8*x*x*y"
++      ],
++      "maxdeg": 6
++    }
++  ],
++  "excludedCategories": [
++    "commutative rings",
++    "non-unit weights",
++    "nonhomogeneous Weyl/Lie/shift inputs",
++    "Plural quotients not presented as homogeneous free-algebra ideals"
++  ],
++  "note": "expectedBasis entries for the five simple cases are explicit polynomial reference bases, independently certified in this release. They are not recordings of a new Singular or Bergman execution.",
++  "sourceLicense": "Singular test sources: GPL-2.0-only OR GPL-3.0-only; this fixture records adapted mathematical presentations, not CAS implementation code."
++}
+--- a/package.json
++++ b/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "fomkyr",
+-  "version": "0.6.0",
++  "version": "0.6.1",
+   "private": true,
+   "type": "module",
+   "license": "MIT",
+@@ -26,6 +26,9 @@
+     "benchmark:modular": "python3 tests/benchmark_modular.py",
+     "test:rational": "python3 tests/test_rational_arithmetic.py && python3 tests/test_rational_cases.py",
+     "test:direct": "bash tools/verify_direct.sh",
+-    "benchmark:direct": "python3 tests/benchmark_direct.py"
++    "benchmark:direct": "python3 tests/benchmark_direct.py",
++    "test:061": "bash tools/verify_061.sh",
++    "benchmark:deep": "python3 tests/benchmark_deep.py",
++    "test:external": "node --experimental-wasm-memory64 tools/check_george_oracles.mjs"
+   }
+ }
+--- a/src/kernel.c
++++ b/src/kernel.c
+@@ -43,13 +43,14 @@
+   u64 reductions,pruned,reads,read_bytes,pairs,peak;
+   u64 hash_probes,matcher_queries,matcher_characters,redcache_hits,heap_attempts,heap_successes,heap_fallbacks;
+   u64 insertion_prunes,commuting_prunes,quadratic_swaps;
+-  u64 rational_attempts,rational_successes,rational_fallbacks,integer_steps,rational_steps,local_hits,pinned_hits;u32 publications,busy,skip_rule;
++  u64 rational_attempts,rational_successes,rational_fallbacks,integer_steps,rational_steps,local_hits,pinned_hits;u64 rational_local_hits,rational_space_misses,rational_coefficient_misses,rational_arithmetic_misses,rational_table_retries;u32 publications,busy,skip_rule,reduction_tier;
+ } Lane;
+ typedef struct {u32 f,g,k,snapshot,rc,bytes;u64 output;} BatchTask;
+ /* Published at sparse safe points, never read another lane's mutable row. */
+ typedef struct __attribute__((aligned(64))) {
+  GN_ATOMIC(u64) reductions,pruned,reads,pairs,terms,hash_probes,matcher_queries;
+  GN_ATOMIC(u32) busy,sequence;
++ GN_ATOMIC(u64) tier,exact_fallbacks,left_rule,right_rule,overlap;
+ } LiveLane;
+ 
+ typedef struct {
+@@ -57,7 +58,7 @@
+   u32 batch_n,batch_enabled,hilbert_degree,hilbert_nodes;
+   u64 batch_epochs,batch_spills,hilbert_bytes;
+   u64 hilbert_offset,hilbert_end,hilbert_base;
+-  u32 hilbert_limbs,pruning,heap_enabled,cache_percent,heap_threshold,rational_enabled;
++  u32 hilbert_limbs,pruning,heap_enabled,cache_percent,heap_threshold,rational_enabled,rational_rewrites;
+   double deadline;
+   BatchTask tasks[BATCH_MAX];
+   u32 batch_order[BATCH_MAX],batch_sort[BATCH_MAX],cost_scheduling;
+@@ -98,6 +99,8 @@
+  GN_STORE(&v->reads,l->reads);GN_STORE(&v->pairs,l->pairs);
+  GN_STORE(&v->terms,terms);GN_STORE(&v->hash_probes,l->hash_probes);
+  GN_STORE(&v->matcher_queries,l->matcher_queries);GN_STORE(&v->busy,l->busy);
++ GN_STORE(&v->tier,l->reduction_tier);GN_STORE(&v->exact_fallbacks,l->rational_fallbacks);
++ GN_STORE(&v->left_rule,l->f);GN_STORE(&v->right_rule,l->g);GN_STORE(&v->overlap,l->k);
+  GN_FETCH_ADD(&v->sequence,1);
+  /* The existing clock import can notify the UI while this Wasm call is still
+   * running. Only the coordinator invokes its reporting callback. No new ABI
+@@ -364,8 +367,8 @@
+ #include "local_rewrites.inc"
+ #include "heap_nf.inc"
+ #include "rational_heap_nf.inc"
+-static int nf(Lane*l,u32 snapshot){u32 active=l->active;Poly p=l->result;u64 steps=0;u32 scan=0,heap_tried=0;
+- for(;;){if(S.heap_enabled&&p.degree<=GN_INLINE_DEGREE&&!heap_tried&&p.n>=S.heap_threshold){heap_tried=1;l->heap_attempts++;u64 prior_steps=l->reductions;int hr=heap_nf(l,p,active,snapshot);l->integer_steps+=l->reductions-prior_steps;if(hr>=0){if(!hr)l->heap_successes++;return hr;}l->heap_fallbacks++;if(S.rational_enabled&&!S.modulus){l->rational_attempts++;prior_steps=l->reductions;hr=rational_nf(l,p,active,snapshot);l->rational_steps+=l->reductions-prior_steps;if(hr>=0){if(!hr)l->rational_successes++;return hr;}l->rational_fallbacks++;}}if(l->a[active].error)return l->a[active].error;if((steps&255)==0){publish_lane(l,p.n,0);if(cancelled())return GN_CANCELLED;}Term*t=PTR(Term,p.off);u32 idx=scan,pos=0,id=0;
++static int nf(Lane*l,u32 snapshot){u32 active=l->active;Poly p=l->result;u64 steps=0;u32 scan=0,heap_tried=0;l->reduction_tier=3;
++ for(;;){if(S.heap_enabled&&p.degree<=GN_INLINE_DEGREE&&!heap_tried&&p.n>=S.heap_threshold){heap_tried=1;l->heap_attempts++;u64 prior_steps=l->reductions;l->reduction_tier=1;int hr=heap_nf(l,p,active,snapshot);l->integer_steps+=l->reductions-prior_steps;if(hr>=0){if(!hr)l->heap_successes++;return hr;}l->heap_fallbacks++;if(S.rational_enabled&&!S.modulus){l->rational_attempts++;prior_steps=l->reductions;l->reduction_tier=2;hr=rational_nf(l,p,active,snapshot);l->rational_steps+=l->reductions-prior_steps;if(hr>=0){if(!hr)l->rational_successes++;return hr;}l->rational_fallbacks++;}l->reduction_tier=3;}if(l->a[active].error)return l->a[active].error;if((steps&255)==0){publish_lane(l,p.n,0);if(cancelled())return GN_CANCELLED;}Term*t=PTR(Term,p.off);u32 idx=scan,pos=0,id=0;
+   for(;idx<p.n;idx++){id=divisor(t[idx].w,p.degree,snapshot,&pos,l);if(id)break;}
+   if(!id){int rc=normalise(&p,&l->a[active]);l->result=p;l->active=active;return rc;}
+   l->reductions++;steps++;scan=idx;Rule*rr=rule(id);
+@@ -448,7 +451,7 @@
+ API int gn_init(u32 generators,u32 degree,u32 workers,u64 budget,u64 scratch_pool,u32 hash_bits,u32 modulus,u32 spill){
+  if(!generators||generators>16||degree>GN_INDEX_MAX||budget>GN_HARD_BYTES||scratch_pool>budget||scratch_pool<1024*1024||hash_bits<8||hash_bits>26||modulus==1||modulus>2147483647u)return GN_INPUT;
+  if(modulus){for(u32 d=2;(u64)d*d<=modulus;d++)if(modulus%d==0)return GN_INPUT;}
+- memset(&S,0,sizeof(S));S.abi=GN_ABI;S.generators=generators;S.target=degree?degree:GN_INDEX_MAX;S.pruning=1;S.heap_enabled=1;S.rational_enabled=1;S.matcher_enabled=1;S.chain_enabled=1;S.telemetry_enabled=1;S.eager_pruning=1;S.quadratic_rewrite=1;S.cost_scheduling=1;S.matcher_limit=MIN(budget/16,UINT64_C(67108864));S.cache_percent=12;S.heap_threshold=16;S.budget=budget;S.modulus=modulus;S.spill=!!spill;S.base=gn_heap_base();S.bump=S.base;S.stack_base=alloc_p((u64)GN_MAX_WORKERS*STACK_BYTES);if(!S.stack_base)return S.error;
++ memset(&S,0,sizeof(S));S.abi=GN_ABI;S.generators=generators;S.target=degree?degree:GN_INDEX_MAX;S.pruning=1;S.heap_enabled=1;S.rational_enabled=1;S.rational_rewrites=1;S.matcher_enabled=1;S.chain_enabled=1;S.telemetry_enabled=1;S.eager_pruning=1;S.quadratic_rewrite=1;S.cost_scheduling=1;S.matcher_limit=MIN(budget/16,UINT64_C(67108864));S.cache_percent=12;S.heap_threshold=16;S.budget=budget;S.modulus=modulus;S.spill=!!spill;S.base=gn_heap_base();S.bump=S.base;S.stack_base=alloc_p((u64)GN_MAX_WORKERS*STACK_BYTES);if(!S.stack_base)return S.error;
+  S.scratch_base=alloc_p(scratch_pool);if(!S.scratch_base)return S.error;S.scratch_size=scratch_pool;int rc=gn_workers(workers);if(rc)return rc;
+  S.hash_mask=((u32)1<<hash_bits)-1;u64 hb=((u64)S.hash_mask+1)*4;S.lm_heads=alloc_p(hb);S.prefix_heads=alloc_p(hb);if(S.error)return S.error;memset(PTR(u8,S.lm_heads),0,(size_t)hb);memset(PTR(u8,S.prefix_heads),0,(size_t)hb);
+  S.table_capacity=(u32)MIN((budget/(PAGE_N*sizeof(Prefix))+2),(u64)UINT32_MAX);u64 tb=(u64)S.table_capacity*8;S.rule_pages=alloc_p(tb);S.prefix_pages=alloc_p(tb);if(S.error)return S.error;memset(PTR(u8,S.rule_pages),0,(size_t)tb);memset(PTR(u8,S.prefix_pages),0,(size_t)tb);return 0;
+@@ -486,7 +489,8 @@
+  switch(key){case 0:return GN_LOAD(&v->reductions);case 1:return GN_LOAD(&v->pruned);
+  case 2:return GN_LOAD(&v->reads);case 3:return GN_LOAD(&v->pairs);case 4:return GN_LOAD(&v->terms);
+  case 5:return GN_LOAD(&v->hash_probes);case 6:return GN_LOAD(&v->matcher_queries);
+- case 7:return GN_LOAD(&v->busy);case 8:return GN_LOAD(&v->sequence);default:return 0;}
++ case 7:return GN_LOAD(&v->busy);case 8:return GN_LOAD(&v->sequence);case 9:return GN_LOAD(&v->tier);case 10:return GN_LOAD(&v->exact_fallbacks);
++ case 11:return GN_LOAD(&v->left_rule);case 12:return GN_LOAD(&v->right_rule);case 13:return GN_LOAD(&v->overlap);default:return 0;}
+ }
+ API u64 gn_progress_stat(u32 key){
+  switch(key){case 0:return S.degree_total;case 1:return S.degree_seen;
+@@ -508,7 +512,7 @@
+ API u64 gn_stat(u32 key){switch(key){case 0:return S.nrules;case 1:return S.terms;case 2:return S.completed;case 3:return S.current;case 4:return S.bump;case 5:return S.budget;case 6:return S.disk_end;case 7:return S.pair_count;case 8:return S.zero_pairs;case 9:return S.commit_zero;case 10:return S.workers;case 11:return S.nprefix;case 12:return S.allocated_peak;case 13:return S.error;case 14:return S.target;case 15:return S.generators;case 16:return S.modulus;case 17:return S.batch_epochs;case 18:return S.batch_spills;case 19:return S.hilbert_nodes;case 20:return S.hilbert_bytes;case 21:return S.pruning;case 22:return S.heap_enabled;case 23:return S.cache_percent;case 24:return S.heap_threshold;case 25:return S.matcher_nodes;
+  case 26:return S.matcher_allocated;case 27:return S.matcher_builds;case 28:return S.matcher_fallbacks;
+  case 29:return S.chain_skipped;case 30:return S.matcher_enabled;case 31:return S.chain_enabled;
+- case 32:return S.telemetry_enabled;case 33:return S.matcher_snapshot;case 34:return S.eager_pruning;case 35:return S.quadratic_rewrite;case 36:return S.cost_scheduling;case 37:return S.word_cache_entries?S.word_cache_entries:RED_CACHE_N;case 38:return S.word_cache_bytes;case 39:return S.pin_capacity;case 40:return S.pin_used;case 41:return S.local_degree;case 42:return S.local_used;case 43:return S.local_capacity;case 44:return S.local_entries;case 45:return S.local_declined;case 46:return S.local_built;case 47:return S.local_snapshot;default:return 0;}}
++ case 32:return S.telemetry_enabled;case 33:return S.matcher_snapshot;case 34:return S.eager_pruning;case 35:return S.quadratic_rewrite;case 36:return S.cost_scheduling;case 37:return S.word_cache_entries?S.word_cache_entries:RED_CACHE_N;case 38:return S.word_cache_bytes;case 39:return S.pin_capacity;case 40:return S.pin_used;case 41:return S.local_degree;case 42:return S.local_used;case 43:return S.local_capacity;case 44:return S.local_entries;case 45:return S.local_declined;case 46:return S.local_built;case 47:return S.local_snapshot;case 48:return S.rational_rewrites;default:return 0;}}
+ API u64 gn_lane_stat(u32 lane,u32 key){if(lane>=S.workers)return 0;Lane*l=&S.lanes[lane];switch(key){case 27:return l->pinned_hits;case 26:return l->local_hits;case 24:return l->integer_steps;case 25:return l->rational_steps;case 21:return l->rational_attempts;case 22:return l->rational_successes;case 23:return l->rational_fallbacks;case 0:return l->reductions;case 1:return l->pruned;case 2:return l->reads;case 3:return l->read_bytes;case 4:return MAX(l->a[0].peak,l->a[1].peak);case 5:return l->error;case 6:return l->pairs;case 7:return l->cache_hits;case 8:return l->hash_probes;
+  case 9:return l->matcher_queries;case 10:return l->matcher_characters;case 11:return l->redcache_hits;
+  case 12:return l->heap_attempts;case 13:return l->heap_successes;case 14:return l->heap_fallbacks;case 15:return l->insertion_prunes;case 16:return l->commuting_prunes;case 17:return l->quadratic_swaps;default:return 0;}}
+@@ -713,3 +717,10 @@
+  for(u32 j=0;j<entry->n;j++)t[j+1]=(Term){{lt[j].word,0},negf(csmall(lt[j].c))};
+  Poly p={off,entry->n+1,S.local_degree,0};int rc=write_record(p,l->io_base,l->io_size);l->error=rc;return rc?0:l->io_base;
+ }
++
++/* Optional exact macro reuse in the compact rational fallback, 0.6.1. */
++API int gn_rational_rewrites(u32 enabled){if(enabled>1)return GN_INPUT;if(S.nrules||S.current||S.input_expected)return GN_STATE;S.rational_rewrites=!!enabled;return 0;}
++API u64 gn_deep_stat(u32 lane,u32 key){if(lane>=S.workers)return 0;Lane*l=&S.lanes[lane];switch(key){case 0:return l->rational_local_hits;case 1:return l->rational_space_misses;case 2:return l->rational_coefficient_misses;case 3:return l->rational_arithmetic_misses;case 4:return l->rational_table_retries;default:return 0;}}
++
++/* Immutable field identity for audit/harness checks. */
++API u32 gn_modulus(void){return S.modulus;}
+--- a/src/kernel.h
++++ b/src/kernel.h
+@@ -53,6 +53,9 @@
+  * 16=exact monic quadratic-binomial preconditioning,
+  * 32=cost-ordered dispatch (commit order is unchanged). */
+ API int gn_rational_heap(u32 enabled);
++API int gn_rational_rewrites(u32 enabled); /* same exact cached identities in rational NF */
++API u32 gn_modulus(void);
++API u64 gn_deep_stat(u32 lane,u32 key); /* read only at barriers, unlike gn_live_stat */
+ API int gn_optimize(u32 flags,u64 matcher_budget);
+ API int gn_word_cache(u32 entries); /* power of two, 256..1048576; optional bounded growth */
+ API u64 gn_live_stat(u32 lane,u32 key);
+--- a/src/rational_heap_nf.inc
++++ b/src/rational_heap_nf.inc
+@@ -63,7 +63,7 @@
+  u32 h=rrow_hash(w,r->mask),id=r->heads[h];
+  while(id&&!weq(r->nodes[id-1].w,w))id=r->nodes[id-1].next;
+  if(id){RNode*n=&r->nodes[id-1];if(!n->pos)return HEAP_MISS; // a triangularity invariant
+-  RCoef c;if(!radd(n->c,delta,&c))return HEAP_MISS;
++  RCoef c;if(!radd(n->c,delta,&c)){r->lane->rational_arithmetic_misses++;return HEAP_MISS;}
+   if(c.n)n->c=c;else{rheap_remove(r,id);rrow_remove(r,id);}return 0;
+  }
+  if(r->free_head){id=r->free_head;r->free_head=r->nodes[id-1].next;}
+@@ -73,24 +73,35 @@
+ static int rational_nf_try(Lane*l,Poly original,u32 active,u32 snapshot,u32 capacity){
+  Arena*a=&l->a[active^1];reset_a(a);
+  u64 no=alloc_a(a,(u64)capacity*sizeof(RNode)),ho=alloc_a(a,(u64)capacity*2*sizeof(u32)),po=alloc_a(a,(u64)capacity*sizeof(u32)),oo=alloc_a(a,(u64)capacity*sizeof(u32));
+- if(a->error)return HEAP_MISS;
++ if(a->error){l->rational_space_misses++;return HEAP_MISS;}
+  RRow row={PTR(RNode,no),PTR(u32,ho),PTR(u32,po),PTR(u32,oo),capacity,2*capacity-1,0,0,0,0,original.degree,l};
+  memset(row.heads,0,(size_t)capacity*2*sizeof(u32));
+  Term*input=PTR(Term,original.off);
+- for(u32 i=0;i<original.n;i++){RCoef c;if(!rload(pc(original,i),&c))return HEAP_MISS;int rc=rrow_add(&row,input[i].w,c);if(rc)return rc;}
++ for(u32 i=0;i<original.n;i++){RCoef c;if(!rload(pc(original,i),&c)){l->rational_coefficient_misses++;return HEAP_MISS;}int rc=rrow_add(&row,input[i].w,c);if(rc)return rc;}
+  u64 steps=0;
+  while(row.heap_n){
+   if((steps++&255)==0){publish_lane(l,(u64)row.heap_n+row.normal_n,0);if(cancelled())return GN_CANCELLED;}
+   u32 id=row.heap[0];RNode*node=&row.nodes[id-1];Word word=node->w;RCoef coefficient=node->c;rheap_remove(&row,id);
+-  u32 pos=0,rid=divisor(word,original.degree,snapshot,&pos,l);
++  u32 pos=0;LocalEntry*local=(!S.rational_rewrites||l->skip_rule)?NULL:local_find(word,original.degree,snapshot,&pos);
++  if(local){
++   rrow_remove(&row,id);l->reductions++;l->local_hits++;l->rational_local_hits++;
++   if(!local->n){l->pruned++;continue;}
++   u32 nr=original.degree-pos-S.local_degree;Word left=part(word,original.degree,0,pos),right=part(word,original.degree,pos+S.local_degree,nr);
++   LocalTerm*lt=PTR(LocalTerm,S.local_base+local->off);
++   for(u32 j=0;j<local->n;j++){
++    RCoef delta;if(!rmul(coefficient,(RCoef){lt[j].c,1},&delta)){l->rational_arithmetic_misses++;return HEAP_MISS;}
++    int rc=rrow_add(&row,context(left,(Word){lt[j].word,0},S.local_degree,right,nr,original.degree,a),delta);if(rc)return rc;
++   }continue;
++  }
++  u32 rid=divisor(word,original.degree,snapshot,&pos,l);
+   if(!rid){row.normal[row.normal_n++]=id;continue;}
+   rrow_remove(&row,id);Rule*rr=rule(rid);l->reductions++;
+   if(S.pruning&&rr->n==1){l->pruned++;continue;}
+   Poly g=load_rule(rid,l);if(l->error)return l->error;
+-  RCoef lead;if(!rload(pc(g,0),&lead)||!lead.n)return HEAP_MISS;
++  RCoef lead;if(!rload(pc(g,0),&lead)||!lead.n){l->rational_coefficient_misses++;return HEAP_MISS;}
+   u32 nr=original.degree-pos-g.degree;Word left=part(word,original.degree,0,pos),right=part(word,original.degree,pos+g.degree,nr);Term*gt=PTR(Term,g.off);
+   for(u32 j=1;j<g.n;j++){
+-   RCoef v,delta;if(!rload(pc(g,j),&v))return HEAP_MISS;u64 common=rgcd(rabs(v.n),rabs(lead.n));v.n=v.n/(i64)common*(lead.n<0?-1:1);v.d=rabs(lead.n)/common;if(!rmul(coefficient,v,&delta))return HEAP_MISS;delta.n=-delta.n;
++   RCoef v,delta;if(!rload(pc(g,j),&v)){l->rational_coefficient_misses++;return HEAP_MISS;}u64 common=rgcd(rabs(v.n),rabs(lead.n));v.n=v.n/(i64)common*(lead.n<0?-1:1);v.d=rabs(lead.n)/common;if(!rmul(coefficient,v,&delta)){l->rational_arithmetic_misses++;return HEAP_MISS;}delta.n=-delta.n;
+    int rc=rrow_add(&row,context(left,gt[j].w,g.degree,right,nr,original.degree,a),delta);if(rc)return rc;
+   }
+  }
+@@ -104,6 +115,6 @@
+ static int rational_nf(Lane*l,Poly p,u32 active,u32 snapshot){
+  u32 cap=128;while(cap<(u64)p.n*2&&cap<(1u<<26))cap*=2;
+  if(S.modulus)return HEAP_MISS;
+- for(;;){int rc=rational_nf_try(l,p,active,snapshot,cap);if(rc!=HEAP_FULL)return rc;
++ for(;;){int rc=rational_nf_try(l,p,active,snapshot,cap);if(rc!=HEAP_FULL)return rc;l->rational_table_retries++;
+   if(cap>(1u<<25)||(u64)cap*2*(sizeof(RNode)+16)>l->a[active^1].end-l->a[active^1].base)return HEAP_MISS;cap*=2;}
+ }
+--- /dev/null
++++ b/tests/audit_deep_hilbert.mjs
+@@ -0,0 +1,16 @@
++// Independent derived-invariant check of a completed deep checkpoint. No GB replay.
++import fs from 'node:fs';import os from 'node:os';import path from 'node:path';import assert from 'node:assert/strict';import {spawnSync} from 'node:child_process';
++import {setup} from './node-host.mjs';import {FomkyrEngine} from '../web/engine.js';
++const [source,degreeArg,out='results/0.6.1/deep-hilbert.json']=process.argv.slice(2),degree=Number(degreeArg);
++assert.ok(source&&Number.isSafeInteger(degree)&&degree>0);
++const root=fs.mkdtempSync(path.join(os.tmpdir(),'fomkyr-deep-hilbert-'));fs.cpSync(source,root,{recursive:true});setup(root);
++const fixture=JSON.parse(fs.readFileSync('fixtures/fk6.json'));let result;
++try{
++ const e=new FomkyrEngine({bits:32,workers:4,budgetBytes:512*1048576,scratchBytes:128*1048576,resume:true,progress:false,hilbert:true,hilbertRequired:true,hilbertDegree:degree,exportText:false,timeoutMs:120000});
++ try{result=await e.compute(fixture,degree,0);}finally{await e.close();}
++ assert.ok(result.cacheHit&&result.resumedFromDegree>=degree,'Expected a completed checkpoint, not a GB rerun');
++ const input=path.join(root,'fomkyr',result.runKey,'basis.gnb');
++ const checked=spawnSync('python3',['-c',`import sys,json\nsys.path[:0]=['tools','tests']\nfrom pathlib import Path\nfrom canonical_audit import records\nfrom oracle import hilbert\ng=list(records(Path(sys.argv[1]),int(sys.argv[2]),15))\nprint(json.dumps([str(x) for x in hilbert([max(r) for r in g],15,int(sys.argv[2]))]))`,input,String(degree)],{encoding:'utf8',timeout:120000,maxBuffer:1048576});
++ assert.equal(checked.status,0,checked.stderr);const independent=JSON.parse(checked.stdout);assert.deepEqual(result.hilbert.coefficients,independent);
++ fs.mkdirSync(path.dirname(out),{recursive:true});fs.writeFileSync(out,JSON.stringify({passed:true,degree,modulus:0,sourceStorage:source,engineVersion:result.version,cacheHit:result.cacheHit,coefficients:independent,method:'C Hilbert DP versus independently implemented Python forbidden-word automaton and arbitrary-size integers',independentGroebnerCertificate:false},null,2)+'\n');console.log('Deep Hilbert equality PASS',degree,independent);
++}finally{fs.rmSync(root,{recursive:true,force:true});}
+--- /dev/null
++++ b/tests/benchmark_deep.py
+@@ -0,0 +1,28 @@
++#!/usr/bin/env python3
++"""Sequential, bounded high-degree trials. Keeps interruptions; never calls them completed."""
++from __future__ import annotations
++import argparse,json,os,subprocess,sys,time,shutil
++from pathlib import Path
++R=Path(__file__).resolve().parents[1]
++p=argparse.ArgumentParser(description=__doc__);p.add_argument('--degree',type=int,default=12);p.add_argument('--seconds',type=float,default=900);p.add_argument('--workers',type=int,default=4);p.add_argument('--budget-mib',type=int,default=512);p.add_argument('--scratch-mib',type=int,default=128);p.add_argument('--trials',type=int,default=1);p.add_argument('--out',type=Path,required=True);p.add_argument('--baseline',type=Path);p.add_argument('--resume-storage',type=Path);p.add_argument('--ablate-rational-rewrites',action='store_true');a=p.parse_args()
++if a.degree<12 or a.seconds<=0 or a.trials<1:p.error('Use degree >=12, positive deadline and trials')
++a.out=a.out.resolve();a.out.mkdir(parents=True,exist_ok=True)
++modes=[('current',R,{})]
++if a.baseline:modes.insert(0,('baseline',a.baseline.resolve(),{}))
++if a.ablate_rational_rewrites:modes.insert(0,('rational-rewrites-off',R,{'rationalRewrites':False}))
++reports=[]
++for trial in range(a.trials):
++ for name,source,extra in (modes if trial%2==0 else list(reversed(modes))):
++  dest=a.out/f'{name}-{trial}';dest.mkdir() # Do not silently replace prior evidence.
++  if a.resume_storage:shutil.copytree(a.resume_storage,dest/'storage')
++  options={'workers':a.workers,'budgetBytes':a.budget_mib<<20,'scratchBytes':a.scratch_mib<<20,'timeoutMs':int(a.seconds*1000),'resume':bool(a.resume_storage),**extra}
++  env={**os.environ,'FOMKYR_SOURCE':str(source),'TRIAL_OPTIONS':json.dumps(options)}
++  with (dest/'stdout.log').open('w') as log:
++   try:
++    proc=subprocess.run(['node','--experimental-wasm-memory64',str(R/'tests/deep_trial.mjs'),str(R/'fixtures/fk6.json'),str(a.degree),str(dest)],cwd=R,env=env,stdout=log,stderr=subprocess.STDOUT,timeout=a.seconds+60)
++    code=proc.returncode
++   except subprocess.TimeoutExpired:code=124
++  file=dest/'report.json';report=json.loads(file.read_text()) if file.exists() else {'status':'incomplete','reason':'host watchdog stopped the worker; inspect the last checkpoint'}
++  reports.append({'mode':name,'trial':trial,'returncode':code,'report':str(file),'status':report['status'],'elapsedMs':report.get('elapsedMs')})
++  (a.out/'summary.json').write_text(json.dumps({'sequential':True,'degree':a.degree,'reports':reports,'timedOutTrialsAreCensored':True},indent=2))
++  print(json.dumps(reports[-1]),flush=True)
+--- /dev/null
++++ b/tests/deep_trial.mjs
+@@ -0,0 +1,15 @@
++// Degree-12+ profiling: retain partial results, checkpoints, per-degree events.
++import fs from 'node:fs';import crypto from 'node:crypto';import os from 'node:os';import path from 'node:path';import {pathToFileURL} from 'node:url';
++const [fixturePath,degreeString,outputRoot]=process.argv.slice(2);
++const source=path.resolve(process.env.FOMKYR_SOURCE??'.');
++const {setup}=await import(pathToFileURL(path.join(source,'tests/node-host.mjs')));
++const {FomkyrEngine}=await import(pathToFileURL(path.join(source,'web/engine.js')));
++const output=path.resolve(outputRoot);fs.mkdirSync(output,{recursive:true});const store=path.join(output,'storage');fs.mkdirSync(store,{recursive:true});setup(store);
++const events=[],options={workers:4,bits:32,budgetBytes:512*1048576,scratchBytes:128*1048576,hashBits:16,spill:true,resume:false,exportText:false,hilbert:false,progress:true,progressIntervalMs:5000,rationalHeap:true,timeoutMs:900000,...JSON.parse(process.env.TRIAL_OPTIONS??'{}')};
++const fixture=JSON.parse(fs.readFileSync(fixturePath));const start=performance.now();let e;
++options.onEvent=ev=>{const item={elapsedMs:performance.now()-start,...ev};if(ev.type!=='progress'||!events.length||item.elapsedMs-(events.at(-1)?.elapsedMs??0)>10000){events.push(item);fs.appendFileSync(path.join(output,'events.jsonl'),JSON.stringify(item)+'\n');if(ev.type==='degree'||ev.type==='checkpoint'||ev.type==='warning')console.log(JSON.stringify(item));}};
++const sha=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
++let report={sourceHashes:Object.fromEntries(['src/kernel.c','src/rational_heap_nf.inc','web/engine.js','web/fomkyr32.wasm'].map(p=>[p,sha(path.join(source,p))])),fixtureSHA256:sha(fixturePath),options:{...options,onEvent:undefined},source,fixturePath:path.resolve(fixturePath),requestedDegree:Number(degreeString),node:process.version,cpu:os.cpus()[0]?.model,logicalCPUs:os.cpus().length,startedAt:new Date().toISOString()};
++try{e=new FomkyrEngine(options);report.result=await e.compute(fixture,Number(degreeString),0);report.status='completed';}
++catch(error){report.status='incomplete';report.error=String(error.message);report.code=error.code;report.lastCheckpoint=e?.lastCheckpoint;console.error(error);}
++finally{report.elapsedMs=performance.now()-start;report.peakProcessRSSBytes=process.resourceUsage().maxRSS*1024;try{if(e?.e){const {stats}=await import(pathToFileURL(path.join(source,'web/runtime.js')));report.kernelStats=stats(e.e);if(e.e.gn_deep_stat)report.deepStats=Array.from({length:e.workers},(_,i)=>Array.from({length:5},(_,j)=>String(e.e.gn_deep_stat(i,j))));}}catch{}if(e){report.scheduler=e.scheduler;report.lastProgress=e.lastProgress;await e.close();}fs.writeFileSync(path.join(output,'report.json'),JSON.stringify(report,null,2));console.log(JSON.stringify({status:report.status,elapsedMs:report.elapsedMs,error:report.error,result:report.result}));if(report.status!=='completed')process.exitCode=1;}
+--- /dev/null
++++ b/tests/test_audit.py
+@@ -0,0 +1,61 @@
++import sys,json,tempfile,struct
++from pathlib import Path
++from fractions import Fraction
++R=Path(__file__).resolve().parents[1];sys.path[:0]=[str(R/'tools'),str(R/'tests')]
++from canonical_audit import canonicalize,canonical_digest,AuditError,records
++from oracle import certify
++from native import Engine,parse
++from field_oracle import ModularOracle
++checks=[]
++def mark(name):checks.append({'test':name,'passed':True})
++left=[{(1,0):1,(0,0):-1},{(1,1):1,(1,0):-1}]
++right=[{(1,0):1,(0,0):-1},{(1,1):1,(0,0):-1}]
++a,_=canonicalize(left);b,_=canonicalize(right);assert a==b;mark('different-unreduced-tails-same-canonical-basis')
++wrong=[{(1,0):1,(0,0):-2},{(1,1):1,(0,0):-1}];c,_=canonicalize(wrong)
++assert canonical_digest(a,['a','b'],0,2)!=canonical_digest(c,['a','b'],0,2);mark('same-leading-words-not-enough')
++for p in (2,5,101):
++ a,_=canonicalize(left,p);b,_=canonicalize(right,p);assert a==b
++mark('canonical-normalization-in-Q-and-prime-fields')
++try:canonicalize([{(1,1):1},{(1,0,1):1,(0,1,1):1}])
++except AuditError:mark('reject-proper-subword-precondition-failure')
++else:raise AssertionError('Failed to reject reducible proper tail')
++notgb=[{(0,1):1},{(1,0):1,(0,0):-1}]
++canonicalize(notgb)
++try:certify(notgb,[],3)
++except AssertionError:mark('canonical-digest-is-not-a-Groebner-certificate')
++else:raise AssertionError('Independent critical-pair check failed to detect bad basis')
++names,rels=parse('a,b','3*a*b+2*b*a,a*a')
++f={'variables':names,'relations':rels}
++leading=[]
++for p in (0,2,5):
++ e=Engine(f,4,modulus=p);e.run();assert e.stats()['modulus']==p;leading.append({max(x) for x in e.basis()})
++assert leading[0]!=leading[1];mark('field-identity-and-characteristic-dependent-leading-words')
++with tempfile.TemporaryDirectory() as tmp:
++ path=Path(tmp)/'b.gnb';e=Engine(f,4,modulus=0,disk=str(path));e.run();list(records(path,4,2))
++ data=bytearray(path.read_bytes());data[35]^=1;path.write_bytes(data)
++ try:list(records(path,4,2))
++ except AuditError:mark('independent-record-checksum-rejects-corruption')
++ else:raise AssertionError('Corrupted record accepted')
++# Explicitly imported mathematical test presentations; executable oracles are separate.
++fixture=json.loads((R/'fixtures/george-supported.json').read_text());rows=[]
++for case in fixture['cases']:
++ for p in fixture['fields']:
++  names,rels=parse(','.join(case['vars']),','.join(case['rels']));f={'name':case['id'],'variables':names,'relations':rels};D=case['maxdeg']
++  e=Engine(f,D,modulus=p);e.run();gb=e.basis();assert e.stats()['modulus']==p
++  if p:o=ModularOracle(p);g=o.complete(rels,D);critical=o.certify(gb,rels,D);nf=o.normal
++  else:
++   from oracle import complete,normal
++   g=complete(rels,D);critical=certify(gb,rels,D);nf=normal
++  assert all(not nf(x,g) for x in gb) and all(not nf(x,gb) for x in g)
++  a,_=canonicalize(gb,p);b,_=canonicalize(g,p);assert a==b
++  if 'expectedBasis' in case:
++   _,expected=parse(','.join(names),','.join(case['expectedBasis']))
++   from oracle import poly
++   expected=[poly(x) for x in expected]
++   if p:expected=[{w:int(c)%p for w,c in row.items() if int(c)%p} for row in expected]
++   if p:o.certify(expected,rels,D)
++   else:certify(expected,rels,D)
++   assert all(not nf(x,expected) for x in gb) and all(not nf(x,gb) for x in expected)
++  rows.append({'case':case['id'],'modulus':p,'degree':D,'passed':True,'basisSize':len(gb),'independentCriticalCompositions':critical,'canonicalEqual':True,'externalEngineExecuted':False})
++report={'passed':True,'checks':checks,'georgeHomogeneousCases':rows,'scope':'Independent exact completion of adapted presentations, not fresh Singular/Bergman execution.'}
++(R/'results/0.6.1/audit-tests.json').write_text(json.dumps(report,indent=2));print(json.dumps({'passed':True,'checks':len(checks),'adaptedCaseFieldCombinations':len(rows)}))
+--- /dev/null
++++ b/tests/test_deep_polish_wasm.mjs
+@@ -0,0 +1,22 @@
++// Actual new rational-rewrite execution in all four builds, independent Python checking.
++import fs from 'node:fs';import path from 'node:path';import os from 'node:os';import assert from 'node:assert/strict';import {spawnSync} from 'node:child_process';
++import {setup} from './node-host.mjs';import {FomkyrEngine} from '../web/engine.js';import {parseNativeJob} from '../web/job-adapter.js';
++const root=fs.mkdtempSync(path.join(os.tmpdir(),'fomkyr-061-rational-'));setup(root);
++const {fixture}=parseNativeJob({task:'gb',script:'(NONCOMMIFY)\n(DEGLEFTLEXIFY)\n(SETMODULUS 0)\n(SETMAXDEG 6)\n(SIMPLE "input.bg" "result.gb")',files:{'input.bg':'(ALGFORMINPUT)\nvars t,b,a;\na*b-b*a-t*t,a*t-t*a,b*t-t*b,2*a^4+3*b^4;'}});
++fixture.name='homogeneous-oscillator-quartic-quotient-arithmetic-test';const rows=[];
++try{
++ const modes=[];for(const bits of [32,64])for(const execution of ['single','multicore'])modes.push({bits,execution});
++ modes.push({rationalRewrites:false},{compiledRewrites:false},{rewriteBudgetBytes:0},{monomialPruning:false},{modulus:2},{modulus:5});
++ for(const o of modes){
++  const key='case-'+rows.length,e=new FomkyrEngine({bits:32,execution:'multicore',workers:4,ioMode:'broker',spill:true,runKey:key,resume:false,heapThreshold:1,budgetBytes:128*1048576,scratchBytes:16*1048576,...o});let r;
++  try{r=await e.compute(fixture,6,o.modulus??0);}finally{await e.close();}
++  if(!o.modulus&&o.rationalRewrites!==false&&o.compiledRewrites!==false&&o.rewriteBudgetBytes!==0)assert.ok(r.rationalCompiledRewriteHits>0,'new rational macro tier not exercised');
++  assert.equal(r.modulus,o.modulus??0);if(o.modulus)assert.equal(r.rationalCompiledRewriteHits,0);
++  rows.push({name:key,fixture,degree:6,modulus:o.modulus??0,record:path.join(root,'fomkyr',key,'basis.gnb'),hilbert:r.hilbert.coefficients,bits:r.bits,shared:r.shared,workers:r.workers,progressError:r.progressError,rationalMacroHits:r.rationalCompiledRewriteHits});
++ }
++ const file=path.join(root,'manifest.json');fs.writeFileSync(file,JSON.stringify(rows));
++ const check=spawnSync('python3',['tests/verify_physics_wasm.py',file,'results/0.6.1/deep-polish-wasm-oracle.json'],{encoding:'utf8',timeout:120000});
++ assert.equal(check.status,0,check.stdout+check.stderr);
++ fs.writeFileSync('results/0.6.1/deep-polish-wasm.json',JSON.stringify({passed:true,reports:rows.map(({fixture,record,...r})=>r)},null,2));
++ console.log(JSON.stringify({passed:true,cases:rows.length}));
++}finally{fs.rmSync(root,{recursive:true,force:true});}
+--- /dev/null
++++ b/tests/test_oracle_format.mjs
+@@ -0,0 +1,6 @@
++import assert from 'node:assert/strict';import {rationalTerms} from '../tools/oracle-format.mjs';
++assert.deepEqual(rationalTerms('1/2*x*y-17/3*y^2+x',['x','y']),[
++ {numerator:1n,denominator:2n,word:['x','y']},{numerator:-17n,denominator:3n,word:['y','y']},{numerator:1n,denominator:1n,word:['x']}]);
++assert.deepEqual(rationalTerms('0',['x']),[]);
++for(const s of ['1/0*x','x;quit','x++x','z','2**x','1/(2)*x','x+'])assert.throws(()=>rationalTerms(s,['x']));
++console.log('Exact Singular interchange parsing passed');
+--- a/tests/test_physics_matrix.py
++++ b/tests/test_physics_matrix.py
+@@ -14,8 +14,8 @@
+     for prime in fields:
+         t=time.perf_counter();oracle=ModularOracle(prime) if prime else None
+         nf=oracle.normal if oracle else normal;comp=oracle.complete if oracle else complete;cert=oracle.certify if oracle else certify
+-        e=Engine(fixture,D,budget=128<<20,scratch=16<<20,optimize=63);e.run();b=e.basis();h=e.hilbert();st=e.stats()
+-        e=Engine(fixture,D,budget=128<<20,scratch=16<<20,optimize=0);e.run();plain=e.basis()
++        e=Engine(fixture,D,budget=128<<20,scratch=16<<20,modulus=prime,optimize=63);e.run();b=e.basis();h=e.hilbert();st=e.stats();assert st['modulus']==prime
++        e=Engine(fixture,D,budget=128<<20,scratch=16<<20,modulus=prime,optimize=0);e.run();plain=e.basis()
+         g=comp(fixture['relations'],D)
+         assert {max(x) for x in b}=={max(x) for x in g}=={max(x) for x in plain},(fixture['name'],prime,'leading set')
+         for other in [g,plain]:
+--- a/tests/test_progress.mjs
++++ b/tests/test_progress.mjs
+@@ -11,4 +11,9 @@
+ p.begin(10,9);p.setPhase('reducing');x=p.sample(raw(10n**24n,2n*10n**24n));assert.equal(x.overlaps.resolved,'1000000000000000000000000');assert.equal(x.overlaps.fraction,.5);
+ const q=new ProgressTracker({target:5,now:()=>now});for(let d=1;d<=3;d++){q.begin(d,d-1);now+=1000*2**d;q.finish(d,{total:20n,scheduled:20n});}
+ assert.ok(q.forecast().conditionalNextDegrees);assert.equal(q.forecast().targetSeconds,null);q.target=20;assert.equal(q.forecast().conditionalNextDegrees,undefined);q.target=null;assert.equal(q.forecast().targetSeconds,null);
++const h=new ProgressTracker({target:4,now:()=>now});
++for(let d=1;d<=3;d++){h.begin(d,d-1);now+=1000*2**d;h.finish(d,{total:20n,scheduled:20n});}
++h.begin(4,3);h.setPhase('reducing');h.sample(raw(0n));now+=100000;
++x=h.sample(raw(10n));assert.equal(x.forecast.conditionalNextDegrees,undefined);assert.match(x.forecast.reason,/withdrawn/);
++assert.equal(h.forecastForSample({reason:'Observed overlap costs are too heterogeneous'},now).conditionalNextDegrees,undefined);
+ fs.writeFileSync(new URL('../results/progress-unit-tests.json',import.meta.url),JSON.stringify({passed:true,checks:['previous-degree counters hidden during input/indexing','exact count fraction not time fraction','ETA warmup','stall withdraws ETA while reductions remain active','replay resets ETA','BigInt counters beyond 2^53','no far-future or unconditional total ETA']},null,2));console.log('Progress model tests passed');
+--- /dev/null
++++ b/tools/canonical_audit.py
+@@ -0,0 +1,174 @@
++#!/usr/bin/env python3
++"""Independent exact normalization and comparison of homogeneous basis records.
++
++This is an audit tool, not a Groebner certification algorithm. It verifies a
++minimal leading-word antichain and irreducibility of every proper subword of
++stored tails, then tail-reduces by a triangular same-degree substitution. No C
++matcher, compiled rewrite table or native arithmetic is reused. An input failing
++these preconditions is rejected, never silently declared unequal/equal.
++"""
++from __future__ import annotations
++import argparse, hashlib, json, struct, sys, time, tempfile, shutil, math
++from collections import deque
++from fractions import Fraction
++from pathlib import Path
++from typing import Iterable
++
++class AuditError(ValueError): pass
++MASK=(1<<64)-1
++
++def records(path: Path, degree: int, generators: int, max_record_bytes=256<<20):
++    with path.open('rb') as f:
++        while True:
++            header=f.read(32)
++            if not header:return
++            if len(header)!=32:raise AuditError('Truncated record header')
++            magic,size,n,d,checksum,reserved=struct.unpack('<IIIIQQ',header)
++            if magic!=0x31424e47 or size<32 or size>max_record_bytes or n<1 or 32+24*n>size or d<1 or reserved:
++                raise AuditError('Invalid record header')
++            if d>degree:return # later partial degrees are not in this audit window
++            data=header+f.read(size-32)
++            if len(data)!=size:raise AuditError('Truncated record')
++            h=1469598103934665603
++            for byte in data[32:]: h=((h^byte)*1099511628211)&MASK
++            if h!=checksum:raise AuditError('Record checksum mismatch')
++            p={}
++            previous=None
++            for i in range(n):
++                lo,hi,c=struct.unpack_from('<QQQ',data,32+24*i)
++                if hi>>63:
++                    if d<=31 or lo<32+24*n or lo+d>size:raise AuditError('Invalid long-word offset')
++                    word=tuple(data[lo:lo+d])
++                else:
++                    if d>31:raise AuditError('Invalid inline word length')
++                    value=(hi<<64)|lo
++                    if value>>(4*d):raise AuditError('Noncanonical inline word')
++                    word=tuple((value>>(4*j))&15 for j in reversed(range(d)))
++                if any(x>=generators for x in word):raise AuditError('Generator index outside presentation')
++                if previous is not None and word>=previous:raise AuditError('Unsorted/duplicate record term')
++                previous=word
++                if c&1:
++                    offset=c&~7
++                    if offset<32+24*n or offset+8>size:raise AuditError('Invalid coefficient offset')
++                    limbs=struct.unpack_from('<I',data,offset)[0]
++                    if not limbs or offset+8+4*limbs>size:raise AuditError('Invalid coefficient length')
++                    value=int.from_bytes(data[offset+8:offset+8+4*limbs],'little')
++                    if c&2:value=-value
++                else:value=(c if c<(1<<63) else c-(1<<64))>>1
++                if not value:raise AuditError('Zero record coefficient')
++                p[word]=value
++            yield p
++
++class ShorterDivisors:
++    """Aho-Corasick scan, retaining shortest matched leader length only."""
++    def __init__(self,leaders: Iterable[tuple[int,...]]):
++        self.edges=[{}];self.failure=[0];self.terminal=[0]
++        for w in leaders:
++            v=0
++            for a in w:
++                child=self.edges[v].get(a)
++                if child is None:
++                    child=len(self.edges);self.edges[v][a]=child
++                    self.edges.append({});self.failure.append(0);self.terminal.append(0)
++                v=child
++            self.terminal[v]=len(w)
++        queue=deque(self.edges[0].values())
++        while queue:
++            v=queue.popleft()
++            for a,u in self.edges[v].items():
++                queue.append(u);f=self.failure[v]
++                while f and a not in self.edges[f]:f=self.failure[f]
++                self.failure[u]=self.edges[f].get(a,0)
++                inherited=self.terminal[self.failure[u]]
++                if inherited:self.terminal[u]=min(self.terminal[u],inherited) if self.terminal[u] else inherited
++    def proper(self,word):
++        v=0;n=len(word)
++        for a in word:
++            while v and a not in self.edges[v]:v=self.failure[v]
++            v=self.edges[v].get(a,0)
++            if self.terminal[v] and self.terminal[v]<n:return True
++        return False
++
++def canonicalize(polynomials,modulus=0):
++    if modulus and (modulus<2 or modulus>2147483647 or any(modulus%d==0 for d in range(2,math.isqrt(modulus)+1))):raise AuditError('The coefficient characteristic must be zero or prime')
++    rows={}
++    for p in polynomials:
++        if not p:raise AuditError('Zero basis row')
++        lm=max(p)
++        if any(len(w)!=len(lm) for w in p):raise AuditError('Nonhomogeneous basis row')
++        if lm in rows:raise AuditError('Duplicate leading word')
++        rows[lm]=p
++    matcher=ShorterDivisors(rows);count=0
++    # Check, do not assume, that higher-order subword reductions cannot be needed.
++    for lm,p in rows.items():
++        if matcher.proper(lm):raise AuditError('Leading words are not a minimal antichain')
++        for w in p:
++            count+=1
++            if matcher.proper(w):raise AuditError('A tail has a reducible proper subword; general independent interreduction is required')
++    result={}
++    for lm in sorted(rows,key=lambda w:(len(w),w)):
++        p=rows[lm];lead=p[lm]
++        if modulus:
++            if not lead%modulus:raise AuditError('Leading coefficient vanishes in requested field')
++            inv=pow(lead%modulus,-1,modulus);monic={w:c*inv%modulus for w,c in p.items() if c%modulus}
++        else:monic={w:Fraction(c,lead) for w,c in p.items()}
++        out={lm:1 if modulus else Fraction(1)}
++        for w,c in monic.items():
++            if w==lm:continue
++            if w in result:
++                replacement=((v,-c*b) for v,b in result[w].items() if v!=w)
++            else:replacement=((w,c),)
++            for v,b in replacement:
++                value=out.get(v,0)+b
++                if modulus:value%=modulus
++                if value:out[v]=value
++                else:out.pop(v,None)
++        if any(w in rows and w!=lm for w in out):raise AuditError('Triangular normalization failed')
++        result[lm]=out
++    return result,{'properSubwordChecks':count,'matcherStates':len(matcher.edges),'minimalLeaders':True,'tailReduced':True,'monic':True}
++
++def canonical_digest(basis,variables,modulus,degree,stream=None):
++    metadata={'format':'fomkyr-independent-canonical-v1','variables':variables,'order':'degleftlex-last-variable-largest','modulus':modulus,'throughDegree':degree}
++    digest=hashlib.sha256()
++    def emit(value):
++        encoded=(json.dumps(value,separators=(',',':'),sort_keys=True)+'\n').encode();digest.update(encoded)
++        if stream:stream.write(encoded)
++    emit(metadata)
++    for lm,row in sorted(basis.items(),key=lambda kv:(len(kv[0]),kv[0])):
++        emit([[list(w),str(c)] for w,c in sorted(row.items(),reverse=True)])
++    return digest.hexdigest()
++
++def main():
++    ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('fixture',type=Path);ap.add_argument('basis',type=Path)
++    ap.add_argument('--degree',type=int,required=True);ap.add_argument('--modulus',type=int,default=0)
++    ap.add_argument('--against',type=Path);ap.add_argument('--out',type=Path,required=True);ap.add_argument('--canonical-jsonl',type=Path)
++    args=ap.parse_args();start=time.perf_counter();fixture=json.loads(args.fixture.read_text());names=fixture['variables']
++    report={'kind':'canonical-normalization-not-Groebner-certification','independentGroebnerCertificate':False,'degree':args.degree,'modulus':args.modulus,'variables':names,'files':[]}
++    try:
++        previous=None;previous_stream=None
++        for path in [args.basis]+([args.against] if args.against else []):
++            basis,checks=canonicalize(records(path,args.degree,len(names)),args.modulus)
++            stream=tempfile.TemporaryFile()
++            digest=canonical_digest(basis,names,args.modulus,args.degree,stream);stream.seek(0)
++            if args.canonical_jsonl and previous is None:
++                with args.canonical_jsonl.open('wb') as output:shutil.copyfileobj(stream,output)
++                stream.seek(0)
++            report['files'].append({'path':str(path.resolve()),'rules':len(basis),'canonicalSHA256':digest,**checks})
++            if previous_stream is not None:
++                equal=True
++                while True:
++                    left=previous_stream.read(1048576);right=stream.read(1048576)
++                    if left!=right:equal=False;break
++                    if not left:break
++                previous_stream.close();stream.close()
++                report['canonicalEqual']=equal;report['comparison']='exact canonical byte-stream comparison, not hash-only'
++                if not equal:raise AuditError('Canonical bases differ')
++                previous_stream=None
++            else:previous_stream=stream
++            previous=digest
++        if previous_stream is not None:previous_stream.close()
++        report['passed']=True
++    except Exception as error:report.update(passed=False,error=str(error))
++    report['elapsedSeconds']=time.perf_counter()-start;args.out.parent.mkdir(parents=True,exist_ok=True);args.out.write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report,indent=2))
++    if not report['passed']:sys.exit(1)
++if __name__=='__main__':main()
+--- /dev/null
++++ b/tools/check_george_oracles.mjs
+@@ -0,0 +1,76 @@
++// SPDX-License-Identifier: MIT
++// Execute THIS release, George's actual Bergman backend, and Singular Letterplace.
++// Missing programs are UNAVAILABLE (exit 77), never passing verification.
++import fs from 'node:fs';import path from 'node:path';import os from 'node:os';import crypto from 'node:crypto';import assert from 'node:assert/strict';import {spawnSync} from 'node:child_process';import {fileURLToPath,pathToFileURL} from 'node:url';
++import {oraclePolynomial} from './oracle-format.mjs';
++import {setup} from '../tests/node-host.mjs';import {FomkyrEngine} from '../web/engine.js';import {parseNativeJob} from '../web/job-adapter.js';
++const ROOT=fileURLToPath(new URL('../',import.meta.url));
++const args=process.argv.slice(2);const arg=(key,fallback)=>{const i=args.indexOf(key);return i<0?fallback:args[i+1];};
++const george=path.resolve(arg('--george','.'));const out=path.resolve(arg('--out',path.join(ROOT,'results/0.6.1/external-oracles')));fs.mkdirSync(out,{recursive:true});
++const oracleRoot=path.join(george,'build/oracles/root'),singular=path.resolve(arg('--singular',process.env.SINGULAR_BIN??path.join(oracleRoot,'usr/bin/Singular')));
++const sha=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');const report={status:'running',externalVerified:false,cases:[],version:JSON.parse(fs.readFileSync(path.join(ROOT,'package.json'))).version,
++ startedAt:new Date().toISOString(),fomkyrWasmSHA256:sha(path.join(ROOT,'web/fomkyr32.wasm')),george,singular};
++const save=()=>fs.writeFileSync(path.join(out,'report.json'),JSON.stringify(report,null,2)+'\n');
++const required=[singular,...['web/src/bergman-syntax.js','test/support/backend-client.mjs','test/support/algebra.mjs','web/engine/compiled/build.json'].map(p=>path.join(george,p))];
++const missing=required.filter(p=>!fs.existsSync(p));
++if(missing.length){report.status='unavailable';report.missing=missing;report.reason='Use an initialized George checkout and install its pinned oracle packages. No engine comparison was run.';save();console.error(report.reason);process.exit(77);}
++const load=p=>import(pathToFileURL(path.join(george,p)));
++const {buildJob,parseBasis}=await load('web/src/bergman-syntax.js'),{BackendClient}=await load('test/support/backend-client.mjs'),{algebra}=await load('test/support/algebra.mjs');
++report.bergmanManifest=JSON.parse(fs.readFileSync(path.join(george,'web/engine/compiled/build.json')));
++report.validatorSHA256=Object.fromEntries(['web/src/bergman-syntax.js','test/support/algebra.mjs'].map(p=>[p,sha(path.join(george,p))]));
++const inputs=JSON.parse(fs.readFileSync(path.join(ROOT,'fixtures/george-supported.json')));
++const cases=inputs.cases.map(c=>({...c,fields:inputs.fields}));
++// Fail rather than comparing against an accidentally different fixture revision.
++const georgeFixturePath=path.join(george,'test/fixtures/upstream-cases.json');
++if(fs.existsSync(georgeFixturePath)){
++ const actual=JSON.parse(fs.readFileSync(georgeFixturePath));
++ for(const c of cases){const other=actual.cases.find(x=>x.id===c.id);assert.ok(other,'Missing upstream case '+c.id);assert.deepEqual(other.vars,c.vars);assert.deepEqual(other.rels,c.rels);assert.equal(other.maxdeg,c.maxdeg);}
++ report.georgeFixtureSHA256=sha(georgeFixturePath);
++ report.excludedCaseIds=actual.cases.filter(x=>!cases.some(c=>c.id===x.id)).map(x=>x.id);
++}
++
++// Physical homogeneous presentations complement the imported upstream subset.
++const physics=JSON.parse(fs.readFileSync(path.join(ROOT,'fixtures/physics-matrix.json')));
++const text=(f)=>f.relations.map(r=>r.terms.map((t,i)=>{let c=BigInt(t.coefficient);return (c<0n?'-':i?'+':'')+(c===1n||c===-1n?'':String(c<0n?-c:c)+'*')+t.word.map(j=>f.variables[j]).join('*');}).join(''));
++for(const f of physics.filter(f=>f.name.startsWith('homogenized-')))
++ cases.push({id:f.name,vars:f.variables,rels:text(f),maxdeg:4,fields:[0,2,101]});
++const fk=JSON.parse(fs.readFileSync(path.join(ROOT,'fixtures/fk6.json')));
++cases.push({id:'submitted-FK6',vars:fk.variables,rels:text(fk),maxdeg:Number(arg('--fk-degree','5')),fields:[0]});
++const env={...process.env,LD_LIBRARY_PATH:[path.join(oracleRoot,'usr/lib/x86_64-linux-gnu'),path.join(oracleRoot,'usr/lib/x86_64-linux-gnu/singular/MOD'),process.env.LD_LIBRARY_PATH??''].join(':'),SINGULARPATH:[path.join(oracleRoot,'usr/share/singular/LIB'),path.join(oracleRoot,'usr/lib/x86_64-linux-gnu/singular/MOD'),process.env.SINGULARPATH??''].join(':')};
++const timeout=Number(arg('--timeout-ms','120000'));assert.ok(Number.isSafeInteger(timeout)&&timeout>0);
++const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'fomkyr-external-'));setup(tmp);
++try{
++ for(const c of cases)for(const p of c.fields){
++  const id=`${c.id}-p${p}`,dir=path.join(out,id);fs.mkdirSync(dir,{recursive:true});
++  const form={task:'gb',ring:'noncomm',order:'degleftlex',field:p===0?'0':p===2?'2':'p',modulus:String(p),vars:c.vars,rels:c.rels,maxdeg:String(c.maxdeg),lowterms:'safe',legacy:false,outmode:'ALG'};
++  const job={task:'gb',script:`(NONCOMMIFY)\n(DEGLEFTLEXIFY)\n(SETMODULUS ${p})\n(SETMAXDEG ${c.maxdeg})\n(SIMPLE "input.bg" "result.gb")`,files:{'input.bg':`(ALGFORMINPUT)\nvars ${c.vars.join(',')};\n${c.rels.join(',')} ;`}};
++  const {fixture}=parseNativeJob(job);const engine=new FomkyrEngine({workers:4,bits:32,execution:'multicore',budgetBytes:256*1048576,scratchBytes:64*1048576,spill:true,runKey:id,resume:false,timeoutMs:timeout,progress:false,hilbert:true,exportText:true});
++  let result;try{result=await engine.compute(fixture,c.maxdeg,p);}finally{await engine.close();}
++  const output=fs.readFileSync(path.join(tmp,'fomkyr',id,'result.gb'),'utf8');fs.writeFileSync(path.join(dir,'fomkyr.gb'),output);
++  assert.equal(result.modulus,p,'Kernel field must match the requested field');
++  const client=new BackendClient(path.join(george,'web/engine/compiled'),{timeoutMs:timeout});let external;
++  try{external=await client.run(buildJob({...form,backend:'compiled'}));}finally{await client.close();}
++  const refText=external.files['result.gb'];fs.writeFileSync(path.join(dir,'bergman.gb'),refText);
++  const a=algebra(c.vars,false,p),basis=a.basis(output),reference=a.basis(refText),input=c.rels.map(a.parse);
++  const ambiguities=a.certify(input,basis,c.maxdeg),refAmbiguities=a.certify(input,reference,c.maxdeg);
++  for(const f of basis)assert.equal(a.nf(f,reference).size,0,id+': Fomkyr belongs to Bergman ideal');
++  for(const f of reference)assert.equal(a.nf(f,basis).size,0,id+': Bergman belongs to Fomkyr ideal');
++  assert.deepEqual(a.hilbert(basis,c.maxdeg),a.hilbert(reference,c.maxdeg));
++  // The exact canonical monic rows must agree even when raw unreduced tails do not.
++  const canonical=g=>g.map((f,i)=>a.monic(a.nf(f,g.filter((_,j)=>j!==i)))).filter(f=>f.size).map(f=>JSON.stringify([...f].map(([w,n])=>[w,String(n)]).sort((u,v)=>String(u[0]).localeCompare(String(v[0]))))).sort();
++  assert.deepEqual(canonical(basis),canonical(reference),id+': canonical rows');
++  const rename=new Map(c.vars.map((v,i)=>[v,`g_${i}`]));const convert=s=>s.replace(/[A-Za-z_][A-Za-z_0-9]*/g,v=>{assert.ok(rename.has(v),`unknown generator ${v}`);return rename.get(v);});
++  const names=c.vars.map(v=>rename.get(v));const polys=parseBasis(output).groups.flatMap(g=>g.polys);
++  const code=`LIB "freegb.lib";\nring r=${p},(${[...names].reverse().join(',')}),Dp;\ndef A=freeAlgebra(r,${c.maxdeg});\nsetring A;\noption(redSB);\noption(redTail);\nideal I=${c.rels.map(convert).join(',')||'0'};\nideal B=${polys.map(convert).join(',')||'0'};\nideal G=twostd(I);\nprint("ORACLE:"+string(size(reduce(I,B)))+":"+string(size(reduce(B,G)))+":"+string(size(reduce(G,B))));\nfor(int j=1;j<=size(G);j++){print("CANON:"+string(G[j]));}\nquit;\n`;
++  fs.writeFileSync(path.join(dir,'singular.sing'),code);
++  const execution=spawnSync(singular,['-q'],{input:code,encoding:'utf8',cwd:dir,env,timeout,maxBuffer:64*1048576,killSignal:'SIGKILL'});
++  const log=(execution.stdout??'')+(execution.stderr??'');fs.writeFileSync(path.join(dir,'singular.log'),log);
++  assert.ifError(execution.error);assert.equal(execution.status,0);assert.doesNotMatch(log,/^\s*\?/m);assert.match(log,/ORACLE:0:0:0/);
++  const inverse=new Map([...rename].map(([a,b])=>[b,a]));const singularPolys=[...log.matchAll(/^CANON:(.+)$/gm)].map(m=>m[1].replace(/g_\d+/g,v=>inverse.get(v)));
++  const third=singularPolys.filter(s=>s.trim()!=='0').map(s=>oraclePolynomial(s,a,c.vars));assert.deepEqual(canonical(basis),canonical(third),id+': Singular canonical rows');
++  const row={id,degree:c.maxdeg,modulus:p,fomkyrRules:basis.length,bergmanRules:reference.length,singularRules:third.length,passed:true,criticalCompositions:ambiguities,bergmanCriticalCompositions:refAmbiguities,canonicalEquality:true,threeIdealInclusions:true};
++  report.cases.push(row);save();console.log(id,'PASS');
++ }
++ report.status='passed';report.externalVerified=true;
++}catch(error){report.status='failed';report.error=String(error.stack??error);process.exitCode=1;}
++finally{report.finishedAt=new Date().toISOString();save();fs.rmSync(tmp,{recursive:true,force:true});}
+--- a/tools/install.py
++++ b/tools/install.py
+@@ -117,7 +117,7 @@
+  if a.dry_run:print(''.join(difflib.unified_diff(old.splitlines(True),new.splitlines(True),fromfile=str(path),tofile=str(path))))
+ if not a.dry_run:
+  for path,(old,new) in changes.items():
+-  backup=path.with_suffix(path.suffix+'.before-fomkyr-0.6.0')
++  backup=path.with_suffix(path.suffix+'.before-fomkyr-0.6.1')
+   if not backup.exists():backup.write_text(old)
+   path.write_text(new)
+  dest=web/'engine/fomkyr';dest.mkdir(parents=True,exist_ok=True)
+--- a/tools/native.py
++++ b/tools/native.py
+@@ -62,7 +62,7 @@
+ 
+ class Engine:
+     def __init__(self, fixture: dict, target=7, workers=1, budget=256<<20, scratch=64<<20,
+-                 modulus=0, disk: str|None=None, hash_bits=16, resume: dict|None=None, optimize: int=63, matcher_budget: int|None=None, word_cache_entries: int=256,rational_heap: bool=True, compiled_rewrites: bool=True, rewrite_degree: int=4, rewrite_support: int=8, rewrite_budget: int|None=None, shared_cache: int|None=None):
++                 modulus=0, disk: str|None=None, hash_bits=16, resume: dict|None=None, optimize: int=63, matcher_budget: int|None=None, word_cache_entries: int=256,rational_heap: bool=True, compiled_rewrites: bool=True, rewrite_degree: int=4, rewrite_support: int=8, rewrite_budget: int|None=None, shared_cache: int|None=None, rational_rewrites: bool=True):
+         self.fixture=fixture; self.target=target; self.workers=workers; self.disk=disk
+         self.lib=C.CDLL(os.environ.get('FOMKYR_NATIVE_LIBRARY', str(ROOT/'dist/libfomkyr.so')))
+         api={
+@@ -73,7 +73,7 @@
+             'gn_input_bytes':([U32,I64],C.c_int),'gn_tune':([U32,U32,U32],C.c_int),'gn_hilbert':([U32,U64],C.c_int),'gn_hilbert_limbs':([],U32),'gn_hilbert_limb':([U32,U32],U32),'gn_input_end':([],C.c_int),'gn_start_degree':([U32],C.c_int),
+             'gn_next_pair':([U32],C.c_int),'gn_reduce_pair':([U32],C.c_int),
+             'gn_commit':([U32],C.c_int),'gn_finish_degree':([],C.c_int),
+-            'gn_stat':([U32],U64),'gn_lane_stat':([U32,U32],U64),
++            'gn_modulus':([],U32),'gn_stat':([U32],U64),'gn_lane_stat':([U32,U32],U64),
+             'gn_rule_stat':([U32,U32],U64),'gn_export_rule':([U32],U64),
+             'gn_export_size':([],U32),'gn_import_buffer':([],U64),'gn_import_capacity':([],U32),
+             'gn_restore_rule':([U32,U64],C.c_int),'gn_restored_through':([U32],C.c_int),
+@@ -87,6 +87,9 @@
+         check(self.lib.gn_optimize(optimize, min(budget//16,64<<20) if matcher_budget is None else matcher_budget))
+         check(self.lib.gn_word_cache(word_cache_entries))
+         check(self.lib.gn_rational_heap(int(rational_heap)))
++        if hasattr(self.lib,'gn_rational_rewrites'):
++            self.lib.gn_rational_rewrites.argtypes=[U32];self.lib.gn_rational_rewrites.restype=C.c_int
++            check(self.lib.gn_rational_rewrites(int(rational_rewrites)))
+         check(self.lib.gn_pin_cache(min(budget//16,64<<20) if shared_cache is None else shared_cache))
+         check(self.lib.gn_local_rewrites(rewrite_degree if compiled_rewrites else 0,min(budget//16,8<<20) if rewrite_budget is None else rewrite_budget,rewrite_support))
+         self.report=[]
+@@ -108,6 +111,7 @@
+     def stats(self):
+         keys=['basisSize','terms','completedThroughDegree','currentDegree','allocatedBytes','budgetBytes','diskBytes','pairs','monomialPairsPruned','zeroCommits','workers','prefixNodes','peakAllocatedBytes']
+         s={name:int(self.lib.gn_stat(i)) for i,name in enumerate(keys)}
++        s['modulus']=int(self.lib.gn_modulus())
+         s['reductions']=sum(self.lib.gn_lane_stat(i,0) for i in range(self.workers))
+         s['monomialTermsPruned']=sum(self.lib.gn_lane_stat(i,1) for i in range(self.workers))
+         s['chainPairsPruned']=int(self.lib.gn_stat(29));s['matcherAllocatedBytes']=int(self.lib.gn_stat(26))
+--- /dev/null
++++ b/tools/oracle-format.mjs
+@@ -0,0 +1,31 @@
++// SPDX-License-Identifier: MIT
++// Strict interchange parser: integer/rational scalar times a word, no evaluation.
++export function rationalTerms(text,variables){
++ const names=new Set(variables),source=String(text).replace(/\s+/g,'');
++ if(source==='0')return [];
++ if(!source||/[+-]{2}|[+-]$/.test(source))throw new Error('Malformed oracle polynomial');
++ const out=[];let rebuilt='';
++ for(const m of source.matchAll(/([+-]?)([^+-]+)/g)){
++  rebuilt+=m[0];let body=m[2],numerator=m[1]==='-'?-1n:1n,denominator=1n;
++  const c=/^(\d+)(?:\/(\d+))?(?:\*|$)/.exec(body);
++  if(c){numerator*=BigInt(c[1]);denominator=BigInt(c[2]??1);body=body.slice(c[0].length);}
++  if(!denominator)throw new Error('Zero oracle denominator');
++  const word=[];
++  if(body)for(const f of body.split('*')){
++   const v=/^([A-Za-z_][A-Za-z_0-9]*)(?:\^(\d+))?$/.exec(f);
++   if(!v||!names.has(v[1]))throw new Error('Unknown oracle word factor: '+f);
++   const exponent=Number(v[2]??1);if(!Number.isSafeInteger(exponent)||exponent>1000000)throw new Error('Oracle word exceeds interchange budget');
++   for(let k=0;k<exponent;k++)word.push(v[1]);
++  }
++  if(numerator)out.push({numerator,denominator,word});
++ }
++ if(rebuilt!==source)throw new Error('Unparsed oracle input');return out;
++}
++export function oraclePolynomial(text,a,variables){
++ const result=new Map();
++ for(const t of rationalTerms(text,variables)){
++  const unit=a.parse(t.word.length?t.word.join('*'):'1');
++  for(const [w,c] of a.scale(unit,a.q(t.numerator,t.denominator)))a.put(result,w,c);
++ }
++ return result;
++}
+--- /dev/null
++++ b/tools/verify_061.sh
+@@ -0,0 +1,9 @@
++#!/usr/bin/env bash
++set -euo pipefail
++cd "$(dirname "$0")/.."
++mkdir -p results/0.6.1
++bash tools/verify_direct.sh >results/0.6.1/full-direct-suite.log 2>&1
++python3 tests/test_audit.py >results/0.6.1/audit-tests.log 2>&1
++node tests/test_oracle_format.mjs >results/0.6.1/oracle-format.log 2>&1
++node --experimental-wasm-memory64 tests/test_deep_polish_wasm.mjs >results/0.6.1/deep-polish-wasm.log 2>&1
++printf '0.6.1 SUITE PASSED\n'
+--- a/web/build-info.js
++++ b/web/build-info.js
+@@ -1,2 +1,2 @@
+ // Generated by tools/build.sh; do not hand edit.
+-export const WASM_HASHES={"32": "40f6af8345e98a54426f4b6a4c95d01bb3bc433be50bf07a556617b8d309e56f", "32-single": "d6306ef46576013d95d5a7bc060237c965ad7f963bce1c546215c23963516b44", "64": "32e6191f00744e9480348e3ade30a58797e903a4d5a2423aea4fe03752f7a769", "64-single": "cfb9cdb2bf9e3cfd939dc5d95ad2547e5dfc98b3115c2c97918f42738e9631ce"};
++export const WASM_HASHES={"32": "c82d7c239de53b39b714ebf7de48f6f3f1d8c3197ee65407a2d1e677b88d4878", "32-single": "3e95af0fcd6bfd1d4d3b0d9c2b764770defdfcef11c2a91e31d6ada5afcd7b4f", "64": "75eb6f6e765a2c93cb2df0ccc4ad453ae0f48a18c600c8200f48d4c3e4d8aca2", "64-single": "91b23485de2011692578988fe86bb36f968d41ac98c655684636116093263570"};
+--- a/web/engine.js
++++ b/web/engine.js
+@@ -68,7 +68,7 @@
+         this.module=await loadKernel(bits,o.wasmURL,!this.shared);
+         this.host=hostFor(this.memory,bits,this.budget,null,Infinity,true);
+         this.e=(await WebAssembly.instantiate(this.module,this.host.imports)).exports;
+-        if(this.e.gn_abi()!==3||typeof this.e.gn_optimize!=='function'||typeof this.e.gn_word_cache!=='function'||typeof this.e.gn_progress_stat!=='function'||typeof this.e.gn_candidate_check!=='function'||typeof this.e.gn_local_rewrites!=='function'||typeof this.e.gn_pin_cache!=='function')throw new Error('Kernel/host API mismatch. Deploy fomkyr 0.6.0 JS and WASM together.');
++        if(this.e.gn_abi()!==3||typeof this.e.gn_optimize!=='function'||typeof this.e.gn_word_cache!=='function'||typeof this.e.gn_progress_stat!=='function'||typeof this.e.gn_candidate_check!=='function'||typeof this.e.gn_local_rewrites!=='function'||typeof this.e.gn_pin_cache!=='function'||typeof this.e.gn_rational_rewrites!=='function'||typeof this.e.gn_modulus!=='function')throw new Error('Kernel/host API mismatch. Deploy fomkyr 0.6.1 JS and WASM together.');
+         break;
+       }catch(error){
+         if(bits!==64||o.strictCapabilities||o.wasmURL)throw error;
+@@ -145,6 +145,7 @@
+   async resetKernel(fixture,target,modulus){
+     checked(this.e.gn_init(fixture.variables.length,target??0,this.workers,BigInt(this.budget),BigInt(this.scratch),this.options.hashBits??18,modulus,this.spill?1:0));
+     checked(this.e.gn_rational_heap(this.options.rationalHeap!==false?1:0));
++    if(this.e.gn_rational_rewrites)checked(this.e.gn_rational_rewrites(this.options.rationalRewrites!==false?1:0));
+     const pin=this.options.sharedReducerCacheBytes??Math.min(this.budget/16,64*MiB);
+     const local=this.options.rewriteBudgetBytes??Math.min(this.budget/16,8*MiB);
+     for(const [name,value] of [['sharedReducerCacheBytes',pin],['rewriteBudgetBytes',local]])if(!Number.isSafeInteger(value)||value<0)throw new Error(`${name} must be a nonnegative integer`);
+@@ -202,7 +203,7 @@
+         let start=performance.now();
+         const pending=[];
+         for(let lane=1;lane<this.workers&&lane<n;lane++)pending.push(this.rpc(this.pool[lane],{command:'batch'}));
+-        this.setPhase('reducing',false);checked(this.e.gn_batch_reduce(0));(await Promise.all(pending)).forEach(checked);
++        this.setPhase('reducing',false);const localResult=this.e.gn_batch_reduce(0);const remoteResults=await Promise.all(pending);checked(localResult);remoteResults.forEach(checked);
+         this.scheduler.reduceMs+=performance.now()-start;
+         const rcs=Array.from({length:n},(_,i)=>this.e.gn_batch_status(i));
+         rcs.filter(rc=>rc!==2&&rc!==8).forEach(checked);
+--- a/web/george-entry.js
++++ b/web/george-entry.js
+@@ -9,7 +9,7 @@
+   else if(command==='init')enabled=false;
+   if(!enabled)return false;
+   if(command==='cancel'){engine?.cancel();return true;}
+-  if(command==='init'){send({id,result:{name:'fomkyr',version:'0.6.0',backend:'fomkyr',ready:true,startupMs:0}});return true;}
++  if(command==='init'){send({id,result:{name:'fomkyr',version:'0.6.1',backend:'fomkyr',ready:true,startupMs:0}});return true;}
+   if(engine){send({id,error:'fomkyr is busy',code:'BUSY'});return true;}
+   engine={cancel(){}};let stdout='',owned=null;
+   try{
+--- a/web/progress-view.js
++++ b/web/progress-view.js
+@@ -22,6 +22,8 @@
+  else bar.removeAttribute('value');
+  activity.textContent=`${a.activeLanes} active lane(s); ${a.maxActiveRowTerms} terms in the largest sampled active row; ${a.sampledReductions} sampled reductions. `+
+   `${o.chainSkipped} lower-degree chain skips. This bar measures overlap count, not elapsed-time completion.`;
++ const general=(a.lanes??[]).filter(l=>l.tier==='arbitrary-precision');
++ if(general.length)activity.textContent+=` ${general.length} lane(s) using the exact arbitrary-precision fallback.`;
+  const eta=event.eta.currentDegreeSeconds;
+  estimate.textContent=eta?`Current-degree estimate: ${seconds(eta[0])}–${seconds(eta[1])}. ${event.eta.reason}`:`Remaining time: unknown. ${event.eta.reason}`;
+  if(o.replay)estimate.textContent+=` Degree replay ${o.replay}: earlier throughput has been discarded.`;
+--- a/web/progress.js
++++ b/web/progress.js
+@@ -28,6 +28,15 @@
+     let mid=0,lo=0,hi=0;
+     for(let k=1;k<=distance;k++){mid+=last.elapsedMs*growth**k;lo+=last.elapsedMs*(Math.min(...ratios)*0.5)**k;hi+=last.elapsedMs*(Math.max(...ratios)*2)**k;}
+     return {targetSeconds:null,conditionalNextDegrees:{fromDegree:last.degree+1,throughDegree:this.target,centralSeconds:mid/1000,scenarioSeconds:[lo/1000,hi/1000],label:'Conditional extrapolation; not a completion-time bound.'},recentDegreeGrowth:ratios};
++  }
++  forecastForSample(eta,now){
++    const historical=this.forecast();
++    if(!historical.conditionalNextDegrees)return historical;
++    const stalled=/heterogeneous|long unresolved/.test(eta.reason??'');
++    const exceeded=this.degreeStart!=null && now-this.degreeStart>historical.conditionalNextDegrees.centralSeconds*1000;
++    if(stalled||exceeded)return {targetSeconds:null,recentDegreeGrowth:historical.recentDegreeGrowth,
++      reason:stalled?'Historical projection withdrawn: current overlap timings are not predictive.':'Historical projection withdrawn: the current degree has exceeded the projected duration.'};
++    return historical;
+   }
+   sample(raw){
+     const now=this.now();
+@@ -62,12 +71,14 @@
+       elapsedMs:now-this.started,degreeElapsedMs:this.degreeStart==null?0:now-this.degreeStart,
+       overlaps:{total:raw.totalKnown?String(total):null,resolved:String(resolved),enumerated:String(raw.seen),scheduled:String(raw.scheduled),committed:String(raw.committed),monomialSkipped:String(raw.monomialSkipped),chainSkipped:String(raw.chainSkipped),
+         fraction:raw.totalKnown?(total?fraction(resolved,total):null):null,kind:'overlap-count-not-time',replay:raw.replay},
+-      activity:{activeLanes:raw.activeLanes,maxActiveRowTerms:String(raw.maxTerms),sampledReductions:String(live),sampledReductionsPerSecond:reductionRate,sampleIsApproximate:true},
+-      eta,forecast:this.forecast(),history:[...this.history]};
++      activity:{lanes:raw.lanes??[],activeLanes:raw.activeLanes,maxActiveRowTerms:String(raw.maxTerms),sampledReductions:String(live),sampledReductionsPerSecond:reductionRate,sampleIsApproximate:true},
++      eta,forecast:this.forecastForSample(eta,now),history:[...this.history]};
+   }
+ }
+ export function readProgressCounters(e){
+-  const p=k=>e.gn_progress_stat(k),workers=Number(e.gn_stat(10));let reductions=0n,maxTerms=0n,activeLanes=0;
+-  for(let i=0;i<workers;i++){reductions+=e.gn_live_stat(i,0);const busy=e.gn_live_stat(i,7),terms=e.gn_live_stat(i,4);if(busy){activeLanes++;if(terms>maxTerms)maxTerms=terms;}}
+-  return {total:p(0),seen:p(1),committed:p(2),scheduled:p(3),monomialSkipped:p(4),chainSkipped:p(5),replay:Number(p(6)),totalKnown:!!p(7),reductions,maxTerms,activeLanes};
++  const p=k=>e.gn_progress_stat(k),workers=Number(e.gn_stat(10));let reductions=0n,maxTerms=0n,activeLanes=0;const lanes=[];
++  for(let i=0;i<workers;i++){reductions+=e.gn_live_stat(i,0);const busy=e.gn_live_stat(i,7),terms=e.gn_live_stat(i,4);if(busy){activeLanes++;if(terms>maxTerms)maxTerms=terms;
++    lanes.push({lane:i,tier:['unknown','compact-integer','compact-rational','arbitrary-precision'][Number(e.gn_live_stat(i,9))]??'unknown',
++      terms:String(terms),exactFallbacks:String(e.gn_live_stat(i,10)),pair:{leftRule:Number(e.gn_live_stat(i,11)),rightRule:Number(e.gn_live_stat(i,12)),overlap:Number(e.gn_live_stat(i,13))}});}}
++  return {total:p(0),seen:p(1),committed:p(2),scheduled:p(3),monomialSkipped:p(4),chainSkipped:p(5),replay:Number(p(6)),totalKnown:!!p(7),reductions,maxTerms,activeLanes,lanes};
+ }
+--- a/web/runtime.js
++++ b/web/runtime.js
+@@ -65,6 +65,8 @@
+ export function stats(e) {
+   const keys = ['basisSize','terms','completedThroughDegree','currentDegree','allocatedBytes','budgetBytes','diskBytes','pairs','monomialPairsPruned','zeroCommits','workers','prefixNodes','peakAllocatedBytes'];
+   const s = Object.fromEntries(keys.map((k,i)=>[k,Number(e.gn_stat(i))]));
++  s.rationalCompiledRewritesEnabled=!!e.gn_stat(48);
++  s.modulus=e.gn_modulus?Number(e.gn_modulus()):null;
+   s.monomialPruning=!!Number(e.gn_stat(21));s.heapReduction=!!Number(e.gn_stat(22));
+   s.reductions = 0; s.monomialTermsPruned = 0; s.diskReads=0; s.diskReadBytes=0; s.reducerCacheHits=0;
+   for (let i=0;i<s.workers;i++) { s.reductions+=Number(e.gn_lane_stat(i,0)); s.monomialTermsPruned+=Number(e.gn_lane_stat(i,1)); s.diskReads+=Number(e.gn_lane_stat(i,2));s.diskReadBytes+=Number(e.gn_lane_stat(i,3));s.reducerCacheHits+=Number(e.gn_lane_stat(i,7)); }
+@@ -73,6 +75,11 @@
+   s.chainPairsPruned=Number(e.gn_stat(29));s.matcherNodes=Number(e.gn_stat(25));s.matcherAllocatedBytes=Number(e.gn_stat(26));s.matcherBuilds=Number(e.gn_stat(27));s.matcherFallbacks=Number(e.gn_stat(28));
+   for(const [name,key] of [['hashProbes',8],['matcherQueries',9],['matcherCharacters',10],['wordCacheHits',11],['heapAttempts',12],['heapSuccesses',13],['heapFallbacks',14],['insertionPrunes',15],['commutingPrunes',16],['quadraticSwaps',17],['rationalHeapAttempts',21],['rationalHeapSuccesses',22],['rationalHeapFallbacks',23],['pinnedReducerHits',27],['localRewriteHits',26],['integerHeapSteps',24],['rationalHeapSteps',25]]){
+     s[name]=0;for(let i=0;i<s.workers;i++)s[name]+=Number(e.gn_lane_stat(i,key));
++  }
++  if(e.gn_deep_stat){
++    for(const [k,name] of ['rationalCompiledRewriteHits','rationalWorkspaceMisses','rationalCoefficientMisses','rationalArithmeticMisses','rationalTableRetries'].entries()){
++      s[name]=0;for(let i=0;i<s.workers;i++)s[name]+=Number(e.gn_deep_stat(i,k));
++    }
+   }
+   return s;
+ }
+--- a/web/storage.js
++++ b/web/storage.js
+@@ -1,7 +1,7 @@
+ // SPDX-License-Identifier: MIT
+ // OPFS data are origin-local. Persistence is a request, never a backup guarantee.
+ export const STORE='fomkyr';
+-export const VERSION='0.6.0';
++export const VERSION='0.6.1';
+ const encoder=new TextEncoder();
+ export async function sha256(bytes){
+   const hash=await crypto.subtle.digest('SHA-256',typeof bytes==='string'?encoder.encode(bytes):bytes);

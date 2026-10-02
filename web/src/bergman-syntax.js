@@ -195,8 +195,13 @@ export function typeset(src, { lead = false } = {}) {
       html += `<span class="paren">${esc(tk.v)}</span>`;
       prev = tk; continue;
     }
-    if (tk.t === 'num') html += `<span class="num">${esc(tk.v)}</span>`;
-    else html += `<var>${esc(tk.v)}</var>`;
+    const base = tk.t === 'num' ? `<span class="num">${esc(tk.v)}</span>` : `<var>${esc(tk.v)}</var>`;
+    if (toks[i + 1]?.v === '^' && toks[i + 2]) {
+      const exponent = toks[i + 2];
+      html += `<span class="math-power">${base}<sup>${esc(exponent.v)}</sup></span>`;
+      i += 2; prev = exponent; continue;
+    }
+    html += base;
     prev = tk;
   }
   endTerm();

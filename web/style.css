@@ -407,17 +407,24 @@ input[aria-invalid="true"], textarea[aria-invalid="true"] { border-color: var(--
 .seg var { font-family: var(--serif); }
 
 /* relations as read */
-.preview { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 2px; counter-reset: rel; }
+.relation-preview { margin-top: 10px; }
+.relation-preview > summary { cursor: pointer; color: var(--ink-2); font: 500 0.88rem/1.4 var(--sans); }
+.preview-count { color: var(--ink-3); margin-left: 4px; font-variant-numeric: tabular-nums; }
+.preview { margin: 8px 0 0; display: grid; gap: 8px; }
+.relation-group { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 3px 20px; }
 .preview li {
-  display: grid;
-  grid-template-columns: 2.2em minmax(0, 1fr);
+  display: flex;
+  gap: 6px;
   align-items: baseline;
-  counter-increment: rel;
+  min-width: 0;
+  max-width: 100%;
   font-family: var(--serif);
   font-size: 1.12rem;
   overflow-wrap: anywhere;
 }
-.preview li::before { content: "(" counter(rel) ")"; color: var(--ink-3); font-size: 0.8rem; font-family: var(--sans); }
+.preview li::before { content: "(" attr(value) ")"; color: var(--ink-3); font-size: 0.75rem; font-family: var(--sans); flex-shrink: 0; }
+.preview li .rel { min-width: 0; }
+.preview .relation-group[data-term-count="error"] li { flex-basis: 100%; }
 .preview li.bad { font-family: var(--sans); font-size: 0.9rem; color: var(--error); }
 .preview li.bad code { color: var(--ink); }
 .preview li .nh { font-family: var(--sans); font-size: 0.78rem; color: var(--warn); margin-left: 8px; }
@@ -563,6 +570,7 @@ button { font: inherit; cursor: pointer; }
 }
 var { font-family: var(--serif); font-style: italic; }
 sup { font-size: 0.68em; line-height: 0; vertical-align: 0.55em; margin-left: 0.04em; }
+.math-power { display: inline-block; white-space: nowrap; }
 .op { margin: 0 0.28em; }
 .op.sign { margin: 0 0.1em 0 0; }
 .op.times { margin: 0 0.12em; }
@@ -594,8 +602,10 @@ mark.lm {
   align-items: baseline;
 }
 .degree h3 .d { font: 600 1.05rem/1 var(--serif); color: var(--ink); }
-.polys { margin: 0; padding: 0 0 0 2px; list-style: none; display: grid; gap: 4px; }
-.polys li { font-size: 1.22rem; line-height: 1.55; overflow-wrap: anywhere; padding-left: 1.2em; text-indent: -1.2em; }
+.polynomial-groups { display: grid; gap: 8px; }
+.polys { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 3px 20px; }
+.polys li { font-size: 1.22rem; line-height: 1.55; overflow-wrap: anywhere; flex: 0 0 auto; min-width: 0; max-width: 100%; }
+.math-expression { overflow-wrap: anywhere; }
 
 .series-line { margin: 0 0 14px; }
 .series-line .what { display: block; color: var(--ink-2); font-size: 0.9rem; }

@@ -1,0 +1,299 @@
+{
+  "name": "fomkyr",
+  "version": "0.6.0",
+  "recordAbi": 3,
+  "status": "passed-bounded-release-validation",
+  "createdUtc": "2026-10-02T18:14:55.708397+00:00",
+  "source": {
+    "name": "fomkyr-0.5.0.zip",
+    "sha256": "f450644690aace846d1679fba0b0f29c56cf9fcbe9171d862fd6466635038b3b",
+    "fixtureSha256": "fc262ce4250ffbdaf366243b4aac1765caa97c2832313be013f82373ef6f0419",
+    "fixtureUnchangedFromSource": true,
+    "generatorOrder": [
+      "a",
+      "b",
+      "c",
+      "d",
+      "e",
+      "f",
+      "g",
+      "h",
+      "k",
+      "m",
+      "n",
+      "p",
+      "q",
+      "r",
+      "s"
+    ],
+    "relations": 100,
+    "field": "Q",
+    "order": "degleftlex"
+  },
+  "production": {
+    "arithmetic": "direct exact",
+    "rationalHeap": true,
+    "compiledRewrites": true,
+    "rewriteDegree": 4,
+    "rewriteSupport": 8,
+    "sharedReducerCache": "bounded, optional, one immutable copy",
+    "modularGeorgeUi": false,
+    "modularExplicitApi": "retained for compatibility, not default",
+    "productionSignatureScheduler": false,
+    "checkpointAbiChanged": false,
+    "newDegreeCap": false
+  },
+  "environment": {
+    "compiler": "clang version 17.0.0 (https://github.com/swiftlang/llvm-project.git 10999b6d034fe318f3d56c83bddb6572593a8bb0)",
+    "node": "v22.16.0",
+    "logicalCpuCount": 5,
+    "cpu": "AMD EPYC 9V74 80-Core Processor",
+    "actualWasm": true,
+    "storage": "Node filesystem OPFS adapter",
+    "browserExecutionThisTurn": false
+  },
+  "checks": {
+    "existingCoreSuite": true,
+    "existingPhysicsWasmCombinations": 37,
+    "newCompiledEdgeChecks": 44,
+    "compiledIdentitiesAcrossEdgeChecks": 8927,
+    "independentFk6CompletionThroughDegree": 5,
+    "independentFk6CriticalCompositions": 3100,
+    "allDefaultFk6CompiledIdentitiesIndependentlyAudited": 46534,
+    "newActualWasmChecks": 17,
+    "newActualWasmIndependentOutputChecks": 12,
+    "rationalArithmetic": {
+      "passed": true,
+      "accepted": 3269,
+      "exactFallback": 6731,
+      "total": 10000,
+      "oracle": "Python Fraction, seeded independent arithmetic"
+    },
+    "rationalPresentationChecks": 25,
+    "modularCompatibilityChecks": 15,
+    "savedControlAssertions": 9,
+    "ubsan": true,
+    "countsOverlap": true
+  },
+  "differential": {
+    "FK6-d9": {
+      "throughDegree": 9,
+      "rules": 1451,
+      "equalLeadingSets": true,
+      "differentUnreducedTails": 9,
+      "mutualExactReduction": true,
+      "seconds": 0.03845114199998534,
+      "scope": "Differential against previous exact engine, not independent completion to this degree"
+    },
+    "FK6-d10": {
+      "throughDegree": 10,
+      "rules": 2155,
+      "equalLeadingSets": true,
+      "differentUnreducedTails": 49,
+      "mutualExactReduction": true,
+      "seconds": 0.3424886489999608,
+      "scope": "Differential against previous exact engine, not independent completion to this degree"
+    },
+    "P6-d12": {
+      "throughDegree": 12,
+      "rules": 22,
+      "equalLeadingSets": true,
+      "differentUnreducedTails": 0,
+      "mutualExactReduction": true,
+      "seconds": 0.004406535000043732,
+      "scope": "Differential against previous exact engine, not independent completion to this degree"
+    }
+  },
+  "benchmarks": {
+    "conditions": "Fresh-process actual shared WASM32, four CPU lanes, Node filesystem adapter for OPFS; startup, table construction and checkpoints included; no text export or Hilbert; progress off except explicit ablation. Default 128 MiB budget, 32 MiB scratch, hashBits=16. Baseline separately built from supplied 0.5.0 with same Clang/flags. Sequential trials, alternating order for main pairs.",
+    "summary": [
+      {
+        "case": "FK6",
+        "degree": 9,
+        "mode": "baseline-0.5",
+        "trials": 3,
+        "medianMs": 1309.021524,
+        "minMs": 1267.382629,
+        "maxMs": 1313.804462,
+        "recordSha256": "cd9fdba495720688d9ee6588da0d0165017a8bdab14eaaddcb2de38ef2c59b44"
+      },
+      {
+        "case": "FK6",
+        "degree": 9,
+        "mode": "direct-0.6",
+        "trials": 3,
+        "medianMs": 870.725258,
+        "minMs": 867.728153,
+        "maxMs": 919.573052,
+        "recordSha256": "4ab024e8bfcc76ac66b8c38702e3815a1fea642b1d317a6168dc1c92eb121db6"
+      },
+      {
+        "case": "FK6",
+        "degree": 10,
+        "mode": "baseline-0.5",
+        "trials": 3,
+        "medianMs": 6880.4272089999995,
+        "minMs": 6816.599252,
+        "maxMs": 6904.41655,
+        "recordSha256": "d20b35b7b49f8fb13ed1f1a537f0b822bf8f70920e4336a7cfa129c68f688091"
+      },
+      {
+        "case": "FK6",
+        "degree": 10,
+        "mode": "direct-0.6",
+        "trials": 3,
+        "medianMs": 3978.168143,
+        "minMs": 3751.703711,
+        "maxMs": 4357.163816,
+        "recordSha256": "0cd491b811a1fc6e7b0496e344dd7ad3a5a869c31eed56771f7920e5be1e97ec"
+      },
+      {
+        "case": "P6",
+        "degree": 12,
+        "mode": "baseline-0.5",
+        "trials": 3,
+        "medianMs": 230.998814,
+        "minMs": 215.66960799999998,
+        "maxMs": 233.59412500000002,
+        "recordSha256": "f6fc227d49663dac762e72e7826932f43c798211e1da672d9f6b288ce8db84a8"
+      },
+      {
+        "case": "P6",
+        "degree": 12,
+        "mode": "direct-0.6",
+        "trials": 3,
+        "medianMs": 227.24936800000003,
+        "minMs": 220.26793499999997,
+        "maxMs": 243.64390100000003,
+        "recordSha256": "f6fc227d49663dac762e72e7826932f43c798211e1da672d9f6b288ce8db84a8"
+      },
+      {
+        "case": "FK6",
+        "degree": 10,
+        "mode": "pin-only",
+        "trials": 3,
+        "medianMs": 6441.147041,
+        "minMs": 6409.351856,
+        "maxMs": 6818.745164,
+        "recordSha256": "d20b35b7b49f8fb13ed1f1a537f0b822bf8f70920e4336a7cfa129c68f688091"
+      },
+      {
+        "case": "FK6",
+        "degree": 10,
+        "mode": "rewrites-only",
+        "trials": 3,
+        "medianMs": 3890.394512,
+        "minMs": 3727.911078,
+        "maxMs": 4163.709597,
+        "recordSha256": "0cd491b811a1fc6e7b0496e344dd7ad3a5a869c31eed56771f7920e5be1e97ec"
+      },
+      {
+        "case": "FK6",
+        "degree": 10,
+        "mode": "with-progress",
+        "trials": 3,
+        "medianMs": 3635.383284,
+        "minMs": 3593.644093,
+        "maxMs": 3747.985592,
+        "recordSha256": "0cd491b811a1fc6e7b0496e344dd7ad3a5a869c31eed56771f7920e5be1e97ec"
+      }
+    ],
+    "raw": "results/0.6/benchmarks/summary.json",
+    "reportingOverhead": "not isolated by the nonalternated later progress ablation; do not interpret lower median as negative/zero overhead"
+  },
+  "binaries": {
+    "fomkyr32-single.wasm": {
+      "bytes": 76613,
+      "sha256": "d6306ef46576013d95d5a7bc060237c965ad7f963bce1c546215c23963516b44"
+    },
+    "fomkyr32.wasm": {
+      "bytes": 76780,
+      "sha256": "40f6af8345e98a54426f4b6a4c95d01bb3bc433be50bf07a556617b8d309e56f"
+    },
+    "fomkyr64-single.wasm": {
+      "bytes": 80737,
+      "sha256": "cfb9cdb2bf9e3cfd939dc5d95ad2547e5dfc98b3115c2c97918f42738e9631ce"
+    },
+    "fomkyr64.wasm": {
+      "bytes": 80885,
+      "sha256": "32e6191f00744e9480348e3ade30a58797e903a4d5a2423aea4fe03752f7a769"
+    }
+  },
+  "evidence": {
+    "results/0.6/final-suite.log": {
+      "sha256": "ec8dffb2e9cea1c96d8466c883d6bac6dda2be8c3751e29f20c1b01462c2ee09",
+      "bytes": 357
+    },
+    "results/0.6/core-suite.log": {
+      "sha256": "2381d8406e084a7de2b73a1daf31ccd028a11b840da057b86fa2800dee7479f0",
+      "bytes": 710
+    },
+    "results/physics-wasm-matrix.json": {
+      "sha256": "c61d6956259055c4027808eecc9b7222c092f5d9223ad2c66453a786169e85c3",
+      "bytes": 12988
+    },
+    "results/0.6/compiled-edge-tests.json": {
+      "sha256": "92375a167a9a048e775f88d134ab597b8254a6148e1466105fab1271f47bdfe8",
+      "bytes": 18344
+    },
+    "results/0.6/compiled-fk6-certificate.json": {
+      "sha256": "a4df2591ae7097737274ecedefdeed9826cf50e20107a00c369d9d55fba6dbb1",
+      "bytes": 432
+    },
+    "results/0.6/compiled-wasm-tests.json": {
+      "sha256": "f201a8552e6fee4af6dd898904b72dfbb5788c7a78d91cc42b137b78636feec5",
+      "bytes": 4491
+    },
+    "results/0.6/compiled-wasm-oracle.json": {
+      "sha256": "9cf3a8b3fd8c43c9499168c2236d6f0ece844735c899491779d518757faee7e7",
+      "bytes": 4393
+    },
+    "results/0.6/rational-arithmetic-tests.json": {
+      "sha256": "f22c4fec0cd43e0af70d85c2c18f17ba7c0a67854c1402a5f6c01f235e244bcf",
+      "bytes": 145
+    },
+    "results/0.6/rational-cases.json": {
+      "sha256": "fadd17b8e53e0005d5243dc3ecc0cde14b3d237d5ed0d285271c19a18befaca3",
+      "bytes": 6350
+    },
+    "results/0.6/modular-tests.json": {
+      "sha256": "8f9875aec7c69a2669fb8f845e444e821882ca2004444746ece3448d990205c2",
+      "bytes": 2232
+    },
+    "results/0.6/direct-controls-tests.json": {
+      "sha256": "6141cf5d0bdb5e5356f6ee9c5e67f60751e68abfe0ad58e4f19365a028389240",
+      "bytes": 134
+    },
+    "results/ubsan-tests.log": {
+      "sha256": "8380f9e4051819df8438947ddab7371a54047a3d5bf9682a1b696d71fba37d5c",
+      "bytes": 8394
+    },
+    "results/0.6/benchmarks/summary.json": {
+      "sha256": "d6388fe95ca3eb6b99b7d4a9bb0a7af83adec6c202f36da12a62ad2d31008ca1",
+      "bytes": 147547
+    },
+    "results/0.6/benchmarks/equivalence-FK6-d9.json": {
+      "sha256": "ec31e4864efe0f2e27554db5b9c6656b84fd2414a6b886de86d8a89f040b640e",
+      "bytes": 267
+    },
+    "results/0.6/benchmarks/equivalence-FK6-d10.json": {
+      "sha256": "c14081aaa3763b9bf1f71165104eaf18faa7b15c933cc351f8ac935f1892c385",
+      "bytes": 268
+    },
+    "results/0.6/benchmarks/equivalence-P6-d12.json": {
+      "sha256": "6a2f0412a965583fac293dbbaf227dd40eb52a9a202da09e4a08445b845d3fa8",
+      "bytes": 267
+    }
+  },
+  "limits": [
+    "No live Firefox, browser OPFS, or GitHub Pages validation this turn.",
+    "Remote repository and published site were not modified.",
+    "FK6 degrees 15-20 were not run; no forecast of their runtime is supplied.",
+    "FK6 degree 9/10 evidence is differential against the prior exact engine, not independent completion at those bounds.",
+    "The new and old FK6 bases have differing unreduced tails; equal ideals/leading words checked, not byte equality.",
+    "Compiled word length is a local cache bound only. Larger words/coefficients use the retained exact fallback.",
+    "Kernel memory budget does not bound browser RSS or guarantee absence of OS/browser OOM.",
+    "An active reduction row and basis metadata must fit memory.",
+    "Algebra tests are not experimental-physics validation or a complete physical operator-counting pipeline."
+  ]
+}

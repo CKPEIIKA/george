@@ -1,0 +1,12 @@
+% fomkyr; completed through degree 4; not a claim of a finite complete GB
+
+% 2
+x_1_2^2,
+x_1_3^2,
+x_2_3^2,
+x_2_3*x_1_3-x_1_2*x_2_3-x_1_3*x_1_2,
+x_2_3*x_1_2+x_1_2*x_1_3-x_1_3*x_2_3,
+
+% 3
+x_1_2*x_1_3*x_1_2+x_1_3*x_1_2*x_1_3,
+Done

@@ -23,7 +23,13 @@ test('input bergman cannot read is rejected', () => {
 
 test('typesetting marks the leading monomial', () => {
   const html = B.typeset('y^2+3*y*x', { lead: true });
-  assert.match(html, /^<mark class="lm"><var>y<\/var><sup>2<\/sup><\/mark>/);
+  assert.match(html, /^<mark class="lm"><span class="math-power"><var>y<\/var><sup>2<\/sup><\/span><\/mark>/);
+});
+
+test('typesetting keeps each power together as a single inline unit',()=>{
+  const html=B.typeset('a^2+b^33+2*c^100001');
+  assert.equal((html.match(/class="math-power"/g)||[]).length,3);
+  for(const [variable,power] of [['a',2],['b',33],['c',100001]])assert.ok(html.includes(`<span class="math-power"><var>${variable}</var><sup>${power}</sup></span>`));
 });
 
 test('every bundled example parses, and its reference output renders', () => {

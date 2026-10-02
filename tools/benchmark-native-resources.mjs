@@ -16,6 +16,7 @@ if(report.state!=='complete')throw new Error('Finish the serial browser phase fi
 const save=()=>fs.writeFileSync(reportFile,JSON.stringify(report,null,2)+'\n');
 const {vars,rels}=readInputFile('(ALGFORMINPUT)\n'+JSON.parse(fs.readFileSync(report.inputFile)).inputText);
 const sha=file=>crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+if(sha(report.inputFile)!==report.inputSha256)throw new Error('Input changed after browser measurements.');
 const sbclRoot='build/sbcl-oracle-fixed-v4-04-20261001';
 const singularRoot=path.resolve('build/oracles/root');
 const sbcl=path.resolve(sbclRoot+'/bin/clisp/unix/bergman');
@@ -26,12 +27,15 @@ report.configurations=[...report.configurations.filter(c=>!definitions.some(d=>d
 report.nativeProvenance={sbclLauncher:sbclRoot+'/bin/clisp/unix/bergman',
   sbclImageSha256:sha(sbclRoot+'/bin/clisp/unix/bergman.exe'),
   singularExecutable:'build/oracles/root/usr/bin/Singular',singularSha256:sha(singular),
+  singularProcDir:'build/oracles/root/usr/lib/x86_64-linux-gnu/singular/MOD',
+  singularArithmeticModules:Object.fromEntries(['p_Procs_FieldQ.so','p_Procs_FieldZp.so'].map(name=>[name,sha(path.join(singularRoot,'usr/lib/x86_64-linux-gnu/singular/MOD',name))])),
   order:'Degree left lex; Singular Dp with reversed generator order matches Bergman/Native.',
   orderReference:'https://github.com/Singular/Singular/blob/spielwiese/doc/letterplace.doc',
   ram:'Native process-tree PSS sampled every 0.02 s. Includes runtime startup. No browser baseline.',
   cpu:'GNU time reports exact aggregate child user+system CPU seconds; /proc sampling retained as a cross-check.',
   budget:'SBCL dynamic space is 2048 MiB. Singular runs with a 2 GiB virtual-address limit. Browser memory budgets and these native limits cover different allocations.',
   singularOptions:['redSB','intStrategy'],degreeBound:'freeAlgebra(r, degree) at each requested degree'};
+report.nativeProvenance.degreeOne='Singular requires ring degree >=2; its degree-1 point uses the zero ideal in a bound-2 ring. SBCL uses the zero relation for the empty linear prefix.';
 report.state='running-native';save();
 
 async function run(config,degree){
@@ -39,7 +43,7 @@ async function run(config,degree){
   const dir=path.join(out,key);fs.mkdirSync(dir,{recursive:true});
   let command,args,source,environment={...process.env};
   if(config.id==='sbcl'){
-    const job=buildJob({task:'gb',ring:'noncomm',order:'degleftlex',field:'0',vars,rels,
+    const job=buildJob({task:'gb',ring:'noncomm',order:'degleftlex',field:'0',vars,rels:degree===1?['0']:rels,
       maxdeg:String(degree),memoryMiB:2048,nonhomog:'degreewise',strategy:'default',lowterms:'quick',monomialPruning:true});
     for(const [name,text]of Object.entries(job.files))fs.writeFileSync(path.join(dir,name),text);
     source=job.script+'\n(QUIT)\n';command=sbcl;args=['--dynamic-space-size','2048'];
@@ -47,14 +51,15 @@ async function run(config,degree){
     const names=vars.map((_,i)=>'fk_var_'+i),mapping=Object.fromEntries(vars.map((v,i)=>[v,names[i]]));
     const convert=polynomial=>toBergman(parseRelation(polynomial,vars).map(t=>({...t,factors:t.factors.map(f=>({...f,v:mapping[f.v]}))})));
     source=['LIB "freegb.lib";',`ring fk_r=0,(${[...names].reverse().join(',')}),Dp;`,
-      `def fk_a=freeAlgebra(fk_r,${degree});`,'setring fk_a;','option(redSB); option(intStrategy);',
-      `ideal I=${rels.map(convert).join(',')};`,'ideal G=twostd(I);',
+      `def fk_a=freeAlgebra(fk_r,${Math.max(2,degree)});`,'setring fk_a;','option(redSB); option(intStrategy);',
+      `ideal I=${degree<2?'0':rels.map(convert).join(',')};`,'ideal G=twostd(I);',
       'print("COUNT:"+string(size(G)));',
-      'for(int j=1;j<=size(G);j++){print("LEAD:"+string(lead(G[j])));}',
+      'for(int j=1;j<=size(G);j++){if(G[j]!=0){print("LEAD:"+string(lead(G[j])));print("POLY:"+string(G[j]));}}',
       'print("GEORGE_DONE");','quit;',''].join('\n');
     command='/usr/bin/prlimit';args=['--as=2147483648','--',singular,'-q'];
     environment.LD_LIBRARY_PATH=`${singularRoot}/usr/lib/x86_64-linux-gnu:${singularRoot}/usr/lib/x86_64-linux-gnu/singular/MOD:${process.env.LD_LIBRARY_PATH||''}`;
     environment.SINGULARPATH=`${singularRoot}/usr/share/singular/LIB:${singularRoot}/usr/lib/x86_64-linux-gnu/singular/MOD`;
+    environment.SINGULAR_PROCS_DIR=path.join(singularRoot,'usr/lib/x86_64-linux-gnu/singular/MOD');
   }
   fs.writeFileSync(path.join(dir,config.id==='sbcl'?'session.lsp':'session.sing'),source);
   const timing=path.join(dir,'time.txt'),logFile=path.join(dir,'stdout.txt');
@@ -74,6 +79,7 @@ async function run(config,degree){
   const timingNumbers=timingText.split(/\s+/).map(Number);
   const exactCpu=timingNumbers.length===4&&timingNumbers.every(Number.isFinite)?timingNumbers[0]+timingNumbers[1]:null;
   const row={id:config.id,backend:config.backend,browser:'native',degree,trial:0,timeLimitSeconds:cap,
+    singularRingDegreeBound:config.id==='singular'?Math.max(2,degree):undefined,emptyQuadraticPrefix:degree===1,
     status:exit.code===0?'complete':wall>=cap-.5?'timeout':'error',coldWallSeconds:wall,...measured,
     sampledCpuSeconds:measured.cpuSeconds,cpuSeconds:exactCpu??measured.cpuSeconds,
     averageCpuPercent:100*(exactCpu??measured.cpuSeconds)/wall,
@@ -85,9 +91,9 @@ async function run(config,degree){
       row.basisSize=parsed.groups.reduce((n,g)=>n+g.polys.length,0);row.outputHasDone=parsed.done;
       row.basisFile=key+'/result.gb';if(!parsed.done)row.status='error';
     }else{
-      row.basisSize=Number(log.match(/^COUNT:(\d+)$/m)?.[1]);
+      row.basisSize=[...log.matchAll(/^LEAD:/gm)].length;
       row.outputHasDone=/^GEORGE_DONE$/m.test(log);
-      if(!row.outputHasDone||/^\s*\?/m.test(log))row.status='error';
+      if(!row.outputHasDone||/^\s*\?|Could not find dynamic library/m.test(log))row.status='error';
     }
   }
   if(row.status==='error')row.error=log.slice(-4000);
@@ -97,7 +103,11 @@ async function run(config,degree){
 }
 try{
   for(const degree of report.degrees)for(const config of definitions){
+    if(report.finiteCertificate&&degree>report.finiteCertificate.firstZeroDegree)continue;
     if(report.rows.some(r=>r.id===config.id&&r.degree===degree))continue;
+    if(process.argv.includes('--skip-censored')&&report.rows.some(r=>r.id===config.id&&r.degree<degree&&['timeout','oom'].includes(r.status))){
+      report.skipped??=[];report.skipped.push({id:config.id,degree,trial:0,reason:'A lower degree reached the time or memory limit.'});save();continue;
+    }
     await run(config,degree);
   }
   report.state='complete';report.finishedAt=new Date().toISOString();save();

@@ -1,0 +1,2 @@
+fomkyr runtime: wasm64, shared, 4 CPU lane(s), broker-exclusive; budget 2147483648 bytes.
+fomkyr degree 1: 0 rules; 621193456 allocated bytes; 0 disk bytes.

@@ -1,0 +1,24 @@
+{
+  "description": "Fixed-seed random invertible generator scalings of the submitted FK6 presentation. Preserves its monomial supports, variable order, graded dimensions and growth through degree 9; varies exact rational coefficient arithmetic. This is a graded-isomorphic FK6 presentation.",
+  "generator": "test/support/random-growing-form.mjs",
+  "seed": 1179338550,
+  "construction": "random-invertible-FK6-generator-scalings",
+  "scalings": {
+    "a": 3,
+    "b": -3,
+    "c": 5,
+    "d": 5,
+    "e": -1,
+    "f": -1,
+    "g": 5,
+    "h": -3,
+    "k": -2,
+    "m": 2,
+    "n": -5,
+    "p": -5,
+    "q": -2,
+    "r": 3,
+    "s": -5
+  },
+  "inputText": "vars a,b,c,d,e,f,g,h,k,m,n,p,q,r,s;\na^2,b^2,c^2,d^2,e^2,f^2,g^2,h^2,k^2,m^2,n^2,p^2,q^2,r^2,s^2,a*c-c*a,a*d-d*a,a*e-e*a,a*k-k*a,a*r-r*a,a*s-s*a,b*d-d*b,b*e-e*b,b*f-f*b,b*h-h*b,b*n-n*b,b*r-r*b,c*e-e*c,c*f-f*c,c*g-g*c,c*n-n*c,c*p-p*c,d*f-f*d,d*g-g*d,d*m-m*d,d*s-s*d,e*h-h*e,e*m-m*e,e*q-q*e,f*k-k*f,f*p-p*f,f*q-q*f,g*h-h*g,g*k-k*g,g*m-m*g,g*n-n*g,h*k-k*h,h*p-p*h,h*s-s*h,k*q-q*k,k*r-r*k,m*p-p*m,m*q-q*m,m*r-r*m,n*q-q*n,n*r-r*n,n*s-s*n,p*r-r*p,p*s-s*p,q*s-s*q,5*m*n+5*n*k-2*k*m,5*n*m+5*k*n-2*m*k,2*m*a+3*a*b+2*b*m,2*a*m+3*b*a+2*m*b,6*m*h-15*h*c+10*c*m,6*h*m-15*c*h+10*m*c,2*m*f+5*f*s-10*s*m,2*f*m+5*s*f-10*m*s,10*k*p-15*p*b-6*b*k,10*p*k-15*b*p-6*k*b,2*k*d+5*d*c-2*c*k,2*d*k+5*c*d-2*k*c,2*k*e-5*e*s-10*s*k,2*e*k-5*s*e-10*k*s,6*b*q+10*q*c+15*c*b,6*q*b+10*c*q+15*b*c,3*b*g-5*g*s+3*s*b,3*g*b-5*s*g+3*b*s,3*c*r+3*r*s+5*s*c,3*r*c+3*s*r+5*c*s,5*n*p+3*p*a+3*a*n,5*p*n+3*a*p+3*n*a,5*n*d-3*d*h+3*h*n,5*d*n-3*h*d+3*n*h,5*n*e-e*f-5*f*n,5*e*n-f*e-5*n*f,2*a*q+2*q*h-3*h*a,2*q*a+2*h*q-3*a*h,15*a*g+5*g*f+3*f*a,15*g*a+5*f*g+3*a*f,3*h*r-r*f+f*h,3*r*h-f*r+h*f,2*p*q+2*q*d+5*d*p,2*q*p+2*d*q+5*p*d,5*p*g-g*e+e*p,5*g*p-e*g+p*e,15*d*r+3*r*e+5*e*d,15*r*d+3*e*r+5*d*e,6*q*r+15*r*g-10*g*q,6*r*q+15*g*r-10*q*g;\n"
+}

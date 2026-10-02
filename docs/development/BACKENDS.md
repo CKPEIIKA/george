@@ -1,8 +1,99 @@
 # Browser backends in George 0.6
 
+## fomkyr 0.6.1 integration — 2026-10-03
+
+The current core is fomkyr 0.6.1. Its four production Wasm modules are copied
+unchanged from the supplied archive, SHA-256
+`ee286ecc55dea5275f7568abfd721bb380cc57b9df9772ab4348aad7ca411492`.
+The original 694 files, including source, tests, fixtures, reports and MIT
+notice, are preserved in `vendor/fomkyr-0.6.1/`.
+
+The archive contains a stale 0.6.0 manifest: 507 of its 557 entries match,
+50 have changed, and 137 files are unlisted. The original manifest is retained.
+[The import audit](validation/fomkyr-061-import.json) records the actual size
+and SHA-256 of all 694 files. Runtime asset hashes are generated from the
+installed files in `web/engine/fomkyr/build.json`.
+
+This update applies compiled local identities inside exact rational heap
+reduction and fixes batch cleanup by awaiting all remote lanes before checking
+the local lane's result. George uses that host fix and checks the new rational
+rewrite/modulus API. The rational rewrite setting defaults on and is exposed
+with help, persistence and Share support under Engine. Existing explicit
+choices are preserved. The C kernel has no George patches.
+
+Compact powers stay in a single wrapping unit. Relation previews and each
+result degree group expressions by term count. The preview starts expanded
+and stays foldable. Whole expressions copy their source syntax; partial
+superscripts copy with carets. Automatic worker selection uses reported CPU
+threads minus one, clamped to 1–32; actual usage remains visible in results.
+George remains version 0.6.0, with experimental only in the engine chooser.
+
+Regression fixtures include the submitted FK6 form, seeded independent
+FK6-shaped coefficients, and seeded invertible generator scalings. The
+independent-coefficient fixture is finite in dimension 678 and stops at its
+first zero coefficient in degree 6. The scaled fixture preserves FK6's graded
+dimensions and supports; it exercises different exact coefficient arithmetic
+while retaining growth through the measured degree range. Both constructions
+and their seeds are recorded with the inputs. Resource jobs remain serial and
+separate from verification.
+
+The corresponding-source download includes build sources, test code, fixtures
+and reports. Generated upstream OPFS benchmark stores are omitted from that
+download; separate checkpoint fixtures consumed by tests remain included.
+The original vendor imports in Git retain every file and hash.
+
+## fomkyr 0.6.0 integration — 2026-10-03
+
+The earlier 0.6.0 import verified all 557 entries in the upstream manifest;
+the four shipped Wasm variants match its `dist/` binaries.
+Original source, fixtures, tests, reports and MIT notices are preserved in
+`vendor/fomkyr-0.6.0/`. Archive SHA-256:
+`bca8de72862bd79bea208958467f00d79da28e5d0ebfee7d3dbe95a5289642a5`.
+George remains 0.6.0, with experimental shown only in the engine chooser.
+
+The new core uses checked compact rational arithmetic, a bounded shared
+immutable reducer cache and compiled local identities derived from the
+completed low-degree basis. These paths have exact fallbacks. New jobs enable
+rational heaps and local rewrites, length 4/support 8. Automatic local-cache
+space is min(memory/16, 8 MiB); shared-cache space is min(memory/16, 64 MiB).
+Both can be explicitly disabled or budgeted. George exposes these controls
+with EN/RU help under Engine and persists them in drafts and Share links.
+Direct exact computation is the production arithmetic mode. The upstream
+research modules remain in the corresponding source archive.
+
+George retains its worker-count helper, degree-start and explicit phase events,
+completed-prefix update before checkpoints, public seconds, result downloads,
+OPFS locks and cancellation behavior. ABI 3 and algebra checkpoint identity
+remain unchanged. The C kernel has no George patches. The rebuilding wrapper
+now stages the 0.6 sources and preserves George's host adapters.
+
+Parsed relations are initially expanded and foldable. They and basis results
+wrap into compact groups by term count; basis groups remain within each
+degree. Input numbers retain their original positions. Selection copying
+uses complete expression source syntax, with caret serialization for partial
+superscripts. File Copy/download continues to use original file contents.
+
+Correctness and browser evidence is recorded in VALIDATION.md. Worker timing
+reports retain their measured core versions in PERFORMANCE.md.
+
+## Worker selection follow-up — 2026-10-02
+
+The automatic four-worker ceiling has been removed from George's host.
+`worker-count.js` requests the browser-reported logical CPU count minus one,
+clamped to 1–32. Explicit selections still cover 1–32; unshared execution
+uses one lane. The same helper informs custom scratch-budget validation.
+No Wasm module or vendored source changes are involved. Actual worker count,
+width and storage mode remain in each result and runtime announcement.
+
+The browser exposes potentially available logical processors through
+[`hardwareConcurrency`](https://html.spec.whatwg.org/multipage/workers.html#dom-navigator-hardwareconcurrency).
+Its reported value can be lowered by browser scheduling or privacy policy.
+The count provides the automatic request; performance depends on the algebra,
+batch size, available physical execution resources and host load.
+
 ## fomkyr 0.4.0 — 2026-10-02
 
-The active fomkyr runtime now uses the unmodified four prebuilt modules from
+The 0.4 upgrade used the unmodified four prebuilt modules from
 `vendor/fomkyr-0.4.0/`. The archive SHA-256 is
 `d6feec734d25a1901d2cb3c582caa150d0e91bdfb22b541f1c2da06e9739c20a`;
 all 293 manifest entries were verified before import. The original sources,

@@ -1,0 +1,11 @@
+LIB "freegb.lib";
+ring gn_r=0,(gn_var_2,gn_var_1,gn_var_0),Dp;
+def gn_a=freeAlgebra(gn_r,5);
+setring gn_a;
+ideal I=2251799813685251*gn_var_2*gn_var_1-1125899906842631*gn_var_1*gn_var_2-gn_var_0*gn_var_0,4503599627370505*gn_var_1*gn_var_0-562949953421323*gn_var_0*gn_var_1-gn_var_2*gn_var_2;
+ideal B=2251799813685251*gn_var_2*gn_var_1-1125899906842631*gn_var_1*gn_var_2-gn_var_0^2,gn_var_2^2-4503599627370505*gn_var_1*gn_var_0+562949953421323*gn_var_0*gn_var_1,1267650600228255860144514007073*gn_var_2*gn_var_0*gn_var_1-5070602400912959264283365998655*gn_var_1*gn_var_2*gn_var_0+10141204801825868988970830921755*gn_var_1*gn_var_0*gn_var_2-1267650600228255860144514007073*gn_var_0*gn_var_1*gn_var_2-4503599627370505*gn_var_0^3,2251799813685251*gn_var_2*gn_var_0^2+5708990770823921921522158713071617601242661305*gn_var_1^2*gn_var_0-23549586929648467337822941775678725133999014508*gn_var_1*gn_var_0*gn_var_1+2854495385411983144646583350522750445209780323*gn_var_0*gn_var_1^2+1125899906842631*gn_var_0^2*gn_var_2;
+ideal G=twostd(I);
+ideal H=twostd(B);
+print("ORACLE:"+string(size(reduce(B,G)))+":"+string(size(reduce(I,H))));
+for(int j=1;j<=size(G);j++){print("LEAD:"+string(lead(G[j])));}
+quit;

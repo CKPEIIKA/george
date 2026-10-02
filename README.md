@@ -78,7 +78,8 @@ and results are compared with a native SBCL build, Bergman 2 and Singular
 : Select **fomkyr / C O3 + LTO** for homogeneous noncommutative Gröbner
   bases with 1–16 generators, unit generator degrees, ordinary degree/left
   lexicographic order, ℚ or a prime field. **Worker count** accepts 1–32;
-  0 automatically selects up to four. Unsupported tasks/settings are greyed out.
+  0 selects the browser’s reported CPU threads minus one, within 1–32.
+  Unsupported tasks/settings are greyed out.
   Shared multicore uses browser isolation. Without it, automatic execution
   uses a genuine single-worker module; denied disk storage can fall back to RAM.
   Firefox uses a portable I/O owner while compute lanes remain parallel.
@@ -86,20 +87,32 @@ and results are compared with a native SBCL build, Bergman 2 and Singular
   A first visit to the hosted site may reload once to enable isolation.
   Blank **Maximal degree** requests completion without a chosen degree bound;
   the run still obeys memory and time limits and can be stopped. Long words
-  have variable-length storage rather than the old degree-20 ceiling.
+  have variable-length storage with a configurable workspace budget.
   The kernel budget is at most 14304 MiB; larger allowances select memory64.
   Degree checkpoints can resume the same presentation across execution modes.
   Optional exact Hilbert coefficients appear in **Series**. Blank **Series
   degree** uses the computed degree; a longer prefix requires a proved complete
   basis. Integer coefficients stay exact in the page and CSV/JSON downloads.
   Runtime tuning controls have help under “?” and are saved in Share links.
+  Worker count 0 uses the browser’s reported CPU threads minus one, within
+  1–32; choose 1–32 explicitly to compare counts on your presentation.
+  Single-worker execution uses one lane.
   New fomkyr runs enable monomial pruning, disk storage, checkpoint resume
-  and sparse heap reduction. Exact Hilbert counting is off until selected;
+  and sparse heap reduction, exact rational reduction and compiled local rewrites.
+  Rewrite and shared reducer caches have bounded automatic allowances;
+  their tuning controls are in **Engine**. Exact Hilbert counting is off until selected;
   workers, batches and workspace are automatic. Saved settings and Share
   links retain their explicit choices.
   Output has primitive coefficients; earlier polynomial tails are not globally
   interreduced. Large results have a preview and full disk downloads. Old
   Native NC form preferences and Share links migrate to fomkyr.
+
+**Relation preview**
+: The parsed list below the input starts expanded and can be folded.
+  Relations share compact rows, grouped by their number of terms: monomials,
+  binomials, then longer expressions. Each number refers to its input position.
+  Basis results use the same compact grouping within each degree.
+  Copying selected expressions preserves powers such as `a^2` in plain text.
 
 **Memory**
 : The default engine is **C / ECL O3 + LTO (memory64)** with a **15.7 GiB**
@@ -165,10 +178,12 @@ and results are compared with a native SBCL build, Bergman 2 and Singular
 | `npm run test:backends` | seeded Latin hypercube inputs/settings, exact parity across the four engines |
 | `npm run test:native` | imported kernel tests, bounded FK parity against Bergman and Singular |
 | `npm run test:native:browser` | alias for `test:fomkyr:browser` |
-| `npm run test:fomkyr` | imported suites, 48 FK LHS samples, four anchors and 27 physics cases, all four fomkyr variants, C/ECL and bounded Singular |
+| `npm run test:fomkyr` | imported suites, 64 FK LHS samples, four anchors and 27 physics cases, all four fomkyr variants, C/ECL and bounded Singular |
 | `npm run test:fomkyr:browser` | Firefox/Chromium, root/project paths, isolated/unshared execution, OPFS, resume, Share, long words and cancellation |
-| `npm run test:fomkyr:upgrade` | existing fomkyr 0.3 browser checkpoints resumed by 0.4; independent exact certificates |
+| `npm run test:fomkyr:upgrade` | existing fomkyr 0.3 browser checkpoints resumed by the current engine; independent exact certificates |
 | `npm run test:fk` | small Fomin–Kirillov LHS cases, all four engines, native SBCL and Singular; degrees 2–4 |
+| `npm run test:fk6` | FK6 and a fixed-seed invertible generator scaling, degrees 1–8; all four fomkyr variants and bounded C/ECL/Singular comparisons |
+| `npm run test:fk6:finite` | an independent random-coefficient FK6-shaped presentation, stopping at the proved finite bound, degree 6 |
 | `npm run test:upstream` | 90 adapted Singular/Plural, SymPy and GBNP field cases; independent oracles |
 | `npm run test:resolution:names` | long generator names, differentials |
 | `npm run test:braid` | native/Wasm braid resolutions, full differentials, projectivity and weighted bounds |
@@ -179,7 +194,7 @@ and results are compared with a native SBCL build, Bergman 2 and Singular
 
 ## VERSION
 
-George **0.6** includes fomkyr 0.4.0, configurable multicore execution,
+George **0.6** includes fomkyr 0.6.1, configurable multicore execution,
 disk checkpoints and full result downloads. Unsupported tasks and settings
 are disabled for this backend. Live allocated Wasm memory appears beside
 the computation status, alongside degree progress and elapsed seconds.
@@ -187,6 +202,8 @@ Mathematical options appear in **More settings**; runtime controls are in the se
 **Engine** submenu. Settings have expanded EN/RU help under “?”. New fomkyr
 jobs enable its reduction optimizations and pruning, with optional Hilbert
 counting off. The default is Bergman memory64 with a 15.7 GiB allowance.
+Parsed relations can be folded, and relations and basis results share compact
+rows grouped by term count. Mathematical copying preserves plain-text powers.
 
 George 0.5 added the **C / ECL O3 + LTO (memory64)** engine, allowances up to
 16 GiB and a **No heap cap** setting. It also adds optional monomial pruning

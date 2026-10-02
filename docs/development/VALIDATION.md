@@ -1,5 +1,154 @@
 # Validation and verification
 
+## fomkyr 0.6.1 and grouped polynomial lists — 2026-10-03
+
+The current four Wasm binaries match the supplied 0.6.1 archive byte for byte.
+All 694 imported files match the archive. Its embedded 0.6.0 manifest is stale;
+[fresh import hashes](validation/fomkyr-061-import.json) preserve that fact.
+The kernel has no George patches. Supplied benchmark reports remain in the
+vendor tree with their original conditions; fresh evidence is separate.
+
+- **132 unit tests pass**: [final log](validation/fomkyr-061-unit-tests-final.log).
+  Checks include nonwrapping powers, source/caret copying, compact term-count
+  groups, fold state, availability-based workers, 0.6.1 optimizer defaults,
+  budget conversion and persisted/Share settings, independent BigInt normal-word
+  counting, seeded fixtures and exact invertible generator scalings.
+- **25 imported suites pass**: [report](validation/fomkyr-061/report.json),
+  [native source/build provenance](validation/fomkyr-061/provenance.json).
+  New suites cover audit policy, strict rational oracle interchange and ten
+  real-Wasm rational-rewrite configurations with independent Python completion.
+  The earlier native/actual-Wasm/installer/optimizer/progress/physics/rational
+  suites, 46,534 compiled FK6 identities, modular checks and UBSan also pass.
+  The compiled-Wasm suite contains thirteen engine jobs and twelve serialized
+  basis certificates. The staging harness gives each job/certificate its own
+  120-second limit and allows their aggregate runtime to finish. All original
+  cases are retained. The original vendored test is unchanged.
+- **95 cases / 380 Wasm runs / 95 bounded Singular checks** pass the expanded
+  **64-sample, 24-dimensional** Latin hypercube plus anchors and physics cases.
+  The added dimension toggles rational compiled rewrites. Each module agrees
+  with C/ECL and Singular by exact mutual ideal membership, leading words and
+  Hilbert prefixes; **105,376 critical ambiguities** pass independently.
+  These small-case Singular jobs used its generic arithmetic fallback.
+  Subsequent degree matrices and benchmarks explicitly load the packaged
+  arithmetic modules using `SINGULAR_PROCS_DIR` and reject loading failures.
+- **Eight UI scenarios pass**: [Chromium/Firefox evidence](validation/fomkyr-browser-061/report.json),
+  root/project paths, isolated/shared and unshared execution, real OPFS, cached
+  continuation, Share, grouped/folded lists, original syntax copying, defaults,
+  help at 390 px, cancellation and restart. Auto selection is seven compute
+  lanes on this eight-thread host, one in unshared mode.
+- **Both Pages-style browser checks pass**, without server isolation headers:
+  [Chromium](validation/fomkyr-static-061-chromium/report.json),
+  [Firefox](validation/fomkyr-static-061-firefox/report.json).
+  They check service-worker isolation, actual parallel OPFS execution, wasm32/
+  memory64, project/root mounts, cache versions and single-worker fallback.
+- **Eight old checkpoint extensions pass**: [0.3 → 0.6.1](validation/fomkyr-upgrade-061-from03/report.json),
+  [0.4 → 0.6.1](validation/fomkyr-upgrade-061-from04/report.json).
+  Both browsers over Q/F101 extend real wasm32 degree-4 checkpoints in memory64
+  to degree 5 and match fresh output plus an independent critical-pair certificate.
+- **32 displayed-layout checks pass**: [report and screenshots](validation/math-layout-061/report.json).
+  Actual FK6 degree-2 output, Chromium/Firefox, two themes, widths 390/960/1280/
+  1920 px and root fonts 16/24 px. All fifteen powers stay attached and raised;
+  clipboard serialization retains every caret. Desktop/mobile crops were inspected.
+- **Fourteen completed cold fomkyr samples match the fresh matrix exactly**:
+  [polynomial-set audit](validation/fomkyr-061-resources-partial/fk6/fomkyr-output-audit.json).
+  The duplicate full benchmark was stopped at the user's request and remains
+  explicitly marked interrupted. Existing baseline measurements are retained;
+  future default benchmark commands time only the updated fomkyr.
+
+### Finite random-coefficient fixture
+
+[The calibrated finite matrix](validation/fk6-matrix-061/report.json) covers
+six FK6 bounds and six seeded, independent-coefficient FK6-shaped bounds:
+**12 cases / 48 actual Wasm runs / 12 completed Singular oracles**. Every
+included Singular job finishes within 120 seconds. Normal-word counts use an
+independent BigInt avoidance automaton. Exact input/mutual ideal membership
+and leading words agree; distinct bases receive critical-pair certificates
+through degree 4. Additional C/ECL checks pass where completed; its random
+degree-5 job is censored and higher C/ECL jobs are skipped.
+
+The random coefficient fixture has prefix `1,15,125,522,14,1,0`, proving finite
+dimension 678. The exploratory degree-7 oracle reached 120 seconds and added
+no graded information after that zero. The updated matrix driver stops when
+either fixture has a proved zero coefficient. `npm run test:fk6:finite` defaults
+to bounds 1–6 and never requests degree 7. The generic resource driver also
+uses the input-hash-matched finite certificate to skip higher bounds.
+
+Degree 1 is the empty linear prefix of these quadratic presentations. Singular
+requires ring degree at least 2 and receives the zero ideal for this prefix.
+Bergman loads its initial degree regardless of a smaller requested maximum,
+so its degree-1 check receives the zero relation. Those substitutions are
+recorded explicitly; fomkyr receives the full input and stops before degree 2.
+
+### Growing scaled FK6 matrix
+
+[The growing matrix](validation/fk6-growing-matrix-061/report.json) covers
+**eight FK6 bounds and eight randomly scaled bounds: 16 cases / 64 actual
+Wasm runs / 16 completed Singular oracles**. Every included Singular job
+finishes within 120 seconds. All four shared/unshared wasm32/memory64 modules
+agree by exact input and mutual ideal membership, leading words and independent
+BigInt Hilbert prefixes. Distinct bases receive critical-pair certificates
+through degree 4. Additional C/ECL comparisons run until their first time cap.
+
+The growing randomized fixture uses seeded invertible generator scalings of
+the submitted presentation. It is graded-isomorphic to FK6: dimensions and
+monomial supports are preserved, while exact rational coefficients vary.
+The independent-coefficient finite fixture remains a separate regression.
+The included degree-8 Singular jobs took 77.47 and 82.75 seconds. The attempted
+FK6 degree-9 oracle reached the 120-second cap and is recorded as censored;
+it supplies no completed degree-9 Singular comparison. `npm run test:fk6`
+defaults to this calibrated bound of 8. Resource benchmarks separately probe
+degrees 1–9 and preserve every timeout.
+
+## fomkyr 0.6.0 and compact polynomial lists — 2026-10-03
+
+All 557 upstream manifest entries were verified on import. The four packaged
+Wasm modules match the supplied binaries, and George has no C kernel patches.
+The corresponding source contains the original 0.6 fixtures/tests/reports.
+Fresh local evidence is separate from those supplied reports.
+
+- **126 unit tests pass**: [final log](validation/fomkyr-06-unit-tests-final.log).
+  New checks cover term-count grouping, original relation numbering, caret
+  clipboard serialization, availability-based worker counts, new optimizer
+  defaults, cache-budget bounds/conversion and saved/Share settings.
+- **22 imported suites pass** in staging, including the previous 15 core
+  suites, native Clang O3/LTO, UBSan, 10,000 exact rational arithmetic cases,
+  rational coefficient/fallback cases, 44 local-rewrite edge cases, all
+  **46,534 compiled FK6 identities plus degree-5 completion**, 17 real-Wasm
+  cache checks, direct-control migration and modular API compatibility.
+  The upstream native physics matrix still omitted its field argument; the
+  staging harness explicitly passes its loop's modulus. Imported sources
+  and production kernels are unchanged. Node filesystem OPFS is emulated.
+  [Fresh upstream evidence and initial 79-case parity run](validation/fomkyr-06/report.json),
+  [source/build provenance](validation/fomkyr-06/provenance.json).
+- **95 comparison cases / 380 fomkyr Wasm runs / 95 bounded Singular checks**
+  pass the expanded **64-sample, 23-dimensional** FK Latin hypercube, four
+  anchors and 27 small physics cases. New dimensions cover rational heap,
+  compiled rewrites, local length 2/3/4, support 1/8/64, zero/small/automatic
+  rewrite and shared-cache budgets. Every declared numeric stratum is covered
+  before quantization. Ranks 3–6, Q/F2/F3/F5/F7/F101, variable permutations,
+  signs/reversal, pruning and older tuning settings remain covered. Degrees
+  are 2–5, with rank 6 capped at 4. All four Wasm variants agree with C/ECL
+  and Singular by exact mutual ideal membership, leading words and Hilbert
+  prefixes; **105,376 critical ambiguities** pass independently.
+  [Expanded report, generated Singular programs and bases](validation/fomkyr-06-lhs/report.json).
+  The initial 79-case matrix remains archived separately. The expanded run
+  reuses its verified 22 upstream-suite results with matching kernel hashes;
+  it runs every expanded algebra comparison afresh.
+
+Historical 0.6.0 browser checks passed all eight UI scenarios, both static-host
+matrices and eight old-checkpoint extensions. Current 0.6.1 evidence appears
+at the top of this document.
+All computations have deadlines at most 120 seconds. George remains 0.6.0,
+with experimental shown only in the fomkyr chooser. Performance measurements
+retain their tested versions and separate runtime conditions in PERFORMANCE.md.
+
+Reproduce with `npm test`, `npm run test:fomkyr`,
+`npm run test:fomkyr:browser`, `npm run test:fomkyr:upgrade`,
+`npm run test:static`, and
+`node tools/validate-static-isolation.mjs OUTPUT --firefox`.
+The source build wrapper stages 0.6.1 and preserves George's host adapters;
+the four production Wasm modules are imported prebuilt binaries.
+
 ## fomkyr 0.4.0 upgrade — 2026-10-02
 
 All four packaged shared/unshared wasm32/wasm64 modules match the verified

@@ -1,5 +1,110 @@
 # Runtime performance assessment
 
+## fomkyr 0.6.1 and retained baselines — 2026-10-03
+
+The requested release retains the existing Bergman/SBCL/Singular baselines.
+An unnecessary full repeat was stopped at the user's request. Its
+[partial cold-browser record](validation/fomkyr-061-resources-partial/fk6/report.json)
+is explicitly marked interrupted: 38 completed points and two censored Lisp
+points, with fomkyr measured through degree 7. No new complete degree-1–9
+resource plot or 0.6.1 worker-scaling series is claimed.
+All fourteen completed fomkyr samples exactly match the monic polynomial
+sets of the fresh certified degree matrix:
+[output audit](validation/fomkyr-061-resources-partial/fk6/fomkyr-output-audit.json).
+
+The completed degree-7 fomkyr samples can be compared with the fresh Singular
+CLI check in the [degree matrix](validation/fk6-growing-matrix-061/report.json):
+the same i5-1135G7 PC, original input SHA-256, variable order and Q.
+Fomkyr uses memory64, a 2 GiB kernel allowance, four actual workers, pruning
+and default optimizers, Hilbert counting off and no resumed checkpoint.
+Singular's packaged arithmetic modules are explicitly loaded. Its matrix CLI
+job has the same two-minute deadline, with CPU/RAM sampling omitted.
+
+| Engine | Wall seconds | CPU core-seconds |
+|---|---:|---:|
+| fomkyr 0.6.1 / Chromium | 1.21 | 3.90 |
+| fomkyr 0.6.1 / Firefox | 4.20 | 4.81 |
+| Singular / Letterplace, fresh native CLI oracle | 18.30 | — |
+
+These samples support faster completion with fomkyr for this presentation
+at degree 7 on this PC. The wall-time ratios are about 15.2× for Chromium
+and 4.4× for Firefox. They are separate single cold runs; load and caches can
+affect them. Browser wall time includes engine initialization, computation,
+export and initial delivery, excluding browser launch. Singular includes
+fresh CLI startup. Parallel worker count is part of the configuration.
+The comparison establishes no general speed ranking across other algebras,
+degrees or machines.
+
+The [existing Singular resource baseline](validation/backend-resources-degree8/report.json)
+took 17.86 seconds / 17.76 core-seconds at degree 7. Its log records generic
+arithmetic fallback because the Q module search path was missing. It retains
+its original conditions; the fresh module-loaded CLI time is used above.
+
+[Fresh correctness-matrix diagnostics](validation/fk6-growing-matrix-061/report.json)
+also favor fomkyr at degrees 7/8 for both the original and invertibly scaled
+presentation. These Node engine timers have different startup accounting and
+512 MiB kernel / 128 MiB scratch settings; they remain separate from the cold
+browser timings. Every included Singular oracle finishes within 120 seconds;
+the degree-9 attempt is censored. The scaled form is graded-isomorphic to FK6.
+
+`npm run benchmark:resources` now measures updated fomkyr only.
+`npm run benchmark:fk6` measures both growing forms and its Chromium/Firefox
+worker probes, then audits outputs and produces resource plots. Existing
+baselines retain their original versions and conditions. Explicitly requesting
+`npm run benchmark:fk6 -- --all-backends` repeats the full browser/native matrix.
+No further measurements are required for this release.
+
+## Worker scaling with fomkyr 0.4 — 2026-10-02
+
+The submitted 15-generator/100-relation Q presentation through degree 9 was
+measured with 1, 2, 4, 6, 8 and automatic workers in Chromium 153 and Firefox
+155. On this i5-1135G7 host, the browser reports eight logical CPUs; the
+processor has four physical cores. Automatic selection requests seven lanes.
+All requested lanes processed pairs, as checked from the kernel counters.
+These measurements use fomkyr 0.4.0; the later 0.6 import is recorded separately.
+
+Three serial cold trials per configuration used memory64, a 2048 MiB kernel
+allowance, one shared 512 MiB scratch pool, pruning/optimizers on and Hilbert/
+resume off. Holding each batch at 32 pairs isolates the worker-count setting.
+Wall time includes startup, computation, export and initial delivery.
+
+| Actual workers | Chromium median seconds (range) | Firefox median seconds (range) |
+|---:|---:|---:|
+| 1 | 24.56 (21.25–29.64) | 26.48 (23.54–38.31) |
+| 2 | 12.81 (12.49–21.17) | 17.01 (16.38–17.16) |
+| 4 | 10.21 (9.62–18.72) | 13.44 (13.39–14.04) |
+| 6 | 9.66 (8.83–17.26) | 13.36 (12.49–14.01) |
+| 8 | 11.05 (8.91–16.27) | 13.74 (13.25–14.43) |
+| 7 (automatic) | 9.05 (8.60–16.95) | 13.86 (13.18–14.13) |
+
+Going from one to four workers gives 2.41×/1.97× median improvement in
+Chromium/Firefox. Additional workers provide a smaller gain on this host;
+Firefox's four/six medians differ by 0.6%. Ranges overlap, and background
+load varied from 3.69 to 13.52. CPU time grows with worker count: Chromium
+25.33→33.68→38.98 core-seconds at 1/4/8 lanes, Firefox 27.18→36.86→43.50.
+Additional peak physical PSS grows from about 53.7 to 97.6 MiB in Chromium
+and 43.7 to 69.5 MiB in Firefox; the exact per-configuration values are in
+the summary. These measurements support adjustable counts and removing
+the four-worker automatic ceiling. They do not establish a universal best count.
+
+A separate single probe per count used the default batch size, workers×8.
+Chromium 1/2/4/6/8/auto took 20.89/11.36/8.57/8.02/7.71/7.71 seconds;
+Firefox took 23.42/15.91/12.58/13.35/15.64/14.31 seconds. These probes
+combine worker-count and batch-size effects. The automatic batch policy
+is unchanged. All 48 completed outputs contain 1451 rules and pass exact
+input membership, leading-word and mutual-ideal checks against the archived
+0.4 degree-9 output. This high-degree comparison is consistency evidence;
+independent small-degree Singular/critical-pair certificates are separate.
+
+[Controlled trials](validation/fomkyr-worker-scaling-controlled/report.json),
+[default probes](validation/fomkyr-worker-scaling-defaults/report.json) and
+[exact audit/CPU/RAM summary](validation/fomkyr-worker-scaling-summary/report.json)
+include every completed basis and resource sample. Browser profiles are omitted.
+All computations obeyed the 120-second cap. Counts are available under Engine;
+automatic selection uses the browser-reported logical CPU count minus one,
+clamped to 1–32. Browser scheduling/privacy policies can lower that reported
+count; see the primary API reference in BACKENDS.md.
+
 ## fomkyr 0.4.0 versus 0.3.0 — 2026-10-02
 
 The same submitted 15-generator, 100-relation presentation over Q was timed
