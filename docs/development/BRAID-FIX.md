@@ -1,8 +1,7 @@
 # Idempotent braid resolution fix
 
 The default-mode stall for `a^2-a, b^2-b, b*a*b-a*b*a` is resolved.
-Changes live on `fix/anick-braid`; the published release is kept on
-`gh-pages` until the user publishes the fix.
+The fix is included in the default behavior patches and regression suite.
 
 ## Causes and changes
 

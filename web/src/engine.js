@@ -1,15 +1,17 @@
 import { getBackend } from './backends.js';
+import { backendCapabilities } from './backend-capabilities.js';
 import { deadline, validateTimeoutMs } from './time-limit.js';
 
 // Form computations start in independent Bergman sessions. Console commands
 // share the current session. Stop terminates Wasm; the next call restarts it.
 export class EclEngine {
-  constructor({backend = 'standard', getBackend: readBackend, getTimeoutMs, onReady} = {}) {
+  constructor({backend = 'standard', getBackend: readBackend, getTimeoutMs, onReady, onMemory} = {}) {
     getBackend(backend);
     this.backend = backend;
     this.readBackend = readBackend;
     this.readTimeoutMs = getTimeoutMs;
     this.onReady = onReady;
+    this.onMemory = onMemory;
     this.nextId = 0;
     this.pending = new Map();
     this.generation = 0;
@@ -19,12 +21,19 @@ export class EclEngine {
 
   init() {
     if (!this.busy) this.setBackend(this.readBackend?.() ?? this.backend);
+    if (this.stopping) return this.stopping.then(() => this.init());
     if (this.initializing) return this.initializing;
-    const worker = this.worker = new Worker(new URL('../engine/worker.js', import.meta.url), { type: 'module' });
+    const worker = this.worker = new Worker(new URL(getBackend(this.backend).worker ?? '../engine/worker.js', import.meta.url), { type: 'module' });
+    this.workerClosed = false;
     worker.onmessage = ({ data }) => {
+      if (data.closed) {if (worker === this.worker) this.workerClosed = true; return;}
       const p = this.pending.get(data.id);
       if (!p) return;
-      if (data.event) { p.onEvent?.(data.event); return; }
+      if (data.event) {
+        if (data.event.type === 'control' && data.event.memory?.buffer instanceof SharedArrayBuffer) this.nativeControl = data.event;
+        if (data.event.type === 'memory') this.onMemory?.(data.event.bytes);
+        p.onEvent?.(data.event); return;
+      }
       this.pending.delete(data.id);
       if (data.error) {
         const error = Object.assign(new Error(data.error), {code: data.code, partialResult: data.partialResult});
@@ -83,7 +92,12 @@ export class EclEngine {
   }
 
   run(job, onEvent) { return this.execute('run', { job }, onEvent, true); }
-  eval(source, onEvent) { return this.execute('eval', { source }, onEvent, false); }
+  eval(source, onEvent) {
+    if (backendCapabilities(this.readBackend?.() ?? this.backend).console === false) {
+      return Promise.reject(new Error('The selected engine does not support the Lisp console.'));
+    }
+    return this.execute('eval', { source }, onEvent, false);
+  }
 
   setBackend(id) {
     getBackend(id);
@@ -97,7 +111,20 @@ export class EclEngine {
     this.clearDeadline?.();
     this.clearDeadline = null;
     this.generation++;
-    this.worker?.terminate();
+    const stoppedWorker = this.worker;
+    if (this.nativeControl && stoppedWorker && !this.workerClosed) {
+      Atomics.store(new Int32Array(this.nativeControl.memory.buffer, this.nativeControl.cancelOffset, 1), 0, 1);
+      // Let the coordinator close OPFS handles before another run opens them.
+      this.stopping = new Promise(resolve => {
+        let timer, finished = false;
+        const finish = () => {if (finished) return; finished = true; clearTimeout(timer); stoppedWorker.terminate(); this.stopping = null; resolve();};
+        stoppedWorker.onmessage = ({data}) => {if (data.closed) finish();};
+        stoppedWorker.onerror = finish;
+        timer = setTimeout(finish, 3000);
+        stoppedWorker.postMessage({id: -1, command: 'cancel', backend: 'native'});
+      });
+    } else stoppedWorker?.terminate();
+    this.nativeControl = null;
     this.worker = null;
     this.initializing = null;
     this.used = this.busy = false;

@@ -9,7 +9,7 @@ site branch's root; `build/publication/plan.json` records the reviewed refs.
 Run `bash build/publication/publish.sh` from the repository. The script
 checks the prepared refs, pushes both atomically without forcing, then
 waits for that site commit's Pages workflow. It verifies the served
-HTML, UI sources, all four runtime manifests and assets, and the
+HTML, UI sources, the isolation worker, all five runtime manifests and assets, and the
 corresponding source archive against the commit.
 Failure returns a nonzero exit status with the workflow URL. Verification
 uses Node and Git; it does not require GitHub CLI or an API token for this
@@ -39,3 +39,13 @@ is required. The workflow and publisher do not alter repository settings.
 
 Full builds, algebra checks and profiling run locally before publication;
 the deployment workflow uploads already committed assets.
+
+## Static-host isolation
+
+The site includes its own isolation service worker. On a first secure visit,
+the entry module registers it in the site directory and reloads once before
+starting the app. It adds COOP/COEP to same-origin network responses, enabling
+Native NC's shared Wasm workers on Pages without changing repository settings.
+It does not store an offline asset cache; GET requests revalidate assets.
+Service-worker or isolation failures leave Native disabled and Bergman available.
+Both root and project-directory hosting must be checked before publication.

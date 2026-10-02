@@ -19,6 +19,7 @@ const FIELDS = [
   ['backend', 'standard'],
   ['timeoutMinutes', 0],
   ['monomialPruning', false],
+  ['nativeWorkers', 0],
 ];
 const CHOICES = {
   ring: ['noncomm', 'comm'], field: ['0', '2', 'p'],
@@ -35,6 +36,7 @@ function validateState(state) {
   }
   if (!ORDERS[state.ring].some(order => order.id === state.order)) throw new Error('share.invalid');
   if (!validMemoryMiB(state.memoryMiB, state.backend)) throw new Error('share.invalid');
+  if (!Number.isInteger(state.nativeWorkers) || state.nativeWorkers < 0 || state.nativeWorkers > 32) throw new Error('share.invalid');
   try { timeoutMilliseconds(state.timeoutMinutes); } catch { throw new Error('share.invalid'); }
   return state;
 }
@@ -65,10 +67,10 @@ async function readBytes(stream) {
 
 export async function createShareLink(values, href) {
   const state = validateState(Object.fromEntries(FIELDS.map(([key, fallback]) => [key, values[key] ?? fallback])));
-  let mask = 0;
+  let mask = 0n;
   const changed = [];
   FIELDS.forEach(([key, fallback], i) => {
-    if (state[key] !== fallback) { mask |= 1 << i; changed.push(state[key]); }
+    if (state[key] !== fallback) { mask |= 1n << BigInt(i); changed.push(state[key]); }
   });
   let bytes = new TextEncoder().encode(JSON.stringify([mask.toString(36), ...changed]));
   if (bytes.length > MAX_BYTES) throw new Error('share.tooLarge');
@@ -96,7 +98,7 @@ export async function readShareLink(hash) {
   const mask = parseInt(packed[0], 36);
   if (!Number.isSafeInteger(mask) || mask < 0 || mask >= 2 ** FIELDS.length) throw new Error('share.invalid');
   let offset = 1;
-  const state = Object.fromEntries(FIELDS.map(([key, fallback], i) => [key, mask & (1 << i) ? packed[offset++] : fallback]));
+  const state = Object.fromEntries(FIELDS.map(([key, fallback], i) => [key, BigInt(mask) & (1n << BigInt(i)) ? packed[offset++] : fallback]));
   if (offset !== packed.length) throw new Error('share.invalid');
   return validateState(state);
 }

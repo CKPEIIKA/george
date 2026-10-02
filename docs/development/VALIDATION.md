@@ -1,8 +1,118 @@
 # Validation and verification
 
+## George 0.6 experimental release checks — 2026-10-02
+
+All **97 unit tests** pass: [unit log](validation/unit-tests-06.log).
+The static-host check uses no server isolation headers at either `/` or
+`/george/`. The app installs its local service worker, then Native NC computes
+with two workers in both wasm32 and memory64. Reload preserves settings,
+both release labels are localized, no offline cache is created and no
+external requests occur. With the service-worker API unavailable, Native is
+disabled and Bergman remains usable: [report](validation/static-isolation-06.json).
+
+The final [UI regression](validation/ui-06.json) passes at root and project
+paths, including 390 px mobile layout, EN/RU, themes, MathJax, all four
+Bergman backends, old Share defaults, timeouts and blocked storage.
+The fresh [Native UI regression](validation/native-ui-06.json) passes worker
+selection, persistence/Share, both widths, live memory, OPFS downloads,
+capability restrictions, cancellation/resume and timeout/restart.
+
+## Native NC integration — 2026-10-02
+
+George **0.6.0 is experimental**, with an explicitly selected `native` backend.
+The Native NC 0.1.0 archive's manifest was checked before importing its
+sources, tests and unchanged wasm32/wasm64 modules. MIT notices are retained.
+The stale overlay installer was not applied; George uses a separate worker
+and its existing configurable capability controls.
+
+- **94 unit tests** pass: [log](validation/unit-tests-native.log). Native
+  constraints, manifests, worker-count sharing (including bit 31 of the
+  version-1 mask), cooperative cancellation and restart are covered.
+- The appropriate imported **native, extra, Wasm and integration suites**
+  pass in a staging copy. They include independent Fraction reductions,
+  word encoding past 64 bits, actual 155-bit coefficients, prime fields,
+  bounded allocation failure, cancellation and cross-width checkpoint resume.
+  Historical result files and the original installer/browser harness were
+  not used as current integration proof.
+- **19 local parity cases / 38 Native runs**, wasm32/one worker and
+  memory64/three workers: 16 FK LHS samples, two low-degree anchors and the
+  155-bit-coefficient fixture. C/ECL and **19 bounded Singular
+  checks** agree by mutual ideal membership and normal-word dimensions.
+  **8658 critical ambiguities** pass across both widths. FK degrees are 2–4,
+  with the reference 15-generator case bounded at 3; the coefficient anchor
+  is bounded at 5. Full details: [native.json](validation/native.json).
+- Actual isolated Chromium checks worker selection/persistence/Share,
+  capability grey-out, EN/RU “?” help and file controls, exact OPFS text
+  versus preview, automatic memory64 above 4095 MiB, live memory, stop/resume,
+  configured timeout/restart, and returning to Bergman. Without isolation
+  Native is disabled: [native-ui.json](validation/native-ui.json).
+- **21 serial browser degree-7 trials** give 695-rule outputs with matching
+  leading words and mutual reductions. An independent checker certifies
+  **10250 ambiguities** through degree 7. Best measured Bergman median is
+  **29.15 s**, Native/four workers **2.91 s** (**10.02×**); see
+  [timings](validation/native-speed.json),
+  [output-hash/leading-word audit](validation/native-leading-words.json)
+  and [PERFORMANCE.md](PERFORMANCE.md) for scope and memory figures.
+
+The browser test exposed a form stop/restart race: an old rejected run
+could overwrite a replacement run's status. Form generations fix it.
+Native cancellation also waits for OPFS handles to close, and already
+closed workers terminate immediately. No kernel mathematics was changed.
+Native output is degree bounded and its old tails are not globally
+interreduced. No new main-case degree-8-or-higher run was made; bundled
+degree-10 claims in the original backend archive were not independently rerun.
+
+The reports above were produced before the 0.6 version bump; their recorded
+versions and hashes are preserved. The mathematical Wasm modules are unchanged.
+The full preceding UI audit is [ui-native.json](validation/ui-native.json).
+Public evidence paths are normalized to repository-relative paths; timings,
+versions, output hashes and runtime hashes are unchanged.
+
+## Local 0.5 follow-up — 2026-10-02
+
+The focused Fomin–Kirillov suite uses **16 LHS samples + 2 anchors**,
+with full rank-3-to-6 presentations, variable permutations/signs,
+Q/F2/F3/F5/F7, reversal, pruning and both behavior modes. Degree bounds
+are **2–4**, with rank 6 capped at **3**. `npm run test:fk` runs it with a
+30-second per-calculation watchdog (`GEORGE_TEST_TIMEOUT_MS` overrides it).
+The definition follows [section 2 of Blasiak, Liu and Mészáros](https://arxiv.org/pdf/1310.4112).
+
+All **18 native cases** agree byte for byte with all four engines (**72
+engine runs**). Independent reduction certifies **4317 ambiguities** within
+the bounds. Singular checks both generating-set memberships and normal-word
+dimensions using **the same low degree bound**, rather than completing a
+larger basis. The exact reference presentation has dimensions **1, 15,
+125, 765** through degree 3. No high-degree or unrestricted result is claimed.
+The initial harness failed because its Singular ring identifier collided
+with the presentation generator `r`; synthetic oracle names fix that collision.
+All engine/native results already agreed; no mathematics change was needed.
+
+The full case forms, compiler identities and per-output hashes are in
+[fomin-kirillov.json](validation/fomin-kirillov.json).
+
+All **88 unit tests** pass ([log](validation/unit-tests-local05.log)). The actual browser UI checks the new memory64 /
+**16077 MiB (15.7 GiB)** default, retained settings/Share behavior, configurable
+task/setting grey-out, and live memory display on each of the four backends.
+The [full UI report](validation/ui-local05.json) covers root and `/george/`,
+mobile, blocked storage and a simulated browser without memory64 support.
+After that run, fixed boolean settings were hardened to reject string
+values such as `"false"`. This is the only source difference in that report;
+the final 88-test log and a [focused browser check](validation/ui-capabilities-local05.json)
+cover the stricter validation and the actual disabled/re-enabled controls.
+All source hashes in the focused report match the final local sources.
+Separate production-worker checks retain two 120 MiB arrays on wasm32 and
+memory64 and confirm multiple memory updates arriving **while a synchronous
+allocation is still pending**. GC roots and exact arithmetic pass. Values
+describe allocated Wasm memory, not live Lisp heap or total browser RAM.
+Streaming event sizes, pending-command flags and runtime hashes are retained
+in [memory64](validation/memory-monitor-memory64.json) and
+[wasm32](validation/memory-monitor-wasm32.json) reports.
+
+These reports retain their original 0.5 identities as historical evidence.
+
 ## George 0.5 — 2026-10-02
 
-The current package is **0.5.0**. It adds an explicitly selected
+That package was **0.5.0**. It added an explicitly selected
 **C / ECL O3 + LTO (memory64)** engine to the three existing backends.
 All four use identical Bergman data; the wasm32 C backend remains the
 default. Final memory64 asset identities and report hashes are in
@@ -39,8 +149,8 @@ live Lisp heap, except the explicitly retained arrays. Timings gathered
 during concurrent builds and validation are diagnostic; **no memory64
 speed advantage is claimed**. No-cap removes ECL's allowance but this
 engine still has a **16 GiB browser memory maximum**. The submitted
-presentation has not been checked at degrees 9–11 in memory64. The user's
-cancelled degree-eight run remains cancelled. Degree-bounded results do
+presentation has not been checked at degrees 9–11 in memory64. The
+degree-eight run was cancelled. Degree-bounded results do
 not certify unrestricted completion.
 
 ## George 0.4 — 2026-10-01
@@ -96,7 +206,7 @@ See [PERFORMANCE.md](PERFORMANCE.md) and
 hashes, current checks and historical timing evidence. The initial paired
 0.4 timings and memory audits retain their original runtime identity;
 they were not remeasured after the boundary corrections. The current
-submitted presentation still matches native through degree four in every
+reference presentation still matches native through degree four in every
 backend and through degree seven in the C share-link check. **No degree-eight
 run was performed.** Degree bounds do not certify an unrestricted basis.
 
@@ -127,7 +237,7 @@ are excluded from the release. See [PERFORMANCE.md](PERFORMANCE.md) and
 [performance.json](validation/performance.json) for exact hashes, build
 variants, measurements and checks on this engine.
 
-The submitted 15-generator, 100-relation presentation takes **9.635 seconds**
+The reference 15-generator, 100-relation presentation takes **9.635 seconds**
 through degree 4, versus **17.541 seconds** on the preceding engine in the
 same current Chromium measurement series (medians of three runs). Through
 degree 6 it takes **155.148 seconds**, saving 497 basis elements. Both outputs
@@ -162,7 +272,7 @@ and the explicit setting in `ports/ecl/link-wasm.sh`.
 | Heap exhaustion | A real 128 MiB limit failure returns saved basis output, releases the worker and permits the next command |
 | Form and language handling | The actual form displays the interrupted basis and memory status in EN/RU, retains the setting and computes successfully after restart |
 
-The submitted presentation contains **15 generators and 100 quadratic
+The reference presentation contains **15 generators and 100 quadratic
 relations** over Q. In Chromium without a debugger, its degree-4 run takes
 **50.093 seconds** and matches the native output: 100, 76 and 89 basis
 elements in degrees 2, 3 and 4 (265 total).
@@ -354,11 +464,9 @@ to execute all assertions in one process; local tooling requires Node >=22.8.
 
 The pinned ECL/SDK build and link were executed locally, reusing the native
 and cross toolchains after their initial builds. All builds and checks run
-locally. Repository CI/Actions workflows were removed. Pages publication uses
-the prebuilt `web/` tree on a `gh-pages` branch, as described in the README.
-The user deferred concurrent console changes; browser checks and source
-packaging use the isolated release checkout `/tmp/george-release-20260930`.
-The shared workspace retains those edits for a later release.
+locally. Pages publication uses the prebuilt `web/` tree on a `gh-pages`
+branch, as described in [DEPLOYMENT.md](DEPLOYMENT.md). The original checks
+and source packaging used an isolated release checkout.
 Project-site compatibility was
 verified locally at `/george/`, including worker/Wasm paths and MIME types.
 

@@ -77,6 +77,7 @@ export function initConsole({ $, engine, storage, runCurrent }) {
   const label = $('promptLabel');
   const chips = $('consoleChips');
   let busy = false;
+  let enabled = true;
   let count = 1;
   let ghost = '';
   let dismissed = null;
@@ -173,7 +174,7 @@ export function initConsole({ $, engine, storage, runCurrent }) {
   }
 
   async function submit(force = false) {
-    if (busy) return;
+    if (busy || !enabled) return;
     const raw = input.value.trim();
     if (!raw) return;
     const b = balance(raw);
@@ -218,8 +219,10 @@ export function initConsole({ $, engine, storage, runCurrent }) {
 
   function setBusy(value) {
     busy = value;
-    $('promptForm').querySelector('button[type=submit]').disabled = value;
-    $('pasteJob').disabled = value;
+    $('promptForm').querySelector('button[type=submit]').disabled = value || !enabled;
+    $('pasteJob').disabled = value || !enabled;
+    input.disabled = !enabled;
+    for (const button of chips.querySelectorAll('button')) button.disabled = !enabled;
     $('stopConsole').hidden = !value;
     status();
   }
@@ -373,6 +376,7 @@ export function initConsole({ $, engine, storage, runCurrent }) {
   $('stopConsole').addEventListener('click', () => engine.cancel());
   $('clearTerm').addEventListener('click', () => { term.textContent = ''; input.focus(); });
   $('pasteJob').addEventListener('click', async () => {
+    if (busy || !enabled) return;
     let job;
     try { job = runCurrent.build(); } catch (error) { write(`${error.message}\n`, 'o-err'); return; }
     writeHTML(`<span class="prompt-echo">% input.bg</span>\n${highlight(job.files['input.bg'])}\n${highlight(job.script)}`, 'in');
@@ -420,6 +424,7 @@ export function initConsole({ $, engine, storage, runCurrent }) {
   loadHelpTexts().then(render);
 
   return {
-    updateLanguage() { renderChips(); render(); },
+    setEnabled(value) {enabled = value; setBusy(busy);},
+    updateLanguage() { renderChips(); setBusy(busy); render(); },
   };
 }

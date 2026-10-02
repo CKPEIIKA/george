@@ -5,7 +5,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import assert from 'node:assert/strict';
 import {spawnSync} from 'node:child_process';
-import {BACKENDS} from '../web/src/backends.js';
+import {BERGMAN_BACKENDS as BACKENDS} from '../web/src/backends.js';
 import {buildJob, monomialPruningAvailable, ORDERS, parseBasis, parseRelation, toBergman} from '../web/src/bergman-syntax.js';
 import {latinHypercube} from '../test/support/backend-lhs.mjs';
 import {BackendClient} from '../test/support/backend-client.mjs';

@@ -5,7 +5,7 @@ GEORGE(1)                      George Manual                      GEORGE(1)
 ## NAME
 
 **george** — Gröbner bases, Hilbert series and Anick resolutions in the
-browser, *an interface to bergman*
+browser, *an interface to bergman and more…*
 
 ## TRY IT
 
@@ -17,6 +17,7 @@ No installation. Everything runs in your browser; nothing is sent to a server.
 
 ```
 npm ci && npm run serve        open http://127.0.0.1:8000/
+npm run serve:native            local server with isolation for Native NC
 npm test                       unit tests
 npm run test:ui                browser checks: examples, EN/RU, themes, /george/
 npm run wasm:build:backends    rebuild all four engines
@@ -30,6 +31,9 @@ with documented fixes enabled by default and original behavior in legacy mode. I
 Gröbner bases in free associative and commutative algebras over ℚ, 𝔽₂ and
 𝔽ₚ, Hilbert and Poincaré–Betti series, Anick resolutions, Betti numbers of
 algebras and modules, and Hochschild homology. Arithmetic is exact.
+
+**0.6 is an experimental release**, adding an independent Native NC backend
+for homogeneous noncommutative Gröbner bases.
 
 ## ARCHITECTURE
 
@@ -54,7 +58,7 @@ static site (GitHub Pages)       web/ → gh-pages
 
 ## DISCLAIMER
 
-THIS SOFTWARE IS VIBE-CODED! The mathematics is bergman's own, and the interface is tested against the
+THIS SOFTWARE IS VIBE-CODED! The Bergman engines use bergman's mathematics; Native NC is an experimental independent C implementation. The interface is tested against the
 original: in legacy mode all 37 stored bergman outputs match byte for byte,
 and results are compared with a native SBCL build, Bergman 2 and Singular
 (*docs/development/VALIDATION.md*). Check results that matter.
@@ -67,10 +71,28 @@ and results are compared with a native SBCL build, Bergman 2 and Singular
 
 **Settings**
 : Field, monomial order, weights and degree limit. Every bergman mode is
-  under *More settings*.
+  under *More settings*. The “?” buttons explain settings without expanding
+  all their help text at once.
+
+**Native NC (experimental)**
+: Select **Native NC / C O3 + LTO** for homogeneous noncommutative Gröbner
+  bases with 1–16 generators, ordinary degree/left lexicographic order and
+  a degree bound of 1–20. It supports ℚ and prime fields, shared workers,
+  automatic pruning and disk checkpoints. **Worker count** accepts 1–32;
+  0 automatically selects up to four. The value is saved and shared.
+  This engine needs browser isolation and local file storage. On the hosted
+  site, a first visit may reload once to enable isolation. It is disabled
+  when the browser cannot provide these features.
+  Its budget is at most 14304 MiB; it selects wasm64 above 4095 MiB.
+  Output is a degree-bounded basis with primitive coefficients; previous
+  polynomial tails are not globally interreduced. Large results have a
+  preview and a full disk download. Unsupported tasks/settings are greyed out.
 
 **Memory**
-: *More settings → Memory limit* defaults to 2 GiB. The 32-bit engines allow
+: The default engine is **C / ECL O3 + LTO (memory64)** with a **15.7 GiB**
+  heap allowance; memory grows on demand. Browsers without memory64 support
+  start with the 32-bit C engine and 2 GiB. Saved settings and older Share
+  links preserve their selected engine and allowance. The 32-bit engines allow
   up to 4095 MiB, with a 4 GiB total Wasm ceiling. Select **C / ECL O3 + LTO
   (memory64)** for allowances up to 16 GiB or **No heap cap**. This removes
   George's heap cap; the browser still limits this build to 16 GiB and can
@@ -79,6 +101,8 @@ and results are compared with a native SBCL build, Bergman 2 and Singular
   unweighted homogeneous noncommutative Gröbner bases.
   An exhausted heap returns saved basis output as partial and releases the
   worker. A larger limit does not guarantee completion of an unbounded basis.
+  Beside “Computing…” the memory indicator reports allocated Wasm memory
+  as it grows; it does not measure total browser RAM or live Lisp objects.
 
 **Output**
 : The basis by degree, series, Betti tables, Anick differentials, the raw
@@ -118,6 +142,9 @@ and results are compared with a native SBCL build, Bergman 2 and Singular
 | `npm run test:ocaml` | Bergman 2 aliases and references |
 | `npm run test:algebra` | Singular, critical pairs, Hilbert dimensions |
 | `npm run test:backends` | seeded Latin hypercube inputs/settings, exact parity across the four engines |
+| `npm run test:native` | imported kernel tests, bounded FK parity against Bergman and Singular |
+| `npm run test:native:browser` | real OPFS/UI and serial degree-7 comparison with C/ECL |
+| `npm run test:fk` | small Fomin–Kirillov LHS cases, all four engines, native SBCL and Singular; degrees 2–4 |
 | `npm run test:upstream` | 90 adapted Singular/Plural, SymPy and GBNP field cases; independent oracles |
 | `npm run test:resolution:names` | long generator names, differentials |
 | `npm run test:braid` | native/Wasm braid resolutions, full differentials, projectivity and weighted bounds |
@@ -128,10 +155,17 @@ and results are compared with a native SBCL build, Bergman 2 and Singular
 
 ## VERSION
 
-George 0.5 adds the **C / ECL O3 + LTO (memory64)** engine, allowances up to
+George **0.6 experimental** adds Native NC, configurable multicore execution,
+disk checkpoints and full result downloads. Unsupported tasks and settings
+are disabled for this backend. Live allocated Wasm memory appears beside
+the computation status. Settings have expanded EN/RU help under “?”.
+The default is Bergman memory64 with a 15.7 GiB allowance.
+
+George 0.5 added the **C / ECL O3 + LTO (memory64)** engine, allowances up to
 16 GiB and a **No heap cap** setting. It also adds optional monomial pruning
 and raises the largest 32-bit heap allowance to 4095 MiB. The 32-bit C backend
-remains the default; wider pointers can increase memory use.
+is available as the fallback; memory64 now defaults to 15.7 GiB. Wider pointers
+can increase memory use.
 
 George 0.4 adds a computation engine selector in **More settings**. It keeps
 the same Bergman algorithms, with Lisp / ECL O2, Lisp / ECL O3 + LTO and

@@ -1,11 +1,11 @@
 {
   "state": "complete",
   "startedAt": "2026-10-01T17:40:02.538Z",
-  "reference": "/home/uu/Projects/george/build/validation/parity-oracle-final-20261001/report.json",
+  "reference": "build/validation/parity-oracle-final-20261001/report.json",
   "referenceSha256": "8318923d99bf55f58f1e3964be268a46166d5ae9266cfa4ea4c5fe74bb538f25",
   "engines": {
     "standard": {
-      "directory": "/home/uu/Projects/george/web/engine",
+      "directory": "web/engine",
       "manifest": {
         "bergman": "bergman-1.001-fix",
         "upstreamBergman": "1.001",
@@ -50,7 +50,7 @@
       }
     },
     "optimized": {
-      "directory": "/home/uu/Projects/george/web/engine/optimized",
+      "directory": "web/engine/optimized",
       "manifest": {
         "bergman": "bergman-1.001-fix",
         "upstreamBergman": "1.001",
@@ -97,7 +97,7 @@
       }
     },
     "compiled": {
-      "directory": "/home/uu/Projects/george/web/engine/compiled",
+      "directory": "web/engine/compiled",
       "manifest": {
         "bergman": "bergman-1.001-fix",
         "upstreamBergman": "1.001",
@@ -150,9 +150,9 @@
       }
     }
   },
-  "native": "/home/uu/Projects/george/build/sbcl-oracle-fixed-v4-04-20261001/bin/clisp/unix/bergman",
+  "native": "build/sbcl-oracle-fixed-v4-04-20261001/bin/clisp/unix/bergman",
   "nativeLauncherSha256": "4363789e2174592c5bf92490234d4dc52957b433c88b385923932ac9c4453b2e",
-  "singular": "/home/uu/Projects/george/build/oracles/root/usr/bin/Singular",
+  "singular": "build/oracles/root/usr/bin/Singular",
   "timeoutMs": 60000,
   "results": [
     {

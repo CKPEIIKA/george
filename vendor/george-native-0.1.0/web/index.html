@@ -1,0 +1,24 @@
+<!doctype html><meta charset="utf-8"><title>George Native backend smoke test</title>
+<h1>George Native - backend test page</h1>
+<p>This is a diagnostic page, not a replacement for the George frontend.</p>
+<label>Degree <input id="degree" type="number" min="1" max="20" value="7"></label>
+<label>Workers <input id="workers" type="number" min="1" max="32" value="4"></label>
+<label>Memory ABI <select id="bits"><option>32</option><option>64</option></select></label>
+<label><input id="spill" type="checkbox" checked>OPFS</label>
+<button id="run">Run exact Q example</button><button id="stop">Cancel</button>
+<pre id="log"></pre>
+<script type="module">
+let worker,control;const log=document.querySelector('#log');
+window.runNative=async(options={})=>new Promise((resolve,reject)=>{
+  worker=new Worker('./demo-worker.js',{type:'module'});log.textContent='';control=null;
+  worker.onmessage=({data:m})=>{
+    if(m.event?.type==='control'){control=m.event;return;}
+    log.textContent=(log.textContent+JSON.stringify(m)+'\n').slice(-32768);
+    if(m.result){window.lastResult=m.result;resolve(m.result);}
+    if(m.error){window.lastError=m;reject(new Error(m.error));}
+  };worker.onerror=e=>reject(new Error(e.message));
+  worker.postMessage({degree:options.degree??+document.querySelector('#degree').value,fixture:options.fixture,modulus:options.modulus??0,options:{budgetBytes:128*1048576,scratchBytes:32*1048576,workers:+document.querySelector('#workers').value,bits:+document.querySelector('#bits').value,spill:document.querySelector('#spill').checked,...options}});
+});
+document.querySelector('#run').onclick=()=>window.runNative().catch(e=>log.textContent+='\n'+e);
+document.querySelector('#stop').onclick=()=>{if(control)Atomics.store(new Int32Array(control.memory.buffer,control.cancelOffset,1),0,1);};
+</script>

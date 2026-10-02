@@ -1,0 +1,67 @@
+{
+  "backend": "native",
+  "appVersion": "0.6.0",
+  "name": "George Native NC",
+  "version": "0.1.0-experimental",
+  "license": "MIT",
+  "compiler": {
+    "language": "C",
+    "libraryOptimization": "O3",
+    "linkOptimization": "O3",
+    "lto": true,
+    "sharedMemory": true
+  },
+  "memory": {
+    "defaultHeapMiB": 512,
+    "maximumHeapMiB": 14304,
+    "wasm32MaximumBytes": 4294901760,
+    "wasm64MaximumBytes": 14999945216
+  },
+  "provenance": {
+    "archiveSha256": "a517030392eb2db53fbf919817ce78132a8d45a1afefa907d718decc117ac1c9",
+    "kernelChanged": false,
+    "hostAdapted": true
+  },
+  "files": {
+    "george32.wasm": {
+      "bytes": 34887,
+      "sha256": "a4c06634c05c5091c878eb227d9873add25c3f5690d69fe4642eaaa5ed0ab083"
+    },
+    "george64.wasm": {
+      "bytes": 34925,
+      "sha256": "5cd17a791b98ff24d4123e03cbe79d7bbfdb05c9a8e50a5db5f72d0ebc2fe035"
+    },
+    "runtime.js": {
+      "bytes": 4503,
+      "sha256": "7001ae15868fe7566bb94fad6232a55794e276fc05b8ee58164c2556cfe72aa6"
+    },
+    "lane.js": {
+      "bytes": 912,
+      "sha256": "0455e8f85988d8492a23bbc01f9a193cd3c7aeaaba8387fea7530ca8ac1598aa"
+    },
+    "engine.js": {
+      "bytes": 13716,
+      "sha256": "acf25ead12c5faa9deda797ad5b392c1a8f6f786388137831af1ebc7eb0e7cc2"
+    },
+    "job-adapter.js": {
+      "bytes": 3325,
+      "sha256": "472bd4c1c9ea01235f2cc6726a5f10f923f71788a35e103576945a7b5537ef54"
+    },
+    "george-entry.js": {
+      "bytes": 3693,
+      "sha256": "ea1c96bc6e4a9bd35c295d5719cfba49651c5ac68eeb41607518e01b3d65ed84"
+    },
+    "result-links.js": {
+      "bytes": 1601,
+      "sha256": "ea3500b0e5131b92c80e67e48c5d7854b9c12b929562b2e8d4c35245bf8823a8"
+    },
+    "worker.js": {
+      "bytes": 520,
+      "sha256": "d0158f20859eb00b53f0fd55ccb9ca4b1af027cc7bc8ca0ad142ccf702f783b7"
+    },
+    "LICENSE.txt": {
+      "bytes": 1083,
+      "sha256": "7ff623d315cf3fb1d87e5c03e3aa7bc3ef3f25dc24b8b1bffe9afb2d9c62a034"
+    }
+  }
+}

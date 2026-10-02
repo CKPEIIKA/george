@@ -1,0 +1,1 @@
+{"name":"george-native-nc","version":"0.1.0","private":true,"type":"module","scripts":{"test:wasm":"node --experimental-wasm-memory64 tests/test_wasm.mjs"},"license":"MIT"}

@@ -1,7 +1,7 @@
 {
   "state": "complete",
   "startedAt": "2026-10-02T09:23:35.922Z",
-  "reference": "/home/uu/Projects/george/build/validation/parity-oracle-final-20261001/report.json",
+  "reference": "build/validation/parity-oracle-final-20261001/report.json",
   "referenceSha256": "8318923d99bf55f58f1e3964be268a46166d5ae9266cfa4ea4c5fe74bb538f25",
   "sampling": {
     "method": "Latin hypercube; stratification before discrete mapping",
@@ -8150,7 +8150,7 @@
   "perCaseTimeoutMs": 180000,
   "engines": {
     "memory64": {
-      "directory": "/home/uu/Projects/george/web/engine/memory64",
+      "directory": "web/engine/memory64",
       "hashes": {
         "ecl.js": "20396f8ba77b29ef330513e55fcab5352678ba20c96119d4d7174089b3c1e667",
         "ecl.wasm": "56a55b5829bb678eb65c35eee34eb6ecb91b714d0b057eba045367774e85960d",

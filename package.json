@@ -1,7 +1,7 @@
 {
   "name": "george",
-  "version": "0.5.0",
-  "description": "Gr\u00f6bner bases, Hilbert series and Anick resolutions in the browser, an interface to bergman",
+  "version": "0.6.0",
+  "description": "Gröbner bases, Hilbert series and Anick resolutions in the browser, an interface to bergman and more",
   "private": true,
   "type": "module",
   "scripts": {
@@ -19,6 +19,7 @@
     "test:backends:browser": "node tools/validate-backends-browser.mjs",
     "test:backends:oracles": "node tools/validate-backend-oracles.mjs",
     "test:lhs:singular": "node tools/validate-lhs-singular.mjs",
+    "test:fk": "node tools/validate-fomin-kirillov.mjs",
     "test:resolution:names": "node tools/validate-resolution-names.mjs",
     "test:braid": "node tools/validate-braid.mjs",
     "test:reader": "node tools/validate-reader.mjs",
@@ -31,7 +32,11 @@
     "sources": "bash tools/package-sources.sh",
     "sbcl:build": "ports/sbcl/build.sh vendor/bergman-1.001 build/sbcl-$(date +%Y%m%d-%H%M%S)",
     "sbcl:test": "ports/sbcl/runtests.sh $(ls -td build/sbcl-* | head -1) run-$(date +%Y%m%d-%H%M%S)",
-    "sbcl:test:legacy": "ports/sbcl/runtests.sh $(ls -td build/sbcl-* | head -1) legacy-$(date +%Y%m%d-%H%M%S) legacy"
+    "sbcl:test:legacy": "ports/sbcl/runtests.sh $(ls -td build/sbcl-* | head -1) legacy-$(date +%Y%m%d-%H%M%S) legacy",
+    "serve:native": "node tools/serve.mjs web 8000 --isolate",
+    "test:native": "node tools/validate-native.mjs",
+    "test:native:browser": "node tools/validate-native-browser.mjs",
+    "test:static": "node tools/validate-static-isolation.mjs"
   },
   "engines": {
     "node": ">=22.8.0"

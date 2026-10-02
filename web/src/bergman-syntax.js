@@ -1,7 +1,8 @@
 // Bergman input/output syntax: parsing relations, typesetting polynomials,
 // reading bergman input files, and generating the bergman session script
 // for a computation.  No DOM access here except building HTML strings.
-import { BACKENDS, validMemoryMiB, memoryLimitMessage } from './backends.js';
+import { BACKENDS, validMemoryMiB, memoryLimitMessage, defaultMemoryMiB } from './backends.js';
+import { backendCapabilities, backendSettingsErrors, backendRelationErrors } from './backend-capabilities.js';
 import { timeoutMilliseconds } from './time-limit.js';
 
 // ------------------------------------------------------------ tokens
@@ -403,6 +404,15 @@ export function validateSettings(form) {
   const memoryBackend = Object.hasOwn(BACKENDS, form.backend ?? 'standard') ? form.backend ?? 'standard' : 'standard';
   if (form.memoryMiB !== undefined && (!/^\d+$/.test(String(form.memoryMiB)) || !validMemoryMiB(Number(form.memoryMiB), memoryBackend))) errors.push(memoryLimitMessage(memoryBackend));
   if (form.backend !== undefined && !Object.hasOwn(BACKENDS, form.backend)) errors.push('Unknown computation engine.');
+  errors.push(...backendSettingsErrors(form, memoryBackend));
+  const caps = backendCapabilities(memoryBackend);
+  if (form.nativeWorkers !== undefined && !integer(form.nativeWorkers, 0, 32)) errors.push('Worker count must be an integer from 0 to 32 (0 means automatic).');
+  if (caps.homogeneous || caps.relationDegrees || caps.maximumCoefficient) {
+    try {
+      const parsed = (form.rels || []).map(r => parseRelation(r, form.vars || []));
+      errors.push(...backendRelationErrors(parsed, memoryBackend));
+    } catch { /* The normal input validation reports malformed relations. */ }
+  }
   if (form.monomialPruning !== undefined && typeof form.monomialPruning !== 'boolean') errors.push('Monomial pruning must be on or off.');
   if (form.monomialPruning && !monomialPruningAvailable(form)) errors.push('Monomial pruning requires unweighted homogeneous noncommutative Gröbner basis relations and the default degreewise strategy.');
   try { timeoutMilliseconds(form.timeoutMinutes); } catch (error) { errors.push(error.message); }
@@ -530,8 +540,9 @@ export function buildJob(form) {
   for (const k of extended ? ['gb'] : task.out) outputs[k] = outs[k];
   if (task.id === 'anick' && !form.legacy && !extended) outputs.resolution = 'resolution.jsonl';
   if (form.outmode === 'MACAULAY') outputs.macaulay = 'result.macaulay';
-  const job = { task: task.id, files, script: session.join('\n') + '\n', outputs, legacy: !!form.legacy, degreeBound: form.maxdeg || (task.group === 'Resolutions' ? 6 : null), memoryMiB: Number(form.memoryMiB ?? DEFAULT_MEMORY_MIB), backend: form.backend ?? 'standard' };
+  const job = { task: task.id, files, script: session.join('\n') + '\n', outputs, legacy: !!form.legacy, degreeBound: form.maxdeg || (task.group === 'Resolutions' ? 6 : null), memoryMiB: Number(form.memoryMiB ?? defaultMemoryMiB(form.backend ?? 'standard')), backend: form.backend ?? 'standard' };
   job.timeoutMs = timeoutMilliseconds(form.timeoutMinutes);
+  if (job.backend === 'native') job.nativeOptions = {workers: Number(form.nativeWorkers) || undefined};
   if (extended) {
     job.resolution = { form: { ...form, augmentation }, nonhomogeneous };
     job.outputs.anick = outs.anick; // produced by the second stage

@@ -1,7 +1,8 @@
-import { resolutionJob, DEFAULT_MEMORY_MIB } from '../src/bergman-syntax.js';
-import { validMemoryMiB, memoryLimitMessage } from '../src/backends.js';
+import { resolutionJob } from '../src/bergman-syntax.js';
+import { validMemoryMiB, memoryLimitMessage, defaultMemoryMiB } from '../src/backends.js';
 import { augmentedHomology } from '../src/homology.js';
-export function setMemoryLimit(runtime, memoryMiB = DEFAULT_MEMORY_MIB, backend = 'standard') {
+export function setMemoryLimit(runtime, memoryMiB, backend = 'standard') {
+  memoryMiB ??= defaultMemoryMiB(backend);
   if (!validMemoryMiB(memoryMiB, backend)) throw new Error(memoryLimitMessage(backend));
   const source = `(EXT:SET-LIMIT 'EXT:HEAP-SIZE ${memoryMiB * 1048576})`;
   if (runtime.ccall('george_eval', 'number', ['string', 'number'], [source, 0])) throw new Error('Cannot set the engine memory limit.');

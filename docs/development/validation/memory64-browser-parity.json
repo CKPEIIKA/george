@@ -1,7 +1,7 @@
 {
   "state": "complete",
   "startedAt": "2026-10-02T09:16:06.644Z",
-  "reference": "/home/uu/Projects/george/build/validation/memory64-parity-20261002/report.json",
+  "reference": "build/validation/memory64-parity-20261002/report.json",
   "referenceSha256": "642e11c9e2efe477d7cda6b08fab6c50ac9c9952416c3fe757d1797951853ec0",
   "resumedResults": 0,
   "debuggerDuringCalculations": false,
@@ -12,7 +12,7 @@
   "perCaseTimeoutMs": 180000,
   "engines": {
     "memory64": {
-      "directory": "/home/uu/Projects/george/web/engine/memory64",
+      "directory": "web/engine/memory64",
       "hashes": {
         "ecl.js": "20396f8ba77b29ef330513e55fcab5352678ba20c96119d4d7174089b3c1e667",
         "ecl.wasm": "56a55b5829bb678eb65c35eee34eb6ecb91b714d0b057eba045367774e85960d",

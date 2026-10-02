@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import assert from 'node:assert/strict';
-import {BACKENDS} from '../web/src/backends.js';
+import {BERGMAN_BACKENDS as BACKENDS} from '../web/src/backends.js';
 import {wasmMemories} from './wasm-memory.mjs';
 
 const [sourceArgument, backend] = process.argv.slice(2);
@@ -34,7 +34,7 @@ fs.mkdirSync(destination, {recursive: true});
 for (const name of Object.keys(files)) fs.copyFileSync(path.join(source, 'engine', name), path.join(destination, name));
 fs.writeFileSync(path.join(destination, 'build.json'), JSON.stringify({...manifest, backend, files,
   memory: {wasmMaximumBytes: backend === 'memory64' ? 17179869184 : 4294967296,
-    defaultHeapMiB: 2048, maximumHeapMiB: BACKENDS[backend].maximumHeapMiB,
+    defaultHeapMiB: BACKENDS[backend].defaultHeapMiB, maximumHeapMiB: BACKENDS[backend].maximumHeapMiB,
     ...(backend === 'memory64' ? {uncappedHeap: true} : {})},
   compiler: {libraryOptimization: variant.optimization, linkOptimization: variant.linkOptimization ?? variant.optimization,
     lto: !!variant.lto, aot: !!variant.aot, memory64: !!variant.memory64,

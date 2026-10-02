@@ -7992,7 +7992,7 @@
   ],
   "engines": {
     "standard": {
-      "directory": "/home/uu/Projects/george/web/engine",
+      "directory": "web/engine",
       "manifest": {
         "bergman": "bergman-1.001-fix",
         "upstreamBergman": "1.001",
@@ -8037,7 +8037,7 @@
       }
     },
     "optimized": {
-      "directory": "/home/uu/Projects/george/web/engine/optimized",
+      "directory": "web/engine/optimized",
       "manifest": {
         "bergman": "bergman-1.001-fix",
         "upstreamBergman": "1.001",
@@ -8084,7 +8084,7 @@
       }
     },
     "compiled": {
-      "directory": "/home/uu/Projects/george/web/engine/compiled",
+      "directory": "web/engine/compiled",
       "manifest": {
         "bergman": "bergman-1.001-fix",
         "upstreamBergman": "1.001",
@@ -13048,7 +13048,7 @@
   "browser": {
     "state": "complete",
     "startedAt": "2026-10-01T17:39:04.987Z",
-    "reference": "/home/uu/Projects/george/build/validation/parity-oracle-final-20261001/report.json",
+    "reference": "build/validation/parity-oracle-final-20261001/report.json",
     "referenceSha256": "8318923d99bf55f58f1e3964be268a46166d5ae9266cfa4ea4c5fe74bb538f25",
     "resumedResults": 0,
     "debuggerDuringCalculations": false,
@@ -13059,7 +13059,7 @@
     "perCaseTimeoutMs": 60000,
     "engines": {
       "standard": {
-        "directory": "/home/uu/Projects/george/web/engine",
+        "directory": "web/engine",
         "manifest": {
           "bergman": "bergman-1.001-fix",
           "upstreamBergman": "1.001",
@@ -13104,7 +13104,7 @@
         }
       },
       "optimized": {
-        "directory": "/home/uu/Projects/george/web/engine/optimized",
+        "directory": "web/engine/optimized",
         "manifest": {
           "bergman": "bergman-1.001-fix",
           "upstreamBergman": "1.001",
@@ -13151,7 +13151,7 @@
         }
       },
       "compiled": {
-        "directory": "/home/uu/Projects/george/web/engine/compiled",
+        "directory": "web/engine/compiled",
         "manifest": {
           "bergman": "bergman-1.001-fix",
           "upstreamBergman": "1.001",

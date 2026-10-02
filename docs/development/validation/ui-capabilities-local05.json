@@ -1,0 +1,92 @@
+{
+  "debuggerDuringCalculations": false,
+  "mobileViewportControl": "CDP Emulation only; no Runtime, Debugger or Profiler domains",
+  "engine": {
+    "bergman": "bergman-1.001-fix",
+    "upstreamBergman": "1.001",
+    "defaultBehavior": "fixed",
+    "legacyBehavior": "original",
+    "ecl": "59f60e09102961bf5872c672fdd9d200b2e83d6b",
+    "emscripten": "4.0.12",
+    "files": {
+      "ecl.js": {
+        "bytes": 113128,
+        "sha256": "20396f8ba77b29ef330513e55fcab5352678ba20c96119d4d7174089b3c1e667"
+      },
+      "ecl.wasm": {
+        "bytes": 6809943,
+        "sha256": "56a55b5829bb678eb65c35eee34eb6ecb91b714d0b057eba045367774e85960d"
+      },
+      "ecl.data": {
+        "bytes": 3024774,
+        "sha256": "dce742ded7cc24a6ace543505cad50b4699d7acdb9c51fef8dbae01905871ece"
+      }
+    },
+    "appVersion": "0.5.0",
+    "memory": {
+      "wasmMaximumBytes": 17179869184,
+      "defaultHeapMiB": 16077,
+      "maximumHeapMiB": 16384,
+      "uncappedHeap": true
+    },
+    "compiler": {
+      "libraryOptimization": "O3",
+      "linkOptimization": "O3",
+      "lto": true,
+      "aot": true,
+      "memory64": true,
+      "longjmp": "emscripten",
+      "pointerSpilling": true,
+      "profiling": false
+    },
+    "backend": "memory64",
+    "boundaryFixes": "2026-10-01: one-generator degree sums and weighted Hilbert series; equal-word and unequal-length elimination comparisons; both modes",
+    "binaryen": {
+      "revision": "fc6a7977cccea66c7d78f3d86eb0cdac9f37cbdb",
+      "memory64StackPatchSha256": "071c2e981cd50bcb59f5cb9baba2e22559b378be2a0eff961ea5fb5250409b83"
+    },
+    "compilation": {
+      "functions": 763,
+      "aliases": 163,
+      "sourceModules": 18,
+      "compilerFailure": false
+    }
+  },
+  "sourceHashes": {
+    "web/index.html": "ab19599186f30256cd6242c0c8a8046a2e802bf2e6d17c9b7d3d83b4942ae766",
+    "web/style.css": "503c1602a8f47e49f6c1257676f522c071b1e03c1c48d20e2c14e2772ea0f161",
+    "web/src/app.js": "14773628900b08461dc6ed7dd6a860c75f5a951013d412a0ab55c1a0195ee75d",
+    "web/src/backend-capabilities.js": "b33ecaea6a74284874f3a9a3942db93c17be4b4d5e6b7b482f98d5b74abb7b51",
+    "web/src/backends.js": "0bf58dc1e8fb4b1fa9b0d85c60aa6e29f6d5dde8449e984a89bbd83b800e5d70",
+    "web/src/bergman-syntax.js": "5645bdcd4ecc548112197e9df702e8a594566548187a8d9a50ecbd2a4e3bb213",
+    "web/src/console-commands.js": "19632c1257b8d9469d30921ddbf4a6ccee4a5151eb709f3f1e56add2ed4c59fa",
+    "web/src/console.js": "b5bc76ec9d98cd8a75b553a6d5607afb5f7b54c2ba43114e5690fcef9b2769f7",
+    "web/src/engine.js": "b3efc2cc7021095d90cc8f362344c5da37ffc1ae96569c0e74d35e7fd24c78d7",
+    "web/src/examples.js": "50c4294ada3efb095386ce57df9b54efd560612e8487dd15b741a05acd053bc0",
+    "web/src/guide.js": "265ee27b3968f0bf4a4be99a24620db0e63595786b40fbb8369a0935e5d7e95d",
+    "web/src/homology.js": "ad72c6d5792f90e08c15768c0c1725e6b71d0077b041518fef21f376cccecdca",
+    "web/src/i18n.js": "e20eb2f0e17679f7818fd34a80475164e1315ebfed4ec6226919d19659083058",
+    "web/src/lisp.js": "acc71cb91bdcd091b7299403c6a05b75c7a97890008877944781cc5d95dd817c",
+    "web/src/math.js": "daf8b75527b72938995b7e83d75dffcf86e12f79e0b534f7d70251a8da3a1655",
+    "web/src/memory-monitor.js": "86bdaeccb369998aa288c454430e63f51233c618a155afd1779f32dfbed60f04",
+    "web/src/preferences.js": "d686c5621c36648104e5a2d3d981bba4222ba3e2951a1c77bcfed51c907007dc",
+    "web/src/resolution-data.js": "e9bf9e7cec5738346f4b32a4c7c265ae82a6843e848938ccdf85bd6a71076ec4",
+    "web/src/share.js": "a5ff3ac0d3a4607f4f7d746ea6044654c050138e87d95780ef68d629caf779bd",
+    "web/src/time-limit.js": "33cf053cd394199bb7f93bef9589c198245b078332f10e58bb3e9c35816519c5",
+    "web/src/tutorials.js": "5c473b8d4974eaa64d0f0a3a6006b49d1e910bc8f6e7e821342bde70c36fb1e9",
+    "web/engine/worker.js": "0b50054c58a2653bc480e431d72ac3c096137d6593976c0cafefa0d08758c644",
+    "web/engine/runner.js": "0208061d200b4ce8e00387dbe630143d9ddff9dee8c15c4773932cb4badad166"
+  },
+  "browser": null,
+  "mounts": [],
+  "console": [],
+  "backends": [],
+  "pruning": [],
+  "examples": [],
+  "checks": [
+    "backend capabilities: algebra/task/order normalization, disabled controls, typed validation and re-enabling in real DOM"
+  ],
+  "errors": [],
+  "externalRequests": [],
+  "scope": "backend capability controls"
+}

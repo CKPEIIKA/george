@@ -28,7 +28,7 @@
   },
   "engines": {
     "standard": {
-      "directory": "/home/uu/Projects/george/web/engine",
+      "directory": "web/engine",
       "manifest": {
         "bergman": "bergman-1.001-fix",
         "upstreamBergman": "1.001",
@@ -73,7 +73,7 @@
       }
     },
     "optimized": {
-      "directory": "/home/uu/Projects/george/web/engine/optimized",
+      "directory": "web/engine/optimized",
       "manifest": {
         "bergman": "bergman-1.001-fix",
         "upstreamBergman": "1.001",
@@ -120,7 +120,7 @@
       }
     },
     "compiled": {
-      "directory": "/home/uu/Projects/george/web/engine/compiled",
+      "directory": "web/engine/compiled",
       "manifest": {
         "bergman": "bergman-1.001-fix",
         "upstreamBergman": "1.001",
@@ -813,7 +813,7 @@
   "historicalSelectedCValidation": {
     "engines": {
       "standard": {
-        "directory": "/home/uu/Projects/george/web/engine",
+        "directory": "web/engine",
         "manifest": {
           "bergman": "bergman-1.001-fix",
           "upstreamBergman": "1.001",
@@ -857,7 +857,7 @@
         }
       },
       "optimized": {
-        "directory": "/home/uu/Projects/george/web/engine/optimized",
+        "directory": "web/engine/optimized",
         "manifest": {
           "bergman": "bergman-1.001-fix",
           "upstreamBergman": "1.001",
@@ -903,7 +903,7 @@
         }
       },
       "compiled": {
-        "directory": "/home/uu/Projects/george/web/engine/compiled",
+        "directory": "web/engine/compiled",
         "manifest": {
           "bergman": "bergman-1.001-fix",
           "upstreamBergman": "1.001",
@@ -1994,7 +1994,7 @@
       "nodeHighMemory": {
         "caseId": "gc-high",
         "cpuProfile": false,
-        "engine": "/home/uu/Projects/george/web/engine/compiled",
+        "engine": "web/engine/compiled",
         "hashes": {
           "ecl.js": "e275bb91c299a0928e07f35d17192de2fe4e65cd9175116f0ab69d743debc392",
           "ecl.wasm": "281af63deabd3170bcf878135e12b1177525d817622b193105de75265f35e6f8",
@@ -2026,7 +2026,7 @@
       "nodeHeapExhaustion": {
         "caseId": "gc-limit",
         "cpuProfile": false,
-        "engine": "/home/uu/Projects/george/web/engine/compiled",
+        "engine": "web/engine/compiled",
         "hashes": {
           "ecl.js": "e275bb91c299a0928e07f35d17192de2fe4e65cd9175116f0ab69d743debc392",
           "ecl.wasm": "281af63deabd3170bcf878135e12b1177525d817622b193105de75265f35e6f8",

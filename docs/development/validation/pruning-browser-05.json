@@ -1,7 +1,7 @@
 {
   "state": "complete",
   "startedAt": "2026-10-02T07:54:16.827Z",
-  "reference": "/home/uu/Projects/george/build/validation/pruning-20261002-v2/report.json",
+  "reference": "build/validation/pruning-20261002-v2/report.json",
   "referenceSha256": "6cf1f45a1154f2421429905c3df206df2cf8053e55270d8589c68a504131eb0a",
   "resumedResults": 0,
   "debuggerDuringCalculations": false,
@@ -12,7 +12,7 @@
   "perCaseTimeoutMs": 180000,
   "engines": {
     "standard": {
-      "directory": "/home/uu/Projects/george/web/engine",
+      "directory": "web/engine",
       "hashes": {
         "ecl.js": "10b688b96b805c2339a76f6d9fc0c800fbefb37b9ec0310d297d49873cda530f",
         "ecl.wasm": "b90c140372df3f8857e535fd8a8de3406ba57d27a40b6cf2e62b51a123a26585",
@@ -20,7 +20,7 @@
       }
     },
     "optimized": {
-      "directory": "/home/uu/Projects/george/web/engine/optimized",
+      "directory": "web/engine/optimized",
       "hashes": {
         "ecl.js": "d4bda52e4d48ed9610f55ef882cdaf2a64639a3903f1fa27a77e4a2c72550916",
         "ecl.wasm": "221a268e3aac9bf1a7167f1e613eb51f600437f8c65596c2b0dfbbff0677786c",
@@ -28,7 +28,7 @@
       }
     },
     "compiled": {
-      "directory": "/home/uu/Projects/george/web/engine/compiled",
+      "directory": "web/engine/compiled",
       "hashes": {
         "ecl.js": "b51a386338911b8d262557686fe0ff81e46fdbd99c55a058a7ceb3223d55edee",
         "ecl.wasm": "8bd7c0b8be173025c741e9cb90718de0210be7eb6a0537725b06bd702f8d687d",

@@ -34,7 +34,7 @@
     },
     "appVersion": "0.2.0"
   },
-  "native": "/home/uu/Downloads/george/build/sbcl-reader-02-v2-20260930/bin/clisp/unix/bergman",
+  "native": "build/sbcl-reader-02-v2-20260930/bin/clisp/unix/bergman",
   "sources": [
     {
       "id": "singular-1",

@@ -19,6 +19,22 @@ test('cancellation rejects a running command and permits restart',async()=>{
  const e=new EclEngine(),p=e.eval('forever');const rejected=assert.rejects(p,{name:'AbortError'});await tick();e.cancel();await rejected;
  const next=e.eval('again');await tick();e.worker.reply(e.worker.messages.at(-1),{stdout:'ok'});assert.equal((await next).stdout,'ok');e.cancel();
 });
+test('native cancellation signals shared memory and waits for disk handles before restart',async()=>{
+ const e=new EclEngine({backend:'native'}),first=e.run({backend:'native'}),rejected=assert.rejects(first,{name:'AbortError'});
+ await tick();const old=e.worker,request=old.messages.at(-1);
+ const memory={buffer:new SharedArrayBuffer(16)};
+ old.onmessage({data:{id:request.id,event:{type:'control',memory,cancelOffset:0}}});
+ e.cancel();await rejected;assert.equal(new Int32Array(memory.buffer)[0],1);assert.equal(old.terminated,undefined);
+ const next=e.run({backend:'native'});await tick();assert.equal(e.worker,null,'new worker waits for OPFS close');
+ old.onmessage({data:{closed:true}});await tick();assert.equal(old.terminated,true);assert.notEqual(e.worker,old);
+ e.worker.reply(e.worker.messages.at(-1),{});await next;e.cancel();
+});
+test('a native worker which already closed its files terminates immediately',async()=>{
+ const e=new EclEngine({backend:'native'}),p=e.run({backend:'native'});await tick();const w=e.worker,request=w.messages.at(-1);
+ w.onmessage({data:{id:request.id,event:{type:'control',memory:{buffer:new SharedArrayBuffer(16)},cancelOffset:0}}});
+ w.reply(request,{});await p;w.onmessage({data:{closed:true}});e.cancel();
+ assert.equal(w.terminated,true);assert.equal(e.stopping,undefined);
+});
 test('a cancelled initialization cannot mark a replacement command idle',async()=>{
  const e=new EclEngine(),p=e.eval('old'),rejected=assert.rejects(p,{name:'AbortError'});e.cancel();const next=e.eval('new');await rejected;await tick();assert.equal(e.busy,true);e.worker.reply(e.worker.messages.at(-1),{});await next;e.cancel();
 });

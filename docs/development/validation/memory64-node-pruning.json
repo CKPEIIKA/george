@@ -1,7 +1,7 @@
 {
   "state": "complete",
   "startedAt": "2026-10-02T09:23:36.075Z",
-  "reference": "/home/uu/Projects/george/build/validation/pruning-20261002-v2/report.json",
+  "reference": "build/validation/pruning-20261002-v2/report.json",
   "referenceSha256": "6cf1f45a1154f2421429905c3df206df2cf8053e55270d8589c68a504131eb0a",
   "sampling": {
     "seed": 1347573070,
@@ -2657,7 +2657,7 @@
   "perCaseTimeoutMs": 180000,
   "engines": {
     "memory64": {
-      "directory": "/home/uu/Projects/george/web/engine/memory64",
+      "directory": "web/engine/memory64",
       "hashes": {
         "ecl.js": "20396f8ba77b29ef330513e55fcab5352678ba20c96119d4d7174089b3c1e667",
         "ecl.wasm": "56a55b5829bb678eb65c35eee34eb6ecb91b714d0b057eba045367774e85960d",

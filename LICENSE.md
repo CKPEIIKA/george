@@ -59,6 +59,15 @@ George contains no code from ocaml-alg, which is GPL-2.0.
 
 ## Components of the engine
 
+### Native NC
+
+George Native NC 0.1.0 is distributed under MIT. Its sources, tests and
+original notice are in `vendor/george-native-0.1.0/`; the browser modules and
+their notice are in `web/engine/native/`. It is an independent C implementation
+and does not link ECL or Bergman. `tools/build-native-backend.sh` rebuilds it.
+
+### Bergman / ECL
+
 The WebAssembly engine statically links:
 
 | Component | License |

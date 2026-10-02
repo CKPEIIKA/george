@@ -14,10 +14,15 @@ const TYPES = {
   '.png': 'image/png', '.data': 'application/octet-stream', '.txt': 'text/plain; charset=utf-8',
 };
 
-export function staticServer(directory = 'web', mount = '/') {
+export function staticServer(directory = 'web', mount = '/', {isolate = false} = {}) {
   const root = path.resolve(directory);
   if (!mount.startsWith('/') || !mount.endsWith('/')) throw new Error('The mount path must start and end with /.');
   return http.createServer((req, res) => {
+    if (isolate) {
+      res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+      res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+      res.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
+    }
     let url;
     try { url = decodeURIComponent(new URL(req.url, 'http://x').pathname); }
     catch { res.writeHead(400).end(); return; }
@@ -33,6 +38,7 @@ export function staticServer(directory = 'web', mount = '/') {
   });
 }
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const root = process.argv[2] || 'web', port = Number(process.argv[3] || 8000), mount = process.argv[4] || '/';
-  staticServer(root, mount).listen(port, '127.0.0.1', () => console.log(`George at http://127.0.0.1:${port}${mount} (serving ${path.resolve(root)})`));
+  const args = process.argv.slice(2).filter(arg => arg !== '--isolate');
+  const root = args[0] || 'web', port = Number(args[1] || 8000), mount = args[2] || '/';
+  staticServer(root, mount, {isolate: process.argv.includes('--isolate')}).listen(port, '127.0.0.1', () => console.log(`George at http://127.0.0.1:${port}${mount} (serving ${path.resolve(root)})`));
 }

@@ -1,4 +1,4 @@
-# Browser backends in George 0.5
+# Browser backends in George 0.6 experimental
 
 The interface offers these exact labels:
 
@@ -8,17 +8,62 @@ The interface offers these exact labels:
 | Lisp / ECL O3 + LTO | `optimized` | `web/engine/optimized/` | Same bytecode; O3 libraries and final link with LTO |
 | C / ECL O3 + LTO | `compiled` | `web/engine/compiled/` | ECL compiles existing Lisp functions to C, then Emscripten produces Wasm; O3 + LTO |
 | C / ECL O3 + LTO (memory64) | `memory64` | `web/engine/memory64/` | Same compiled functions, 64-bit pointers and GC words; O3 + LTO |
+| Native NC / C O3 + LTO (experimental) | `native` | `web/engine/native/` | Independent homogeneous NC kernel, shared wasm32/wasm64 workers and OPFS |
 
-`compiled` is the default. The form and console use the chosen backend.
+`memory64` is the default, with a 16077 MiB allowance (15.7 GiB rounded to
+whole MiB). If memory64 is unsupported, a fresh form selects `compiled`
+and 2048 MiB. Saved settings and old Share defaults are preserved.
+The form and console use the chosen backend.
 Changing it starts a new console session on the next command. An active
 computation retains its worker until it completes or is stopped. Presets
 preserve the choice; storage and new share links include it. Earlier share
 links restore `standard`, the engine available when those links were made.
 
-All variants use the same `ecl.data` package. The browser fetches that
+All four Bergman variants use the same `ecl.data` package. The browser fetches that
 package from the root engine directory. Standalone variant directories also
 contain a copy so that Node validation tools can load them independently.
 Each engine manifest records its compiler settings and asset hashes.
+
+## Native NC — 2026-10-02
+
+Native NC 0.1.0 is vendored under MIT. Its source archive SHA-256 is
+`a517030392eb2db53fbf919817ce78132a8d45a1afefa907d718decc117ac1c9`.
+`vendor/george-native-0.1.0/` retains the sources, original host, fixtures,
+tests and docs. Bundled historical result files were not imported into the
+source tree or treated as new evidence. The two shipped Wasm modules are
+unchanged; `web/engine/native/` adapts only the host/George bridge.
+
+`native` has a separate worker. It never loads ECL or `ecl.data`.
+Its descriptor uses `NATIVE_CAPABILITIES`: homogeneous noncommutative GB,
+ordinary degree-left-lex, up to 16 generators, a required bound 1–20,
+input integers through ±(2^62−1), Q or a supported prime field. Native's
+own pruning is automatic; the Bergman pruning setting is disabled.
+Other tasks, orders, weights, modes and the Lisp console are disabled.
+The basis is primitive and degree bounded; old tails are not globally
+interreduced. UI notices state this, and full OPFS files accompany previews.
+
+The memory budget accepts 128–14304 MiB (no uncapped value); a fresh API
+job defaults to 512 MiB. Native chooses memory64 above the wasm32 range.
+Worker count is a saved/shared 0–32 setting, with 0 choosing up to four.
+The scratch pool is split among workers, not multiplied. The main thread
+signals cancellation atomically and waits for disk handles to close before
+restarting. Form run generations prevent a stopped result from overwriting
+the status of a replacement run.
+
+`web/isolation-worker.js` adds COOP/COEP to same-origin responses on static
+hosts, including GitHub Pages. The entry module installs it before starting
+the app and reloads once on a first visit. It revalidates assets without an
+offline cache. Browsers without service workers can still use Bergman; Native
+requires isolation and OPFS. `npm run serve:native` also supplies the headers
+directly. `bash tools/build-native-backend.sh` rebuilds from the vendored
+sources and refreshes the native manifest while retaining the adapted host.
+
+`BERGMAN_BACKENDS` keeps full-task/byte-equality ECL validators separate.
+`npm run test:native` runs appropriate imported tests in a build staging
+directory, then compares 16 FK LHS cases, two anchors and the
+155-bit-coefficient fixture against C/ECL and Singular. Native output is
+checked by mutual reductions, critical pairs and normal-word dimensions;
+it is not required to have identical polynomial tails.
 
 ## ECL compilation
 
@@ -64,7 +109,7 @@ The host Binaryen tools use O1; the guest engine uses O3 + LTO.
 
 The memory64 option is disabled in browsers that cannot validate this
 build's 16 GiB memory64 declaration. Settings allow 6, 8, 12 and 16 GiB,
-plus `memoryMiB: 0` for no ECL heap cap. This calls ECL's native
+15.7 GiB by default, plus `memoryMiB: 0` for no ECL heap cap. This calls ECL's native
 `EXT:SET-LIMIT` with zero, including its error-handling safety area.
 It does not remove the browser's memory limit. The current
 [WebAssembly JavaScript API](https://webassembly.github.io/spec/js-api/#implementation-defined-limits)
@@ -84,6 +129,46 @@ rabbit jobs cannot enable it. Native and Singular checks remain independent
 of engine parity. Degree-seven results do not establish degree-eleven capacity.
 
 ## Rebuild
+
+### Adding another engine
+
+`web/src/backend-capabilities.js` applies a backend descriptor's optional
+`capabilities` to the actual form and validates the same restrictions in
+job construction. Current Bergman descriptors omit restrictions. The
+reusable `QUADRATIC_BASIS_CAPABILITIES` profile is a starting point for a
+homogeneous quadratic basis engine; no unbuilt backend is exposed in the UI.
+
+```js
+capabilities: {
+  choices: {task: ['gb'], ring: ['noncomm'], field: ['0', 'p'],
+    order: ['degleftlex']},
+  fixedSettings: {weights: '', legacy: false, strategy: 'default',
+    nonhomog: 'degreewise', lowterms: 'quick', outmode: 'ALG',
+    monomialPruning: false},
+  homogeneous: true,
+  relationDegrees: [2],
+  console: false,
+}
+```
+
+`choices` filters radio/select alternatives; `fixedSettings` assigns the
+required value and greys out that control. Unsupported tasks show a note.
+Switching back to a full backend enables those settings again. Relation
+restrictions use ordinary degree and are checked even for direct jobs.
+Add `ncpbh` to `choices.task` to support the existing noncommutative series
+task; `hilbert` is the commutative task. Profiles may allow other degrees,
+fields and modes instead. This policy does not detect a specific physics
+problem or prove that an arbitrary quadratic presentation is Fomin–Kirillov.
+
+A descriptor may also specify `worker`, a module-worker URL relative to
+`web/src/engine.js`. If omitted, the existing ECL worker is used. A new
+worker implements the existing init/run protocol and consumes the job's
+input files/settings; that engine and its job adapter remain future work.
+Memory progress uses `{id, event: {type: 'memory', bytes}}` and describes
+allocated linear memory. A worker without Lisp evaluation declares
+`console: false`, which disables the console UI and rejects evaluation.
+
+### Runtime compilation
 
 The full build uses the pinned ECL and Emscripten revisions, a single
 Bergman package, and separate library builds:
@@ -139,6 +224,23 @@ See [memory64.json](validation/memory64.json) and
 [VALIDATION.md](VALIDATION.md) for final engine identities and scope.
 
 ## Backend parity suite
+
+The focused Fomin–Kirillov suite runs separately with `npm run test:fk`.
+It uses **16 seeded LHS cases** with ranks 3–6, fields Q/F2/F3/F5/F7,
+generator permutations and signs, both behavior modes, reversal and
+pruning settings. Degree bounds are 2–4; rank 6 is capped at 3. Two anchors
+cover rational E3 through degree 4 and the exact reference presentation
+through degree 3. The input definition follows
+[Blasiak, Liu and Mészáros, section 2](https://arxiv.org/pdf/1310.4112).
+
+All **18 cases** match native SBCL byte for byte in all four engines
+(**72 engine runs**). Singular checks two-way ideal membership and
+normal-word dimensions at the same explicit Letterplace degree bound;
+the independent checker verifies **4317 critical ambiguities** within
+the bounds. No unrestricted completion is claimed. Singular names are
+mapped to synthetic identifiers to avoid collisions such as the presentation's
+generator `r` with a ring identifier. The default watchdog is 30 seconds
+per calculation and is configurable with `GEORGE_TEST_TIMEOUT_MS`.
 
 The default design uses a seeded Latin hypercube with **64 basis samples**,
 **16 series samples**, and **16 Anick resolution samples**. Every continuous

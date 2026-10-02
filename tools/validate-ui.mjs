@@ -14,9 +14,10 @@ import {EXAMPLES} from '../web/src/examples.js';
 import {algebra} from '../test/support/algebra.mjs';
 const upstream=JSON.parse(fs.readFileSync('test/fixtures/upstream-cases.json','utf8'));
 const out=`build/validation/ui-${Date.now()}`;fs.mkdirSync(out,{recursive:true});
+const policyOnly=process.argv.includes('--policy-only');
 const sha=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
-const browserFiles=['web/index.html','web/style.css',...fs.readdirSync('web/src').filter(n=>n.endsWith('.js')).map(n=>'web/src/'+n),'web/engine/worker.js','web/engine/runner.js'];
-const report={debuggerDuringCalculations:false,mobileViewportControl:'CDP Emulation only; no Runtime, Debugger or Profiler domains',engine:JSON.parse(fs.readFileSync('web/engine/compiled/build.json','utf8')),sourceHashes:Object.fromEntries(browserFiles.map(p=>[p,sha(p)])),browser:null,mounts:[],console:[],backends:[],pruning:[],examples:[],checks:[],errors:[],externalRequests:[]};
+const browserFiles=['web/index.html','web/style.css','web/isolation-worker.js',...fs.readdirSync('web/src').filter(n=>n.endsWith('.js')).map(n=>'web/src/'+n),'web/engine/worker.js','web/engine/runner.js'];
+const report={debuggerDuringCalculations:false,mobileViewportControl:'CDP Emulation only; no Runtime, Debugger or Profiler domains',engine:JSON.parse(fs.readFileSync('web/engine/memory64/build.json','utf8')),sourceHashes:Object.fromEntries(browserFiles.map(p=>[p,sha(p)])),browser:null,mounts:[],console:[],backends:[],pruning:[],examples:[],checks:[],errors:[],externalRequests:[]};
 const data={tutorials:TUTORIALS.map(t=>({...t,form:tutorialForm(t.id)})),examples:EXAMPLES,
  upstream:upstream.cases.filter(c=>['sympy-katsura3','singular-gb_braid3-11','gbnp-weighted','gbnp-sl2-quotient'].includes(c.id))};
 
@@ -27,6 +28,11 @@ async function checkUI(){
  const wait=async(fn,label,timeout=120000)=>{const start=performance.now();while(!fn()){if(performance.now()-start>timeout)throw Error(label+' timed out; '+$('#runStatus')?.textContent);await new Promise(r=>setTimeout(r,40));}};
  const data=await(await fetch(new URL('__validation/data',location.href))).json();
  const errors=window.validationErrors;
+ const memoryUpdates=[];
+ const memoryObserver=new MutationObserver(()=>{
+  if(!$('#memoryUsage').hidden&&$('#runStatus').classList.contains('busy'))memoryUpdates.push($('#memoryUsage').textContent);
+ });
+ memoryObserver.observe($('#memoryUsage'),{childList:true,subtree:true,attributes:true,attributeFilter:['hidden']});
  const phase=sessionStorage.getItem('validation.phase')||'start';
  const mode=new URL(location.href).searchParams.get('validation')||'desktop';
  const files=()=>Object.fromEntries(all('#filesOut .file').map(e=>[e.querySelector('.name').textContent,e.querySelector('pre').textContent]));
@@ -43,6 +49,34 @@ async function checkUI(){
  try{
   await wait(()=>$('#engineNote')?.classList.contains('live'),'engine ready',90000);
   ok($('#engineNote').textContent.includes('bergman-1.001-fix'),'engine version');
+  if(mode==='policy') {
+   language('en');
+   const {applyBackendCapabilities,QUADRATIC_BASIS_CAPABILITIES,backendSettingsErrors}=await import(new URL('src/backend-capabilities.js',location.href));
+   const {TASKS,ORDERS}=await import(new URL('src/bergman-syntax.js',location.href));
+   const {t}=await import(new URL('src/i18n.js',location.href));
+   const profile={capabilities:QUADRATIC_BASIS_CAPABILITIES};
+   radio('ring','comm');radio('task','hilbert');set('legacy',true);set('weights','1 1 1');
+   applyBackendCapabilities($('#presentation'),profile,{tasks:TASKS,translate:t,onRingChange:()=>{
+    $('#order').innerHTML=ORDERS.noncomm.map(o=>`<option value="${o.id}">${o.id}</option>`).join('');
+   }});
+   eq($('input[name="ring"]:checked').value,'noncomm','profile restores supported algebra');
+   eq($('input[name="task"]:checked').value,'gb','profile restores supported task');
+   for(const input of all('input[name="task"]'))eq(input.disabled,input.value!=='gb','unsupported tasks disabled');
+   for(const id of ['legacy','weights','nonhomog','strategy','outmode','monomialPruning'])ok($('#'+id).disabled,'unsupported setting disabled: '+id);
+   ok(backendSettingsErrors({legacy:'false'},profile).length>0,'string cannot enable unsupported legacy mode');
+   eq($('#legacy').checked,false,'legacy checkbox normalized');eq($('#order').value,'degleftlex','supported order');
+   applyBackendCapabilities($('#presentation'),'memory64',{tasks:TASKS,translate:t});
+   ok(!$('#legacy').disabled&&!$('#weights').disabled,'returning to Bergman enables controls');
+   await post('done',{mode,errors,checks:['backend capabilities: algebra/task/order normalization, disabled controls, typed validation and re-enabling in real DOM']});return;
+  }
+  if(mode==='unsupported') {
+   language('en');eq($('#backend').value,'compiled','unsupported memory64 falls back to C wasm32');
+   eq($('#memoryMiB').value,'2048','fallback allowance is 2 GiB');
+   ok($('#backend option[value="memory64"]').disabled,'unsupported engine greyed out');
+   set('preset','tutorial:char2');await compute();language('ru');
+   ok($('#backend option[value="memory64"]').disabled,'language switch preserves unsupported state');
+   await post('done',{mode,errors,checks:['unsupported memory64: fresh form uses C wasm32/2 GiB, calculation works, disabled engine persists across language change']});return;
+  }
   if(mode==='blocked'){
    eq($('[data-lang][aria-pressed="true"]').dataset.lang,'ru','blocked storage browser language');set('preset','tutorial:char2');await compute();await post('done',{mode,errors,checks:['blocked storage: browser language and computation work']});return;
   }
@@ -52,12 +86,25 @@ async function checkUI(){
    $('[data-tutorial="monoid"]').click();await compute();ok(!$('#view-compute').hidden,'mobile computed result visible');ok($('#bettiOut').textContent.includes('Ungraded Betti numbers'),'mobile Betti result');ok(document.documentElement.scrollWidth<=innerWidth+1,'mobile result overflow');await post('done',{mode,errors,checks:['390px guide and computed monoid result have no page overflow']});return;
   }
   if(phase==='start'){
-   language('en');eq($('.brand-sub').textContent,'an interface to bergman','English interface wording');eq($('.brand-version').textContent,'0.5','application version');
-   eq($('#backend').value,'compiled','default backend');
+   language('en');eq($('.brand-sub').textContent,'an interface to bergman and more…','English interface wording');eq($('.brand-version').textContent,'0.6','application version');
+   eq($('#backend').value,'memory64','default backend');eq($('#memoryMiB').value,'16077','default allowance is 15.7 GiB');
    eq($('#timeoutMinutes').value,'0','default time limit is unlimited');
-   eq(all('#backend option').map(o=>o.textContent),['C / ECL O3 + LTO','C / ECL O3 + LTO (memory64)','Lisp / ECL O3 + LTO','Lisp / ECL O2'],'explicit backend labels');
+   eq(all('#backend option').map(o=>o.textContent),['C / ECL O3 + LTO (memory64)','C / ECL O3 + LTO','Lisp / ECL O3 + LTO','Lisp / ECL O2','Native NC / C O3 + LTO (experimental)'],'explicit backend labels');
    ok(!$('#backend option[value="memory64"]').disabled,'memory64 available in this browser');
-   ok($('#memoryMiB option[value="0"]').disabled,'uncapped heap unavailable in wasm32');
+   ok(!$('#memoryMiB option[value="0"]').disabled,'uncapped heap available in memory64');
+   const {applyBackendCapabilities,QUADRATIC_BASIS_CAPABILITIES}=await import(new URL('src/backend-capabilities.js',location.href));
+   const {TASKS}=await import(new URL('src/bergman-syntax.js',location.href));
+   const {t}=await import(new URL('src/i18n.js',location.href));
+   radio('task','anick');set('legacy',true);set('weights','1 1 1');set('order','elim');
+   applyBackendCapabilities($('#presentation'),{capabilities:QUADRATIC_BASIS_CAPABILITIES},{tasks:TASKS,translate:t});
+   eq($('input[name="task"]:checked').value,'gb','specialized profile selects supported task');
+   for(const task of all('input[name="task"]'))eq(task.disabled,task.value!=='gb','specialized task grey-out');
+   ok($('input[name="ring"][value="comm"]').disabled,'specialized ring grey-out');
+   for(const id of ['weights','legacy','nonhomog','strategy','outmode','monomialPruning'])ok($('#'+id).disabled,'specialized setting '+id+' disabled');
+   eq($('#legacy').checked,false,'unsupported legacy value reset');eq($('#weights').value,'','unsupported weights reset');eq($('#order').value,'degleftlex','supported order restored');
+   applyBackendCapabilities($('#presentation'),'memory64',{tasks:TASKS,translate:t});
+   ok(!$('#legacy').disabled&&!$('#weights').disabled,'switching back restores settings');
+   radio('ring','noncomm');set('preset','tutorial:char2');
    location.hash='#console';
    const command=async(src,expected)=>{
     const term=$('#terminal'),start=term.children.length;
@@ -99,7 +146,8 @@ async function checkUI(){
    set('timeoutMinutes',30);
    location.hash='#compute';$('details.advanced').open=true;
    const {readShareLink}=await import(new URL('src/share.js',location.href));
-   set('memoryMiB',4095);eq($('#memoryMiB').value,'4095','highest wasm32 allowance');
+   set('backend','compiled');set('memoryMiB',4095);eq($('#memoryMiB').value,'4095','highest wasm32 allowance');
+   ok($('#memoryMiB option[value="0"]').disabled,'uncapped heap unavailable in wasm32');
    set('preset','tutorial:char2');await compute();const unpruned=files();
    ok(!$('#monomialPruning').disabled,'pruning available for homogeneous basis');
    set('monomialPruning',true);await compute();eq(files(),unpruned,'pruning output parity');
@@ -118,6 +166,7 @@ async function checkUI(){
    await post('pruning',{mount:data.mount,outputParity:true,localPersistence:true,shareRoundTrip:true,incomingRestoration:true,incompatibleDisabled:true});
    const backendRows=[];let reference;
    for(const backend of ['standard','optimized','compiled','memory64']){
+    const memoryBefore=memoryUpdates.length;
     set('backend',backend);set('preset','tutorial:char2');eq($('#backend').value,backend,'preset preserves backend');eq($('#timeoutMinutes').value,'30','preset preserves time limit');
     if(backend==='memory64'){
      ok(!$('#memoryMiB option[value="16384"]').disabled,'16 GiB allowance available');
@@ -130,13 +179,15 @@ async function checkUI(){
     eq((await readShareLink(new URL($('#shareLink').value).hash)).timeoutMinutes,30,'shared time limit');
     location.hash='#console';set('timeoutMinutes',0.001);await command('(loop)',/configured time limit/);
     set('timeoutMinutes',30);await command('(+ 1 2)',/3/);location.hash='#compute';
-    backendRows.push({backend,outputParity:true,shareRoundTrip:true,timeoutMinutes:30,timeoutAndRestart:true});
+    ok(memoryUpdates.length>memoryBefore,'live memory reported while computing in '+backend);
+    ok($('#memoryUsage').hidden,'memory indicator hidden after computation');
+    backendRows.push({backend,outputParity:true,shareRoundTrip:true,timeoutMinutes:30,timeoutAndRestart:true,memoryReportedDuringComputation:true});
    }
-   await post('backends',{mount:data.mount,defaultBackend:'compiled',rows:backendRows});
+   await post('backends',{mount:data.mount,defaultBackend:'memory64',rows:backendRows});
    set('backend','optimized');
    eq($('#memoryMiB').value,'4095','switching to wasm32 clamps the uncapped heap allowance');
    location.hash='#compute';await theme('light');eq(getComputedStyle(document.body).backgroundColor,'rgb(238, 242, 243)','light theme');await theme('dark');eq(getComputedStyle(document.body).backgroundColor,'rgb(17, 26, 39)','dark theme');await theme('auto');eq(document.documentElement.getAttribute('data-theme'),null,'automatic theme');eq(getComputedStyle(document.body).backgroundColor,matchMedia('(prefers-color-scheme: dark)').matches?'rgb(17, 26, 39)':'rgb(238, 242, 243)','automatic follows OS');
-   set('preset','tutorial:weights');await compute();const before=form(),raw=files();language('ru');eq($('.brand-sub').textContent,'интерфейс к bergman','Russian interface wording');eq(document.documentElement.lang,'ru','Russian lang');ok(/Вычислить/.test($('#go').textContent),'Russian controls');ok(/Вычислено/.test($('#runStatus').textContent),'Russian status');eq(form(),before,'language preserves form');eq(files(),raw,'language preserves files');
+   set('preset','tutorial:weights');await compute();const before=form(),raw=files();language('ru');eq($('.brand-sub').textContent,'интерфейс к bergman и не только…','Russian interface wording');eq(document.documentElement.lang,'ru','Russian lang');ok(/Вычислить/.test($('#go').textContent),'Russian controls');ok(/Вычислено/.test($('#runStatus').textContent),'Russian status');eq(form(),before,'language preserves form');eq(files(),raw,'language preserves files');
    location.hash='#guide';await math();eq($('#guideTitle').textContent,'Руководство пользователя','Russian guide');checkMath();await theme('dark');sessionStorage.setItem('validation.savedForm',JSON.stringify(before));next('persist');return;
   }
   if(phase==='persist'){
@@ -209,8 +260,8 @@ async function run(mount,mode='desktop'){
      else{assert.deepEqual(JSON.parse(v.files['homology.json']).betti.slice(0,5),[1,1,0,0,0]);assert.ok(v.resolutionLines>0);}
      report.examples.push({id:item.id,task:tutorialForm(item.id).task,outputs:Object.keys(v.files),hashes:Object.fromEntries(Object.entries(v.files).map(([n,s])=>[n,crypto.createHash('sha256').update(s).digest('hex')]))});console.log(item.id,'PASS');
     }else if(kind==='backends'){
-     assert.equal(v.defaultBackend,'compiled');assert.deepEqual(v.rows.map(r=>r.backend),['standard','optimized','compiled','memory64']);
-     for(const row of v.rows){assert.equal(row.outputParity,true);assert.equal(row.shareRoundTrip,true);assert.equal(row.timeoutMinutes,30);assert.equal(row.timeoutAndRestart,true);}
+     assert.equal(v.defaultBackend,'memory64');assert.deepEqual(v.rows.map(r=>r.backend),['standard','optimized','compiled','memory64']);
+     for(const row of v.rows){assert.equal(row.outputParity,true);assert.equal(row.shareRoundTrip,true);assert.equal(row.timeoutMinutes,30);assert.equal(row.timeoutAndRestart,true);assert.equal(row.memoryReportedDuringComputation,true);}
      report.backends.push(v);console.log(mount,'backend selection, parity and share PASS');
     }else if(kind==='pruning'){
      for(const key of ['outputParity','localPersistence','shareRoundTrip','incomingRestoration','incompatibleDisabled'])assert.equal(v[key],true,key);
@@ -224,7 +275,7 @@ async function run(mount,mode='desktop'){
     res.end('ok');return;
    }
    if(url.pathname===mount){
-    const init=`<script>window.validationErrors=[];addEventListener('error',e=>validationErrors.push(e.message));addEventListener('unhandledrejection',e=>validationErrors.push(String(e.reason)));${mode==='blocked'?`Object.defineProperty(window,'localStorage',{get(){throw new DOMException('Blocked','SecurityError')}});Object.defineProperty(navigator,'language',{get(){return 'ru-RU'}});Object.defineProperty(navigator,'languages',{get(){return ['ru-RU','ru']}});`:''}</script>`;
+    const init=`<script>window.validationErrors=[];addEventListener('error',e=>validationErrors.push(e.message));addEventListener('unhandledrejection',e=>validationErrors.push(String(e.reason)));${mode==='blocked'?`Object.defineProperty(window,'localStorage',{get(){throw new DOMException('Blocked','SecurityError')}});Object.defineProperty(navigator,'language',{get(){return 'ru-RU'}});Object.defineProperty(navigator,'languages',{get(){return ['ru-RU','ru']}});`:''}${mode==='unsupported'?`const originalValidate=WebAssembly.validate.bind(WebAssembly);WebAssembly.validate=bytes=>bytes.byteLength===16&&bytes[11]===5?false:originalValidate(bytes);`:''}</script>`;
     const html=fs.readFileSync('web/index.html','utf8').replace('<head>','<head>'+init).replace('</body>',`<script type="module">(${checkUI.toString()})();</script></body>`);res.setHeader('Content-Type','text/html');res.end(html);return;
    }
    serve(req,res);
@@ -241,8 +292,17 @@ async function run(mount,mode='desktop'){
   if(mode==='mobile')viewport=await mobileViewport(profile,url);
   const result=await done;assert.deepEqual(badResponses,[]);assert.ok(requests.every(p=>p.startsWith(mount)));assert.ok(requests.every(p=>!p.includes('//')));
   if(mode==='desktop')report.mounts.push({mount,requests:requests.length,mathjaxSVGs:result.mathjaxSVGs,badResponses,diagnostics:[]});
+  // These modes need no screenshots or inspector attachment. Their checks
+  // can finish before Chromium has populated its debugging-port file.
+  if(mode==='blocked'||mode==='unsupported'||mode==='policy')return;
   // No calculations remain. Attaching here cannot affect their execution.
-  const port=Number(fs.readFileSync(path.join(profile,'DevToolsActivePort'),'utf8').split('\n')[0]);attached=await chromium.connectOverCDP('http://127.0.0.1:'+port);report.browser=attached.version();
+  const portFile=path.join(profile,'DevToolsActivePort'),portStarted=Date.now();let port;
+  while(!Number.isInteger(port)||port<1||port>65535){
+   if(fs.existsSync(portFile))port=Number(fs.readFileSync(portFile,'utf8').split('\n')[0]);
+   assert.ok(Date.now()-portStarted<30000,'Chromium screenshot port did not become ready');
+   if(!port)await new Promise(r=>setTimeout(r,50));
+  }
+  attached=await chromium.connectOverCDP('http://127.0.0.1:'+port);report.browser=attached.version();
   const page=attached.contexts()[0].pages().find(p=>p.url().startsWith(`http://127.0.0.1:${server.address().port}`));assert.ok(page);
   if(mode==='desktop'){
    await page.locator('[data-lang="ru"]').click();await page.locator('a[data-view="guide"]').click();await page.waitForFunction(()=>document.querySelector('#guideContent').getAttribute('aria-busy')==='false'&&document.querySelectorAll('#guideContent mjx-container[jax="SVG"] svg').length>=20);
@@ -251,9 +311,17 @@ async function run(mount,mode='desktop'){
    await page.screenshot({path:`${out}/project-result-mobile.png`,fullPage:true});await page.locator('a[data-view="guide"]').click();await page.waitForFunction(()=>document.querySelector('#guideContent').getAttribute('aria-busy')==='false');await page.screenshot({path:`${out}/project-guide-en-light-mobile.png`,fullPage:true});
   }
  }catch(e){fs.writeFileSync(`${out}/failure-${mode}-${mount==='/'?'root':'project'}.json`,JSON.stringify({error:String(e.stack||e),failures,requests,badResponses},null,2));throw e;}
- finally{clearTimeout(timer);await attached?.close().catch(()=>{});viewport?.close();browser.kill('SIGTERM');server.close();fs.writeFileSync(`${out}/browser-${mode}-${mount==='/'?'root':'project'}.log`,stderr);}
+ finally{
+  clearTimeout(timer);await attached?.close().catch(()=>{});viewport?.close();browser.kill('SIGTERM');
+  if(browser.exitCode===null&&browser.signalCode===null)await new Promise(r=>browser.once('exit',r));
+  server.close();server.closeAllConnections();fs.writeFileSync(`${out}/browser-${mode}-${mount==='/'?'root':'project'}.log`,stderr);
+  fs.rmSync(profile,{recursive:true,force:true,maxRetries:3,retryDelay:100});
+ }
 }
-try{for(const mount of ['/','/george/']){console.log('Checking',mount);await run(mount);}await run('/george/','mobile');await run('/','blocked');
- assert.equal(report.examples.length,8);assert.equal(report.mounts.length,2);assert.equal(report.console.length,2);assert.equal(report.backends.length,2);assert.deepEqual(report.errors,[]);assert.deepEqual(report.externalRequests,[]);for(const [p,h]of Object.entries(report.sourceHashes))assert.equal(sha(p),h,p+': sources changed during validation');
+try{
+ if(policyOnly){report.scope='backend capability controls';await run('/','policy');}
+ else{for(const mount of ['/','/george/']){console.log('Checking',mount);await run(mount);}await run('/george/','mobile');await run('/','blocked');await run('/','unsupported');
+  assert.equal(report.examples.length,8);assert.equal(report.mounts.length,2);assert.equal(report.console.length,2);assert.equal(report.backends.length,2);}
+ assert.deepEqual(report.errors,[]);assert.deepEqual(report.externalRequests,[]);for(const [p,h]of Object.entries(report.sourceHashes))assert.equal(sha(p),h,p+': sources changed during validation');
  fs.writeFileSync(`${out}/report.json`,JSON.stringify(report,null,2)+'\n');console.log(out,'PASS');
 }catch(e){console.error(e);process.exitCode=1;}

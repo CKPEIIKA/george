@@ -1,12 +1,70 @@
 # Runtime performance assessment
 
+## Native NC versus current C/ECL — 2026-10-02
+
+The reference 15-generator, 100-relation Q presentation was computed
+through **degree 7**, with **695 rules**. Three serial trials per configuration
+used fresh workers in isolated Chromium, with no debugger or concurrent
+builds/oracle runs. Cold wall time includes startup, calculation and result
+transfer for both engines. The 512 MiB budget is the same in every trial.
+The Native memory64 row explicitly selects 64-bit execution at that budget.
+
+| Engine/settings | Median cold seconds | Cold range, seconds | Relative to fastest Bergman |
+|---|---:|---:|---:|
+| C/ECL O3 + LTO, wasm32 | 30.13 | 29.32–34.81 | 0.97× |
+| **C/ECL O3 + LTO, wasm32, pruning** | **29.15** | **27.82–29.42** | **1.00×** |
+| C/ECL O3 + LTO, memory64 | 37.09 | 34.51–38.73 | 0.79× |
+| C/ECL O3 + LTO, memory64, pruning | 34.81 | 32.21–37.66 | 0.84× |
+| Native NC, wasm32, 1 worker | 5.00 | 4.51–5.32 | 5.83× |
+| **Native NC, wasm32, 4 workers** | **2.91** | **2.86–3.27** | **10.02×** |
+| Native NC, memory64, 4 workers | 3.25 | 2.90–5.53 | 8.97× |
+
+Four Native workers are about **1.72×** faster than one here. This is a local
+three-trial result for this bounded presentation. It does not estimate
+performance at degrees 9–11 or across the full Bergman task set. Native
+produces primitive coefficients and does not globally interreduce earlier
+tails; its scope and output notices remain explicit.
+
+Every timed output passes mutual reductions against the current Bergman
+basis. All **695 leading words** match in all 21 runs. An independent exact
+checker certifies **10250 critical ambiguities through degree 7** for a Native
+result. These checks ran after the timing phase. The low-degree suite checks
+Native separately against Singular; no new high-degree Singular run was made.
+
+Allocated Wasm memory is **177.625 MiB** for Native at this budget, compared
+with **92.375 MiB** for the fastest pruned Bergman configuration. Native
+preallocates a shared scratch pool from the budget; this comparison establishes
+a speed gain, with higher allocated linear memory in the tested settings.
+Neither value measures browser RSS. The smaller scratch configurations in
+the imported Node tests are separate evidence, not this browser timing series.
+
+All trial times, source/module hashes and output filenames are in
+[native-speed.json](validation/native-speed.json); the corresponding
+[leading-word audit](validation/native-leading-words.json) retains each output
+hash. Fresh jobs disable checkpoint resume for these measurements.
+
+## Local default and memory reporting update — 2026-10-02
+
+Fresh forms select memory64 and a 16077 MiB
+(15.7 GiB) heap allowance. This is a preference change, not a measured
+speed improvement; the timing limitations below still apply. Unsupported
+browsers fall back to C wasm32/2048 MiB, and memory grows on demand.
+
+The live indicator reports allocated Wasm linear memory during computation.
+Two 120 MiB retained-array checks show memory events arriving during the
+synchronous allocation command: memory64 grows from 64 to 182.75 and
+327 MiB; wasm32 from 64 to 143.5625 and 316.3125 MiB. GC roots and exact
+arithmetic still pass. These are allocation checks, not comparative timings
+or estimates of browser RSS/live Lisp heap.
+
 ## George 0.5 memory measurements — 2026-10-02
 
-The new memory64 engine has not been compared in a controlled timing
-series. It remains an explicit option, and the wasm32 C backend remains
-the default. Concurrent validation timings do not establish a speed gain.
+At the original 0.5 release, memory64 had not yet been compared in a
+controlled timing series. That release selected the wasm32 C backend by
+default; the later default update is described above. The controlled Native
+comparison at the start of this document supersedes that timing limitation.
 
-For the submitted presentation through degree 7, repeated wasm32 C runs
+For the reference presentation through degree 7, repeated wasm32 C runs
 with pruning off/on/on/off retain the same native **695-element** result.
 Allocated Wasm memory falls from **110.875 to 92.375 MiB**, about **16.7%**.
 The corresponding memory64/pruning/no-cap run uses **191.1875 MiB** and
@@ -22,7 +80,7 @@ degrees have not been tested here. Evidence and final asset hashes are in
 
 ## George 0.4: Lisp O2, Lisp O3 + LTO, and C
 
-Measured on **2026-10-01**. The submitted 15-generator, 100-relation
+Measured on **2026-10-01**. The reference 15-generator, 100-relation
 presentation is unchanged. Ordinary Chromium runs use fresh workers,
 exclude startup, and compare each output byte for byte with native SBCL.
 

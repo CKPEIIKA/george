@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import assert from 'node:assert/strict';
-import {BACKENDS} from '../web/src/backends.js';
+import {BERGMAN_BACKENDS as BACKENDS} from '../web/src/backends.js';
 import {buildJob, exampleForm, readInputFile, parseRelation, isHomogeneous, TASK_BY_ID} from '../web/src/bergman-syntax.js';
 import {TUTORIALS, tutorialForm} from '../web/src/tutorials.js';
 import {EXAMPLES} from '../web/src/examples.js';

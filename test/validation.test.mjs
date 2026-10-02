@@ -26,6 +26,7 @@ test('memory budgets reject injection and persist through both resolution stages
 });
 test('valid prime fields and integer matrices are accepted',()=>assert.deepEqual(validateSettings({...form,ring:'comm',order:'matrix',matrix:'1 2\n0 -1',field:'p',modulus:2147483647}),[]));
 test('memory64 permits a larger or uncapped heap in both resolution stages',()=>{
+ assert.equal(buildJob({...form,backend:'memory64'}).memoryMiB,16077);
  for(const memoryMiB of [0,4096,8192,16384])assert.deepEqual(validateSettings({...form,backend:'memory64',memoryMiB}),[]);
  for(const memoryMiB of [-1,127,16385,Infinity,'0)(QUIT)('])assert.ok(validateSettings({...form,backend:'memory64',memoryMiB}).length);
  const job=buildJob({...form,backend:'memory64',memoryMiB:0,task:'anick',rels:['x^2-x']});

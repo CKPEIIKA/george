@@ -16,7 +16,7 @@ test('share links reproduce every backend along with the computation settings', 
   }
 });
 test('memory64 links preserve larger and uncapped allowances',async()=>{
- for(const memoryMiB of [0,4096,6144,8192,12000,12288,16384]){
+ for(const memoryMiB of [0,4096,6144,8192,12000,12288,16077,16384]){
   const url=await createShareLink({backend:'memory64',memoryMiB},'https://example.org/george/');
   const state=await readShareLink(new URL(url).hash);
   assert.equal(state.memoryMiB,memoryMiB);assert.equal(state.backend,'memory64');
