@@ -40,7 +40,8 @@
     "serve:fomkyr": "node tools/serve.mjs web 8000 --isolate",
     "test:fomkyr": "node tools/validate-fomkyr.mjs",
     "test:fomkyr:browser": "node tools/validate-fomkyr-browser.mjs",
-    "wasm:build:fomkyr": "bash tools/build-fomkyr-backend.sh"
+    "wasm:build:fomkyr": "bash tools/build-fomkyr-backend.sh",
+    "test:fomkyr:upgrade": "node tools/validate-fomkyr-upgrade.mjs"
   },
   "engines": {
     "node": ">=22.8.0"

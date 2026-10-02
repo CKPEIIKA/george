@@ -2,6 +2,7 @@
 import {FomkyrEngine} from './engine.js';
 import {parseNativeJob} from './job-adapter.js';
 import {hilbertCSV} from './hilbert.js';
+import {VERSION} from './storage.js';
 let enabled=false,engine=null;
 export async function dispatchFomkyr(message,send=postMessage){
   const {id,command,job,backend}=message;
@@ -9,7 +10,7 @@ export async function dispatchFomkyr(message,send=postMessage){
   else if(command==='init')enabled=false;
   if(!enabled)return false;
   if(command==='cancel'){engine?.cancel();return true;}
-  if(command==='init'){send({id,result:{name:'fomkyr',version:'0.3.0',backend:'fomkyr',ready:true,startupMs:0}});return true;}
+  if(command==='init'){send({id,result:{name:'fomkyr',version:VERSION,backend:'fomkyr',ready:true,startupMs:0}});return true;}
   if(engine){send({id,error:'fomkyr is busy',code:'BUSY'});return true;}
   engine={cancel(){}};let stdout='',owned=null;
   try{

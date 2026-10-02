@@ -35,3 +35,13 @@ test('unrelated or invalid events cannot change degree; Anick starts its own pha
   const next=degreeProgress({type:'degree-start',phase:'anick',degree:4},anick);
   assert.equal(next.completedThroughDegree,3);
 });
+test('fomkyr live overlap and activity counts remain exact beyond safe numbers',()=>{
+  const overlaps={total:'18446744073709551615',resolved:'9007199254740993'};
+  const activity={activeLanes:4,sampledReductions:'9007199254740994',maxActiveRowTerms:'12345'};
+  const state=degreeProgress({type:'progress',phase:'reducing',currentDegree:11,completedThroughDegree:10,overlaps,activity});
+  assert.equal(state.completed,false);assert.equal(state.completedThroughDegree,10);
+  assert.deepEqual(state.overlaps,overlaps);assert.deepEqual(state.activity,activity);
+  assert.equal(degreeLabel(state,12),'11 … / 12');
+  const checkpoint=degreeProgress({type:'progress',phase:'checkpoint',currentDegree:11,completedThroughDegree:11,overlaps});
+  assert.equal(degreeLabel(checkpoint,12),'11 ✓ / 12');
+});

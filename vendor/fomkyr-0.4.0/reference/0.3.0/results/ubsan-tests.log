@@ -1,0 +1,18 @@
+{"test": "commutative", "passed": true, "hilbert": [1, 2, 3, 4, 5, 6, 7, 8], "criticalPairsChecked": 1, "criticalPairsThroughDegree": 7, "nativeSeconds": 0.0001353710001694708, "basisSize": 1, "terms": 2, "completedThroughDegree": 7, "currentDegree": 0, "allocatedBytes": 21880944, "budgetBytes": 268435456, "diskBytes": 0, "pairs": 0, "monomialPairsPruned": 0, "zeroCommits": 0, "workers": 1, "prefixNodes": 1, "peakAllocatedBytes": 21880944, "reductions": 0, "monomialTermsPruned": 0}
+{"test": "exterior", "passed": true, "hilbert": [1, 3, 3, 1, 0, 0, 0, 0], "criticalPairsChecked": 16, "criticalPairsThroughDegree": 7, "nativeSeconds": 0.00011415000017223065, "basisSize": 6, "terms": 9, "completedThroughDegree": 7, "currentDegree": 0, "allocatedBytes": 21881272, "budgetBytes": 268435456, "diskBytes": 0, "pairs": 7, "monomialPairsPruned": 3, "zeroCommits": 7, "workers": 1, "prefixNodes": 6, "peakAllocatedBytes": 21881272, "reductions": 16, "monomialTermsPruned": 6}
+{"test": "fk3", "passed": true, "hilbert": [1, 3, 4, 3, 1, 0, 0, 0], "criticalPairsChecked": 17, "criticalPairsThroughDegree": 7, "nativeSeconds": 0.00011240599997108802, "basisSize": 6, "terms": 11, "completedThroughDegree": 7, "currentDegree": 0, "allocatedBytes": 21881320, "budgetBytes": 268435456, "diskBytes": 0, "pairs": 8, "monomialPairsPruned": 3, "zeroCommits": 7, "workers": 1, "prefixNodes": 7, "peakAllocatedBytes": 21881320, "reductions": 31, "monomialTermsPruned": 14}
+{"test": "fk6", "passed": true, "hilbert": [1, 15, 125, 765, 3831, 16605, 64432, 228855], "criticalPairsChecked": 1558, "criticalPairsThroughDegree": 4, "nativeSeconds": 0.2365142979999746, "basisSize": 695, "terms": 4808, "completedThroughDegree": 7, "currentDegree": 0, "allocatedBytes": 22051264, "budgetBytes": 268435456, "diskBytes": 0, "pairs": 8845, "monomialPairsPruned": 15, "zeroCommits": 8250, "workers": 1, "prefixNodes": 2772, "peakAllocatedBytes": 22051264, "reductions": 798824, "monomialTermsPruned": 105381}
+{"test": "80-bit-words", "passed": true}
+{"test": "bigint-multiply-exact-divide", "passed": true}
+{"test": "persistent-bigint-coefficients", "passed": true, "largestBits": 155}
+{"test": "large-coefficient-relations", "passed": true, "largestBits": 46}
+{"test": "spill-parallel-resume", "passed": true, "basisSize": 497, "terms": 2294, "completedThroughDegree": 6, "currentDegree": 0, "allocatedBytes": 38674464, "budgetBytes": 268435456, "diskBytes": 70960, "pairs": 3727, "monomialPairsPruned": 0, "zeroCommits": 3495, "workers": 3, "prefixNodes": 1584, "peakAllocatedBytes": 38674464, "reductions": 172841, "monomialTermsPruned": 21433}
+{"test": "finite-fields", "passed": true}
+{"test": "memory-budget-denial", "passed": true}
+{"test": "cooperative-cancellation", "passed": true}
+{"test": "random-Q-presentations", "passed": true, "cases": 12}
+UBSAN long words 31 passed
+UBSAN long words 32 passed
+UBSAN long words 33 passed
+UBSAN long words 64 passed
+UBSAN long words 129 passed

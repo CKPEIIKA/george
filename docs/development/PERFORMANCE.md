@@ -1,5 +1,86 @@
 # Runtime performance assessment
 
+## fomkyr 0.4.0 versus 0.3.0 — 2026-10-02
+
+The same submitted 15-generator, 100-relation presentation over Q was timed
+before and after the import. Each version uses fresh serial browser profiles,
+memory64, 2048 MiB, four actual workers, pruning on, resume off and Hilbert
+off. New 0.4 optimizations use their defaults. All correctness and oracle
+work finished before the new timing series; no concurrent build or test
+suite ran during either measured series. The host is the same i5-1135G7,
+eight logical CPUs and 15.3 GiB RAM, with Chromium 153 / Firefox 155.
+
+Three cold trials per version/browser/degree give:
+
+| Browser | Degree | 0.3 median seconds (range) | 0.4 median seconds (range) | Old/new median ratio |
+|---|---:|---:|---:|---:|
+| Chromium | 8 | 4.24 (3.75–5.17) | 3.30 (2.54–4.16) | 1.29× |
+| Firefox | 8 | 7.58 (7.14–9.24) | 6.55 (6.40–6.69) | 1.16× |
+| Chromium | 9 | 19.40 (18.95–20.06) | 10.41 (9.79–10.59) | 1.86× |
+| Firefox | 9 | 22.96 (21.90–28.76) | 14.86 (14.58–17.26) | 1.55× |
+
+Degree-9 median process-tree CPU also falls: Chromium **60.29 → 35.40 core
+seconds**, Firefox **65.20 → 38.94**. Additional peak physical PSS rises
+slightly: Chromium **66.7 → 78.4 MiB**, Firefox **48.7 → 62.3 MiB**. The new
+indexes therefore establish a speed improvement here, without a measured
+memory saving. PSS subtracts each browser's own idle baseline; allocated Wasm
+capacity is separate and includes reserved scratch memory.
+
+One upgraded degree-10 trial per browser completed: **80.25 s in Chromium**
+and **85.85 s in Firefox**, both with **2155 rules**. The previous version
+hit the 120-second cap (two Chromium trials, one Firefox trial), so there is
+no measured baseline completion time or exact degree-10 speed ratio. These
+cold results also differ from the earlier progress-boundary measurements;
+the cause of that variation is not established.
+
+All **26 completed timed outputs** pass exact input membership and matching
+leading-word checks. At degrees 8/9 they also pass mutual ideal reductions
+against the old version. Degree 8 is the same monic polynomial set; degree 9
+has one changed tail, which reduces to zero in both directions. At degree 10,
+the two upgraded browsers return the same monic polynomial set; no completed
+old degree-10 output is available in this series. This is consistency
+evidence, not a fresh high-degree critical-pair certificate. The independent
+small-degree C/ECL/Singular certificates are documented in VALIDATION.md.
+
+[Comparison and exact audit](validation/fomkyr-04-speed-comparison/report.json),
+[0.3 baseline](validation/fomkyr-04-speed-baseline/report.json),
+[0.4 degree-8/9 trials](validation/fomkyr-04-speed-current/report.json) and
+[0.4 degree-10 trials](validation/fomkyr-04-speed-degree10/report.json) retain
+runtime hashes, all completed bases and sampled CPU/RAM traces. No browser
+profiles are included in the archive.
+
+The baseline and upgraded trials ran in groups, rather than an interleaved
+randomized version comparison. Background desktop load varied (recorded
+one-minute load ranges 3.55–10.24 and 3.17–8.85), and browser/filesystem caches
+can affect timings. These are local three-trial medians, not a confidence
+interval or a guarantee on another machine. No degree-11/12 completion or
+projection is inferred.
+
+Cold wall time includes engine startup, calculation, export and initial
+result delivery, excluding browser launch/rendering. Above the preview limit,
+the harness fetches the full OPFS basis for audit after the wall timer stops;
+CPU/PSS sampling includes that read. Browser CPU/PSS is sampled every 0.25 s,
+so brief peaks or exiting processes can be missed. Every computation has a
+120-second cold wall cap. Once a version/browser times out, later trials of
+the same or higher degree are skipped. An interrupted baseline pilot produced
+no result row and is excluded; earlier recorded completed/capped rows remain.
+
+The earlier 0.3 degree-2–8 plot below is retained with its original version,
+conditions and asset hashes. Earlier Bergman/SBCL/Singular timings have not
+been rerun for this upgrade.
+
+For the current runtime, repeat the serial measurements and audit with:
+
+```sh
+node tools/benchmark-backend-resources.mjs --out build/validation/fomkyr-04-speed-current --configs fomkyr,fomkyr-firefox --degrees 8,9 --trials 3 --timeout-seconds 120 --memory-mib 2048 --skip-censored
+node tools/benchmark-backend-resources.mjs --out build/validation/fomkyr-04-speed-degree10 --configs fomkyr,fomkyr-firefox --degrees 10 --trials 1 --timeout-seconds 120 --memory-mib 2048 --skip-censored
+node tools/compare-fomkyr-resources.mjs build/validation/fomkyr-04-speed-comparison build/validation/fomkyr-04-speed-baseline build/validation/fomkyr-04-speed-current build/validation/fomkyr-04-speed-degree10
+```
+
+The baseline was captured before replacing the production 0.3 assets. Its
+report records those original hashes and remains a separate input to the
+audit; rerunning the current runtime does not recreate a 0.3 baseline.
+
 ## fomkyr 0.3.0 resource comparison — 2026-10-02
 
 Fresh serial browser runs recompute the submitted 15-generator, 100-relation

@@ -140,8 +140,8 @@
       <p class="warn" id="homogWarn" hidden></p>
     </fieldset>
 
-    <details class="block advanced">
-      <summary data-i18n="advanced">More settings</summary>
+    <details id="engineSettings" class="block engine-settings">
+      <summary data-i18n="engine.settings">Engine</summary>
       <label for="backend" class="field">
         <span class="label-row"><span class="label" data-i18n="backend.label">Computation engine</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="backendHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="backendHint" data-i18n="backend.hint">The engine selection is saved with your settings and share link.</span></span></span>
         <select id="backend">
@@ -188,21 +188,6 @@
       <label for="monomialPruning" class="field">
         <span class="label-row"><span><input id="monomialPruning" type="checkbox" aria-describedby="pruningHint"> <span data-i18n="pruning.label">Monomial pruning</span></span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="pruningHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="pruningHint" data-i18n="pruning.hint">Release stored monomials after each completed degree. Available for unweighted homogeneous noncommutative Gröbner bases with the default degreewise strategy.</span></span></span>
       </label>
-      <label for="augmentation" class="field">
-        <span class="label-row"><span class="label" data-i18n="augmentation.label">Augmentation for the Anick resolution</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="augmentationHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="augmentationHint" data-i18n="augmentation.hint">Choose the map to the coefficient field used by the Anick resolution. For graded algebras generators map to 0; for monoids and groups they map to 1. Relations must respect this choice.</span></span></span>
-        <select id="augmentation">
-          <option value="graded" data-i18n="augmentation.graded">Generators map to 0</option>
-          <option value="monoid" data-i18n="augmentation.monoid">Generators map to 1 (monoids and groups)</option>
-        </select>
-      </label>
-      <label for="nonhomog" class="field">
-        <span class="label-row"><span class="label" data-i18n="nonhomog.label">Nonhomogeneous relations</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="nonhomogHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="nonhomogHint" data-i18n="nonhomog.hint">Automatic mode processes nonhomogeneous relations item by item. Degreewise mode is appropriate for homogeneous presentations. Fomkyr requires homogeneous relations.</span></span></span>
-        <select id="nonhomog">
-          <option value="auto" data-i18n="nonhomog.auto">Process item by item when needed</option>
-          <option value="itemwise" data-i18n="nonhomog.itemwise">Always process item by item</option>
-          <option value="degreewise" data-i18n="nonhomog.degreewise">Always process degree by degree</option>
-        </select>
-      </label>
       <label for="strategy" class="field">
         <span class="label-row"><span class="label" data-i18n="strategy.label">Strategy</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="strategyHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="strategyHint" data-i18n="strategy.hint">The default completes consecutive degrees. Rabbit changes Bergman’s processing strategy and can help some presentations; its parameters require care. Fomkyr uses its own degreewise algorithm.</span></span></span>
         <select id="strategy">
@@ -235,6 +220,26 @@
         </label>
         <span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="legacyHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="legacyHint" data-i18n="legacy.hint">Legacy mode keeps bergman 1.001’s original behaviour. By default George applies its documented fixes.</span></span>
       </div>
+    </details>
+
+    <details class="block advanced">
+      <summary data-i18n="advanced">More settings</summary>
+      <div id="fomkyrMathOptions" hidden></div>
+      <label for="augmentation" class="field">
+        <span class="label-row"><span class="label" data-i18n="augmentation.label">Augmentation for the Anick resolution</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="augmentationHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="augmentationHint" data-i18n="augmentation.hint">Choose the map to the coefficient field used by the Anick resolution. For graded algebras generators map to 0; for monoids and groups they map to 1. Relations must respect this choice.</span></span></span>
+        <select id="augmentation">
+          <option value="graded" data-i18n="augmentation.graded">Generators map to 0</option>
+          <option value="monoid" data-i18n="augmentation.monoid">Generators map to 1 (monoids and groups)</option>
+        </select>
+      </label>
+      <label for="nonhomog" class="field">
+        <span class="label-row"><span class="label" data-i18n="nonhomog.label">Nonhomogeneous relations</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="nonhomogHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="nonhomogHint" data-i18n="nonhomog.hint">Automatic mode processes nonhomogeneous relations item by item. Degreewise mode is appropriate for homogeneous presentations. Fomkyr requires homogeneous relations.</span></span></span>
+        <select id="nonhomog">
+          <option value="auto" data-i18n="nonhomog.auto">Process item by item when needed</option>
+          <option value="itemwise" data-i18n="nonhomog.itemwise">Always process item by item</option>
+          <option value="degreewise" data-i18n="nonhomog.degreewise">Always process degree by degree</option>
+        </select>
+      </label>
       <label for="maxserdeg" class="field" id="maxserdegField" hidden>
         <span class="label-row"><span class="label" data-i18n="maxserdeg">Hilbert series up to degree</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="maxserdegHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="maxserdegHint" data-i18n="maxserdeg.hint">Highest power requested in the commutative Hilbert series. This is separate from the Gröbner basis degree bound.</span></span></span>
         <input type="number" id="maxserdeg" min="1" value="7" inputmode="numeric">

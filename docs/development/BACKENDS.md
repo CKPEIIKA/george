@@ -1,5 +1,44 @@
 # Browser backends in George 0.6
 
+## fomkyr 0.4.0 — 2026-10-02
+
+The active fomkyr runtime now uses the unmodified four prebuilt modules from
+`vendor/fomkyr-0.4.0/`. The archive SHA-256 is
+`d6feec734d25a1901d2cb3c582caa150d0e91bdfb22b541f1c2da06e9739c20a`;
+all 293 manifest entries were verified before import. The original sources,
+tests, fixtures, reports and MIT notices remain intact, alongside the older
+versions. `web/engine/fomkyr/build.json` records the current runtime hashes.
+George remains version 0.6.0.
+
+This core adds an exact leading-word matcher with a budgeted hash fallback,
+a homogeneous chain criterion, earlier proved-zero pruning, checked monic
+quadratic rewrites and cost-ordered dispatch with deterministic commits.
+New jobs enable these optimizations. The word cache defaults to 256 entries;
+the matcher budget is automatic (the smaller of memory/16 and 64 MiB).
+Their localized controls, budgets and progress interval are saved/shared.
+Existing explicit choices are preserved. Hilbert counting remains off for
+new GB-only jobs. No browser F4/F5 or modular reconstruction is claimed.
+
+Mathematical settings remain directly under **More settings**. Runtime
+settings, including backend, memory, workers and fomkyr tuning, are grouped
+in the separate collapsed **Engine** submenu. The optional fomkyr Hilbert calculation
+is a mathematical setting outside that submenu. The global Bergman
+memory64/15.7 GiB default and capability restrictions are unchanged.
+
+The worker adapts upstream live progress to George's degree/count tooltip.
+Sampled activity can arrive during a synchronous Wasm reduction; it reports
+actual counters, not an estimated remaining time. A host fix sets the
+completed-degree tracker before publishing the checkpoint phase. Public
+timing remains in seconds. ABI-3 records and algebra identities are unchanged:
+actual 0.3 wasm32 browser checkpoints resume in 0.4 memory64 in both browsers.
+The four Wasm modules and C kernel have no George modifications; a native C
+build, imported suites and actual packaged modules were checked separately.
+The Wasm rebuild wrapper was not run end to end.
+
+Correctness, browser and checkpoint evidence is in
+[VALIDATION.md](VALIDATION.md#fomkyr-040-upgrade--2026-10-02).
+The sections below retain historical versions and conditions.
+
 The interface offers these exact labels:
 
 | UI label | Stable share ID | Assets | Execution |

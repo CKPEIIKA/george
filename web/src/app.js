@@ -307,7 +307,8 @@ function refresh() {
   $('backendHint').textContent = t(els.backend.value === 'fomkyr' ? 'backend.nativeHint' : 'backend.hint');
   $('nativeWorkersField').hidden = els.backend.value !== 'fomkyr';
   $('fomkyrOptions').hidden = els.backend.value !== 'fomkyr';
-  for (const input of $('fomkyrOptions').querySelectorAll('input, select')) input.disabled = els.backend.value !== 'fomkyr';
+  $('fomkyrMathOptions').hidden = els.backend.value !== 'fomkyr';
+  for (const input of document.querySelectorAll('#fomkyrOptions input, #fomkyrOptions select, #fomkyrMathOptions input')) input.disabled = els.backend.value !== 'fomkyr';
   $('memoryHint').textContent = t(els.backend.value === 'fomkyr' ? 'native.memoryHint' : 'memory.hint');
   const f = readForm();
   const task = TASK_BY_ID.get(f.task);
@@ -371,13 +372,22 @@ function updateElapsedTime() {
 function updateDegreeUsage() {
   const degree = runDegree?.degree ?? '—';
   const limit = runDegreeBound ? t('monitor.degreeLimit', { bound: runDegreeBound }) : '';
-  const phaseKey = {checkpoint:'monitor.phaseCheckpoint',hilbert:'monitor.phaseHilbert',export:'monitor.phaseExport'}[runDegree?.phase];
+  const phaseKey = {input:'monitor.phaseInput',indexing:'monitor.phaseIndexing',committing:'monitor.phaseCommitting',checkpoint:'monitor.phaseCheckpoint',hilbert:'monitor.phaseHilbert',export:'monitor.phaseExport',done:'monitor.phaseDone'}[runDegree?.phase];
   let progress = t(phaseKey ?? (runDegree ? (runDegree.completed ? 'monitor.degreeCompleted' : 'monitor.degreeCurrent')
     : (lastJob?.backend === 'fomkyr' ? 'monitor.degreeWaiting' : 'monitor.degreeUnavailable')), { degree, limit, through:runDegree?.completedThroughDegree ?? 0 });
   if (runDegree?.phase === 'anick') progress = t('monitor.degreeAnick', { progress });
   if (runDegree?.pairs !== undefined) {
     const format = value => new Intl.NumberFormat(getLanguage()).format(value);
     progress += ' ' + t('monitor.degreeCounters', {pairs:format(runDegree.pairs),reductions:format(runDegree.reductions ?? 0),rules:format(runDegree.basisSize ?? 0)});
+  }
+  const exact = value => new Intl.NumberFormat(getLanguage()).format(BigInt(value));
+  if (runDegree?.overlaps) {
+    const {resolved,total} = runDegree.overlaps;
+    progress += ' ' + t(total === null ? 'monitor.overlapsUnknown' : 'monitor.overlaps', {resolved:exact(resolved),total:total === null ? '' : exact(total)});
+  }
+  if (runDegree?.activity) {
+    const {activeLanes,sampledReductions,maxActiveRowTerms} = runDegree.activity;
+    progress += ' ' + t('monitor.activity',{workers:activeLanes,reductions:exact(sampledReductions),terms:exact(maxActiveRowTerms)});
   }
   els.degreeValue.textContent = degreeLabel(runDegree,runDegreeBound);
   els.degreeUsageHint.textContent = progress;

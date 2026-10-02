@@ -1,0 +1,560 @@
+{
+  "state": "complete",
+  "date": "2026-10-02T17:56:13.378Z",
+  "inputSha256": "557b7a5e2e0b3353b374ee417bc6d435d9b5c4bb80ffd3174135d3a662f7d857",
+  "sources": [
+    "docs/development/validation/fomkyr-04-speed-baseline/report.json",
+    "docs/development/validation/fomkyr-04-speed-current/report.json",
+    "docs/development/validation/fomkyr-04-speed-degree10/report.json"
+  ],
+  "comparisons": [
+    {
+      "browser": "chromium",
+      "degree": 8,
+      "baseline": {
+        "trials": 3,
+        "coldMedianSeconds": 4.24072499999404,
+        "coldRangeSeconds": [
+          3.7476200000047686,
+          5.17477500000596
+        ],
+        "medianCpuCoreSeconds": 13.17,
+        "medianAdditionalPeakPssMiB": 69.1005859375
+      },
+      "current": {
+        "trials": 3,
+        "coldMedianSeconds": 3.2998999999761582,
+        "coldRangeSeconds": [
+          2.536484999984503,
+          4.15792000001669
+        ],
+        "medianCpuCoreSeconds": 9.18,
+        "medianAdditionalPeakPssMiB": 70.333984375
+      },
+      "baselineCensored": [],
+      "speedRatio": 1.2851071244657957
+    },
+    {
+      "browser": "chromium",
+      "degree": 9,
+      "baseline": {
+        "trials": 3,
+        "coldMedianSeconds": 19.395134999990464,
+        "coldRangeSeconds": [
+          18.948540000021456,
+          20.063090000003577
+        ],
+        "medianCpuCoreSeconds": 60.29,
+        "medianAdditionalPeakPssMiB": 66.7021484375
+      },
+      "current": {
+        "trials": 3,
+        "coldMedianSeconds": 10.405920000016689,
+        "coldRangeSeconds": [
+          9.78647499999404,
+          10.58722999998927
+        ],
+        "medianCpuCoreSeconds": 35.4,
+        "medianAdditionalPeakPssMiB": 78.41796875
+      },
+      "baselineCensored": [],
+      "speedRatio": 1.863855862812645
+    },
+    {
+      "browser": "chromium",
+      "degree": 10,
+      "baseline": null,
+      "current": {
+        "trials": 1,
+        "coldMedianSeconds": 80.25476000002027,
+        "coldRangeSeconds": [
+          80.25476000002027,
+          80.25476000002027
+        ],
+        "medianCpuCoreSeconds": 229.8,
+        "medianAdditionalPeakPssMiB": 76.4423828125
+      },
+      "baselineCensored": [
+        {
+          "status": "timeout",
+          "capSeconds": 120,
+          "coldWallSeconds": 120.00366500002146
+        },
+        {
+          "status": "timeout",
+          "capSeconds": 120,
+          "coldWallSeconds": 120.00248999997973
+        }
+      ],
+      "speedRatio": null
+    },
+    {
+      "browser": "firefox",
+      "degree": 8,
+      "baseline": {
+        "trials": 3,
+        "coldMedianSeconds": 7.581240000000001,
+        "coldRangeSeconds": [
+          7.1363,
+          9.24356
+        ],
+        "medianCpuCoreSeconds": 16.21,
+        "medianAdditionalPeakPssMiB": 55.2900390625
+      },
+      "current": {
+        "trials": 3,
+        "coldMedianSeconds": 6.54692,
+        "coldRangeSeconds": [
+          6.40212,
+          6.687060000000001
+        ],
+        "medianCpuCoreSeconds": 11.98,
+        "medianAdditionalPeakPssMiB": 59.0419921875
+      },
+      "baselineCensored": [],
+      "speedRatio": 1.1579857398593538
+    },
+    {
+      "browser": "firefox",
+      "degree": 9,
+      "baseline": {
+        "trials": 3,
+        "coldMedianSeconds": 22.958299999999998,
+        "coldRangeSeconds": [
+          21.90074,
+          28.763480000000005
+        ],
+        "medianCpuCoreSeconds": 65.2,
+        "medianAdditionalPeakPssMiB": 48.6826171875
+      },
+      "current": {
+        "trials": 3,
+        "coldMedianSeconds": 14.857919999999998,
+        "coldRangeSeconds": [
+          14.58232,
+          17.2563
+        ],
+        "medianCpuCoreSeconds": 38.94,
+        "medianAdditionalPeakPssMiB": 62.2822265625
+      },
+      "baselineCensored": [],
+      "speedRatio": 1.5451893670177252
+    },
+    {
+      "browser": "firefox",
+      "degree": 10,
+      "baseline": null,
+      "current": {
+        "trials": 1,
+        "coldMedianSeconds": 85.84710000000001,
+        "coldRangeSeconds": [
+          85.84710000000001,
+          85.84710000000001
+        ],
+        "medianCpuCoreSeconds": 230.11,
+        "medianAdditionalPeakPssMiB": 69.5380859375
+      },
+      "baselineCensored": [
+        {
+          "status": "timeout",
+          "capSeconds": 120,
+          "coldWallSeconds": 120.43342
+        }
+      ],
+      "speedRatio": null
+    }
+  ],
+  "audits": [
+    {
+      "version": "0.3.0",
+      "browser": "chromium",
+      "degree": 8,
+      "trial": 0,
+      "file": "docs/development/validation/fomkyr-04-speed-baseline/fomkyr-d8-t0.gb",
+      "sha256": "8d0904c7be5c81dd9105d5468fef5c39e567bfa9a9701cd006792211a430b416",
+      "rules": 990,
+      "inputMembership": true,
+      "leadingWordsMatch": true,
+      "monicPolynomialSetMatches": true,
+      "differingTails": 0,
+      "mutualIdealMembership": true,
+      "reference": "docs/development/validation/fomkyr-04-speed-baseline/fomkyr-d8-t0.gb"
+    },
+    {
+      "version": "0.3.0",
+      "browser": "firefox",
+      "degree": 8,
+      "trial": 0,
+      "file": "docs/development/validation/fomkyr-04-speed-baseline/fomkyr-firefox-d8-t0.gb",
+      "sha256": "8d0904c7be5c81dd9105d5468fef5c39e567bfa9a9701cd006792211a430b416",
+      "rules": 990,
+      "inputMembership": true,
+      "leadingWordsMatch": true,
+      "monicPolynomialSetMatches": true,
+      "differingTails": 0,
+      "mutualIdealMembership": true,
+      "reference": "docs/development/validation/fomkyr-04-speed-baseline/fomkyr-d8-t0.gb"
+    },
+    {
+      "version": "0.3.0",
+      "browser": "chromium",
+      "degree": 8,
+      "trial": 1,
+      "file": "docs/development/validation/fomkyr-04-speed-baseline/fomkyr-d8-t1.gb",
+      "sha256": "8d0904c7be5c81dd9105d5468fef5c39e567bfa9a9701cd006792211a430b416",
+      "rules": 990,
+      "inputMembership": true,
+      "leadingWordsMatch": true,
+      "monicPolynomialSetMatches": true,
+      "differingTails": 0,
+      "mutualIdealMembership": true,
+      "reference": "docs/development/validation/fomkyr-04-speed-baseline/fomkyr-d8-t0.gb"
+    },
+    {
+      "version": "0.3.0",
+      "browser": "firefox",
+      "degree": 8,
+      "trial": 1,
+      "file": "docs/development/validation/fomkyr-04-speed-baseline/fomkyr-firefox-d8-t1.gb",
+      "sha256": "8d0904c7be5c81dd9105d5468fef5c39e567bfa9a9701cd006792211a430b416",
+      "rules": 990,
+      "inputMembership": true,
+      "leadingWordsMatch": true,
+      "monicPolynomialSetMatches": true,
+      "differingTails": 0,
+      "mutualIdealMembership": true,
+      "reference": "docs/development/validation/fomkyr-04-speed-baseline/fomkyr-d8-t0.gb"
+    },
+    {
+      "version": "0.3.0",
+      "browser": "firefox",
+      "degree": 9,
+      "trial": 0,
+      "file": "docs/development/validation/fomkyr-04-speed-baseline/fomkyr-firefox-d9-t0.gb",
+      "sha256": "2043459014a2ec4c6d477d17654d0a8baeef5845068f2201afbfe2becf9f1aa6",
+      "rules": 1451,
+      "inputMembership": true,
+      "leadingWordsMatch": true,
+      "monicPolynomialSetMatches": true,
+      "differingTails": 0,
+      "mutualIdealMembership": true,
+      "reference": "docs/development/validation/fomkyr-04-speed-baseline/fomkyr-firefox-d9-t0.gb"
+    },
+    {
+      "version": "0.3.0",
+      "browser": "chromium",
+      "degree": 9,
+      "trial": 0,
+      "file": "docs/development/validation/fomkyr-04-speed-baseline/fomkyr-d9-t0.gb",
+      "sha256": "2043459014a2ec4c6d477d17654d0a8baeef5845068f2201afbfe2becf9f1aa6",
+      "rules": 1451,
+      "inputMembership": true,
+      "leadingWordsMatch": true,
+      "monicPolynomialSetMatches": true,
+      "differingTails": 0,
+      "mutualIdealMembership": true,
+      "reference": "docs/development/validation/fomkyr-04-speed-baseline/fomkyr-firefox-d9-t0.gb"
+    },
+    {
+      "version": "0.3.0",
+      "browser": "firefox",
+      "degree": 9,
+      "trial": 1,
+      "file": "docs/development/validation/fomkyr-04-speed-baseline/fomkyr-firefox-d9-t1.gb",
+      "sha256": "2043459014a2ec4c6d477d17654d0a8baeef5845068f2201afbfe2becf9f1aa6",
+      "rules": 1451,
+      "inputMembership": true,
+      "leadingWordsMatch": true,
+      "monicPolynomialSetMatches": true,
+      "differingTails": 0,
+      "mutualIdealMembership": true,
+      "reference": "docs/development/validation/fomkyr-04-speed-baseline/fomkyr-firefox-d9-t0.gb"
+    },
+    {
+      "version": "0.3.0",
+      "browser": "chromium",
+      "degree": 9,
+      "trial": 1,
+      "file": "docs/development/validation/fomkyr-04-speed-baseline/fomkyr-d9-t1.gb",
+      "sha256": "2043459014a2ec4c6d477d17654d0a8baeef5845068f2201afbfe2becf9f1aa6",
+      "rules": 1451,
+      "inputMembership": true,
+      "leadingWordsMatch": true,
+      "monicPolynomialSetMatches": true,
+      "differingTails": 0,
+      "mutualIdealMembership": true,
+      "reference": "docs/development/validation/fomkyr-04-speed-baseline/fomkyr-firefox-d9-t0.gb"
+    },
+    {
+      "version": "0.3.0",
+      "browser": "chromium",
+      "degree": 8,
+      "trial": 2,
+      "file": "docs/development/validation/fomkyr-04-speed-baseline/fomkyr-d8-t2.gb",
+      "sha256": "8d0904c7be5c81dd9105d5468fef5c39e567bfa9a9701cd006792211a430b416",
+      "rules": 990,
+      "inputMembership": true,
+      "leadingWordsMatch": true,
+      "monicPolynomialSetMatches": true,
+      "differingTails": 0,
+      "mutualIdealMembership": true,
+      "reference": "docs/development/validation/fomkyr-04-speed-baseline/fomkyr-d8-t0.gb"
+    },
+    {
+      "version": "0.3.0",
+      "browser": "firefox",
+      "degree": 8,
+      "trial": 2,
+      "file": "docs/development/validation/fomkyr-04-speed-baseline/fomkyr-firefox-d8-t2.gb",
+      "sha256": "8d0904c7be5c81dd9105d5468fef5c39e567bfa9a9701cd006792211a430b416",
+      "rules": 990,
+      "inputMembership": true,
+      "leadingWordsMatch": true,
+      "monicPolynomialSetMatches": true,
+      "differingTails": 0,
+      "mutualIdealMembership": true,
+      "reference": "docs/development/validation/fomkyr-04-speed-baseline/fomkyr-d8-t0.gb"
+    },
+    {
+      "version": "0.3.0",
+      "browser": "firefox",
+      "degree": 9,
+      "trial": 2,
+      "file": "docs/development/validation/fomkyr-04-speed-baseline/fomkyr-firefox-d9-t2.gb",
+      "sha256": "2043459014a2ec4c6d477d17654d0a8baeef5845068f2201afbfe2becf9f1aa6",
+      "rules": 1451,
+      "inputMembership": true,
+      "leadingWordsMatch": true,
+      "monicPolynomialSetMatches": true,
+      "differingTails": 0,
+      "mutualIdealMembership": true,
+      "reference": "docs/development/validation/fomkyr-04-speed-baseline/fomkyr-firefox-d9-t0.gb"
+    },
+    {
+      "version": "0.3.0",
+      "browser": "chromium",
+      "degree": 9,
+      "trial": 2,
+      "file": "docs/development/validation/fomkyr-04-speed-baseline/fomkyr-d9-t2.gb",
+      "sha256": "2043459014a2ec4c6d477d17654d0a8baeef5845068f2201afbfe2becf9f1aa6",
+      "rules": 1451,
+      "inputMembership": true,
+      "leadingWordsMatch": true,
+      "monicPolynomialSetMatches": true,
+      "differingTails": 0,
+      "mutualIdealMembership": true,
+      "reference": "docs/development/validation/fomkyr-04-speed-baseline/fomkyr-firefox-d9-t0.gb"
+    },
+    {
+      "version": "0.4.0",
+      "browser": "chromium",
+      "degree": 8,
+      "trial": 0,
+      "file": "docs/development/validation/fomkyr-04-speed-current/fomkyr-d8-t0.gb",
+      "sha256": "9688fe86a89a2c28714685e0783deb58006891cb444656eb38906ec4b80e2d8b",
+      "rules": 990,
+      "inputMembership": true,
+      "leadingWordsMatch": true,
+      "monicPolynomialSetMatches": true,
+      "differingTails": 0,
+      "mutualIdealMembership": true,
+      "reference": "docs/development/validation/fomkyr-04-speed-baseline/fomkyr-d8-t0.gb"
+    },
+    {
+      "version": "0.4.0",
+      "browser": "firefox",
+      "degree": 8,
+      "trial": 0,
+      "file": "docs/development/validation/fomkyr-04-speed-current/fomkyr-firefox-d8-t0.gb",
+      "sha256": "9688fe86a89a2c28714685e0783deb58006891cb444656eb38906ec4b80e2d8b",
+      "rules": 990,
+      "inputMembership": true,
+      "leadingWordsMatch": true,
+      "monicPolynomialSetMatches": true,
+      "differingTails": 0,
+      "mutualIdealMembership": true,
+      "reference": "docs/development/validation/fomkyr-04-speed-baseline/fomkyr-d8-t0.gb"
+    },
+    {
+      "version": "0.4.0",
+      "browser": "firefox",
+      "degree": 9,
+      "trial": 0,
+      "file": "docs/development/validation/fomkyr-04-speed-current/fomkyr-firefox-d9-t0.gb",
+      "sha256": "d485b80055ce8a7a3b66d75c5afbe30d83dd5099bd6bee296e9e510b312997c3",
+      "rules": 1451,
+      "inputMembership": true,
+      "leadingWordsMatch": true,
+      "monicPolynomialSetMatches": false,
+      "differingTails": 1,
+      "mutualIdealMembership": true,
+      "reference": "docs/development/validation/fomkyr-04-speed-baseline/fomkyr-firefox-d9-t0.gb"
+    },
+    {
+      "version": "0.4.0",
+      "browser": "chromium",
+      "degree": 9,
+      "trial": 0,
+      "file": "docs/development/validation/fomkyr-04-speed-current/fomkyr-d9-t0.gb",
+      "sha256": "d485b80055ce8a7a3b66d75c5afbe30d83dd5099bd6bee296e9e510b312997c3",
+      "rules": 1451,
+      "inputMembership": true,
+      "leadingWordsMatch": true,
+      "monicPolynomialSetMatches": false,
+      "differingTails": 1,
+      "mutualIdealMembership": true,
+      "reference": "docs/development/validation/fomkyr-04-speed-baseline/fomkyr-firefox-d9-t0.gb"
+    },
+    {
+      "version": "0.4.0",
+      "browser": "chromium",
+      "degree": 8,
+      "trial": 1,
+      "file": "docs/development/validation/fomkyr-04-speed-current/fomkyr-d8-t1.gb",
+      "sha256": "9688fe86a89a2c28714685e0783deb58006891cb444656eb38906ec4b80e2d8b",
+      "rules": 990,
+      "inputMembership": true,
+      "leadingWordsMatch": true,
+      "monicPolynomialSetMatches": true,
+      "differingTails": 0,
+      "mutualIdealMembership": true,
+      "reference": "docs/development/validation/fomkyr-04-speed-baseline/fomkyr-d8-t0.gb"
+    },
+    {
+      "version": "0.4.0",
+      "browser": "firefox",
+      "degree": 8,
+      "trial": 1,
+      "file": "docs/development/validation/fomkyr-04-speed-current/fomkyr-firefox-d8-t1.gb",
+      "sha256": "9688fe86a89a2c28714685e0783deb58006891cb444656eb38906ec4b80e2d8b",
+      "rules": 990,
+      "inputMembership": true,
+      "leadingWordsMatch": true,
+      "monicPolynomialSetMatches": true,
+      "differingTails": 0,
+      "mutualIdealMembership": true,
+      "reference": "docs/development/validation/fomkyr-04-speed-baseline/fomkyr-d8-t0.gb"
+    },
+    {
+      "version": "0.4.0",
+      "browser": "firefox",
+      "degree": 9,
+      "trial": 1,
+      "file": "docs/development/validation/fomkyr-04-speed-current/fomkyr-firefox-d9-t1.gb",
+      "sha256": "d485b80055ce8a7a3b66d75c5afbe30d83dd5099bd6bee296e9e510b312997c3",
+      "rules": 1451,
+      "inputMembership": true,
+      "leadingWordsMatch": true,
+      "monicPolynomialSetMatches": false,
+      "differingTails": 1,
+      "mutualIdealMembership": true,
+      "reference": "docs/development/validation/fomkyr-04-speed-baseline/fomkyr-firefox-d9-t0.gb"
+    },
+    {
+      "version": "0.4.0",
+      "browser": "chromium",
+      "degree": 9,
+      "trial": 1,
+      "file": "docs/development/validation/fomkyr-04-speed-current/fomkyr-d9-t1.gb",
+      "sha256": "d485b80055ce8a7a3b66d75c5afbe30d83dd5099bd6bee296e9e510b312997c3",
+      "rules": 1451,
+      "inputMembership": true,
+      "leadingWordsMatch": true,
+      "monicPolynomialSetMatches": false,
+      "differingTails": 1,
+      "mutualIdealMembership": true,
+      "reference": "docs/development/validation/fomkyr-04-speed-baseline/fomkyr-firefox-d9-t0.gb"
+    },
+    {
+      "version": "0.4.0",
+      "browser": "chromium",
+      "degree": 8,
+      "trial": 2,
+      "file": "docs/development/validation/fomkyr-04-speed-current/fomkyr-d8-t2.gb",
+      "sha256": "9688fe86a89a2c28714685e0783deb58006891cb444656eb38906ec4b80e2d8b",
+      "rules": 990,
+      "inputMembership": true,
+      "leadingWordsMatch": true,
+      "monicPolynomialSetMatches": true,
+      "differingTails": 0,
+      "mutualIdealMembership": true,
+      "reference": "docs/development/validation/fomkyr-04-speed-baseline/fomkyr-d8-t0.gb"
+    },
+    {
+      "version": "0.4.0",
+      "browser": "firefox",
+      "degree": 8,
+      "trial": 2,
+      "file": "docs/development/validation/fomkyr-04-speed-current/fomkyr-firefox-d8-t2.gb",
+      "sha256": "9688fe86a89a2c28714685e0783deb58006891cb444656eb38906ec4b80e2d8b",
+      "rules": 990,
+      "inputMembership": true,
+      "leadingWordsMatch": true,
+      "monicPolynomialSetMatches": true,
+      "differingTails": 0,
+      "mutualIdealMembership": true,
+      "reference": "docs/development/validation/fomkyr-04-speed-baseline/fomkyr-d8-t0.gb"
+    },
+    {
+      "version": "0.4.0",
+      "browser": "firefox",
+      "degree": 9,
+      "trial": 2,
+      "file": "docs/development/validation/fomkyr-04-speed-current/fomkyr-firefox-d9-t2.gb",
+      "sha256": "d485b80055ce8a7a3b66d75c5afbe30d83dd5099bd6bee296e9e510b312997c3",
+      "rules": 1451,
+      "inputMembership": true,
+      "leadingWordsMatch": true,
+      "monicPolynomialSetMatches": false,
+      "differingTails": 1,
+      "mutualIdealMembership": true,
+      "reference": "docs/development/validation/fomkyr-04-speed-baseline/fomkyr-firefox-d9-t0.gb"
+    },
+    {
+      "version": "0.4.0",
+      "browser": "chromium",
+      "degree": 9,
+      "trial": 2,
+      "file": "docs/development/validation/fomkyr-04-speed-current/fomkyr-d9-t2.gb",
+      "sha256": "d485b80055ce8a7a3b66d75c5afbe30d83dd5099bd6bee296e9e510b312997c3",
+      "rules": 1451,
+      "inputMembership": true,
+      "leadingWordsMatch": true,
+      "monicPolynomialSetMatches": false,
+      "differingTails": 1,
+      "mutualIdealMembership": true,
+      "reference": "docs/development/validation/fomkyr-04-speed-baseline/fomkyr-firefox-d9-t0.gb"
+    },
+    {
+      "version": "0.4.0",
+      "browser": "chromium",
+      "degree": 10,
+      "trial": 0,
+      "file": "docs/development/validation/fomkyr-04-speed-degree10/fomkyr-d10-t0.gb",
+      "sha256": "ed843ea85429fb1db7fffd8ec6278d4455dba88057aa311be49abc157d1cdcb0",
+      "rules": 2155,
+      "inputMembership": true,
+      "leadingWordsMatch": true,
+      "monicPolynomialSetMatches": true,
+      "differingTails": 0,
+      "mutualIdealMembership": true,
+      "reference": "docs/development/validation/fomkyr-04-speed-degree10/fomkyr-d10-t0.gb"
+    },
+    {
+      "version": "0.4.0",
+      "browser": "firefox",
+      "degree": 10,
+      "trial": 0,
+      "file": "docs/development/validation/fomkyr-04-speed-degree10/fomkyr-firefox-d10-t0.gb",
+      "sha256": "ed843ea85429fb1db7fffd8ec6278d4455dba88057aa311be49abc157d1cdcb0",
+      "rules": 2155,
+      "inputMembership": true,
+      "leadingWordsMatch": true,
+      "monicPolynomialSetMatches": true,
+      "differingTails": 0,
+      "mutualIdealMembership": true,
+      "reference": "docs/development/validation/fomkyr-04-speed-degree10/fomkyr-d10-t0.gb"
+    }
+  ],
+  "method": "Serial grouped cold runs; 3 trials at degrees 8/9, 1 upgraded trial at degree 10. Completed outputs have equal leading words and mutual ideal membership; changed tails are checked by two-way exact reductions, identical polynomials require no reduction. Every input relation reduces to zero. This is consistency evidence, not a new high-degree critical-pair certificate. Degree-10 baseline timeouts do not supply an exact speed ratio. CPU/PSS includes the post-timer full OPFS read; wall time excludes it. Variable desktop load limits generalization."
+}

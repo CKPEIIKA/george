@@ -1,0 +1,473 @@
+{
+  "state": "complete",
+  "startedAt": "2026-10-02T17:48:27.915Z",
+  "version": "0.6.0",
+  "inputFile": "test/fixtures/fomin-kirillov-user.json",
+  "inputSha256": "557b7a5e2e0b3353b374ee417bc6d435d9b5c4bb80ffd3174135d3a662f7d857",
+  "variables": 15,
+  "relations": 100,
+  "machine": {
+    "cpu": "11th Gen Intel(R) Core(TM) i5-1135G7 @ 2.40GHz",
+    "logicalCpus": 8,
+    "totalRamMiB": 15708.30859375,
+    "platform": "linux"
+  },
+  "sourceHashes": {
+    "web/src/engine.js": "08cd678a6240de4184e3b07faba6b7fbb0eccf28f5ba09d2b5b753008a965df7",
+    "web/engine/worker.js": "3fdea89eb03fb85b0e5b5c8d441c074a4f56bd4adc70a120991e3be4e3c90e51",
+    "web/engine/native/engine.js": "ae2bc3ebee16931d2cb09d11a2d0b237da6ad1896082f5cd80833bed273736a6",
+    "web/engine/native/runtime.js": "7001ae15868fe7566bb94fad6232a55794e276fc05b8ee58164c2556cfe72aa6",
+    "web/engine/native/george-entry.js": "7c2cb00318dee77ae274b1aa12620f86b92e37914b6d85c736c7ad1933961b1a",
+    "web/engine/native/storage.js": "f89ae6a9eff1e0bf6dfe3926ca7908868a60e07ea2fa659c01b8ab559a872535",
+    "web/engine/native/george32.wasm": "a4c06634c05c5091c878eb227d9873add25c3f5690d69fe4642eaaa5ed0ab083",
+    "web/engine/native/george64.wasm": "5cd17a791b98ff24d4123e03cbe79d7bbfdb05c9a8e50a5db5f72d0ebc2fe035",
+    "web/engine/ecl.wasm": "b90c140372df3f8857e535fd8a8de3406ba57d27a40b6cf2e62b51a123a26585",
+    "web/engine/optimized/ecl.wasm": "221a268e3aac9bf1a7167f1e613eb51f600437f8c65596c2b0dfbbff0677786c",
+    "web/engine/compiled/ecl.wasm": "8bd7c0b8be173025c741e9cb90718de0210be7eb6a0537725b06bd702f8d687d",
+    "web/engine/memory64/ecl.wasm": "56a55b5829bb678eb65c35eee34eb6ecb91b714d0b057eba045367774e85960d",
+    "web/engine/ecl.data": "dce742ded7cc24a6ace543505cad50b4699d7acdb9c51fef8dbae01905871ece",
+    "web/engine/fomkyr/backend-capabilities.js": "a2b5b4518f3ff684e2e7a6837e60f654a8d0f94dbe08cfbd72344acebf859214",
+    "web/engine/fomkyr/build-info.js": "038c67f65834be55c8be5f87297f064913b4ce12e07512dd49b816065ffa1f20",
+    "web/engine/fomkyr/capabilities.js": "526e19b4f53f89c32135917d036d3f7ed7740197300bae9345cd5669fe0c9ccc",
+    "web/engine/fomkyr/controls.js": "27a37a1fd5896c9f52541712a241f7d5b016d6270ad5461fe25cb20351e48b60",
+    "web/engine/fomkyr/demo-worker.js": "18e7e077a8f6e9ba46b3c86b80a6e225d03cc0f488342decee7c30b9daba6dda",
+    "web/engine/fomkyr/demo.js": "4805cdd611774acdff74583661be3723774eaeca60b926bccdbfcb8c012ba3aa",
+    "web/engine/fomkyr/engine.js": "8244ee7500ef74bb66e3b357cafb97f09bff862b11ffe5d14b0848309dc1d4fb",
+    "web/engine/fomkyr/fomkyr-isolation-worker.js": "41bf71ff70c5e98858ace8dc2a9168911bf38f591307e2254f7314eb30ac49dc",
+    "web/engine/fomkyr/fomkyr32-single.wasm": "4100c0f57c49598c1fa327ef7819197f1ab53710d105f10057745db85210154a",
+    "web/engine/fomkyr/fomkyr32.wasm": "0f559a417dcdea967bb93443a18e4a88be138ce108183fd80bc27e3a702a92d2",
+    "web/engine/fomkyr/fomkyr64-single.wasm": "ee25551bc114b751a11af325176d8ab119abf64c89d7c4785393c810c56928a3",
+    "web/engine/fomkyr/fomkyr64.wasm": "0ea15fc3684b9b2cf1b9be32f03d83f5e82cc4eae3bbe266a01bd348e438cc98",
+    "web/engine/fomkyr/form-options.js": "c0aaa8109ceb5a767474ae0e82412875342d8d6a2c18c1d5405042be06ebf55c",
+    "web/engine/fomkyr/george-entry.js": "889ebc5bdbc6ca1549b1453a964a2ff90a970b246d28b40d52f04db2645b3dd9",
+    "web/engine/fomkyr/george-worker.js": "cc022686354ef6d5b82a54e3a2a442deb8372be70c0a544e5a64b75cc7248309",
+    "web/engine/fomkyr/hilbert.js": "2d61495ae34d3d121e437b34890e6f83a6df8be1e5a5bc59bc98d915da80c5b3",
+    "web/engine/fomkyr/io-broker.js": "8563ff332b073f75b8c4fac7d515293897016f2a489454a92bad1bc22cf2ecd6",
+    "web/engine/fomkyr/io-worker.js": "4078fc305789c5eaff6aaa8fc7c3c54cf55a9ab5c13bf68594adc9f7fe38735d",
+    "web/engine/fomkyr/isolation.js": "d16612ad79c3019392b3b46deaedd492b3c702a55e0e8e711a8470b217a8d4dc",
+    "web/engine/fomkyr/job-adapter.js": "cb31beb366a2b398df4e5be246a03f8ddc20256c9299d1be06161275e33fb0dc",
+    "web/engine/fomkyr/lane.js": "a506839398c3569fec0590b95c1e50416680c5c161a638808da6634e65b7db75",
+    "web/engine/fomkyr/module-cache.js": "c620c5bf208ed576cd2731bc6e51f01ff81727d4f9b8ea2ccdc957ef0b98cfcd",
+    "web/engine/fomkyr/progress-view.js": "f847737c6b9647911517db8248ca791e6f8deebee5b8765b86133807fdf7481e",
+    "web/engine/fomkyr/progress.js": "96b6b379166fc21d64ff824467fd9acdd10c447eaf50811685c27c6bf1efba5e",
+    "web/engine/fomkyr/result-links.js": "0bcdc961b8eab820736846ed99bb722573e41f58514af9d278e18efda38a2ec8",
+    "web/engine/fomkyr/runtime.js": "c66f6076a4d82bc793d8621085379b79d902fc5cd6c22338c830562ab220ea7e",
+    "web/engine/fomkyr/storage.js": "0c4c7f8c2338768c6d836cb80fd681731cab255119446c9fd5ebe415410d659f"
+  },
+  "memoryMiB": 2048,
+  "sampleIntervalSeconds": 0.25,
+  "method": {
+    "cpu": "Sum of process-tree user and system CPU time during engine startup, computation and result delivery; core-seconds, not wall seconds. Linux /proc/<pid>/stat, no debugger or CPU profiler.",
+    "ram": "Peak sum of browser-process proportional set sizes (PSS). Shared pages are proportionally counted. Includes browser baseline; allocated Wasm capacity is recorded separately. Sampled every 0.25 seconds, so very brief peaks may be missed.",
+    "jobs": "Fresh browser profile and fresh engine per point. No OPFS resume. Serial runs. Bergman and fomkyr use monomial pruning. Specialized engines select memory64 with four requested workers and Hilbert disabled. Legacy Native may fall back to one Firefox worker; fomkyr uses the portable OPFS broker.",
+    "wall": "Cold engine wall time includes engine startup, calculation, export and result transfer; browser startup and HTML rendering are excluded.",
+    "uncertainty": "One cold run per point unless multiple trials are requested. Host load and filesystem/browser caches can affect timings. No claim of cross-machine performance."
+  },
+  "rows": [
+    {
+      "id": "fomkyr",
+      "backend": "fomkyr",
+      "browser": "chromium",
+      "degree": 10,
+      "trial": 0,
+      "memoryMiB": 2048,
+      "timeLimitSeconds": 120,
+      "requestedWorkers": 4,
+      "environment": {
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.0.0 Safari/537.36",
+        "hardwareConcurrency": 8,
+        "isolated": true
+      },
+      "hostLoadAtStart": [
+        5.17,
+        5.15,
+        4.72
+      ],
+      "status": "complete",
+      "coldWallSeconds": 80.25476000002027,
+      "engineStartupSeconds": 0.13102500000596046,
+      "jobWallSeconds": 80.1237350000143,
+      "allocatedWasmMiB": 523.25,
+      "peakAllocatedWasmMiB": 523.25,
+      "native": {
+        "basisSize": 2155,
+        "completedThroughDegree": 10,
+        "workers": 4,
+        "bits": 64,
+        "storageAccess": "direct-unsafe",
+        "shared": true,
+        "version": "0.4.0",
+        "storage": "opfs",
+        "previewTruncated": true,
+        "kernelWallSeconds": 79.454
+      },
+      "lastDegree": {
+        "type": "degree",
+        "basisSize": 2155,
+        "terms": 78021,
+        "completedThroughDegree": 10,
+        "currentDegree": 0,
+        "allocatedBytes": 548660080,
+        "budgetBytes": 2147483648,
+        "diskBytes": 1941464,
+        "pairs": 44078,
+        "monomialPairsPruned": 15,
+        "zeroCommits": 42023,
+        "workers": 4,
+        "prefixNodes": 14861,
+        "peakAllocatedBytes": 548660080,
+        "monomialPruning": true,
+        "heapReduction": true,
+        "reductions": 56010668,
+        "monomialTermsPruned": 24921892,
+        "diskReads": 8121,
+        "diskReadBytes": 6923736,
+        "reducerCacheHits": 55955759,
+        "costScheduling": true,
+        "wordCacheEntries": 256,
+        "wordCacheBytes": 0,
+        "chainPairsPruned": 928,
+        "matcherNodes": 2262,
+        "matcherAllocatedBytes": 2600960,
+        "matcherBuilds": 8,
+        "matcherFallbacks": 0,
+        "hashProbes": 177734,
+        "matcherQueries": 55022118,
+        "matcherCharacters": 469450673,
+        "wordCacheHits": 1155131,
+        "heapAttempts": 33581,
+        "heapSuccesses": 33537,
+        "heapFallbacks": 44,
+        "insertionPrunes": 24786948,
+        "commutingPrunes": 7662448,
+        "quadraticSwaps": 60388661,
+        "elapsedMs": 79452.70500001311,
+        "scheduler": {
+          "epochs": 1382,
+          "dispatchedPairs": 44078,
+          "rpcMessages": 4150,
+          "reduceMs": 78307.34500005841,
+          "commitMs": 329.31000050902367,
+          "fallbacks": 0
+        }
+      },
+      "lastProgress": {
+        "type": "progress",
+        "engine": "fomkyr",
+        "phase": "done",
+        "target": 10,
+        "currentDegree": 10,
+        "completedThroughDegree": 10,
+        "elapsedMs": 80109.12000000477,
+        "degreeElapsedMs": 70096.82999998331,
+        "overlaps": {
+          "total": "18714",
+          "resolved": "18714",
+          "enumerated": "18714",
+          "scheduled": "18164",
+          "committed": "18164",
+          "monomialSkipped": "0",
+          "chainSkipped": "550",
+          "fraction": 1,
+          "kind": "overlap-count-not-time",
+          "replay": 0
+        },
+        "activity": {
+          "activeLanes": 0,
+          "maxActiveRowTerms": "0",
+          "sampledReductions": "56010668",
+          "sampledReductionsPerSecond": 0,
+          "sampleIsApproximate": true
+        },
+        "eta": {
+          "currentDegreeSeconds": null,
+          "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+          "reason": "Current phase is not overlap reduction."
+        },
+        "forecast": {
+          "targetSeconds": null,
+          "recentDegreeGrowth": [
+            3.9234536643323863,
+            4.768654381405154,
+            9.4920487810703
+          ],
+          "reason": "Target is outside the two-degree forecasting horizon."
+        },
+        "history": [
+          {
+            "degree": 3,
+            "elapsedMs": 75.62999999523163,
+            "candidates": "466",
+            "scheduled": "451"
+          },
+          {
+            "degree": 4,
+            "elapsedMs": 51.20999997854233,
+            "candidates": "827",
+            "scheduled": "827"
+          },
+          {
+            "degree": 5,
+            "elapsedMs": 76.92500001192093,
+            "candidates": "1447",
+            "scheduled": "1447"
+          },
+          {
+            "degree": 6,
+            "elapsedMs": 136.08000001311302,
+            "candidates": "2280",
+            "scheduled": "2271"
+          },
+          {
+            "degree": 7,
+            "elapsedMs": 391.0049999952316,
+            "candidates": "3840",
+            "scheduled": "3815"
+          },
+          {
+            "degree": 8,
+            "elapsedMs": 1534.0900000035763,
+            "candidates": "6472",
+            "scheduled": "6371"
+          },
+          {
+            "degree": 9,
+            "elapsedMs": 7315.544999986887,
+            "candidates": "10975",
+            "scheduled": "10732"
+          },
+          {
+            "degree": 10,
+            "elapsedMs": 69439.50999999046,
+            "candidates": "18714",
+            "scheduled": "18164"
+          }
+        ]
+      },
+      "cpuSeconds": 229.8,
+      "measuredWallSeconds": 80.530814877,
+      "averageCpuPercent": 285.3566058545274,
+      "peakPssMiB": 502.8876953125,
+      "peakRssMiB": 1248.25,
+      "baselinePssMiB": 426.4453125,
+      "basisSize": 2155,
+      "outputHasDone": true,
+      "basisFile": "fomkyr-d10-t0.gb",
+      "samplesFile": "fomkyr-d10-t0.samples.json"
+    },
+    {
+      "id": "fomkyr-firefox",
+      "backend": "fomkyr",
+      "browser": "firefox",
+      "degree": 10,
+      "trial": 0,
+      "memoryMiB": 2048,
+      "timeLimitSeconds": 120,
+      "requestedWorkers": 4,
+      "environment": {
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:155.0) Gecko/20100101 Firefox/155.0",
+        "hardwareConcurrency": 8,
+        "isolated": true
+      },
+      "hostLoadAtStart": [
+        6.71,
+        5.74,
+        4.97
+      ],
+      "status": "complete",
+      "coldWallSeconds": 85.84710000000001,
+      "engineStartupSeconds": 0.27248,
+      "jobWallSeconds": 85.57462,
+      "allocatedWasmMiB": 523.25,
+      "peakAllocatedWasmMiB": 523.25,
+      "native": {
+        "basisSize": 2155,
+        "completedThroughDegree": 10,
+        "workers": 4,
+        "bits": 64,
+        "storageAccess": "broker-exclusive",
+        "shared": true,
+        "version": "0.4.0",
+        "storage": "opfs",
+        "previewTruncated": true,
+        "kernelWallSeconds": 83.81228
+      },
+      "lastDegree": {
+        "type": "degree",
+        "basisSize": 2155,
+        "terms": 78021,
+        "completedThroughDegree": 10,
+        "currentDegree": 0,
+        "allocatedBytes": 548660080,
+        "budgetBytes": 2147483648,
+        "diskBytes": 1941464,
+        "pairs": 44078,
+        "monomialPairsPruned": 15,
+        "zeroCommits": 42023,
+        "workers": 4,
+        "prefixNodes": 14861,
+        "peakAllocatedBytes": 548660080,
+        "monomialPruning": true,
+        "heapReduction": true,
+        "reductions": 56010668,
+        "monomialTermsPruned": 24921892,
+        "diskReads": 8099,
+        "diskReadBytes": 6916552,
+        "reducerCacheHits": 55955781,
+        "costScheduling": true,
+        "wordCacheEntries": 256,
+        "wordCacheBytes": 0,
+        "chainPairsPruned": 928,
+        "matcherNodes": 2262,
+        "matcherAllocatedBytes": 2600960,
+        "matcherBuilds": 8,
+        "matcherFallbacks": 0,
+        "hashProbes": 177634,
+        "matcherQueries": 55022236,
+        "matcherCharacters": 469451656,
+        "wordCacheHits": 1155013,
+        "heapAttempts": 33581,
+        "heapSuccesses": 33537,
+        "heapFallbacks": 44,
+        "insertionPrunes": 24786948,
+        "commutingPrunes": 7662448,
+        "quadraticSwaps": 60388661,
+        "elapsedMs": 83811.68,
+        "scheduler": {
+          "epochs": 1382,
+          "dispatchedPairs": 44078,
+          "rpcMessages": 4151,
+          "reduceMs": 79101.08000000015,
+          "commitMs": 1743.939999999981,
+          "fallbacks": 0
+        }
+      },
+      "lastProgress": {
+        "type": "progress",
+        "engine": "fomkyr",
+        "phase": "done",
+        "target": 10,
+        "currentDegree": 10,
+        "completedThroughDegree": 10,
+        "elapsedMs": 85559.3,
+        "degreeElapsedMs": 72482.2,
+        "overlaps": {
+          "total": "18714",
+          "resolved": "18714",
+          "enumerated": "18714",
+          "scheduled": "18164",
+          "committed": "18164",
+          "monomialSkipped": "0",
+          "chainSkipped": "550",
+          "fraction": 1,
+          "kind": "overlap-count-not-time",
+          "replay": 0
+        },
+        "activity": {
+          "activeLanes": 0,
+          "maxActiveRowTerms": "0",
+          "sampledReductions": "56010668",
+          "sampledReductionsPerSecond": 0,
+          "sampleIsApproximate": true
+        },
+        "eta": {
+          "currentDegreeSeconds": null,
+          "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+          "reason": "Current phase is not overlap reduction."
+        },
+        "forecast": {
+          "targetSeconds": null,
+          "recentDegreeGrowth": [
+            2.514801734286618,
+            4.26868227852437,
+            9.45981426401044
+          ],
+          "reason": "Target is outside the two-degree forecasting horizon."
+        },
+        "history": [
+          {
+            "degree": 3,
+            "elapsedMs": 241.94000000000005,
+            "candidates": "466",
+            "scheduled": "451"
+          },
+          {
+            "degree": 4,
+            "elapsedMs": 255.24000000000024,
+            "candidates": "827",
+            "scheduled": "827"
+          },
+          {
+            "degree": 5,
+            "elapsedMs": 287.4000000000001,
+            "candidates": "1447",
+            "scheduled": "1447"
+          },
+          {
+            "degree": 6,
+            "elapsedMs": 371.8800000000001,
+            "candidates": "2280",
+            "scheduled": "2271"
+          },
+          {
+            "degree": 7,
+            "elapsedMs": 696.54,
+            "candidates": "3840",
+            "scheduled": "3815"
+          },
+          {
+            "degree": 8,
+            "elapsedMs": 1751.6600000000008,
+            "candidates": "6472",
+            "scheduled": "6371"
+          },
+          {
+            "degree": 9,
+            "elapsedMs": 7477.280000000001,
+            "candidates": "10975",
+            "scheduled": "10732"
+          },
+          {
+            "degree": 10,
+            "elapsedMs": 70733.68,
+            "candidates": "18714",
+            "scheduled": "18164"
+          }
+        ]
+      },
+      "cpuSeconds": 230.11,
+      "measuredWallSeconds": 86.244605259,
+      "averageCpuPercent": 266.8108913119375,
+      "peakPssMiB": 487.6044921875,
+      "peakRssMiB": 847.5546875,
+      "baselinePssMiB": 418.06640625,
+      "basisSize": 2155,
+      "outputHasDone": true,
+      "basisFile": "fomkyr-firefox-d10-t0.gb",
+      "samplesFile": "fomkyr-firefox-d10-t0.samples.json"
+    }
+  ],
+  "errors": [],
+  "configurations": [
+    {
+      "id": "fomkyr",
+      "backend": "fomkyr",
+      "browser": "chromium",
+      "label": "fomkyr 0.4.0 (memory64, Chromium, 4 workers)",
+      "workers": 4
+    },
+    {
+      "id": "fomkyr-firefox",
+      "backend": "fomkyr",
+      "browser": "firefox",
+      "label": "fomkyr 0.4.0 (memory64, Firefox, 4 workers)",
+      "workers": 4
+    }
+  ],
+  "degrees": [
+    10
+  ],
+  "requestedTrials": 1,
+  "timeLimitSeconds": 120,
+  "finishedAt": "2026-10-02T17:51:25.684Z"
+}

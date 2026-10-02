@@ -14,8 +14,8 @@ import {algebra} from '../test/support/algebra.mjs';
 const out=path.resolve(process.argv[2] || `build/validation/fomkyr-${Date.now()}`);
 const sha=file=>crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
 fs.mkdirSync(out,{recursive:true});
-const report={state:'running',startedAt:new Date().toISOString(),upstreamVersion:'0.3.0',
-  importedArchiveSha256:'1f616fa6f448c0c3b6feafc9a52a959474c9b61e26ab43a35aa591c3033061f0',
+const report={state:'running',startedAt:new Date().toISOString(),upstreamVersion:'0.4.0',
+  importedArchiveSha256:'d6feec734d25a1901d2cb3c582caa150d0e91bdfb22b541f1c2da06e9739c20a',
   engineHashes:Object.fromEntries(['fomkyr32.wasm','fomkyr64.wasm','fomkyr32-single.wasm','fomkyr64-single.wasm','engine.js','runtime.js','job-adapter.js'].map(n=>[n,sha('web/engine/fomkyr/'+n)])),
   bergmanManifest:JSON.parse(fs.readFileSync('web/engine/compiled/build.json')),upstreamTests:[],cases:[],
   method:'Fomkyr primitive unreduced bases are compared by two-way bounded reduction and critical-pair certificates, not byte equality. Singular uses the same degree bound. Node OPFS is emulated; browser evidence is separate.'};
@@ -33,7 +33,12 @@ function run(command,args,{cwd=out,input,env=process.env,name,timeout=120000}={}
 save();
 try {
   const stage=path.join(out,'upstream');
-  fs.cpSync('vendor/fomkyr-0.3.0',stage,{recursive:true});fs.mkdirSync(path.join(stage,'results'),{recursive:true});
+  fs.cpSync('vendor/fomkyr-0.4.0',stage,{recursive:true});fs.mkdirSync(path.join(stage,'results'),{recursive:true});
+  // The archive's native field matrix forgot to pass its loop's modulus.
+  // Correct only the test copy; keep the imported source and kernel intact.
+  const nativeMatrix=path.join(stage,'tests/test_physics_matrix.py');
+  fs.writeFileSync(nativeMatrix,fs.readFileSync(nativeMatrix,'utf8').replaceAll('scratch=16<<20,optimize=', 'scratch=16<<20,modulus=prime,optimize='));
+  report.testHarnessCorrections=['Native physics matrix passes modulus=prime to both optimized and plain engines in the staging copy.'];save();
   // Upstream fixture tests invoke `python`; provide a local alias on hosts
   // which install only python3, without modifying the imported sources.
   const bin=path.join(out,'bin');fs.mkdirSync(bin,{recursive:true});
@@ -51,10 +56,17 @@ try {
     ['static-host-unit','node',['tests/test_static_host.mjs']],
     ['installer','python3',['tests/test_installer.py']],
     ['installer-modern','python3',['tests/test_installer_modern.py']],
+    ['optimizer-edge','python3',['tests/test_optimizer_edges.py']],
+    ['physics-matrix','python3',['tests/test_physics_matrix.py']],
+    ['physics-wasm-matrix',process.execPath,['tests/test_physics_wasm.mjs']],
+    ['progress-unit',process.execPath,['tests/test_progress.mjs']],
+    ['progress-integration',process.execPath,['tests/test_progress_integration.mjs']],
+    ['ubsan','bash',['tools/test_ubsan.sh']],
   ]) {
     if(report.upstreamTests.some(result=>result.name===name&&result.passed))continue;
     run(executable,args,{cwd:stage,name:'upstream-'+name,env:upstreamEnv});
-    report.upstreamTests.push({name,passed:true,report:JSON.parse(fs.readFileSync(path.join(stage,'results',name==='release'?'fomkyr-tests.json':name==='static-host-unit'?'static-host-unit-tests.json':name+'-tests.json')))});save();
+    const reportName=name==='release'?'fomkyr-tests.json':name==='static-host-unit'?'static-host-unit-tests.json':name.startsWith('physics-')?name+'.json':name+'-tests.json';
+    report.upstreamTests.push({name,passed:true,report:name==='ubsan'?{sanitizer:'undefined',passed:true}:JSON.parse(fs.readFileSync(path.join(stage,'results',reportName)))});save();
     console.log('Upstream',name,'PASS');
   }
   const design=fomkyrSamples(Number(process.env.FOMKYR_LHS_COUNT || 48));
@@ -65,12 +77,15 @@ try {
     {id:'fk-E3-degree4',form:{...fominKirillov(3),field:'0',maxdeg:'4'}},
     ...[3,4].map(degree=>({id:'submitted-degree'+degree,form:{vars:submitted.vars,rels:submitted.rels,field:'0',maxdeg:String(degree),maxserdeg:String(degree)}}))];
   // Reuse the archive's coefficient and word-boundary anchors with our coordinator.
-  const big=JSON.parse(fs.readFileSync('vendor/fomkyr-0.3.0/fixtures/big-coefficients.json'));
+  const big=JSON.parse(fs.readFileSync('vendor/fomkyr-0.4.0/fixtures/big-coefficients.json'));
   const fromFixture=f=>({vars:f.variables,rels:f.relations.map(r=>r.terms.map((t,i)=>{
     const c=BigInt(t.coefficient),abs=c<0n?-c:c;
     return (c<0n?'-':i?'+':'')+(abs===1n?'':abs+'*')+t.word.map(k=>f.variables[k]).join('*');
   }).join(''))});
   cases.push({id:'archive-155-bit-coefficients',form:{...fromFixture(big),field:'0',maxdeg:'5'},coefficientBits:155});
+  const physics=JSON.parse(fs.readFileSync('vendor/fomkyr-0.4.0/fixtures/physics-matrix.json'));
+  for(const fixture of physics.filter(f=>f.name.startsWith('homogenized-')||['commuting-polynomial-4','exterior-6','homogeneous-braid-3'].includes(f.name)))
+    for(const prime of [0,2,101])cases.push({id:`physics-${fixture.name}-p${prime}`,form:{...fromFixture(fixture),field:prime===0?'0':prime===2?'2':'p',modulus:String(prime),maxdeg:'4'}});
   const root=path.resolve('build/oracles/root'),singular=path.join(root,'usr/bin/Singular');
   const env={...process.env,LD_LIBRARY_PATH:`${root}/usr/lib/x86_64-linux-gnu:${root}/usr/lib/x86_64-linux-gnu/singular/MOD`,
     SINGULARPATH:`${root}/usr/share/singular/LIB:${root}/usr/lib/x86_64-linux-gnu/singular/MOD`};

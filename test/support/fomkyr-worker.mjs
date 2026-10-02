@@ -1,6 +1,6 @@
 // Production Fomkyr coordinator/lanes; only OPFS is emulated in Node.
 import {parentPort, workerData} from 'node:worker_threads';
-import {setup} from '../../vendor/fomkyr-0.3.0/tests/node-host.mjs';
+import {setup} from '../../vendor/fomkyr-0.4.0/tests/node-host.mjs';
 import {FomkyrEngine} from '../../web/engine/fomkyr/engine.js';
 import {parseNativeJob} from '../../web/engine/fomkyr/job-adapter.js';
 setup(workerData.directory);

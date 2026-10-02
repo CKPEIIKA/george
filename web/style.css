@@ -336,7 +336,7 @@ main { max-width: 1320px; margin: 0 auto; padding: 0 var(--gutter) 48px; }
 .presentation { padding-bottom: 0; }
 .block { border: 0; margin: 0; padding: 10px 0; border-top: 1px solid var(--rule); min-width: 0; }
 .block:first-of-type { border-top: 0; }
-legend, .advanced summary {
+legend, .advanced summary, .engine-settings summary {
   font: 600 1.02rem/1.3 var(--serif);
   padding: 0;
   margin-bottom: 6px;
@@ -379,8 +379,10 @@ input[aria-invalid="true"], textarea[aria-invalid="true"] { border-color: var(--
 #matrixField { margin-top: 10px; }
 .module-fields { margin-top: 12px; display: grid; gap: 10px; }
 .advanced { display: grid; gap: 12px; }
-.advanced summary { cursor: pointer; list-style-position: inside; }
-.advanced[open] summary { margin-bottom: 4px; }
+.advanced summary, .engine-settings summary { cursor: pointer; list-style-position: inside; }
+.advanced[open] summary, .engine-settings[open] summary { margin-bottom: 4px; }
+.engine-settings { border: 1px solid var(--rule); border-radius: 8px; padding: 12px; }
+.engine-settings[open] { display: grid; gap: 12px; }
 
 /* segmented choice */
 .seg {

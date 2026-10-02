@@ -44,6 +44,7 @@ try {
       await page.locator('#rels').fill('x^2,y^2,y*x-x*y');
       await page.locator('#maxdeg').fill('4');
       await page.locator('details.advanced').evaluate(el => el.open = true);
+      await page.locator('#engineSettings').evaluate(el => el.open = true);
       await page.locator('#backend').selectOption('fomkyr');
       await page.locator('#memoryMiB').selectOption('512');
       await page.locator('#nativeWorkers').fill('2');
@@ -62,7 +63,7 @@ try {
       assert.equal(await page.locator('#backend').inputValue(), 'fomkyr');
       assert.equal(await page.locator('#nativeWorkers').inputValue(), '2');
       assert.equal(await page.evaluate(async () => (await fetch('./index.html')).headers.get('cross-origin-opener-policy')), 'same-origin');
-      assert.deepEqual(await page.evaluate(() => caches.keys()), ['fomkyr-kernel-0.3.0']);
+      assert.deepEqual(await page.evaluate(() => caches.keys()), ['fomkyr-kernel-0.4.0']);
       await page.locator('[data-lang="ru"]').click();
       assert.equal(await page.locator('.release-tag').count(), 0);
       assert.equal(await page.locator('#backend option[value="fomkyr"]').textContent(), 'fomkyr / C O3 + LTO (экспериментальный)');

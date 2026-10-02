@@ -17,6 +17,8 @@ export function degreeProgress(event, previous = null) {
   const completedThroughDegree = Number.isSafeInteger(through) && through >= 0
     ? through : completed ? degree : degree - 1;
   const result = {degree,completed,completedThroughDegree,phase,source:event.source ?? 'engine'};
+  if (event.overlaps) result.overlaps = {...event.overlaps};
+  if (event.activity) result.activity = {...event.activity};
   for (const key of ['pairs','reductions','basisSize']) {
     const value = event[key] ?? (samePhase ? previous[key] : undefined);
     if (Number.isFinite(value) && value >= 0) result[key] = value;

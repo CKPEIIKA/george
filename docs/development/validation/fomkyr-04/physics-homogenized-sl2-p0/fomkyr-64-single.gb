@@ -1,0 +1,10 @@
+% fomkyr; completed through degree 4; not a claim of a finite complete GB
+
+% 2
+f*t-t*f,
+h*t-t*h,
+e*t-t*e,
+h*f-f*h+2*t*f,
+e*h-h*e+2*t*e,
+e*f-f*e-t*h,
+Done

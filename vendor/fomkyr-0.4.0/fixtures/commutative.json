@@ -1,0 +1,39 @@
+{
+  "name": "commutative",
+  "variables": [
+    "a",
+    "b"
+  ],
+  "relationsText": "b*a-a*b;",
+  "relations": [
+    {
+      "degree": 2,
+      "terms": [
+        {
+          "word": [
+            1,
+            0
+          ],
+          "coefficient": "1"
+        },
+        {
+          "word": [
+            0,
+            1
+          ],
+          "coefficient": "-1"
+        }
+      ]
+    }
+  ],
+  "expectedHilbertThrough7": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ]
+}

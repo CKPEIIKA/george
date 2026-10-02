@@ -165,8 +165,9 @@ and results are compared with a native SBCL build, Bergman 2 and Singular
 | `npm run test:backends` | seeded Latin hypercube inputs/settings, exact parity across the four engines |
 | `npm run test:native` | imported kernel tests, bounded FK parity against Bergman and Singular |
 | `npm run test:native:browser` | alias for `test:fomkyr:browser` |
-| `npm run test:fomkyr` | imported suites, 48 FK LHS samples and four anchors, all four fomkyr variants, C/ECL and bounded Singular |
+| `npm run test:fomkyr` | imported suites, 48 FK LHS samples, four anchors and 27 physics cases, all four fomkyr variants, C/ECL and bounded Singular |
 | `npm run test:fomkyr:browser` | Firefox/Chromium, root/project paths, isolated/unshared execution, OPFS, resume, Share, long words and cancellation |
+| `npm run test:fomkyr:upgrade` | existing fomkyr 0.3 browser checkpoints resumed by 0.4; independent exact certificates |
 | `npm run test:fk` | small Fomin–Kirillov LHS cases, all four engines, native SBCL and Singular; degrees 2–4 |
 | `npm run test:upstream` | 90 adapted Singular/Plural, SymPy and GBNP field cases; independent oracles |
 | `npm run test:resolution:names` | long generator names, differentials |
@@ -178,11 +179,14 @@ and results are compared with a native SBCL build, Bergman 2 and Singular
 
 ## VERSION
 
-George **0.6** includes fomkyr 0.3.0, configurable multicore execution,
+George **0.6** includes fomkyr 0.4.0, configurable multicore execution,
 disk checkpoints and full result downloads. Unsupported tasks and settings
 are disabled for this backend. Live allocated Wasm memory appears beside
-the computation status. Settings have expanded EN/RU help under “?”.
-The default is Bergman memory64 with a 15.7 GiB allowance.
+the computation status, alongside degree progress and elapsed seconds.
+Mathematical options appear in **More settings**; runtime controls are in the separate
+**Engine** submenu. Settings have expanded EN/RU help under “?”. New fomkyr
+jobs enable its reduction optimizations and pruning, with optional Hilbert
+counting off. The default is Bergman memory64 with a 15.7 GiB allowance.
 
 George 0.5 added the **C / ECL O3 + LTO (memory64)** engine, allowances up to
 16 GiB and a **No heap cap** setting. It also adds optional monomial pruning

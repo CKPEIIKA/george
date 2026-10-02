@@ -20,7 +20,7 @@ const memoryMiB = Number(arg('--memory-mib', '2048'));
 const trials = Number(arg('--trials', '1'));
 const sampleMs = 250;
 if (process.platform !== 'linux') throw new Error('Resource sampling requires Linux /proc.');
-if (degrees.some(d => !Number.isInteger(d) || d < 2 || d > 8)) throw new Error('Choose degrees 2..8.');
+if (degrees.some(d => !Number.isInteger(d) || d < 2 || d > 12)) throw new Error('Choose degrees 2..12.');
 if (!Number.isInteger(trials) || trials < 1 || trials > 20) throw new Error('Choose 1..20 trials.');
 fs.mkdirSync(out, {recursive: true});
 const temporary = path.join(out, 'browser-profiles');
@@ -29,6 +29,7 @@ const clockTicks = Number(execFileSync('getconf', ['CLK_TCK'], {encoding: 'utf8'
 const inputFile = 'test/fixtures/fomin-kirillov-user.json';
 const inputText = JSON.parse(fs.readFileSync(inputFile)).inputText;
 const {vars, rels} = readInputFile('(ALGFORMINPUT)\n' + inputText);
+const fomkyrVersion = JSON.parse(fs.readFileSync('web/engine/fomkyr/build.json')).version;
 const configurations = [
   {id: 'standard', backend: 'standard', browser: 'chromium', label: 'Lisp / ECL O2'},
   {id: 'optimized', backend: 'optimized', browser: 'chromium', label: 'Lisp / ECL O3 + LTO'},
@@ -36,8 +37,8 @@ const configurations = [
   {id: 'memory64', backend: 'memory64', browser: 'chromium', label: 'C / ECL O3 + LTO (memory64)'},
   {id: 'native', backend: 'native', browser: 'chromium', label: 'Native NC (memory64, 4 workers)', workers: 4},
   {id: 'native-firefox', backend: 'native', browser: 'firefox', label: 'Native NC (memory64, Firefox)', workers: 4},
-  {id: 'fomkyr', backend: 'fomkyr', browser: 'chromium', label: 'fomkyr 0.3 (memory64, Chromium, 4 workers)', workers: 4},
-  {id: 'fomkyr-firefox', backend: 'fomkyr', browser: 'firefox', label: 'fomkyr 0.3 (memory64, Firefox, 4 workers)', workers: 4},
+  {id: 'fomkyr', backend: 'fomkyr', browser: 'chromium', label: `fomkyr ${fomkyrVersion} (memory64, Chromium, 4 workers)`, workers: 4},
+  {id: 'fomkyr-firefox', backend: 'fomkyr', browser: 'firefox', label: `fomkyr ${fomkyrVersion} (memory64, Firefox, 4 workers)`, workers: 4},
 ];
 const selected = arg('--configs', configurations.map(c => c.id).join(',')).split(',');
 const configs = selected.map(id => {
@@ -136,6 +137,7 @@ async function browserJob() {
   const {EclEngine} = await import('/src/engine.js');
   const post = (kind, data) => fetch('/__resource/' + kind, {method: 'POST', body: JSON.stringify(data)});
   const memory = [];
+  let lastDegree = null, lastProgress = null;
   const engine = new EclEngine({backend: config.backend, onMemory: bytes => memory.push(bytes)});
   await post('start', {userAgent: navigator.userAgent, hardwareConcurrency: navigator.hardwareConcurrency,
     isolated: crossOriginIsolated});
@@ -146,9 +148,19 @@ async function browserJob() {
   try {
     await engine.init();
     const initialized = performance.now();
-    const result = await engine.run(job);
+    const result = await engine.run(job,event=>{
+      if(event.type==='degree'||event.type==='degree-start')lastDegree=event;
+      if(event.type==='progress')lastProgress=event;
+    });
     const end = performance.now();
     const native = result.fomkyr ?? result.native;
+    let basis = result.files['result.gb'];
+    if (native?.previewTruncated && native.fullBasisPath) {
+      const parts = native.fullBasisPath.split('/');
+      let directory = await navigator.storage.getDirectory();
+      for (const part of parts.slice(0,-1)) directory = await directory.getDirectoryHandle(part);
+      basis = await (await (await directory.getFileHandle(parts.at(-1))).getFile()).text();
+    }
     await post('end', {status: 'complete', coldWallSeconds: (end - start) / 1000,
       engineStartupSeconds: (initialized - start) / 1000, jobWallSeconds: (end - initialized) / 1000,
       allocatedWasmMiB: result.memoryBytes / 1048576, peakAllocatedWasmMiB: Math.max(...memory) / 1048576,
@@ -156,10 +168,11 @@ async function browserJob() {
         workers: native.workers, bits: native.bits, storageAccess: native.ioMode ?? native.storageAccess,
         shared: native.shared, version: native.version, storage: native.storage,
         previewTruncated: !!native.previewTruncated, kernelWallSeconds: native.elapsedMs / 1000} : null,
-      basis: result.files['result.gb'], stdout: result.stdout});
+      basis, stdout: result.stdout, lastDegree, lastProgress});
   } catch (error) {
     await post('end', {status: error.code === 'timeout' ? 'timeout' : error.code === 'memory-limit' ? 'oom' : 'error',
       coldWallSeconds: (performance.now() - start) / 1000, error: error.stack || String(error), code: error.code,
+      lastDegree, lastProgress,
       peakAllocatedWasmMiB: memory.length ? Math.max(...memory) / 1048576 : null});
   } finally {clearTimeout(cap); engine.cancel();}
 }
@@ -261,6 +274,7 @@ try {
     const rotated = [...configs.slice(degree % configs.length), ...configs.slice(0, degree % configs.length)];
     for (const config of rotated) {
       if (report.rows.some(r => r.id === config.id && r.degree === degree && r.trial === trial)) continue;
+      if (process.argv.includes('--skip-censored') && report.rows.some(r=>r.id===config.id&&r.degree===degree&&['timeout','oom'].includes(r.status))) continue;
       await run(config, degree, trial);
     }
   }

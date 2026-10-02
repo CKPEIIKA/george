@@ -1,0 +1,4003 @@
+{
+  "description": "Actual unshared WASM32 FK6 degree9; 250ms requested interval for live-pulse regression",
+  "events": [
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "input",
+      "target": 9,
+      "currentDegree": 1,
+      "completedThroughDegree": 0,
+      "elapsedMs": 47.416613000000005,
+      "degreeElapsedMs": 0.39556900000000894,
+      "overlaps": {
+        "total": null,
+        "resolved": "0",
+        "enumerated": "0",
+        "scheduled": "0",
+        "committed": "0",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": null,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "0",
+        "sampledReductionsPerSecond": null,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": []
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "indexing",
+      "target": 9,
+      "currentDegree": 1,
+      "completedThroughDegree": 0,
+      "elapsedMs": 47.924609,
+      "degreeElapsedMs": 0.9035650000000004,
+      "overlaps": {
+        "total": null,
+        "resolved": "0",
+        "enumerated": "0",
+        "scheduled": "0",
+        "committed": "0",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": null,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "0",
+        "sampledReductionsPerSecond": 0,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": []
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "reducing",
+      "target": 9,
+      "currentDegree": 1,
+      "completedThroughDegree": 0,
+      "elapsedMs": 48.07233900000001,
+      "degreeElapsedMs": 1.0512950000000103,
+      "overlaps": {
+        "total": "0",
+        "resolved": "0",
+        "enumerated": "0",
+        "scheduled": "0",
+        "committed": "0",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": null,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "0",
+        "sampledReductionsPerSecond": 0,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": [
+          0,
+          0
+        ],
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Overlap work resolved; checkpoint/output work may remain."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": []
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "checkpoint",
+      "target": 9,
+      "currentDegree": 1,
+      "completedThroughDegree": 0,
+      "elapsedMs": 48.382490999999995,
+      "degreeElapsedMs": 1.3614469999999983,
+      "overlaps": {
+        "total": "0",
+        "resolved": "0",
+        "enumerated": "0",
+        "scheduled": "0",
+        "committed": "0",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": null,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "0",
+        "sampledReductionsPerSecond": 0,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": []
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "checkpoint",
+      "target": 9,
+      "currentDegree": 1,
+      "completedThroughDegree": 1,
+      "elapsedMs": 48.485704000000005,
+      "degreeElapsedMs": 1.4646600000000092,
+      "overlaps": {
+        "total": "0",
+        "resolved": "0",
+        "enumerated": "0",
+        "scheduled": "0",
+        "committed": "0",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": null,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "0",
+        "sampledReductionsPerSecond": 0,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "input",
+      "target": 9,
+      "currentDegree": 2,
+      "completedThroughDegree": 1,
+      "elapsedMs": 49.076142999999995,
+      "degreeElapsedMs": 0.016233999999997195,
+      "overlaps": {
+        "total": null,
+        "resolved": "0",
+        "enumerated": "0",
+        "scheduled": "0",
+        "committed": "0",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": null,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "0",
+        "sampledReductionsPerSecond": null,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "indexing",
+      "target": 9,
+      "currentDegree": 2,
+      "completedThroughDegree": 1,
+      "elapsedMs": 51.519039,
+      "degreeElapsedMs": 2.459130000000002,
+      "overlaps": {
+        "total": null,
+        "resolved": "0",
+        "enumerated": "0",
+        "scheduled": "0",
+        "committed": "0",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": null,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "0",
+        "sampledReductionsPerSecond": 0,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "reducing",
+      "target": 9,
+      "currentDegree": 2,
+      "completedThroughDegree": 1,
+      "elapsedMs": 51.560651,
+      "degreeElapsedMs": 2.5007420000000025,
+      "overlaps": {
+        "total": "0",
+        "resolved": "0",
+        "enumerated": "0",
+        "scheduled": "0",
+        "committed": "0",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": null,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "0",
+        "sampledReductionsPerSecond": 0,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": [
+          0,
+          0
+        ],
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Overlap work resolved; checkpoint/output work may remain."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "checkpoint",
+      "target": 9,
+      "currentDegree": 2,
+      "completedThroughDegree": 1,
+      "elapsedMs": 51.579859000000006,
+      "degreeElapsedMs": 2.5199500000000086,
+      "overlaps": {
+        "total": "0",
+        "resolved": "0",
+        "enumerated": "0",
+        "scheduled": "0",
+        "committed": "0",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": null,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "0",
+        "sampledReductionsPerSecond": 0,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "checkpoint",
+      "target": 9,
+      "currentDegree": 2,
+      "completedThroughDegree": 2,
+      "elapsedMs": 51.694669999999995,
+      "degreeElapsedMs": 2.6347609999999975,
+      "overlaps": {
+        "total": "0",
+        "resolved": "0",
+        "enumerated": "0",
+        "scheduled": "0",
+        "committed": "0",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": null,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "0",
+        "sampledReductionsPerSecond": 0,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "input",
+      "target": 9,
+      "currentDegree": 3,
+      "completedThroughDegree": 2,
+      "elapsedMs": 51.795359999999995,
+      "degreeElapsedMs": 0.0033449999999959346,
+      "overlaps": {
+        "total": null,
+        "resolved": "0",
+        "enumerated": "0",
+        "scheduled": "0",
+        "committed": "0",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": null,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "0",
+        "sampledReductionsPerSecond": null,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "indexing",
+      "target": 9,
+      "currentDegree": 3,
+      "completedThroughDegree": 2,
+      "elapsedMs": 51.81096300000001,
+      "degreeElapsedMs": 0.018948000000008847,
+      "overlaps": {
+        "total": null,
+        "resolved": "0",
+        "enumerated": "0",
+        "scheduled": "0",
+        "committed": "0",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": null,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "0",
+        "sampledReductionsPerSecond": 0,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "reducing",
+      "target": 9,
+      "currentDegree": 3,
+      "completedThroughDegree": 2,
+      "elapsedMs": 51.820207,
+      "degreeElapsedMs": 0.028192000000004214,
+      "overlaps": {
+        "total": "466",
+        "resolved": "0",
+        "enumerated": "0",
+        "scheduled": "0",
+        "committed": "0",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": 0,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "0",
+        "sampledReductionsPerSecond": 0,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Collecting timing samples."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "checkpoint",
+      "target": 9,
+      "currentDegree": 3,
+      "completedThroughDegree": 2,
+      "elapsedMs": 54.537400999999996,
+      "degreeElapsedMs": 2.7453859999999963,
+      "overlaps": {
+        "total": "466",
+        "resolved": "466",
+        "enumerated": "466",
+        "scheduled": "451",
+        "committed": "451",
+        "monomialSkipped": "15",
+        "chainSkipped": "0",
+        "fraction": 1,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "2144",
+        "sampledReductionsPerSecond": 789049.2912909443,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "checkpoint",
+      "target": 9,
+      "currentDegree": 3,
+      "completedThroughDegree": 3,
+      "elapsedMs": 54.564922,
+      "degreeElapsedMs": 2.7729070000000036,
+      "overlaps": {
+        "total": "466",
+        "resolved": "466",
+        "enumerated": "466",
+        "scheduled": "451",
+        "committed": "451",
+        "monomialSkipped": "15",
+        "chainSkipped": "0",
+        "fraction": 1,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "2144",
+        "sampledReductionsPerSecond": 0,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "input",
+      "target": 9,
+      "currentDegree": 4,
+      "completedThroughDegree": 3,
+      "elapsedMs": 54.700274,
+      "degreeElapsedMs": 0.004287000000005037,
+      "overlaps": {
+        "total": null,
+        "resolved": "0",
+        "enumerated": "0",
+        "scheduled": "0",
+        "committed": "0",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": null,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "2144",
+        "sampledReductionsPerSecond": null,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "indexing",
+      "target": 9,
+      "currentDegree": 4,
+      "completedThroughDegree": 3,
+      "elapsedMs": 54.713573000000004,
+      "degreeElapsedMs": 0.01758600000000854,
+      "overlaps": {
+        "total": null,
+        "resolved": "0",
+        "enumerated": "0",
+        "scheduled": "0",
+        "committed": "0",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": null,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "2144",
+        "sampledReductionsPerSecond": 0,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "reducing",
+      "target": 9,
+      "currentDegree": 4,
+      "completedThroughDegree": 3,
+      "elapsedMs": 54.780252999999995,
+      "degreeElapsedMs": 0.08426599999999951,
+      "overlaps": {
+        "total": "827",
+        "resolved": "0",
+        "enumerated": "0",
+        "scheduled": "0",
+        "committed": "0",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": 0,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "2144",
+        "sampledReductionsPerSecond": 0,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Collecting timing samples."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "checkpoint",
+      "target": 9,
+      "currentDegree": 4,
+      "completedThroughDegree": 3,
+      "elapsedMs": 61.048132,
+      "degreeElapsedMs": 6.352145000000007,
+      "overlaps": {
+        "total": "827",
+        "resolved": "827",
+        "enumerated": "827",
+        "scheduled": "827",
+        "committed": "827",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": 1,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "10717",
+        "sampledReductionsPerSecond": 1367767.310121971,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "checkpoint",
+      "target": 9,
+      "currentDegree": 4,
+      "completedThroughDegree": 4,
+      "elapsedMs": 61.08934300000001,
+      "degreeElapsedMs": 6.393356000000011,
+      "overlaps": {
+        "total": "827",
+        "resolved": "827",
+        "enumerated": "827",
+        "scheduled": "827",
+        "committed": "827",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": 1,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "10717",
+        "sampledReductionsPerSecond": 0,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.380687000000009,
+          "candidates": "827",
+          "scheduled": "827"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "input",
+      "target": 9,
+      "currentDegree": 5,
+      "completedThroughDegree": 4,
+      "elapsedMs": 61.162181,
+      "degreeElapsedMs": 0.003855000000001496,
+      "overlaps": {
+        "total": null,
+        "resolved": "0",
+        "enumerated": "0",
+        "scheduled": "0",
+        "committed": "0",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": null,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "10717",
+        "sampledReductionsPerSecond": null,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.380687000000009,
+          "candidates": "827",
+          "scheduled": "827"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "indexing",
+      "target": 9,
+      "currentDegree": 5,
+      "completedThroughDegree": 4,
+      "elapsedMs": 61.176182000000004,
+      "degreeElapsedMs": 0.017856000000008976,
+      "overlaps": {
+        "total": null,
+        "resolved": "0",
+        "enumerated": "0",
+        "scheduled": "0",
+        "committed": "0",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": null,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "10717",
+        "sampledReductionsPerSecond": 0,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.380687000000009,
+          "candidates": "827",
+          "scheduled": "827"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "reducing",
+      "target": 9,
+      "currentDegree": 5,
+      "completedThroughDegree": 4,
+      "elapsedMs": 61.27555,
+      "degreeElapsedMs": 0.11722400000000732,
+      "overlaps": {
+        "total": "1447",
+        "resolved": "0",
+        "enumerated": "0",
+        "scheduled": "0",
+        "committed": "0",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": 0,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "10717",
+        "sampledReductionsPerSecond": 0,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Collecting timing samples."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.380687000000009,
+          "candidates": "827",
+          "scheduled": "827"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "checkpoint",
+      "target": 9,
+      "currentDegree": 5,
+      "completedThroughDegree": 4,
+      "elapsedMs": 77.78046499999999,
+      "degreeElapsedMs": 16.622139000000004,
+      "overlaps": {
+        "total": "1447",
+        "resolved": "1447",
+        "enumerated": "1447",
+        "scheduled": "1447",
+        "committed": "1447",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": 1,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "40273",
+        "sampledReductionsPerSecond": 1790739.3040194395,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.380687000000009,
+          "candidates": "827",
+          "scheduled": "827"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "checkpoint",
+      "target": 9,
+      "currentDegree": 5,
+      "completedThroughDegree": 5,
+      "elapsedMs": 77.82509100000001,
+      "degreeElapsedMs": 16.666765000000012,
+      "overlaps": {
+        "total": "1447",
+        "resolved": "1447",
+        "enumerated": "1447",
+        "scheduled": "1447",
+        "committed": "1447",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": 1,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "40273",
+        "sampledReductionsPerSecond": 0,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.380687000000009,
+          "candidates": "827",
+          "scheduled": "827"
+        },
+        {
+          "degree": 5,
+          "elapsedMs": 16.657171000000005,
+          "candidates": "1447",
+          "scheduled": "1447"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "input",
+      "target": 9,
+      "currentDegree": 6,
+      "completedThroughDegree": 5,
+      "elapsedMs": 77.86273700000001,
+      "degreeElapsedMs": 0.002924000000007254,
+      "overlaps": {
+        "total": null,
+        "resolved": "0",
+        "enumerated": "0",
+        "scheduled": "0",
+        "committed": "0",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": null,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "40273",
+        "sampledReductionsPerSecond": null,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.380687000000009,
+          "candidates": "827",
+          "scheduled": "827"
+        },
+        {
+          "degree": 5,
+          "elapsedMs": 16.657171000000005,
+          "candidates": "1447",
+          "scheduled": "1447"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "indexing",
+      "target": 9,
+      "currentDegree": 6,
+      "completedThroughDegree": 5,
+      "elapsedMs": 77.87202099999999,
+      "degreeElapsedMs": 0.012208000000001107,
+      "overlaps": {
+        "total": null,
+        "resolved": "0",
+        "enumerated": "0",
+        "scheduled": "0",
+        "committed": "0",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": null,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "40273",
+        "sampledReductionsPerSecond": 0,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.380687000000009,
+          "candidates": "827",
+          "scheduled": "827"
+        },
+        {
+          "degree": 5,
+          "elapsedMs": 16.657171000000005,
+          "candidates": "1447",
+          "scheduled": "1447"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "reducing",
+      "target": 9,
+      "currentDegree": 6,
+      "completedThroughDegree": 5,
+      "elapsedMs": 78.007112,
+      "degreeElapsedMs": 0.14729900000000384,
+      "overlaps": {
+        "total": "2280",
+        "resolved": "0",
+        "enumerated": "0",
+        "scheduled": "0",
+        "committed": "0",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": 0,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "40273",
+        "sampledReductionsPerSecond": 0,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Collecting timing samples."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.380687000000009,
+          "candidates": "827",
+          "scheduled": "827"
+        },
+        {
+          "degree": 5,
+          "elapsedMs": 16.657171000000005,
+          "candidates": "1447",
+          "scheduled": "1447"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "checkpoint",
+      "target": 9,
+      "currentDegree": 6,
+      "completedThroughDegree": 5,
+      "elapsedMs": 101.034065,
+      "degreeElapsedMs": 23.174251999999996,
+      "overlaps": {
+        "total": "2280",
+        "resolved": "2280",
+        "enumerated": "2280",
+        "scheduled": "2271",
+        "committed": "2271",
+        "monomialSkipped": "0",
+        "chainSkipped": "9",
+        "fraction": 1,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "121362",
+        "sampledReductionsPerSecond": 3521481.9780975813,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.380687000000009,
+          "candidates": "827",
+          "scheduled": "827"
+        },
+        {
+          "degree": 5,
+          "elapsedMs": 16.657171000000005,
+          "candidates": "1447",
+          "scheduled": "1447"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "checkpoint",
+      "target": 9,
+      "currentDegree": 6,
+      "completedThroughDegree": 6,
+      "elapsedMs": 101.08123500000002,
+      "degreeElapsedMs": 23.221422000000018,
+      "overlaps": {
+        "total": "2280",
+        "resolved": "2280",
+        "enumerated": "2280",
+        "scheduled": "2271",
+        "committed": "2271",
+        "monomialSkipped": "0",
+        "chainSkipped": "9",
+        "fraction": 1,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "121362",
+        "sampledReductionsPerSecond": 0,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.380687000000009,
+          "candidates": "827",
+          "scheduled": "827"
+        },
+        {
+          "degree": 5,
+          "elapsedMs": 16.657171000000005,
+          "candidates": "1447",
+          "scheduled": "1447"
+        },
+        {
+          "degree": 6,
+          "elapsedMs": 23.209394000000003,
+          "candidates": "2280",
+          "scheduled": "2271"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "input",
+      "target": 9,
+      "currentDegree": 7,
+      "completedThroughDegree": 6,
+      "elapsedMs": 102.66211800000002,
+      "degreeElapsedMs": 0.0050470000000188975,
+      "overlaps": {
+        "total": null,
+        "resolved": "0",
+        "enumerated": "0",
+        "scheduled": "0",
+        "committed": "0",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": null,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "121362",
+        "sampledReductionsPerSecond": null,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.380687000000009,
+          "candidates": "827",
+          "scheduled": "827"
+        },
+        {
+          "degree": 5,
+          "elapsedMs": 16.657171000000005,
+          "candidates": "1447",
+          "scheduled": "1447"
+        },
+        {
+          "degree": 6,
+          "elapsedMs": 23.209394000000003,
+          "candidates": "2280",
+          "scheduled": "2271"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "indexing",
+      "target": 9,
+      "currentDegree": 7,
+      "completedThroughDegree": 6,
+      "elapsedMs": 102.67823200000001,
+      "degreeElapsedMs": 0.021161000000006425,
+      "overlaps": {
+        "total": null,
+        "resolved": "0",
+        "enumerated": "0",
+        "scheduled": "0",
+        "committed": "0",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": null,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "121362",
+        "sampledReductionsPerSecond": 0,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.380687000000009,
+          "candidates": "827",
+          "scheduled": "827"
+        },
+        {
+          "degree": 5,
+          "elapsedMs": 16.657171000000005,
+          "candidates": "1447",
+          "scheduled": "1447"
+        },
+        {
+          "degree": 6,
+          "elapsedMs": 23.209394000000003,
+          "candidates": "2280",
+          "scheduled": "2271"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "reducing",
+      "target": 9,
+      "currentDegree": 7,
+      "completedThroughDegree": 6,
+      "elapsedMs": 102.92982600000002,
+      "degreeElapsedMs": 0.27275500000001784,
+      "overlaps": {
+        "total": "3840",
+        "resolved": "0",
+        "enumerated": "0",
+        "scheduled": "0",
+        "committed": "0",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": 0,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "121362",
+        "sampledReductionsPerSecond": 0,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Collecting timing samples."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.380687000000009,
+          "candidates": "827",
+          "scheduled": "827"
+        },
+        {
+          "degree": 5,
+          "elapsedMs": 16.657171000000005,
+          "candidates": "1447",
+          "scheduled": "1447"
+        },
+        {
+          "degree": 6,
+          "elapsedMs": 23.209394000000003,
+          "candidates": "2280",
+          "scheduled": "2271"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "checkpoint",
+      "target": 9,
+      "currentDegree": 7,
+      "completedThroughDegree": 6,
+      "elapsedMs": 212.22689900000003,
+      "degreeElapsedMs": 109.56982800000003,
+      "overlaps": {
+        "total": "3840",
+        "resolved": "3840",
+        "enumerated": "3840",
+        "scheduled": "3815",
+        "committed": "3815",
+        "monomialSkipped": "0",
+        "chainSkipped": "25",
+        "fraction": 1,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "397402",
+        "sampledReductionsPerSecond": 2525593.709174627,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.380687000000009,
+          "candidates": "827",
+          "scheduled": "827"
+        },
+        {
+          "degree": 5,
+          "elapsedMs": 16.657171000000005,
+          "candidates": "1447",
+          "scheduled": "1447"
+        },
+        {
+          "degree": 6,
+          "elapsedMs": 23.209394000000003,
+          "candidates": "2280",
+          "scheduled": "2271"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "checkpoint",
+      "target": 9,
+      "currentDegree": 7,
+      "completedThroughDegree": 7,
+      "elapsedMs": 212.288511,
+      "degreeElapsedMs": 109.63144,
+      "overlaps": {
+        "total": "3840",
+        "resolved": "3840",
+        "enumerated": "3840",
+        "scheduled": "3815",
+        "committed": "3815",
+        "monomialSkipped": "0",
+        "chainSkipped": "25",
+        "fraction": 1,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "397402",
+        "sampledReductionsPerSecond": 0,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.380687000000009,
+          "candidates": "827",
+          "scheduled": "827"
+        },
+        {
+          "degree": 5,
+          "elapsedMs": 16.657171000000005,
+          "candidates": "1447",
+          "scheduled": "1447"
+        },
+        {
+          "degree": 6,
+          "elapsedMs": 23.209394000000003,
+          "candidates": "2280",
+          "scheduled": "2271"
+        },
+        {
+          "degree": 7,
+          "elapsedMs": 109.61380400000002,
+          "candidates": "3840",
+          "scheduled": "3815"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "input",
+      "target": 9,
+      "currentDegree": 8,
+      "completedThroughDegree": 7,
+      "elapsedMs": 213.50325899999999,
+      "degreeElapsedMs": 0.005217999999956646,
+      "overlaps": {
+        "total": null,
+        "resolved": "0",
+        "enumerated": "0",
+        "scheduled": "0",
+        "committed": "0",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": null,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "397402",
+        "sampledReductionsPerSecond": null,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.380687000000009,
+          "candidates": "827",
+          "scheduled": "827"
+        },
+        {
+          "degree": 5,
+          "elapsedMs": 16.657171000000005,
+          "candidates": "1447",
+          "scheduled": "1447"
+        },
+        {
+          "degree": 6,
+          "elapsedMs": 23.209394000000003,
+          "candidates": "2280",
+          "scheduled": "2271"
+        },
+        {
+          "degree": 7,
+          "elapsedMs": 109.61380400000002,
+          "candidates": "3840",
+          "scheduled": "3815"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "indexing",
+      "target": 9,
+      "currentDegree": 8,
+      "completedThroughDegree": 7,
+      "elapsedMs": 213.51814099999999,
+      "degreeElapsedMs": 0.020099999999956708,
+      "overlaps": {
+        "total": null,
+        "resolved": "0",
+        "enumerated": "0",
+        "scheduled": "0",
+        "committed": "0",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": null,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "397402",
+        "sampledReductionsPerSecond": 0,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.380687000000009,
+          "candidates": "827",
+          "scheduled": "827"
+        },
+        {
+          "degree": 5,
+          "elapsedMs": 16.657171000000005,
+          "candidates": "1447",
+          "scheduled": "1447"
+        },
+        {
+          "degree": 6,
+          "elapsedMs": 23.209394000000003,
+          "candidates": "2280",
+          "scheduled": "2271"
+        },
+        {
+          "degree": 7,
+          "elapsedMs": 109.61380400000002,
+          "candidates": "3840",
+          "scheduled": "3815"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "reducing",
+      "target": 9,
+      "currentDegree": 8,
+      "completedThroughDegree": 7,
+      "elapsedMs": 213.721844,
+      "degreeElapsedMs": 0.22380299999997533,
+      "overlaps": {
+        "total": "6472",
+        "resolved": "0",
+        "enumerated": "0",
+        "scheduled": "0",
+        "committed": "0",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": 0,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "397402",
+        "sampledReductionsPerSecond": 0,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Collecting timing samples."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.380687000000009,
+          "candidates": "827",
+          "scheduled": "827"
+        },
+        {
+          "degree": 5,
+          "elapsedMs": 16.657171000000005,
+          "candidates": "1447",
+          "scheduled": "1447"
+        },
+        {
+          "degree": 6,
+          "elapsedMs": 23.209394000000003,
+          "candidates": "2280",
+          "scheduled": "2271"
+        },
+        {
+          "degree": 7,
+          "elapsedMs": 109.61380400000002,
+          "candidates": "3840",
+          "scheduled": "3815"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "reducing",
+      "target": 9,
+      "currentDegree": 8,
+      "completedThroughDegree": 7,
+      "elapsedMs": 463.747863,
+      "degreeElapsedMs": 250.249822,
+      "overlaps": {
+        "total": "6472",
+        "resolved": "1664",
+        "enumerated": "1672",
+        "scheduled": "1672",
+        "committed": "1664",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": 0.257107,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 1,
+        "maxActiveRowTerms": "3",
+        "sampledReductions": "1068125",
+        "sampledReductionsPerSecond": 2682612.80438977,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Collecting timing samples."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.380687000000009,
+          "candidates": "827",
+          "scheduled": "827"
+        },
+        {
+          "degree": 5,
+          "elapsedMs": 16.657171000000005,
+          "candidates": "1447",
+          "scheduled": "1447"
+        },
+        {
+          "degree": 6,
+          "elapsedMs": 23.209394000000003,
+          "candidates": "2280",
+          "scheduled": "2271"
+        },
+        {
+          "degree": 7,
+          "elapsedMs": 109.61380400000002,
+          "candidates": "3840",
+          "scheduled": "3815"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "checkpoint",
+      "target": 9,
+      "currentDegree": 8,
+      "completedThroughDegree": 7,
+      "elapsedMs": 705.090815,
+      "degreeElapsedMs": 491.59277399999996,
+      "overlaps": {
+        "total": "6472",
+        "resolved": "6472",
+        "enumerated": "6472",
+        "scheduled": "6371",
+        "committed": "6371",
+        "monomialSkipped": "0",
+        "chainSkipped": "101",
+        "fraction": 1,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "1718558",
+        "sampledReductionsPerSecond": 2695056.949498157,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.380687000000009,
+          "candidates": "827",
+          "scheduled": "827"
+        },
+        {
+          "degree": 5,
+          "elapsedMs": 16.657171000000005,
+          "candidates": "1447",
+          "scheduled": "1447"
+        },
+        {
+          "degree": 6,
+          "elapsedMs": 23.209394000000003,
+          "candidates": "2280",
+          "scheduled": "2271"
+        },
+        {
+          "degree": 7,
+          "elapsedMs": 109.61380400000002,
+          "candidates": "3840",
+          "scheduled": "3815"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "checkpoint",
+      "target": 9,
+      "currentDegree": 8,
+      "completedThroughDegree": 8,
+      "elapsedMs": 705.150384,
+      "degreeElapsedMs": 491.652343,
+      "overlaps": {
+        "total": "6472",
+        "resolved": "6472",
+        "enumerated": "6472",
+        "scheduled": "6371",
+        "committed": "6371",
+        "monomialSkipped": "0",
+        "chainSkipped": "101",
+        "fraction": 1,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "1718558",
+        "sampledReductionsPerSecond": 0,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.380687000000009,
+          "candidates": "827",
+          "scheduled": "827"
+        },
+        {
+          "degree": 5,
+          "elapsedMs": 16.657171000000005,
+          "candidates": "1447",
+          "scheduled": "1447"
+        },
+        {
+          "degree": 6,
+          "elapsedMs": 23.209394000000003,
+          "candidates": "2280",
+          "scheduled": "2271"
+        },
+        {
+          "degree": 7,
+          "elapsedMs": 109.61380400000002,
+          "candidates": "3840",
+          "scheduled": "3815"
+        },
+        {
+          "degree": 8,
+          "elapsedMs": 491.634626,
+          "candidates": "6472",
+          "scheduled": "6371"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "input",
+      "target": 9,
+      "currentDegree": 9,
+      "completedThroughDegree": 8,
+      "elapsedMs": 706.427585,
+      "degreeElapsedMs": 0.012358999999946718,
+      "overlaps": {
+        "total": null,
+        "resolved": "0",
+        "enumerated": "0",
+        "scheduled": "0",
+        "committed": "0",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": null,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "1718558",
+        "sampledReductionsPerSecond": null,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.380687000000009,
+          "candidates": "827",
+          "scheduled": "827"
+        },
+        {
+          "degree": 5,
+          "elapsedMs": 16.657171000000005,
+          "candidates": "1447",
+          "scheduled": "1447"
+        },
+        {
+          "degree": 6,
+          "elapsedMs": 23.209394000000003,
+          "candidates": "2280",
+          "scheduled": "2271"
+        },
+        {
+          "degree": 7,
+          "elapsedMs": 109.61380400000002,
+          "candidates": "3840",
+          "scheduled": "3815"
+        },
+        {
+          "degree": 8,
+          "elapsedMs": 491.634626,
+          "candidates": "6472",
+          "scheduled": "6371"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "indexing",
+      "target": 9,
+      "currentDegree": 9,
+      "completedThroughDegree": 8,
+      "elapsedMs": 706.440975,
+      "degreeElapsedMs": 0.02574899999990521,
+      "overlaps": {
+        "total": null,
+        "resolved": "0",
+        "enumerated": "0",
+        "scheduled": "0",
+        "committed": "0",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": null,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "1718558",
+        "sampledReductionsPerSecond": 0,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.380687000000009,
+          "candidates": "827",
+          "scheduled": "827"
+        },
+        {
+          "degree": 5,
+          "elapsedMs": 16.657171000000005,
+          "candidates": "1447",
+          "scheduled": "1447"
+        },
+        {
+          "degree": 6,
+          "elapsedMs": 23.209394000000003,
+          "candidates": "2280",
+          "scheduled": "2271"
+        },
+        {
+          "degree": 7,
+          "elapsedMs": 109.61380400000002,
+          "candidates": "3840",
+          "scheduled": "3815"
+        },
+        {
+          "degree": 8,
+          "elapsedMs": 491.634626,
+          "candidates": "6472",
+          "scheduled": "6371"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "reducing",
+      "target": 9,
+      "currentDegree": 9,
+      "completedThroughDegree": 8,
+      "elapsedMs": 706.86802,
+      "degreeElapsedMs": 0.4527939999999262,
+      "overlaps": {
+        "total": "10975",
+        "resolved": "0",
+        "enumerated": "0",
+        "scheduled": "0",
+        "committed": "0",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": 0,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "1718558",
+        "sampledReductionsPerSecond": 0,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Collecting timing samples."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.380687000000009,
+          "candidates": "827",
+          "scheduled": "827"
+        },
+        {
+          "degree": 5,
+          "elapsedMs": 16.657171000000005,
+          "candidates": "1447",
+          "scheduled": "1447"
+        },
+        {
+          "degree": 6,
+          "elapsedMs": 23.209394000000003,
+          "candidates": "2280",
+          "scheduled": "2271"
+        },
+        {
+          "degree": 7,
+          "elapsedMs": 109.61380400000002,
+          "candidates": "3840",
+          "scheduled": "3815"
+        },
+        {
+          "degree": 8,
+          "elapsedMs": 491.634626,
+          "candidates": "6472",
+          "scheduled": "6371"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "reducing",
+      "target": 9,
+      "currentDegree": 9,
+      "completedThroughDegree": 8,
+      "elapsedMs": 957.0907990000001,
+      "degreeElapsedMs": 250.67557299999999,
+      "overlaps": {
+        "total": "10975",
+        "resolved": "824",
+        "enumerated": "832",
+        "scheduled": "832",
+        "committed": "824",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": 0.075079,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 1,
+        "maxActiveRowTerms": "415",
+        "sampledReductions": "2388026",
+        "sampledReductionsPerSecond": 2675487.8299868926,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Collecting timing samples."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.380687000000009,
+          "candidates": "827",
+          "scheduled": "827"
+        },
+        {
+          "degree": 5,
+          "elapsedMs": 16.657171000000005,
+          "candidates": "1447",
+          "scheduled": "1447"
+        },
+        {
+          "degree": 6,
+          "elapsedMs": 23.209394000000003,
+          "candidates": "2280",
+          "scheduled": "2271"
+        },
+        {
+          "degree": 7,
+          "elapsedMs": 109.61380400000002,
+          "candidates": "3840",
+          "scheduled": "3815"
+        },
+        {
+          "degree": 8,
+          "elapsedMs": 491.634626,
+          "candidates": "6472",
+          "scheduled": "6371"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "reducing",
+      "target": 9,
+      "currentDegree": 9,
+      "completedThroughDegree": 8,
+      "elapsedMs": 1207.7399910000001,
+      "degreeElapsedMs": 501.32476500000007,
+      "overlaps": {
+        "total": "10975",
+        "resolved": "1008",
+        "enumerated": "1016",
+        "scheduled": "1016",
+        "committed": "1008",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": 0.091845,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 1,
+        "maxActiveRowTerms": "530",
+        "sampledReductions": "3093977",
+        "sampledReductionsPerSecond": 2816490.2283028294,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Collecting timing samples."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.380687000000009,
+          "candidates": "827",
+          "scheduled": "827"
+        },
+        {
+          "degree": 5,
+          "elapsedMs": 16.657171000000005,
+          "candidates": "1447",
+          "scheduled": "1447"
+        },
+        {
+          "degree": 6,
+          "elapsedMs": 23.209394000000003,
+          "candidates": "2280",
+          "scheduled": "2271"
+        },
+        {
+          "degree": 7,
+          "elapsedMs": 109.61380400000002,
+          "candidates": "3840",
+          "scheduled": "3815"
+        },
+        {
+          "degree": 8,
+          "elapsedMs": 491.634626,
+          "candidates": "6472",
+          "scheduled": "6371"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "committing",
+      "target": 9,
+      "currentDegree": 9,
+      "completedThroughDegree": 8,
+      "elapsedMs": 1457.8322130000001,
+      "degreeElapsedMs": 751.4169870000001,
+      "overlaps": {
+        "total": "10975",
+        "resolved": "1304",
+        "enumerated": "1312",
+        "scheduled": "1312",
+        "committed": "1304",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": 0.118815,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "3796087",
+        "sampledReductionsPerSecond": 2807404.3822122547,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Collecting timing samples."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.380687000000009,
+          "candidates": "827",
+          "scheduled": "827"
+        },
+        {
+          "degree": 5,
+          "elapsedMs": 16.657171000000005,
+          "candidates": "1447",
+          "scheduled": "1447"
+        },
+        {
+          "degree": 6,
+          "elapsedMs": 23.209394000000003,
+          "candidates": "2280",
+          "scheduled": "2271"
+        },
+        {
+          "degree": 7,
+          "elapsedMs": 109.61380400000002,
+          "candidates": "3840",
+          "scheduled": "3815"
+        },
+        {
+          "degree": 8,
+          "elapsedMs": 491.634626,
+          "candidates": "6472",
+          "scheduled": "6371"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "reducing",
+      "target": 9,
+      "currentDegree": 9,
+      "completedThroughDegree": 8,
+      "elapsedMs": 1708.18917,
+      "degreeElapsedMs": 1001.773944,
+      "overlaps": {
+        "total": "10975",
+        "resolved": "1536",
+        "enumerated": "1544",
+        "scheduled": "1544",
+        "committed": "1536",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": 0.139954,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 1,
+        "maxActiveRowTerms": "16",
+        "sampledReductions": "4502644",
+        "sampledReductionsPerSecond": 2822198.3861227394,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Collecting timing samples."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.380687000000009,
+          "candidates": "827",
+          "scheduled": "827"
+        },
+        {
+          "degree": 5,
+          "elapsedMs": 16.657171000000005,
+          "candidates": "1447",
+          "scheduled": "1447"
+        },
+        {
+          "degree": 6,
+          "elapsedMs": 23.209394000000003,
+          "candidates": "2280",
+          "scheduled": "2271"
+        },
+        {
+          "degree": 7,
+          "elapsedMs": 109.61380400000002,
+          "candidates": "3840",
+          "scheduled": "3815"
+        },
+        {
+          "degree": 8,
+          "elapsedMs": 491.634626,
+          "candidates": "6472",
+          "scheduled": "6371"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "reducing",
+      "target": 9,
+      "currentDegree": 9,
+      "completedThroughDegree": 8,
+      "elapsedMs": 1958.311978,
+      "degreeElapsedMs": 1251.8967519999999,
+      "overlaps": {
+        "total": "10975",
+        "resolved": "1968",
+        "enumerated": "1976",
+        "scheduled": "1976",
+        "committed": "1968",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": 0.179316,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 1,
+        "maxActiveRowTerms": "123",
+        "sampledReductions": "5219490",
+        "sampledReductionsPerSecond": 2865976.1408084,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Collecting timing samples."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.380687000000009,
+          "candidates": "827",
+          "scheduled": "827"
+        },
+        {
+          "degree": 5,
+          "elapsedMs": 16.657171000000005,
+          "candidates": "1447",
+          "scheduled": "1447"
+        },
+        {
+          "degree": 6,
+          "elapsedMs": 23.209394000000003,
+          "candidates": "2280",
+          "scheduled": "2271"
+        },
+        {
+          "degree": 7,
+          "elapsedMs": 109.61380400000002,
+          "candidates": "3840",
+          "scheduled": "3815"
+        },
+        {
+          "degree": 8,
+          "elapsedMs": 491.634626,
+          "candidates": "6472",
+          "scheduled": "6371"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "reducing",
+      "target": 9,
+      "currentDegree": 9,
+      "completedThroughDegree": 8,
+      "elapsedMs": 2208.3775149999997,
+      "degreeElapsedMs": 1501.9622889999998,
+      "overlaps": {
+        "total": "10975",
+        "resolved": "2544",
+        "enumerated": "2552",
+        "scheduled": "2552",
+        "committed": "2544",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": 0.231799,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 1,
+        "maxActiveRowTerms": "1044",
+        "sampledReductions": "5924947",
+        "sampledReductionsPerSecond": 2821088.4573030956,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Collecting timing samples."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.380687000000009,
+          "candidates": "827",
+          "scheduled": "827"
+        },
+        {
+          "degree": 5,
+          "elapsedMs": 16.657171000000005,
+          "candidates": "1447",
+          "scheduled": "1447"
+        },
+        {
+          "degree": 6,
+          "elapsedMs": 23.209394000000003,
+          "candidates": "2280",
+          "scheduled": "2271"
+        },
+        {
+          "degree": 7,
+          "elapsedMs": 109.61380400000002,
+          "candidates": "3840",
+          "scheduled": "3815"
+        },
+        {
+          "degree": 8,
+          "elapsedMs": 491.634626,
+          "candidates": "6472",
+          "scheduled": "6371"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "reducing",
+      "target": 9,
+      "currentDegree": 9,
+      "completedThroughDegree": 8,
+      "elapsedMs": 2458.667692,
+      "degreeElapsedMs": 1752.2524660000001,
+      "overlaps": {
+        "total": "10975",
+        "resolved": "2792",
+        "enumerated": "2800",
+        "scheduled": "2800",
+        "committed": "2792",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": 0.254396,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 1,
+        "maxActiveRowTerms": "279",
+        "sampledReductions": "6622390",
+        "sampledReductionsPerSecond": 2786537.6434649257,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Collecting timing samples."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.380687000000009,
+          "candidates": "827",
+          "scheduled": "827"
+        },
+        {
+          "degree": 5,
+          "elapsedMs": 16.657171000000005,
+          "candidates": "1447",
+          "scheduled": "1447"
+        },
+        {
+          "degree": 6,
+          "elapsedMs": 23.209394000000003,
+          "candidates": "2280",
+          "scheduled": "2271"
+        },
+        {
+          "degree": 7,
+          "elapsedMs": 109.61380400000002,
+          "candidates": "3840",
+          "scheduled": "3815"
+        },
+        {
+          "degree": 8,
+          "elapsedMs": 491.634626,
+          "candidates": "6472",
+          "scheduled": "6371"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "reducing",
+      "target": 9,
+      "currentDegree": 9,
+      "completedThroughDegree": 8,
+      "elapsedMs": 2708.8590019999997,
+      "degreeElapsedMs": 2002.4437759999998,
+      "overlaps": {
+        "total": "10975",
+        "resolved": "3512",
+        "enumerated": "3520",
+        "scheduled": "3520",
+        "committed": "3512",
+        "monomialSkipped": "0",
+        "chainSkipped": "0",
+        "fraction": 0.32,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 1,
+        "maxActiveRowTerms": "931",
+        "sampledReductions": "7293099",
+        "sampledReductionsPerSecond": 2680784.5564260436,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": [
+          1.135133231845874,
+          20.332553477130443
+        ],
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Recent resolved-overlap throughput; heterogeneous pairs may exceed this range.",
+        "centralSeconds": 6.30553463779054
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.380687000000009,
+          "candidates": "827",
+          "scheduled": "827"
+        },
+        {
+          "degree": 5,
+          "elapsedMs": 16.657171000000005,
+          "candidates": "1447",
+          "scheduled": "1447"
+        },
+        {
+          "degree": 6,
+          "elapsedMs": 23.209394000000003,
+          "candidates": "2280",
+          "scheduled": "2271"
+        },
+        {
+          "degree": 7,
+          "elapsedMs": 109.61380400000002,
+          "candidates": "3840",
+          "scheduled": "3815"
+        },
+        {
+          "degree": 8,
+          "elapsedMs": 491.634626,
+          "candidates": "6472",
+          "scheduled": "6371"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "reducing",
+      "target": 9,
+      "currentDegree": 9,
+      "completedThroughDegree": 8,
+      "elapsedMs": 2958.89382,
+      "degreeElapsedMs": 2252.478594,
+      "overlaps": {
+        "total": "10975",
+        "resolved": "4723",
+        "enumerated": "4731",
+        "scheduled": "4728",
+        "committed": "4720",
+        "monomialSkipped": "0",
+        "chainSkipped": "3",
+        "fraction": 0.430341,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 1,
+        "maxActiveRowTerms": "801",
+        "sampledReductions": "7999939",
+        "sampledReductionsPerSecond": 2826966.2827518675,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": [
+          0.6454243113691167,
+          17.03324726504348
+        ],
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Recent resolved-overlap throughput; heterogeneous pairs may exceed this range.",
+        "centralSeconds": 3.61983286022222
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.380687000000009,
+          "candidates": "827",
+          "scheduled": "827"
+        },
+        {
+          "degree": 5,
+          "elapsedMs": 16.657171000000005,
+          "candidates": "1447",
+          "scheduled": "1447"
+        },
+        {
+          "degree": 6,
+          "elapsedMs": 23.209394000000003,
+          "candidates": "2280",
+          "scheduled": "2271"
+        },
+        {
+          "degree": 7,
+          "elapsedMs": 109.61380400000002,
+          "candidates": "3840",
+          "scheduled": "3815"
+        },
+        {
+          "degree": 8,
+          "elapsedMs": 491.634626,
+          "candidates": "6472",
+          "scheduled": "6371"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "reducing",
+      "target": 9,
+      "currentDegree": 9,
+      "completedThroughDegree": 8,
+      "elapsedMs": 3209.560798,
+      "degreeElapsedMs": 2503.1455720000004,
+      "overlaps": {
+        "total": "10975",
+        "resolved": "7342",
+        "enumerated": "7350",
+        "scheduled": "7280",
+        "committed": "7272",
+        "monomialSkipped": "0",
+        "chainSkipped": "70",
+        "fraction": 0.668974,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "8682074",
+        "sampledReductionsPerSecond": 2721279.8647933574,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Observed overlap costs are too heterogeneous for an informative time estimate."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.380687000000009,
+          "candidates": "827",
+          "scheduled": "827"
+        },
+        {
+          "degree": 5,
+          "elapsedMs": 16.657171000000005,
+          "candidates": "1447",
+          "scheduled": "1447"
+        },
+        {
+          "degree": 6,
+          "elapsedMs": 23.209394000000003,
+          "candidates": "2280",
+          "scheduled": "2271"
+        },
+        {
+          "degree": 7,
+          "elapsedMs": 109.61380400000002,
+          "candidates": "3840",
+          "scheduled": "3815"
+        },
+        {
+          "degree": 8,
+          "elapsedMs": 491.634626,
+          "candidates": "6472",
+          "scheduled": "6371"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "checkpoint",
+      "target": 9,
+      "currentDegree": 9,
+      "completedThroughDegree": 8,
+      "elapsedMs": 3379.8380319999997,
+      "degreeElapsedMs": 2673.4228059999996,
+      "overlaps": {
+        "total": "10975",
+        "resolved": "10975",
+        "enumerated": "10975",
+        "scheduled": "10732",
+        "committed": "10732",
+        "monomialSkipped": "0",
+        "chainSkipped": "243",
+        "fraction": 1,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "9107011",
+        "sampledReductionsPerSecond": 2495559.682394188,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "reason": "Insufficient nontrivial degree timings."
+      },
+      "history": [
+        {
+          "degree": 1,
+          "elapsedMs": 1.444580000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.380687000000009,
+          "candidates": "827",
+          "scheduled": "827"
+        },
+        {
+          "degree": 5,
+          "elapsedMs": 16.657171000000005,
+          "candidates": "1447",
+          "scheduled": "1447"
+        },
+        {
+          "degree": 6,
+          "elapsedMs": 23.209394000000003,
+          "candidates": "2280",
+          "scheduled": "2271"
+        },
+        {
+          "degree": 7,
+          "elapsedMs": 109.61380400000002,
+          "candidates": "3840",
+          "scheduled": "3815"
+        },
+        {
+          "degree": 8,
+          "elapsedMs": 491.634626,
+          "candidates": "6472",
+          "scheduled": "6371"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "checkpoint",
+      "target": 9,
+      "currentDegree": 9,
+      "completedThroughDegree": 9,
+      "elapsedMs": 3379.896499,
+      "degreeElapsedMs": 2673.4812730000003,
+      "overlaps": {
+        "total": "10975",
+        "resolved": "10975",
+        "enumerated": "10975",
+        "scheduled": "10732",
+        "committed": "10732",
+        "monomialSkipped": "0",
+        "chainSkipped": "243",
+        "fraction": 1,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "9107011",
+        "sampledReductionsPerSecond": 0,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "recentDegreeGrowth": [
+          4.722820595832877,
+          4.485152490465525,
+          5.437882031929948
+        ],
+        "reason": "Target is outside the two-degree forecasting horizon."
+      },
+      "history": [
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.380687000000009,
+          "candidates": "827",
+          "scheduled": "827"
+        },
+        {
+          "degree": 5,
+          "elapsedMs": 16.657171000000005,
+          "candidates": "1447",
+          "scheduled": "1447"
+        },
+        {
+          "degree": 6,
+          "elapsedMs": 23.209394000000003,
+          "candidates": "2280",
+          "scheduled": "2271"
+        },
+        {
+          "degree": 7,
+          "elapsedMs": 109.61380400000002,
+          "candidates": "3840",
+          "scheduled": "3815"
+        },
+        {
+          "degree": 8,
+          "elapsedMs": 491.634626,
+          "candidates": "6472",
+          "scheduled": "6371"
+        },
+        {
+          "degree": 9,
+          "elapsedMs": 2673.451099,
+          "candidates": "10975",
+          "scheduled": "10732"
+        }
+      ]
+    },
+    {
+      "type": "progress",
+      "engine": "fomkyr",
+      "phase": "done",
+      "target": 9,
+      "currentDegree": 9,
+      "completedThroughDegree": 9,
+      "elapsedMs": 3380.285438,
+      "degreeElapsedMs": 2673.870212,
+      "overlaps": {
+        "total": "10975",
+        "resolved": "10975",
+        "enumerated": "10975",
+        "scheduled": "10732",
+        "committed": "10732",
+        "monomialSkipped": "0",
+        "chainSkipped": "243",
+        "fraction": 1,
+        "kind": "overlap-count-not-time",
+        "replay": 0
+      },
+      "activity": {
+        "activeLanes": 0,
+        "maxActiveRowTerms": "0",
+        "sampledReductions": "9107011",
+        "sampledReductionsPerSecond": 0,
+        "sampleIsApproximate": true
+      },
+      "eta": {
+        "currentDegreeSeconds": null,
+        "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+        "reason": "Current phase is not overlap reduction."
+      },
+      "forecast": {
+        "targetSeconds": null,
+        "recentDegreeGrowth": [
+          4.722820595832877,
+          4.485152490465525,
+          5.437882031929948
+        ],
+        "reason": "Target is outside the two-degree forecasting horizon."
+      },
+      "history": [
+        {
+          "degree": 2,
+          "elapsedMs": 2.627881000000002,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 2.764764999999997,
+          "candidates": "466",
+          "scheduled": "451"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 6.380687000000009,
+          "candidates": "827",
+          "scheduled": "827"
+        },
+        {
+          "degree": 5,
+          "elapsedMs": 16.657171000000005,
+          "candidates": "1447",
+          "scheduled": "1447"
+        },
+        {
+          "degree": 6,
+          "elapsedMs": 23.209394000000003,
+          "candidates": "2280",
+          "scheduled": "2271"
+        },
+        {
+          "degree": 7,
+          "elapsedMs": 109.61380400000002,
+          "candidates": "3840",
+          "scheduled": "3815"
+        },
+        {
+          "degree": 8,
+          "elapsedMs": 491.634626,
+          "candidates": "6472",
+          "scheduled": "6371"
+        },
+        {
+          "degree": 9,
+          "elapsedMs": 2673.451099,
+          "candidates": "10975",
+          "scheduled": "10732"
+        }
+      ]
+    }
+  ]
+}

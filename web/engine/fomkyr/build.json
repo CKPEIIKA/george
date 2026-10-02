@@ -2,7 +2,7 @@
   "backend": "fomkyr",
   "name": "fomkyr",
   "upstreamName": "fomkyr",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "appVersion": "0.6.0",
   "license": "MIT",
   "compiler": {
@@ -22,7 +22,7 @@
     "maximumHeapMiB": 14304
   },
   "provenance": {
-    "archiveSha256": "1f616fa6f448c0c3b6feafc9a52a959474c9b61e26ab43a35aa591c3033061f0",
+    "archiveSha256": "d6feec734d25a1901d2cb3c582caa150d0e91bdfb22b541f1c2da06e9739c20a",
     "kernelChanged": false,
     "hostAdapted": true
   },
@@ -37,15 +37,15 @@
     },
     "build-info.js": {
       "bytes": 387,
-      "sha256": "f95229b5db7a03addf4a916da1d79be9de8e9d240478b3db377f5848d2332cc9"
+      "sha256": "038c67f65834be55c8be5f87297f064913b4ce12e07512dd49b816065ffa1f20"
     },
     "capabilities.js": {
       "bytes": 1334,
       "sha256": "526e19b4f53f89c32135917d036d3f7ed7740197300bae9345cd5669fe0c9ccc"
     },
     "controls.js": {
-      "bytes": 9363,
-      "sha256": "c037519fc40e8451d738cabe3ae3938554d7245ab1dc3fd7baf09a91726d4410"
+      "bytes": 10544,
+      "sha256": "27a37a1fd5896c9f52541712a241f7d5b016d6270ad5461fe25cb20351e48b60"
     },
     "demo-worker.js": {
       "bytes": 613,
@@ -56,36 +56,36 @@
       "sha256": "4805cdd611774acdff74583661be3723774eaeca60b926bccdbfcb8c012ba3aa"
     },
     "engine.js": {
-      "bytes": 25435,
-      "sha256": "76ad0571691530ba69b80c444d8c790364fc7de072e2c89d9e03e2e5d7f8c383"
+      "bytes": 27911,
+      "sha256": "8244ee7500ef74bb66e3b357cafb97f09bff862b11ffe5d14b0848309dc1d4fb"
     },
     "fomkyr-isolation-worker.js": {
       "bytes": 1158,
       "sha256": "41bf71ff70c5e98858ace8dc2a9168911bf38f591307e2254f7314eb30ac49dc"
     },
     "fomkyr32-single.wasm": {
-      "bytes": 50266,
-      "sha256": "710954296779a344fe070dfc7b4ce20e7a468fed1672f115c4129a7aa30b31bf"
+      "bytes": 61155,
+      "sha256": "4100c0f57c49598c1fa327ef7819197f1ab53710d105f10057745db85210154a"
     },
     "fomkyr32.wasm": {
-      "bytes": 50354,
-      "sha256": "3829a34fc814de14c8efe90a02ec071836e0f08e380ee9848b152f55650df737"
+      "bytes": 61308,
+      "sha256": "0f559a417dcdea967bb93443a18e4a88be138ce108183fd80bc27e3a702a92d2"
     },
     "fomkyr64-single.wasm": {
-      "bytes": 51993,
-      "sha256": "f83ee25c3ae11b10bf8b0506d65b95c50f323bc65a8835d73a66bbed070fc401"
+      "bytes": 64133,
+      "sha256": "ee25551bc114b751a11af325176d8ab119abf64c89d7c4785393c810c56928a3"
     },
     "fomkyr64.wasm": {
-      "bytes": 52076,
-      "sha256": "4f4f95a7aec0e28b43ed4bdf0e976ba9e3f1bf405184d1ce509980f20bba496f"
+      "bytes": 64267,
+      "sha256": "0ea15fc3684b9b2cf1b9be32f03d83f5e82cc4eae3bbe266a01bd348e438cc98"
     },
     "form-options.js": {
       "bytes": 1409,
       "sha256": "c0aaa8109ceb5a767474ae0e82412875342d8d6a2c18c1d5405042be06ebf55c"
     },
     "george-entry.js": {
-      "bytes": 3634,
-      "sha256": "51501c0b118739d9bd1ba5245fc51f3746726d819522ef11328c1822401e0929"
+      "bytes": 3672,
+      "sha256": "889ebc5bdbc6ca1549b1453a964a2ff90a970b246d28b40d52f04db2645b3dd9"
     },
     "george-worker.js": {
       "bytes": 344,
@@ -119,17 +119,25 @@
       "bytes": 1354,
       "sha256": "c620c5bf208ed576cd2731bc6e51f01ff81727d4f9b8ea2ccdc957ef0b98cfcd"
     },
+    "progress-view.js": {
+      "bytes": 2188,
+      "sha256": "f847737c6b9647911517db8248ca791e6f8deebee5b8765b86133807fdf7481e"
+    },
+    "progress.js": {
+      "bytes": 6632,
+      "sha256": "96b6b379166fc21d64ff824467fd9acdd10c447eaf50811685c27c6bf1efba5e"
+    },
     "result-links.js": {
       "bytes": 3096,
       "sha256": "0bcdc961b8eab820736846ed99bb722573e41f58514af9d278e18efda38a2ec8"
     },
     "runtime.js": {
-      "bytes": 5519,
-      "sha256": "b036175eabb368f25647fdb706c02ae564cbfa44339161ad98f4b7db08248a0e"
+      "bytes": 6766,
+      "sha256": "c66f6076a4d82bc793d8621085379b79d902fc5cd6c22338c830562ab220ea7e"
     },
     "storage.js": {
       "bytes": 4794,
-      "sha256": "d769a36f2f86873368aafe4f56c0e883cf6a7a2ed803b5e445ecf9a6ac6285e3"
+      "sha256": "0c4c7f8c2338768c6d836cb80fd681731cab255119446c9fd5ebe415410d659f"
     }
   }
 }

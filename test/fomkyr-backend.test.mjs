@@ -16,7 +16,7 @@ const form = {task:'gb', backend:'fomkyr', ring:'noncomm', order:'degleftlex', f
 test('fomkyr ships all shared/unshared variants with exact asset hashes', () => {
   assert.match(getBackend('fomkyr').worker, /fomkyr\/george-worker\.js$/);
   const manifest = JSON.parse(fs.readFileSync('web/engine/fomkyr/build.json'));
-  assert.equal(manifest.version,'0.3.0'); assert.equal(manifest.provenance.kernelChanged,false);
+  assert.equal(manifest.version,'0.4.0'); assert.equal(manifest.provenance.kernelChanged,false);
   for (const [name, record] of Object.entries(manifest.files)) {
     const bytes = fs.readFileSync('web/engine/fomkyr/' + name);
     assert.equal(bytes.length,record.bytes); assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'),record.sha256,name);
@@ -24,7 +24,7 @@ test('fomkyr ships all shared/unshared variants with exact asset hashes', () => 
   for (const bits of [32,64]) for (const suffix of ['', '-single']) {
     const name = `fomkyr${bits}${suffix}.wasm`;
     assert.ok(manifest.files[name]);
-    assert.deepEqual(fs.readFileSync('web/engine/fomkyr/'+name),fs.readFileSync('vendor/fomkyr-0.3.0/dist/'+name));
+    assert.deepEqual(fs.readFileSync('web/engine/fomkyr/'+name),fs.readFileSync('vendor/fomkyr-0.4.0/dist/'+name));
   }
 });
 test('George form controls are authoritative for fomkyr workers, pruning and Hilbert degree', () => {
@@ -46,6 +46,8 @@ test('new fomkyr jobs default to pruning, disk, resume and heap with optional co
   const options=job.fomkyrOptions;
   assert.equal(options.monomialPruning,true);assert.equal(options.spill,true);assert.equal(options.resume,'auto');
   assert.equal(options.heapReduction,true);assert.equal(options.hilbert,false);assert.equal(options.cachePercent,12);
+  for(const key of ['wordMatcher','chainCriterion','eagerPruning','quadraticRewrite','costScheduling','progress'])assert.equal(options[key],true);
+  assert.equal(options.wordCacheEntries,256);assert.equal(options.progressIntervalMs,1000);assert.equal(options.matcherBudgetBytes,undefined);
   assert.equal(options.workers,undefined);assert.equal(options.batchPairs,undefined);assert.equal(options.scratchBytes,undefined);
   assert.equal(job.outputs.hs,undefined);
   assert.equal(buildJob({...form,monomialPruning:false,fomkyrOptions:{hilbert:true}}).fomkyrOptions.monomialPruning,false);
@@ -54,7 +56,9 @@ test('unsupported fomkyr jobs and invalid runtime options are rejected before ex
   for (const change of [{task:'anick'}, {ring:'comm',order:'deglex'}, {order:'lex'}, {legacy:true},
     {weights:'1 2'}, {weights:'1'}, {rels:['a^2-a']}, {rels:['1']}, {nativeWorkers:33},
     {rels:['4611686018427387904*a']}, {maxdeg:'4294967295'}, {fomkyrOptions:{bits:64}},
-    {fomkyrOptions:{batchPairs:513}}, {fomkyrOptions:{scratchMiB:512},memoryMiB:128}]) {
+    {fomkyrOptions:{batchPairs:513}}, {fomkyrOptions:{scratchMiB:512},memoryMiB:128},
+    {fomkyrOptions:{wordCacheEntries:257}},{fomkyrOptions:{matcherMiB:128},memoryMiB:128},
+    {fomkyrOptions:{progressIntervalSeconds:0}},{fomkyrOptions:{wordMatcher:1}}]) {
     assert.ok(validateSettings({...form,...change}).length,JSON.stringify(change));
     assert.throws(()=>buildJob({...form,...change}));
   }
@@ -63,7 +67,9 @@ test('unsupported fomkyr jobs and invalid runtime options are rejected before ex
 });
 test('fomkyr runtime settings round-trip in Share without changing old tokens', async () => {
   const fomkyrOptions = {...FOMKYR_DEFAULTS,execution:'single',bits:'64',resume:false,hilbert:false,
-    heapReduction:false,batchPairs:0,cachePercent:0,scratchMiB:16,ioMode:'broker'};
+    heapReduction:false,batchPairs:0,cachePercent:0,scratchMiB:16,ioMode:'broker',
+    wordMatcher:false,chainCriterion:false,eagerPruning:false,quadraticRewrite:false,costScheduling:false,
+    wordCacheEntries:4096,matcherMiB:1,progress:false,progressIntervalSeconds:0.5};
   const link = await createShareLink({...form,memoryMiB:512,fomkyrOptions},'https://example.org/george/');
   const decoded = await readShareLink(new URL(link).hash);
   assert.equal(decoded.backend,'fomkyr');assert.deepEqual(decoded.fomkyrOptions,fomkyrOptions);
@@ -83,6 +89,13 @@ test('unfinished local fomkyr drafts remain editable without accepting invalid s
   assert.equal(readFomkyrOptions(root).bits,'64');
   assert.equal(buildJob({...form,memoryMiB:128,fomkyrOptions:{execution:'single',scratchMiB:1}}).fomkyrOptions.scratchBytes,1048576);
   assert.throws(()=>buildJob({...form,memoryMiB:128,fomkyrOptions:{scratchMiB:1}}));
+});
+test('optimizer budgets and update seconds reach the engine without changing old form choices',()=>{
+  const options=buildJob({...form,memoryMiB:128,fomkyrOptions:{wordMatcher:false,chainCriterion:false,matcherMiB:0,wordCacheEntries:4096,progressIntervalSeconds:0.25}}).fomkyrOptions;
+  assert.equal(options.matcherBudgetBytes,0);assert.equal(options.wordMatcher,false);assert.equal(options.chainCriterion,false);
+  assert.equal(options.wordCacheEntries,4096);assert.equal(options.progressIntervalMs,250);
+  assert.equal(options.progressIntervalSeconds,undefined);assert.equal(options.matcherMiB,undefined);
+  assert.equal(validateFomkyrOptions({heapReduction:false}).wordMatcher,true);
 });
 test('George 0.6 release keeps its experimental label only in the engine chooser', () => {
   const html = fs.readFileSync('web/index.html','utf8');

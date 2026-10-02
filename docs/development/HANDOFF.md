@@ -1,5 +1,42 @@
 # George development handoff
 
+## fomkyr 0.4.0 upgrade and settings layout — 2026-10-02
+
+The production backend is now fomkyr 0.4.0, with all 293 imported manifest
+entries verified and all four prebuilt Wasm modules unchanged. Original
+sources/tests/docs and MIT notice are in `vendor/fomkyr-0.4.0/`.
+Older versions and their measured reports remain intact. George stays 0.6.0;
+experimental appears only in the fomkyr chooser. The global backend default
+stays Bergman memory64/16077 MiB.
+
+The user requested mathematical settings under More settings and runtime
+settings inside a separate collapsed Engine submenu. The optional fomkyr Hilbert
+checkbox is outside Engine. `fomkyr-options.js` exposes the new default-on
+matcher, chain criterion, eager pruning, quadratic rewrite and cost scheduling,
+plus cache/index budgets and live-progress interval in seconds. Existing
+explicit saved/Share choices are preserved. The new word cache default is
+256; matcher budget is automatic; progress interval is one second.
+
+New upstream activity events are mapped to George's compact degree tooltip,
+without an ETA. The host sets its completed-degree tracker before checkpoint
+phase publication. Existing cancellation, OPFS downloads, public elapsed
+seconds and legacy migration remain adapted. ABI-3 checkpoint compatibility
+is demonstrated in actual browsers from 0.3 wasm32 to 0.4 memory64 over Q/F101.
+
+All 119 unit tests, 15 imported suites, 79 algebra cases / 316 Wasm runs /
+79 Singular checks / 96,172 certified ambiguities, eight UI scenarios,
+both Pages-style browser matrices and four old-checkpoint checks pass.
+The native physics test's missing modulus argument is corrected only in
+staging and documented. No core patch or fresh Wasm compilation is claimed.
+See [VALIDATION.md](VALIDATION.md#fomkyr-040-upgrade--2026-10-02)
+and [BACKENDS.md](BACKENDS.md#fomkyr-040--2026-10-02).
+
+The new checkpoint check runs with `npm run test:fomkyr:upgrade`. Other
+build/validation/publication commands remain as below. A matched cold-browser
+comparison against 0.3 is recorded in [PERFORMANCE.md](PERFORMANCE.md);
+all jobs remain bounded by 120 seconds. The old degree-2–8 plot is retained
+with its original 0.3 label and runtime hashes.
+
 ## Degree progress and defaults follow-up — 2026-10-02
 
 `web/src/degree-progress.js` interprets engine events without using a timer or

@@ -1,0 +1,3192 @@
+{
+  "state": "complete",
+  "startedAt": "2026-10-02T17:20:27.234Z",
+  "checks": [
+    {
+      "browser": "chromium",
+      "version": "153.0.8010.52",
+      "mount": "/",
+      "isolated": true,
+      "first": {
+        "basisSize": 3,
+        "terms": 4,
+        "completedThroughDegree": 4,
+        "currentDegree": 0,
+        "allocatedBytes": 186227592,
+        "budgetBytes": 536870912,
+        "diskBytes": 192,
+        "pairs": 2,
+        "monomialPairsPruned": 2,
+        "zeroCommits": 2,
+        "workers": 4,
+        "prefixNodes": 3,
+        "peakAllocatedBytes": 186227920,
+        "monomialPruning": true,
+        "heapReduction": true,
+        "reductions": 4,
+        "monomialTermsPruned": 2,
+        "diskReads": 4,
+        "diskReadBytes": 272,
+        "reducerCacheHits": 2,
+        "costScheduling": true,
+        "wordCacheEntries": 256,
+        "wordCacheBytes": 0,
+        "chainPairsPruned": 0,
+        "matcherNodes": 6,
+        "matcherAllocatedBytes": 10240,
+        "matcherBuilds": 1,
+        "matcherFallbacks": 0,
+        "hashProbes": 9,
+        "matcherQueries": 4,
+        "matcherCharacters": 10,
+        "wordCacheHits": 0,
+        "heapAttempts": 0,
+        "heapSuccesses": 0,
+        "heapFallbacks": 0,
+        "insertionPrunes": 0,
+        "commutingPrunes": 0,
+        "quadraticSwaps": 0,
+        "engine": "fomkyr",
+        "version": "0.4.0",
+        "storage": "opfs",
+        "complete": true,
+        "unrestrictedBasisComplete": true,
+        "reduced": false,
+        "target": 4,
+        "modulus": 0,
+        "order": "degleftlex",
+        "runKey": "alg-b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c",
+        "identity": "b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c",
+        "bits": 32,
+        "shared": true,
+        "ioMode": "direct-unsafe",
+        "executionMode": "wasm32-shared",
+        "fallbacks": [],
+        "requestedBudgetBytes": 536870912,
+        "hostMailboxBytes": 0,
+        "linearMemoryBytes": 186253312,
+        "resumedFromDegree": 0,
+        "cacheHit": false,
+        "hilbert": {
+          "grading": "total-word-degree; all generators degree 1",
+          "field": "Q",
+          "coefficients": [
+            "1",
+            "2",
+            "1",
+            "0",
+            "0"
+          ],
+          "certifiedThroughDegree": 4,
+          "finiteDimensionalProved": true,
+          "dimension": "4",
+          "rationalFunction": null,
+          "extrapolated": false,
+          "automatonStates": 6,
+          "temporaryBytes": 348,
+          "algorithm": "leading-word avoidance automaton + exact dynamically sized limb arithmetic",
+          "validity": "Exact coefficient prefix from the certified leading-word basis; not a guessed rational series or a gauge/trace projection.",
+          "basisCompletionProved": true,
+          "certification": "complete-basis"
+        },
+        "scheduler": {
+          "epochs": 1,
+          "dispatchedPairs": 2,
+          "rpcMessages": 7,
+          "reduceMs": 6.504999995231628,
+          "commitMs": 0.16499999165534973,
+          "fallbacks": 0
+        },
+        "lanePairs": [
+          1,
+          1,
+          0,
+          0
+        ],
+        "previewTruncated": false,
+        "textBytes": 103,
+        "fullBasisPath": "fomkyr/alg-b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c/result.gb",
+        "degreeTimings": [
+          {
+            "degree": 1,
+            "elapsedMs": 37.07499998807907,
+            "candidates": "0",
+            "scheduled": "0"
+          },
+          {
+            "degree": 2,
+            "elapsedMs": 26.36499997973442,
+            "candidates": "0",
+            "scheduled": "0"
+          },
+          {
+            "degree": 3,
+            "elapsedMs": 15.2950000166893,
+            "candidates": "4",
+            "scheduled": "2"
+          },
+          {
+            "degree": 4,
+            "elapsedMs": 10.75,
+            "candidates": "0",
+            "scheduled": "0"
+          }
+        ],
+        "progressError": null,
+        "progress": {
+          "engine": "fomkyr",
+          "phase": "done",
+          "target": 4,
+          "currentDegree": 4,
+          "completedThroughDegree": 4,
+          "elapsedMs": 426.4350000023842,
+          "degreeElapsedMs": 61.689999997615814,
+          "overlaps": {
+            "total": "0",
+            "resolved": "0",
+            "enumerated": "0",
+            "scheduled": "0",
+            "committed": "0",
+            "monomialSkipped": "0",
+            "chainSkipped": "0",
+            "fraction": null,
+            "kind": "overlap-count-not-time",
+            "replay": 0
+          },
+          "activity": {
+            "activeLanes": 0,
+            "maxActiveRowTerms": "0",
+            "sampledReductions": "4",
+            "sampledReductionsPerSecond": 0,
+            "sampleIsApproximate": true
+          },
+          "eta": {
+            "currentDegreeSeconds": null,
+            "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+            "reason": "Current phase is not overlap reduction."
+          },
+          "forecast": {
+            "targetSeconds": null,
+            "reason": "Insufficient nontrivial degree timings."
+          },
+          "history": [
+            {
+              "degree": 1,
+              "elapsedMs": 37.07499998807907,
+              "candidates": "0",
+              "scheduled": "0"
+            },
+            {
+              "degree": 2,
+              "elapsedMs": 26.36499997973442,
+              "candidates": "0",
+              "scheduled": "0"
+            },
+            {
+              "degree": 3,
+              "elapsedMs": 15.2950000166893,
+              "candidates": "4",
+              "scheduled": "2"
+            },
+            {
+              "degree": 4,
+              "elapsedMs": 10.75,
+              "candidates": "0",
+              "scheduled": "0"
+            }
+          ]
+        },
+        "elapsedSeconds": 0.3808100000023842
+      },
+      "second": {
+        "basisSize": 3,
+        "terms": 4,
+        "completedThroughDegree": 5,
+        "currentDegree": 0,
+        "allocatedBytes": 186227592,
+        "budgetBytes": 536870912,
+        "diskBytes": 192,
+        "pairs": 0,
+        "monomialPairsPruned": 0,
+        "zeroCommits": 0,
+        "workers": 4,
+        "prefixNodes": 3,
+        "peakAllocatedBytes": 186227920,
+        "monomialPruning": true,
+        "heapReduction": true,
+        "reductions": 0,
+        "monomialTermsPruned": 0,
+        "diskReads": 0,
+        "diskReadBytes": 0,
+        "reducerCacheHits": 0,
+        "costScheduling": true,
+        "wordCacheEntries": 256,
+        "wordCacheBytes": 0,
+        "chainPairsPruned": 0,
+        "matcherNodes": 6,
+        "matcherAllocatedBytes": 10240,
+        "matcherBuilds": 1,
+        "matcherFallbacks": 0,
+        "hashProbes": 0,
+        "matcherQueries": 0,
+        "matcherCharacters": 0,
+        "wordCacheHits": 0,
+        "heapAttempts": 0,
+        "heapSuccesses": 0,
+        "heapFallbacks": 0,
+        "insertionPrunes": 0,
+        "commutingPrunes": 0,
+        "quadraticSwaps": 0,
+        "engine": "fomkyr",
+        "version": "0.4.0",
+        "storage": "opfs",
+        "complete": true,
+        "unrestrictedBasisComplete": true,
+        "reduced": false,
+        "target": 5,
+        "modulus": 0,
+        "order": "degleftlex",
+        "runKey": "alg-b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c",
+        "identity": "b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c",
+        "bits": 64,
+        "shared": true,
+        "ioMode": "broker-exclusive",
+        "executionMode": "wasm64-shared",
+        "fallbacks": [],
+        "requestedBudgetBytes": 536870912,
+        "hostMailboxBytes": 262400,
+        "linearMemoryBytes": 186253312,
+        "resumedFromDegree": 4,
+        "cacheHit": false,
+        "hilbert": {
+          "grading": "total-word-degree; all generators degree 1",
+          "field": "Q",
+          "coefficients": [
+            "1",
+            "2",
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          "certifiedThroughDegree": 5,
+          "finiteDimensionalProved": true,
+          "dimension": "4",
+          "rationalFunction": null,
+          "extrapolated": false,
+          "automatonStates": 6,
+          "temporaryBytes": 348,
+          "algorithm": "leading-word avoidance automaton + exact dynamically sized limb arithmetic",
+          "validity": "Exact coefficient prefix from the certified leading-word basis; not a guessed rational series or a gauge/trace projection.",
+          "basisCompletionProved": true,
+          "certification": "complete-basis"
+        },
+        "scheduler": {
+          "epochs": 0,
+          "dispatchedPairs": 0,
+          "rpcMessages": 7,
+          "reduceMs": 0,
+          "commitMs": 0,
+          "fallbacks": 0
+        },
+        "lanePairs": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "previewTruncated": false,
+        "textBytes": 103,
+        "fullBasisPath": "fomkyr/alg-b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c/result.gb",
+        "degreeTimings": [
+          {
+            "degree": 5,
+            "elapsedMs": 19.74499997496605,
+            "candidates": "0",
+            "scheduled": "0"
+          }
+        ],
+        "progressError": null,
+        "progress": {
+          "engine": "fomkyr",
+          "phase": "done",
+          "target": 5,
+          "currentDegree": 5,
+          "completedThroughDegree": 5,
+          "elapsedMs": 329.02000001072884,
+          "degreeElapsedMs": 55.25,
+          "overlaps": {
+            "total": "0",
+            "resolved": "0",
+            "enumerated": "0",
+            "scheduled": "0",
+            "committed": "0",
+            "monomialSkipped": "0",
+            "chainSkipped": "0",
+            "fraction": null,
+            "kind": "overlap-count-not-time",
+            "replay": 0
+          },
+          "activity": {
+            "activeLanes": 0,
+            "maxActiveRowTerms": "0",
+            "sampledReductions": "0",
+            "sampledReductionsPerSecond": 0,
+            "sampleIsApproximate": true
+          },
+          "eta": {
+            "currentDegreeSeconds": null,
+            "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+            "reason": "Current phase is not overlap reduction."
+          },
+          "forecast": {
+            "targetSeconds": null,
+            "reason": "Insufficient nontrivial degree timings."
+          },
+          "history": [
+            {
+              "degree": 5,
+              "elapsedMs": 19.74499997496605,
+              "candidates": "0",
+              "scheduled": "0"
+            }
+          ]
+        },
+        "elapsedSeconds": 0.29825
+      },
+      "unlimited": {
+        "completedThroughDegree": 3,
+        "proved": true
+      },
+      "longWord": true,
+      "share": true,
+      "legacyMigration": true,
+      "cancellationAndRestart": true,
+      "metrics": true,
+      "stableReleaseBrand": true,
+      "unfinishedDraftRestore": true,
+      "noStaleHilbertSeries": true,
+      "fastDefaults": true,
+      "explicitPhases": true,
+      "engineSubmenu": true,
+      "mobileHelp": true,
+      "externalRequests": 0
+    },
+    {
+      "browser": "chromium",
+      "version": "153.0.8010.52",
+      "mount": "/",
+      "isolated": false,
+      "first": {
+        "basisSize": 3,
+        "terms": 4,
+        "completedThroughDegree": 4,
+        "currentDegree": 0,
+        "allocatedBytes": 186227576,
+        "budgetBytes": 536870912,
+        "diskBytes": 192,
+        "pairs": 2,
+        "monomialPairsPruned": 2,
+        "zeroCommits": 2,
+        "workers": 1,
+        "prefixNodes": 3,
+        "peakAllocatedBytes": 186227904,
+        "monomialPruning": true,
+        "heapReduction": true,
+        "reductions": 4,
+        "monomialTermsPruned": 2,
+        "diskReads": 3,
+        "diskReadBytes": 192,
+        "reducerCacheHits": 3,
+        "costScheduling": true,
+        "wordCacheEntries": 256,
+        "wordCacheBytes": 0,
+        "chainPairsPruned": 0,
+        "matcherNodes": 6,
+        "matcherAllocatedBytes": 10240,
+        "matcherBuilds": 1,
+        "matcherFallbacks": 0,
+        "hashProbes": 9,
+        "matcherQueries": 4,
+        "matcherCharacters": 10,
+        "wordCacheHits": 0,
+        "heapAttempts": 0,
+        "heapSuccesses": 0,
+        "heapFallbacks": 0,
+        "insertionPrunes": 0,
+        "commutingPrunes": 0,
+        "quadraticSwaps": 0,
+        "engine": "fomkyr",
+        "version": "0.4.0",
+        "storage": "opfs",
+        "complete": true,
+        "unrestrictedBasisComplete": true,
+        "reduced": false,
+        "target": 4,
+        "modulus": 0,
+        "order": "degleftlex",
+        "runKey": "alg-b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c",
+        "identity": "b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c",
+        "bits": 32,
+        "shared": false,
+        "ioMode": "exclusive",
+        "executionMode": "wasm32-single",
+        "fallbacks": [
+          "Shared memory is unavailable: using the non-shared single-worker WASM build."
+        ],
+        "requestedBudgetBytes": 536870912,
+        "hostMailboxBytes": 0,
+        "linearMemoryBytes": 186253312,
+        "resumedFromDegree": 0,
+        "cacheHit": false,
+        "hilbert": {
+          "grading": "total-word-degree; all generators degree 1",
+          "field": "Q",
+          "coefficients": [
+            "1",
+            "2",
+            "1",
+            "0",
+            "0"
+          ],
+          "certifiedThroughDegree": 4,
+          "finiteDimensionalProved": true,
+          "dimension": "4",
+          "rationalFunction": null,
+          "extrapolated": false,
+          "automatonStates": 6,
+          "temporaryBytes": 348,
+          "algorithm": "leading-word avoidance automaton + exact dynamically sized limb arithmetic",
+          "validity": "Exact coefficient prefix from the certified leading-word basis; not a guessed rational series or a gauge/trace projection.",
+          "basisCompletionProved": true,
+          "certification": "complete-basis"
+        },
+        "scheduler": {
+          "epochs": 1,
+          "dispatchedPairs": 2,
+          "rpcMessages": 0,
+          "reduceMs": 19.599999994039536,
+          "commitMs": 0.19999998807907104,
+          "fallbacks": 0
+        },
+        "lanePairs": [
+          2
+        ],
+        "previewTruncated": false,
+        "textBytes": 103,
+        "fullBasisPath": "fomkyr/alg-b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c/result.gb",
+        "degreeTimings": [
+          {
+            "degree": 1,
+            "elapsedMs": 42.19999998807907,
+            "candidates": "0",
+            "scheduled": "0"
+          },
+          {
+            "degree": 2,
+            "elapsedMs": 32.900000005960464,
+            "candidates": "0",
+            "scheduled": "0"
+          },
+          {
+            "degree": 3,
+            "elapsedMs": 30.099999994039536,
+            "candidates": "4",
+            "scheduled": "2"
+          },
+          {
+            "degree": 4,
+            "elapsedMs": 10.199999988079071,
+            "candidates": "0",
+            "scheduled": "0"
+          }
+        ],
+        "progressError": null,
+        "progress": {
+          "engine": "fomkyr",
+          "phase": "done",
+          "target": 4,
+          "currentDegree": 4,
+          "completedThroughDegree": 4,
+          "elapsedMs": 254.59999999403954,
+          "degreeElapsedMs": 58.5,
+          "overlaps": {
+            "total": "0",
+            "resolved": "0",
+            "enumerated": "0",
+            "scheduled": "0",
+            "committed": "0",
+            "monomialSkipped": "0",
+            "chainSkipped": "0",
+            "fraction": null,
+            "kind": "overlap-count-not-time",
+            "replay": 0
+          },
+          "activity": {
+            "activeLanes": 0,
+            "maxActiveRowTerms": "0",
+            "sampledReductions": "4",
+            "sampledReductionsPerSecond": 0,
+            "sampleIsApproximate": true
+          },
+          "eta": {
+            "currentDegreeSeconds": null,
+            "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+            "reason": "Current phase is not overlap reduction."
+          },
+          "forecast": {
+            "targetSeconds": null,
+            "reason": "Insufficient nontrivial degree timings."
+          },
+          "history": [
+            {
+              "degree": 1,
+              "elapsedMs": 42.19999998807907,
+              "candidates": "0",
+              "scheduled": "0"
+            },
+            {
+              "degree": 2,
+              "elapsedMs": 32.900000005960464,
+              "candidates": "0",
+              "scheduled": "0"
+            },
+            {
+              "degree": 3,
+              "elapsedMs": 30.099999994039536,
+              "candidates": "4",
+              "scheduled": "2"
+            },
+            {
+              "degree": 4,
+              "elapsedMs": 10.199999988079071,
+              "candidates": "0",
+              "scheduled": "0"
+            }
+          ]
+        },
+        "elapsedSeconds": 0.2102999999821186
+      },
+      "second": {
+        "basisSize": 3,
+        "terms": 4,
+        "completedThroughDegree": 5,
+        "currentDegree": 0,
+        "allocatedBytes": 186227576,
+        "budgetBytes": 536870912,
+        "diskBytes": 192,
+        "pairs": 0,
+        "monomialPairsPruned": 0,
+        "zeroCommits": 0,
+        "workers": 1,
+        "prefixNodes": 3,
+        "peakAllocatedBytes": 186227904,
+        "monomialPruning": true,
+        "heapReduction": true,
+        "reductions": 0,
+        "monomialTermsPruned": 0,
+        "diskReads": 0,
+        "diskReadBytes": 0,
+        "reducerCacheHits": 0,
+        "costScheduling": true,
+        "wordCacheEntries": 256,
+        "wordCacheBytes": 0,
+        "chainPairsPruned": 0,
+        "matcherNodes": 6,
+        "matcherAllocatedBytes": 10240,
+        "matcherBuilds": 1,
+        "matcherFallbacks": 0,
+        "hashProbes": 0,
+        "matcherQueries": 0,
+        "matcherCharacters": 0,
+        "wordCacheHits": 0,
+        "heapAttempts": 0,
+        "heapSuccesses": 0,
+        "heapFallbacks": 0,
+        "insertionPrunes": 0,
+        "commutingPrunes": 0,
+        "quadraticSwaps": 0,
+        "engine": "fomkyr",
+        "version": "0.4.0",
+        "storage": "opfs",
+        "complete": true,
+        "unrestrictedBasisComplete": true,
+        "reduced": false,
+        "target": 5,
+        "modulus": 0,
+        "order": "degleftlex",
+        "runKey": "alg-b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c",
+        "identity": "b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c",
+        "bits": 64,
+        "shared": false,
+        "ioMode": "exclusive",
+        "executionMode": "wasm64-single",
+        "fallbacks": [
+          "Shared memory is unavailable: using the non-shared single-worker WASM build."
+        ],
+        "requestedBudgetBytes": 536870912,
+        "hostMailboxBytes": 0,
+        "linearMemoryBytes": 186253312,
+        "resumedFromDegree": 4,
+        "cacheHit": false,
+        "hilbert": {
+          "grading": "total-word-degree; all generators degree 1",
+          "field": "Q",
+          "coefficients": [
+            "1",
+            "2",
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          "certifiedThroughDegree": 5,
+          "finiteDimensionalProved": true,
+          "dimension": "4",
+          "rationalFunction": null,
+          "extrapolated": false,
+          "automatonStates": 6,
+          "temporaryBytes": 348,
+          "algorithm": "leading-word avoidance automaton + exact dynamically sized limb arithmetic",
+          "validity": "Exact coefficient prefix from the certified leading-word basis; not a guessed rational series or a gauge/trace projection.",
+          "basisCompletionProved": true,
+          "certification": "complete-basis"
+        },
+        "scheduler": {
+          "epochs": 0,
+          "dispatchedPairs": 0,
+          "rpcMessages": 0,
+          "reduceMs": 0,
+          "commitMs": 0,
+          "fallbacks": 0
+        },
+        "lanePairs": [
+          0
+        ],
+        "previewTruncated": false,
+        "textBytes": 103,
+        "fullBasisPath": "fomkyr/alg-b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c/result.gb",
+        "degreeTimings": [
+          {
+            "degree": 5,
+            "elapsedMs": 19.599999994039536,
+            "candidates": "0",
+            "scheduled": "0"
+          }
+        ],
+        "progressError": null,
+        "progress": {
+          "engine": "fomkyr",
+          "phase": "done",
+          "target": 5,
+          "currentDegree": 5,
+          "completedThroughDegree": 5,
+          "elapsedMs": 148.5,
+          "degreeElapsedMs": 56.099999994039536,
+          "overlaps": {
+            "total": "0",
+            "resolved": "0",
+            "enumerated": "0",
+            "scheduled": "0",
+            "committed": "0",
+            "monomialSkipped": "0",
+            "chainSkipped": "0",
+            "fraction": null,
+            "kind": "overlap-count-not-time",
+            "replay": 0
+          },
+          "activity": {
+            "activeLanes": 0,
+            "maxActiveRowTerms": "0",
+            "sampledReductions": "0",
+            "sampledReductionsPerSecond": 0,
+            "sampleIsApproximate": true
+          },
+          "eta": {
+            "currentDegreeSeconds": null,
+            "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+            "reason": "Current phase is not overlap reduction."
+          },
+          "forecast": {
+            "targetSeconds": null,
+            "reason": "Insufficient nontrivial degree timings."
+          },
+          "history": [
+            {
+              "degree": 5,
+              "elapsedMs": 19.599999994039536,
+              "candidates": "0",
+              "scheduled": "0"
+            }
+          ]
+        },
+        "elapsedSeconds": 0.11709999999403954
+      },
+      "unlimited": {
+        "completedThroughDegree": 3,
+        "proved": true
+      },
+      "longWord": true,
+      "share": true,
+      "legacyMigration": true,
+      "cancellationAndRestart": true,
+      "metrics": true,
+      "stableReleaseBrand": true,
+      "unfinishedDraftRestore": true,
+      "noStaleHilbertSeries": true,
+      "fastDefaults": true,
+      "explicitPhases": true,
+      "engineSubmenu": true,
+      "mobileHelp": false,
+      "externalRequests": 0
+    },
+    {
+      "browser": "chromium",
+      "version": "153.0.8010.52",
+      "mount": "/george/",
+      "isolated": true,
+      "first": {
+        "basisSize": 3,
+        "terms": 4,
+        "completedThroughDegree": 4,
+        "currentDegree": 0,
+        "allocatedBytes": 186227592,
+        "budgetBytes": 536870912,
+        "diskBytes": 192,
+        "pairs": 2,
+        "monomialPairsPruned": 2,
+        "zeroCommits": 2,
+        "workers": 4,
+        "prefixNodes": 3,
+        "peakAllocatedBytes": 186227920,
+        "monomialPruning": true,
+        "heapReduction": true,
+        "reductions": 4,
+        "monomialTermsPruned": 2,
+        "diskReads": 4,
+        "diskReadBytes": 272,
+        "reducerCacheHits": 2,
+        "costScheduling": true,
+        "wordCacheEntries": 256,
+        "wordCacheBytes": 0,
+        "chainPairsPruned": 0,
+        "matcherNodes": 6,
+        "matcherAllocatedBytes": 10240,
+        "matcherBuilds": 1,
+        "matcherFallbacks": 0,
+        "hashProbes": 9,
+        "matcherQueries": 4,
+        "matcherCharacters": 10,
+        "wordCacheHits": 0,
+        "heapAttempts": 0,
+        "heapSuccesses": 0,
+        "heapFallbacks": 0,
+        "insertionPrunes": 0,
+        "commutingPrunes": 0,
+        "quadraticSwaps": 0,
+        "engine": "fomkyr",
+        "version": "0.4.0",
+        "storage": "opfs",
+        "complete": true,
+        "unrestrictedBasisComplete": true,
+        "reduced": false,
+        "target": 4,
+        "modulus": 0,
+        "order": "degleftlex",
+        "runKey": "alg-b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c",
+        "identity": "b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c",
+        "bits": 32,
+        "shared": true,
+        "ioMode": "direct-unsafe",
+        "executionMode": "wasm32-shared",
+        "fallbacks": [],
+        "requestedBudgetBytes": 536870912,
+        "hostMailboxBytes": 0,
+        "linearMemoryBytes": 186253312,
+        "resumedFromDegree": 0,
+        "cacheHit": false,
+        "hilbert": {
+          "grading": "total-word-degree; all generators degree 1",
+          "field": "Q",
+          "coefficients": [
+            "1",
+            "2",
+            "1",
+            "0",
+            "0"
+          ],
+          "certifiedThroughDegree": 4,
+          "finiteDimensionalProved": true,
+          "dimension": "4",
+          "rationalFunction": null,
+          "extrapolated": false,
+          "automatonStates": 6,
+          "temporaryBytes": 348,
+          "algorithm": "leading-word avoidance automaton + exact dynamically sized limb arithmetic",
+          "validity": "Exact coefficient prefix from the certified leading-word basis; not a guessed rational series or a gauge/trace projection.",
+          "basisCompletionProved": true,
+          "certification": "complete-basis"
+        },
+        "scheduler": {
+          "epochs": 1,
+          "dispatchedPairs": 2,
+          "rpcMessages": 7,
+          "reduceMs": 14.855000019073486,
+          "commitMs": 0.26999998092651367,
+          "fallbacks": 0
+        },
+        "lanePairs": [
+          1,
+          1,
+          0,
+          0
+        ],
+        "previewTruncated": false,
+        "textBytes": 103,
+        "fullBasisPath": "fomkyr/alg-b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c/result.gb",
+        "degreeTimings": [
+          {
+            "degree": 1,
+            "elapsedMs": 47.520000010728836,
+            "candidates": "0",
+            "scheduled": "0"
+          },
+          {
+            "degree": 2,
+            "elapsedMs": 35.13499999046326,
+            "candidates": "0",
+            "scheduled": "0"
+          },
+          {
+            "degree": 3,
+            "elapsedMs": 26.25499999523163,
+            "candidates": "4",
+            "scheduled": "2"
+          },
+          {
+            "degree": 4,
+            "elapsedMs": 19.92500001192093,
+            "candidates": "0",
+            "scheduled": "0"
+          }
+        ],
+        "progressError": null,
+        "progress": {
+          "engine": "fomkyr",
+          "phase": "done",
+          "target": 4,
+          "currentDegree": 4,
+          "completedThroughDegree": 4,
+          "elapsedMs": 553.9099999964237,
+          "degreeElapsedMs": 98.56499999761581,
+          "overlaps": {
+            "total": "0",
+            "resolved": "0",
+            "enumerated": "0",
+            "scheduled": "0",
+            "committed": "0",
+            "monomialSkipped": "0",
+            "chainSkipped": "0",
+            "fraction": null,
+            "kind": "overlap-count-not-time",
+            "replay": 0
+          },
+          "activity": {
+            "activeLanes": 0,
+            "maxActiveRowTerms": "0",
+            "sampledReductions": "4",
+            "sampledReductionsPerSecond": 0,
+            "sampleIsApproximate": true
+          },
+          "eta": {
+            "currentDegreeSeconds": null,
+            "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+            "reason": "Current phase is not overlap reduction."
+          },
+          "forecast": {
+            "targetSeconds": null,
+            "reason": "Insufficient nontrivial degree timings."
+          },
+          "history": [
+            {
+              "degree": 1,
+              "elapsedMs": 47.520000010728836,
+              "candidates": "0",
+              "scheduled": "0"
+            },
+            {
+              "degree": 2,
+              "elapsedMs": 35.13499999046326,
+              "candidates": "0",
+              "scheduled": "0"
+            },
+            {
+              "degree": 3,
+              "elapsedMs": 26.25499999523163,
+              "candidates": "4",
+              "scheduled": "2"
+            },
+            {
+              "degree": 4,
+              "elapsedMs": 19.92500001192093,
+              "candidates": "0",
+              "scheduled": "0"
+            }
+          ]
+        },
+        "elapsedSeconds": 0.48458500000834465
+      },
+      "second": {
+        "basisSize": 3,
+        "terms": 4,
+        "completedThroughDegree": 5,
+        "currentDegree": 0,
+        "allocatedBytes": 186227592,
+        "budgetBytes": 536870912,
+        "diskBytes": 192,
+        "pairs": 0,
+        "monomialPairsPruned": 0,
+        "zeroCommits": 0,
+        "workers": 4,
+        "prefixNodes": 3,
+        "peakAllocatedBytes": 186227920,
+        "monomialPruning": true,
+        "heapReduction": true,
+        "reductions": 0,
+        "monomialTermsPruned": 0,
+        "diskReads": 0,
+        "diskReadBytes": 0,
+        "reducerCacheHits": 0,
+        "costScheduling": true,
+        "wordCacheEntries": 256,
+        "wordCacheBytes": 0,
+        "chainPairsPruned": 0,
+        "matcherNodes": 6,
+        "matcherAllocatedBytes": 10240,
+        "matcherBuilds": 1,
+        "matcherFallbacks": 0,
+        "hashProbes": 0,
+        "matcherQueries": 0,
+        "matcherCharacters": 0,
+        "wordCacheHits": 0,
+        "heapAttempts": 0,
+        "heapSuccesses": 0,
+        "heapFallbacks": 0,
+        "insertionPrunes": 0,
+        "commutingPrunes": 0,
+        "quadraticSwaps": 0,
+        "engine": "fomkyr",
+        "version": "0.4.0",
+        "storage": "opfs",
+        "complete": true,
+        "unrestrictedBasisComplete": true,
+        "reduced": false,
+        "target": 5,
+        "modulus": 0,
+        "order": "degleftlex",
+        "runKey": "alg-b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c",
+        "identity": "b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c",
+        "bits": 64,
+        "shared": true,
+        "ioMode": "broker-exclusive",
+        "executionMode": "wasm64-shared",
+        "fallbacks": [],
+        "requestedBudgetBytes": 536870912,
+        "hostMailboxBytes": 262400,
+        "linearMemoryBytes": 186253312,
+        "resumedFromDegree": 4,
+        "cacheHit": false,
+        "hilbert": {
+          "grading": "total-word-degree; all generators degree 1",
+          "field": "Q",
+          "coefficients": [
+            "1",
+            "2",
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          "certifiedThroughDegree": 5,
+          "finiteDimensionalProved": true,
+          "dimension": "4",
+          "rationalFunction": null,
+          "extrapolated": false,
+          "automatonStates": 6,
+          "temporaryBytes": 348,
+          "algorithm": "leading-word avoidance automaton + exact dynamically sized limb arithmetic",
+          "validity": "Exact coefficient prefix from the certified leading-word basis; not a guessed rational series or a gauge/trace projection.",
+          "basisCompletionProved": true,
+          "certification": "complete-basis"
+        },
+        "scheduler": {
+          "epochs": 0,
+          "dispatchedPairs": 0,
+          "rpcMessages": 7,
+          "reduceMs": 0,
+          "commitMs": 0,
+          "fallbacks": 0
+        },
+        "lanePairs": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "previewTruncated": false,
+        "textBytes": 103,
+        "fullBasisPath": "fomkyr/alg-b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c/result.gb",
+        "degreeTimings": [
+          {
+            "degree": 5,
+            "elapsedMs": 15.690000027418137,
+            "candidates": "0",
+            "scheduled": "0"
+          }
+        ],
+        "progressError": null,
+        "progress": {
+          "engine": "fomkyr",
+          "phase": "done",
+          "target": 5,
+          "currentDegree": 5,
+          "completedThroughDegree": 5,
+          "elapsedMs": 369.05500000715256,
+          "degreeElapsedMs": 67.18000000715256,
+          "overlaps": {
+            "total": "0",
+            "resolved": "0",
+            "enumerated": "0",
+            "scheduled": "0",
+            "committed": "0",
+            "monomialSkipped": "0",
+            "chainSkipped": "0",
+            "fraction": null,
+            "kind": "overlap-count-not-time",
+            "replay": 0
+          },
+          "activity": {
+            "activeLanes": 0,
+            "maxActiveRowTerms": "0",
+            "sampledReductions": "0",
+            "sampledReductionsPerSecond": 0,
+            "sampleIsApproximate": true
+          },
+          "eta": {
+            "currentDegreeSeconds": null,
+            "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+            "reason": "Current phase is not overlap reduction."
+          },
+          "forecast": {
+            "targetSeconds": null,
+            "reason": "Insufficient nontrivial degree timings."
+          },
+          "history": [
+            {
+              "degree": 5,
+              "elapsedMs": 15.690000027418137,
+              "candidates": "0",
+              "scheduled": "0"
+            }
+          ]
+        },
+        "elapsedSeconds": 0.3220500000119209
+      },
+      "unlimited": {
+        "completedThroughDegree": 3,
+        "proved": true
+      },
+      "longWord": true,
+      "share": true,
+      "legacyMigration": true,
+      "cancellationAndRestart": true,
+      "metrics": true,
+      "stableReleaseBrand": true,
+      "unfinishedDraftRestore": true,
+      "noStaleHilbertSeries": true,
+      "fastDefaults": true,
+      "explicitPhases": true,
+      "engineSubmenu": true,
+      "mobileHelp": false,
+      "externalRequests": 0
+    },
+    {
+      "browser": "chromium",
+      "version": "153.0.8010.52",
+      "mount": "/george/",
+      "isolated": false,
+      "first": {
+        "basisSize": 3,
+        "terms": 4,
+        "completedThroughDegree": 4,
+        "currentDegree": 0,
+        "allocatedBytes": 186227576,
+        "budgetBytes": 536870912,
+        "diskBytes": 192,
+        "pairs": 2,
+        "monomialPairsPruned": 2,
+        "zeroCommits": 2,
+        "workers": 1,
+        "prefixNodes": 3,
+        "peakAllocatedBytes": 186227904,
+        "monomialPruning": true,
+        "heapReduction": true,
+        "reductions": 4,
+        "monomialTermsPruned": 2,
+        "diskReads": 3,
+        "diskReadBytes": 192,
+        "reducerCacheHits": 3,
+        "costScheduling": true,
+        "wordCacheEntries": 256,
+        "wordCacheBytes": 0,
+        "chainPairsPruned": 0,
+        "matcherNodes": 6,
+        "matcherAllocatedBytes": 10240,
+        "matcherBuilds": 1,
+        "matcherFallbacks": 0,
+        "hashProbes": 9,
+        "matcherQueries": 4,
+        "matcherCharacters": 10,
+        "wordCacheHits": 0,
+        "heapAttempts": 0,
+        "heapSuccesses": 0,
+        "heapFallbacks": 0,
+        "insertionPrunes": 0,
+        "commutingPrunes": 0,
+        "quadraticSwaps": 0,
+        "engine": "fomkyr",
+        "version": "0.4.0",
+        "storage": "opfs",
+        "complete": true,
+        "unrestrictedBasisComplete": true,
+        "reduced": false,
+        "target": 4,
+        "modulus": 0,
+        "order": "degleftlex",
+        "runKey": "alg-b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c",
+        "identity": "b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c",
+        "bits": 32,
+        "shared": false,
+        "ioMode": "exclusive",
+        "executionMode": "wasm32-single",
+        "fallbacks": [
+          "Shared memory is unavailable: using the non-shared single-worker WASM build."
+        ],
+        "requestedBudgetBytes": 536870912,
+        "hostMailboxBytes": 0,
+        "linearMemoryBytes": 186253312,
+        "resumedFromDegree": 0,
+        "cacheHit": false,
+        "hilbert": {
+          "grading": "total-word-degree; all generators degree 1",
+          "field": "Q",
+          "coefficients": [
+            "1",
+            "2",
+            "1",
+            "0",
+            "0"
+          ],
+          "certifiedThroughDegree": 4,
+          "finiteDimensionalProved": true,
+          "dimension": "4",
+          "rationalFunction": null,
+          "extrapolated": false,
+          "automatonStates": 6,
+          "temporaryBytes": 348,
+          "algorithm": "leading-word avoidance automaton + exact dynamically sized limb arithmetic",
+          "validity": "Exact coefficient prefix from the certified leading-word basis; not a guessed rational series or a gauge/trace projection.",
+          "basisCompletionProved": true,
+          "certification": "complete-basis"
+        },
+        "scheduler": {
+          "epochs": 1,
+          "dispatchedPairs": 2,
+          "rpcMessages": 0,
+          "reduceMs": 9.400000005960464,
+          "commitMs": 0.20000001788139343,
+          "fallbacks": 0
+        },
+        "lanePairs": [
+          2
+        ],
+        "previewTruncated": false,
+        "textBytes": 103,
+        "fullBasisPath": "fomkyr/alg-b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c/result.gb",
+        "degreeTimings": [
+          {
+            "degree": 1,
+            "elapsedMs": 33.5,
+            "candidates": "0",
+            "scheduled": "0"
+          },
+          {
+            "degree": 2,
+            "elapsedMs": 34.80000001192093,
+            "candidates": "0",
+            "scheduled": "0"
+          },
+          {
+            "degree": 3,
+            "elapsedMs": 25.400000005960464,
+            "candidates": "4",
+            "scheduled": "2"
+          },
+          {
+            "degree": 4,
+            "elapsedMs": 9.900000005960464,
+            "candidates": "0",
+            "scheduled": "0"
+          }
+        ],
+        "progressError": null,
+        "progress": {
+          "engine": "fomkyr",
+          "phase": "done",
+          "target": 4,
+          "currentDegree": 4,
+          "completedThroughDegree": 4,
+          "elapsedMs": 255.7000000178814,
+          "degreeElapsedMs": 57.5,
+          "overlaps": {
+            "total": "0",
+            "resolved": "0",
+            "enumerated": "0",
+            "scheduled": "0",
+            "committed": "0",
+            "monomialSkipped": "0",
+            "chainSkipped": "0",
+            "fraction": null,
+            "kind": "overlap-count-not-time",
+            "replay": 0
+          },
+          "activity": {
+            "activeLanes": 0,
+            "maxActiveRowTerms": "0",
+            "sampledReductions": "4",
+            "sampledReductionsPerSecond": 0,
+            "sampleIsApproximate": true
+          },
+          "eta": {
+            "currentDegreeSeconds": null,
+            "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+            "reason": "Current phase is not overlap reduction."
+          },
+          "forecast": {
+            "targetSeconds": null,
+            "reason": "Insufficient nontrivial degree timings."
+          },
+          "history": [
+            {
+              "degree": 1,
+              "elapsedMs": 33.5,
+              "candidates": "0",
+              "scheduled": "0"
+            },
+            {
+              "degree": 2,
+              "elapsedMs": 34.80000001192093,
+              "candidates": "0",
+              "scheduled": "0"
+            },
+            {
+              "degree": 3,
+              "elapsedMs": 25.400000005960464,
+              "candidates": "4",
+              "scheduled": "2"
+            },
+            {
+              "degree": 4,
+              "elapsedMs": 9.900000005960464,
+              "candidates": "0",
+              "scheduled": "0"
+            }
+          ]
+        },
+        "elapsedSeconds": 0.2125
+      },
+      "second": {
+        "basisSize": 3,
+        "terms": 4,
+        "completedThroughDegree": 5,
+        "currentDegree": 0,
+        "allocatedBytes": 186227576,
+        "budgetBytes": 536870912,
+        "diskBytes": 192,
+        "pairs": 0,
+        "monomialPairsPruned": 0,
+        "zeroCommits": 0,
+        "workers": 1,
+        "prefixNodes": 3,
+        "peakAllocatedBytes": 186227904,
+        "monomialPruning": true,
+        "heapReduction": true,
+        "reductions": 0,
+        "monomialTermsPruned": 0,
+        "diskReads": 0,
+        "diskReadBytes": 0,
+        "reducerCacheHits": 0,
+        "costScheduling": true,
+        "wordCacheEntries": 256,
+        "wordCacheBytes": 0,
+        "chainPairsPruned": 0,
+        "matcherNodes": 6,
+        "matcherAllocatedBytes": 10240,
+        "matcherBuilds": 1,
+        "matcherFallbacks": 0,
+        "hashProbes": 0,
+        "matcherQueries": 0,
+        "matcherCharacters": 0,
+        "wordCacheHits": 0,
+        "heapAttempts": 0,
+        "heapSuccesses": 0,
+        "heapFallbacks": 0,
+        "insertionPrunes": 0,
+        "commutingPrunes": 0,
+        "quadraticSwaps": 0,
+        "engine": "fomkyr",
+        "version": "0.4.0",
+        "storage": "opfs",
+        "complete": true,
+        "unrestrictedBasisComplete": true,
+        "reduced": false,
+        "target": 5,
+        "modulus": 0,
+        "order": "degleftlex",
+        "runKey": "alg-b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c",
+        "identity": "b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c",
+        "bits": 64,
+        "shared": false,
+        "ioMode": "exclusive",
+        "executionMode": "wasm64-single",
+        "fallbacks": [
+          "Shared memory is unavailable: using the non-shared single-worker WASM build."
+        ],
+        "requestedBudgetBytes": 536870912,
+        "hostMailboxBytes": 0,
+        "linearMemoryBytes": 186253312,
+        "resumedFromDegree": 4,
+        "cacheHit": false,
+        "hilbert": {
+          "grading": "total-word-degree; all generators degree 1",
+          "field": "Q",
+          "coefficients": [
+            "1",
+            "2",
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          "certifiedThroughDegree": 5,
+          "finiteDimensionalProved": true,
+          "dimension": "4",
+          "rationalFunction": null,
+          "extrapolated": false,
+          "automatonStates": 6,
+          "temporaryBytes": 348,
+          "algorithm": "leading-word avoidance automaton + exact dynamically sized limb arithmetic",
+          "validity": "Exact coefficient prefix from the certified leading-word basis; not a guessed rational series or a gauge/trace projection.",
+          "basisCompletionProved": true,
+          "certification": "complete-basis"
+        },
+        "scheduler": {
+          "epochs": 0,
+          "dispatchedPairs": 0,
+          "rpcMessages": 0,
+          "reduceMs": 0,
+          "commitMs": 0,
+          "fallbacks": 0
+        },
+        "lanePairs": [
+          0
+        ],
+        "previewTruncated": false,
+        "textBytes": 103,
+        "fullBasisPath": "fomkyr/alg-b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c/result.gb",
+        "degreeTimings": [
+          {
+            "degree": 5,
+            "elapsedMs": 19.099999994039536,
+            "candidates": "0",
+            "scheduled": "0"
+          }
+        ],
+        "progressError": null,
+        "progress": {
+          "engine": "fomkyr",
+          "phase": "done",
+          "target": 5,
+          "currentDegree": 5,
+          "completedThroughDegree": 5,
+          "elapsedMs": 145.59999999403954,
+          "degreeElapsedMs": 58.599999994039536,
+          "overlaps": {
+            "total": "0",
+            "resolved": "0",
+            "enumerated": "0",
+            "scheduled": "0",
+            "committed": "0",
+            "monomialSkipped": "0",
+            "chainSkipped": "0",
+            "fraction": null,
+            "kind": "overlap-count-not-time",
+            "replay": 0
+          },
+          "activity": {
+            "activeLanes": 0,
+            "maxActiveRowTerms": "0",
+            "sampledReductions": "0",
+            "sampledReductionsPerSecond": 0,
+            "sampleIsApproximate": true
+          },
+          "eta": {
+            "currentDegreeSeconds": null,
+            "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+            "reason": "Current phase is not overlap reduction."
+          },
+          "forecast": {
+            "targetSeconds": null,
+            "reason": "Insufficient nontrivial degree timings."
+          },
+          "history": [
+            {
+              "degree": 5,
+              "elapsedMs": 19.099999994039536,
+              "candidates": "0",
+              "scheduled": "0"
+            }
+          ]
+        },
+        "elapsedSeconds": 0.10960000002384186
+      },
+      "unlimited": {
+        "completedThroughDegree": 3,
+        "proved": true
+      },
+      "longWord": true,
+      "share": true,
+      "legacyMigration": true,
+      "cancellationAndRestart": true,
+      "metrics": true,
+      "stableReleaseBrand": true,
+      "unfinishedDraftRestore": true,
+      "noStaleHilbertSeries": true,
+      "fastDefaults": true,
+      "explicitPhases": true,
+      "engineSubmenu": true,
+      "mobileHelp": false,
+      "externalRequests": 0
+    },
+    {
+      "browser": "firefox",
+      "version": "155.0",
+      "mount": "/",
+      "isolated": true,
+      "first": {
+        "basisSize": 3,
+        "terms": 4,
+        "completedThroughDegree": 4,
+        "currentDegree": 0,
+        "allocatedBytes": 186227592,
+        "budgetBytes": 536870912,
+        "diskBytes": 192,
+        "pairs": 2,
+        "monomialPairsPruned": 2,
+        "zeroCommits": 2,
+        "workers": 4,
+        "prefixNodes": 3,
+        "peakAllocatedBytes": 186227920,
+        "monomialPruning": true,
+        "heapReduction": true,
+        "reductions": 4,
+        "monomialTermsPruned": 2,
+        "diskReads": 4,
+        "diskReadBytes": 272,
+        "reducerCacheHits": 2,
+        "costScheduling": true,
+        "wordCacheEntries": 256,
+        "wordCacheBytes": 0,
+        "chainPairsPruned": 0,
+        "matcherNodes": 6,
+        "matcherAllocatedBytes": 10240,
+        "matcherBuilds": 1,
+        "matcherFallbacks": 0,
+        "hashProbes": 9,
+        "matcherQueries": 4,
+        "matcherCharacters": 10,
+        "wordCacheHits": 0,
+        "heapAttempts": 0,
+        "heapSuccesses": 0,
+        "heapFallbacks": 0,
+        "insertionPrunes": 0,
+        "commutingPrunes": 0,
+        "quadraticSwaps": 0,
+        "engine": "fomkyr",
+        "version": "0.4.0",
+        "storage": "opfs",
+        "complete": true,
+        "unrestrictedBasisComplete": true,
+        "reduced": false,
+        "target": 4,
+        "modulus": 0,
+        "order": "degleftlex",
+        "runKey": "alg-b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c",
+        "identity": "b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c",
+        "bits": 32,
+        "shared": true,
+        "ioMode": "broker-exclusive",
+        "executionMode": "wasm32-shared",
+        "fallbacks": [],
+        "requestedBudgetBytes": 536870912,
+        "hostMailboxBytes": 262400,
+        "linearMemoryBytes": 186253312,
+        "resumedFromDegree": 0,
+        "cacheHit": false,
+        "hilbert": {
+          "grading": "total-word-degree; all generators degree 1",
+          "field": "Q",
+          "coefficients": [
+            "1",
+            "2",
+            "1",
+            "0",
+            "0"
+          ],
+          "certifiedThroughDegree": 4,
+          "finiteDimensionalProved": true,
+          "dimension": "4",
+          "rationalFunction": null,
+          "extrapolated": false,
+          "automatonStates": 6,
+          "temporaryBytes": 348,
+          "algorithm": "leading-word avoidance automaton + exact dynamically sized limb arithmetic",
+          "validity": "Exact coefficient prefix from the certified leading-word basis; not a guessed rational series or a gauge/trace projection.",
+          "basisCompletionProved": true,
+          "certification": "complete-basis"
+        },
+        "scheduler": {
+          "epochs": 1,
+          "dispatchedPairs": 2,
+          "rpcMessages": 8,
+          "reduceMs": 10.599999999999909,
+          "commitMs": 0.07999999999992724,
+          "fallbacks": 0
+        },
+        "lanePairs": [
+          1,
+          1,
+          0,
+          0
+        ],
+        "previewTruncated": false,
+        "textBytes": 103,
+        "fullBasisPath": "fomkyr/alg-b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c/result.gb",
+        "degreeTimings": [
+          {
+            "degree": 1,
+            "elapsedMs": 20.839999999999918,
+            "candidates": "0",
+            "scheduled": "0"
+          },
+          {
+            "degree": 2,
+            "elapsedMs": 18.719999999999914,
+            "candidates": "0",
+            "scheduled": "0"
+          },
+          {
+            "degree": 3,
+            "elapsedMs": 21.700000000000045,
+            "candidates": "4",
+            "scheduled": "2"
+          },
+          {
+            "degree": 4,
+            "elapsedMs": 12.560000000000173,
+            "candidates": "0",
+            "scheduled": "0"
+          }
+        ],
+        "progressError": null,
+        "progress": {
+          "engine": "fomkyr",
+          "phase": "done",
+          "target": 4,
+          "currentDegree": 4,
+          "completedThroughDegree": 4,
+          "elapsedMs": 874.5,
+          "degreeElapsedMs": 100.36000000000013,
+          "overlaps": {
+            "total": "0",
+            "resolved": "0",
+            "enumerated": "0",
+            "scheduled": "0",
+            "committed": "0",
+            "monomialSkipped": "0",
+            "chainSkipped": "0",
+            "fraction": null,
+            "kind": "overlap-count-not-time",
+            "replay": 0
+          },
+          "activity": {
+            "activeLanes": 0,
+            "maxActiveRowTerms": "0",
+            "sampledReductions": "4",
+            "sampledReductionsPerSecond": 0,
+            "sampleIsApproximate": true
+          },
+          "eta": {
+            "currentDegreeSeconds": null,
+            "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+            "reason": "Current phase is not overlap reduction."
+          },
+          "forecast": {
+            "targetSeconds": null,
+            "reason": "Insufficient nontrivial degree timings."
+          },
+          "history": [
+            {
+              "degree": 1,
+              "elapsedMs": 20.839999999999918,
+              "candidates": "0",
+              "scheduled": "0"
+            },
+            {
+              "degree": 2,
+              "elapsedMs": 18.719999999999914,
+              "candidates": "0",
+              "scheduled": "0"
+            },
+            {
+              "degree": 3,
+              "elapsedMs": 21.700000000000045,
+              "candidates": "4",
+              "scheduled": "2"
+            },
+            {
+              "degree": 4,
+              "elapsedMs": 12.560000000000173,
+              "candidates": "0",
+              "scheduled": "0"
+            }
+          ]
+        },
+        "elapsedSeconds": 0.7896799999999999
+      },
+      "second": {
+        "basisSize": 3,
+        "terms": 4,
+        "completedThroughDegree": 5,
+        "currentDegree": 0,
+        "allocatedBytes": 186227592,
+        "budgetBytes": 536870912,
+        "diskBytes": 192,
+        "pairs": 0,
+        "monomialPairsPruned": 0,
+        "zeroCommits": 0,
+        "workers": 4,
+        "prefixNodes": 3,
+        "peakAllocatedBytes": 186227920,
+        "monomialPruning": true,
+        "heapReduction": true,
+        "reductions": 0,
+        "monomialTermsPruned": 0,
+        "diskReads": 0,
+        "diskReadBytes": 0,
+        "reducerCacheHits": 0,
+        "costScheduling": true,
+        "wordCacheEntries": 256,
+        "wordCacheBytes": 0,
+        "chainPairsPruned": 0,
+        "matcherNodes": 6,
+        "matcherAllocatedBytes": 10240,
+        "matcherBuilds": 1,
+        "matcherFallbacks": 0,
+        "hashProbes": 0,
+        "matcherQueries": 0,
+        "matcherCharacters": 0,
+        "wordCacheHits": 0,
+        "heapAttempts": 0,
+        "heapSuccesses": 0,
+        "heapFallbacks": 0,
+        "insertionPrunes": 0,
+        "commutingPrunes": 0,
+        "quadraticSwaps": 0,
+        "engine": "fomkyr",
+        "version": "0.4.0",
+        "storage": "opfs",
+        "complete": true,
+        "unrestrictedBasisComplete": true,
+        "reduced": false,
+        "target": 5,
+        "modulus": 0,
+        "order": "degleftlex",
+        "runKey": "alg-b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c",
+        "identity": "b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c",
+        "bits": 64,
+        "shared": true,
+        "ioMode": "broker-exclusive",
+        "executionMode": "wasm64-shared",
+        "fallbacks": [],
+        "requestedBudgetBytes": 536870912,
+        "hostMailboxBytes": 262400,
+        "linearMemoryBytes": 186253312,
+        "resumedFromDegree": 4,
+        "cacheHit": false,
+        "hilbert": {
+          "grading": "total-word-degree; all generators degree 1",
+          "field": "Q",
+          "coefficients": [
+            "1",
+            "2",
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          "certifiedThroughDegree": 5,
+          "finiteDimensionalProved": true,
+          "dimension": "4",
+          "rationalFunction": null,
+          "extrapolated": false,
+          "automatonStates": 6,
+          "temporaryBytes": 348,
+          "algorithm": "leading-word avoidance automaton + exact dynamically sized limb arithmetic",
+          "validity": "Exact coefficient prefix from the certified leading-word basis; not a guessed rational series or a gauge/trace projection.",
+          "basisCompletionProved": true,
+          "certification": "complete-basis"
+        },
+        "scheduler": {
+          "epochs": 0,
+          "dispatchedPairs": 0,
+          "rpcMessages": 7,
+          "reduceMs": 0,
+          "commitMs": 0,
+          "fallbacks": 0
+        },
+        "lanePairs": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "previewTruncated": false,
+        "textBytes": 103,
+        "fullBasisPath": "fomkyr/alg-b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c/result.gb",
+        "degreeTimings": [
+          {
+            "degree": 5,
+            "elapsedMs": 14.259999999999991,
+            "candidates": "0",
+            "scheduled": "0"
+          }
+        ],
+        "progressError": null,
+        "progress": {
+          "engine": "fomkyr",
+          "phase": "done",
+          "target": 5,
+          "currentDegree": 5,
+          "completedThroughDegree": 5,
+          "elapsedMs": 467.34000000000003,
+          "degreeElapsedMs": 47.74000000000001,
+          "overlaps": {
+            "total": "0",
+            "resolved": "0",
+            "enumerated": "0",
+            "scheduled": "0",
+            "committed": "0",
+            "monomialSkipped": "0",
+            "chainSkipped": "0",
+            "fraction": null,
+            "kind": "overlap-count-not-time",
+            "replay": 0
+          },
+          "activity": {
+            "activeLanes": 0,
+            "maxActiveRowTerms": "0",
+            "sampledReductions": "0",
+            "sampledReductionsPerSecond": 0,
+            "sampleIsApproximate": true
+          },
+          "eta": {
+            "currentDegreeSeconds": null,
+            "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+            "reason": "Current phase is not overlap reduction."
+          },
+          "forecast": {
+            "targetSeconds": null,
+            "reason": "Insufficient nontrivial degree timings."
+          },
+          "history": [
+            {
+              "degree": 5,
+              "elapsedMs": 14.259999999999991,
+              "candidates": "0",
+              "scheduled": "0"
+            }
+          ]
+        },
+        "elapsedSeconds": 0.43698
+      },
+      "unlimited": {
+        "completedThroughDegree": 3,
+        "proved": true
+      },
+      "longWord": true,
+      "share": true,
+      "legacyMigration": true,
+      "cancellationAndRestart": true,
+      "metrics": true,
+      "stableReleaseBrand": true,
+      "unfinishedDraftRestore": true,
+      "noStaleHilbertSeries": true,
+      "fastDefaults": true,
+      "explicitPhases": true,
+      "engineSubmenu": true,
+      "mobileHelp": true,
+      "externalRequests": 0
+    },
+    {
+      "browser": "firefox",
+      "version": "155.0",
+      "mount": "/",
+      "isolated": false,
+      "first": {
+        "basisSize": 3,
+        "terms": 4,
+        "completedThroughDegree": 4,
+        "currentDegree": 0,
+        "allocatedBytes": 186227576,
+        "budgetBytes": 536870912,
+        "diskBytes": 192,
+        "pairs": 2,
+        "monomialPairsPruned": 2,
+        "zeroCommits": 2,
+        "workers": 1,
+        "prefixNodes": 3,
+        "peakAllocatedBytes": 186227904,
+        "monomialPruning": true,
+        "heapReduction": true,
+        "reductions": 4,
+        "monomialTermsPruned": 2,
+        "diskReads": 3,
+        "diskReadBytes": 192,
+        "reducerCacheHits": 3,
+        "costScheduling": true,
+        "wordCacheEntries": 256,
+        "wordCacheBytes": 0,
+        "chainPairsPruned": 0,
+        "matcherNodes": 6,
+        "matcherAllocatedBytes": 10240,
+        "matcherBuilds": 1,
+        "matcherFallbacks": 0,
+        "hashProbes": 9,
+        "matcherQueries": 4,
+        "matcherCharacters": 10,
+        "wordCacheHits": 0,
+        "heapAttempts": 0,
+        "heapSuccesses": 0,
+        "heapFallbacks": 0,
+        "insertionPrunes": 0,
+        "commutingPrunes": 0,
+        "quadraticSwaps": 0,
+        "engine": "fomkyr",
+        "version": "0.4.0",
+        "storage": "opfs",
+        "complete": true,
+        "unrestrictedBasisComplete": true,
+        "reduced": false,
+        "target": 4,
+        "modulus": 0,
+        "order": "degleftlex",
+        "runKey": "alg-b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c",
+        "identity": "b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c",
+        "bits": 32,
+        "shared": false,
+        "ioMode": "exclusive",
+        "executionMode": "wasm32-single",
+        "fallbacks": [
+          "Shared memory is unavailable: using the non-shared single-worker WASM build."
+        ],
+        "requestedBudgetBytes": 536870912,
+        "hostMailboxBytes": 0,
+        "linearMemoryBytes": 186253312,
+        "resumedFromDegree": 0,
+        "cacheHit": false,
+        "hilbert": {
+          "grading": "total-word-degree; all generators degree 1",
+          "field": "Q",
+          "coefficients": [
+            "1",
+            "2",
+            "1",
+            "0",
+            "0"
+          ],
+          "certifiedThroughDegree": 4,
+          "finiteDimensionalProved": true,
+          "dimension": "4",
+          "rationalFunction": null,
+          "extrapolated": false,
+          "automatonStates": 6,
+          "temporaryBytes": 348,
+          "algorithm": "leading-word avoidance automaton + exact dynamically sized limb arithmetic",
+          "validity": "Exact coefficient prefix from the certified leading-word basis; not a guessed rational series or a gauge/trace projection.",
+          "basisCompletionProved": true,
+          "certification": "complete-basis"
+        },
+        "scheduler": {
+          "epochs": 1,
+          "dispatchedPairs": 2,
+          "rpcMessages": 0,
+          "reduceMs": 2,
+          "commitMs": 0,
+          "fallbacks": 0
+        },
+        "lanePairs": [
+          2
+        ],
+        "previewTruncated": false,
+        "textBytes": 103,
+        "fullBasisPath": "fomkyr/alg-b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c/result.gb",
+        "degreeTimings": [
+          {
+            "degree": 1,
+            "elapsedMs": 11,
+            "candidates": "0",
+            "scheduled": "0"
+          },
+          {
+            "degree": 2,
+            "elapsedMs": 11,
+            "candidates": "0",
+            "scheduled": "0"
+          },
+          {
+            "degree": 3,
+            "elapsedMs": 10,
+            "candidates": "4",
+            "scheduled": "2"
+          },
+          {
+            "degree": 4,
+            "elapsedMs": 7,
+            "candidates": "0",
+            "scheduled": "0"
+          }
+        ],
+        "progressError": null,
+        "progress": {
+          "engine": "fomkyr",
+          "phase": "done",
+          "target": 4,
+          "currentDegree": 4,
+          "completedThroughDegree": 4,
+          "elapsedMs": 165,
+          "degreeElapsedMs": 41,
+          "overlaps": {
+            "total": "0",
+            "resolved": "0",
+            "enumerated": "0",
+            "scheduled": "0",
+            "committed": "0",
+            "monomialSkipped": "0",
+            "chainSkipped": "0",
+            "fraction": null,
+            "kind": "overlap-count-not-time",
+            "replay": 0
+          },
+          "activity": {
+            "activeLanes": 0,
+            "maxActiveRowTerms": "0",
+            "sampledReductions": "4",
+            "sampledReductionsPerSecond": 0,
+            "sampleIsApproximate": true
+          },
+          "eta": {
+            "currentDegreeSeconds": null,
+            "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+            "reason": "Current phase is not overlap reduction."
+          },
+          "forecast": {
+            "targetSeconds": null,
+            "reason": "Insufficient nontrivial degree timings."
+          },
+          "history": [
+            {
+              "degree": 1,
+              "elapsedMs": 11,
+              "candidates": "0",
+              "scheduled": "0"
+            },
+            {
+              "degree": 2,
+              "elapsedMs": 11,
+              "candidates": "0",
+              "scheduled": "0"
+            },
+            {
+              "degree": 3,
+              "elapsedMs": 10,
+              "candidates": "4",
+              "scheduled": "2"
+            },
+            {
+              "degree": 4,
+              "elapsedMs": 7,
+              "candidates": "0",
+              "scheduled": "0"
+            }
+          ]
+        },
+        "elapsedSeconds": 0.134
+      },
+      "second": {
+        "basisSize": 3,
+        "terms": 4,
+        "completedThroughDegree": 5,
+        "currentDegree": 0,
+        "allocatedBytes": 186227576,
+        "budgetBytes": 536870912,
+        "diskBytes": 192,
+        "pairs": 0,
+        "monomialPairsPruned": 0,
+        "zeroCommits": 0,
+        "workers": 1,
+        "prefixNodes": 3,
+        "peakAllocatedBytes": 186227904,
+        "monomialPruning": true,
+        "heapReduction": true,
+        "reductions": 0,
+        "monomialTermsPruned": 0,
+        "diskReads": 0,
+        "diskReadBytes": 0,
+        "reducerCacheHits": 0,
+        "costScheduling": true,
+        "wordCacheEntries": 256,
+        "wordCacheBytes": 0,
+        "chainPairsPruned": 0,
+        "matcherNodes": 6,
+        "matcherAllocatedBytes": 10240,
+        "matcherBuilds": 1,
+        "matcherFallbacks": 0,
+        "hashProbes": 0,
+        "matcherQueries": 0,
+        "matcherCharacters": 0,
+        "wordCacheHits": 0,
+        "heapAttempts": 0,
+        "heapSuccesses": 0,
+        "heapFallbacks": 0,
+        "insertionPrunes": 0,
+        "commutingPrunes": 0,
+        "quadraticSwaps": 0,
+        "engine": "fomkyr",
+        "version": "0.4.0",
+        "storage": "opfs",
+        "complete": true,
+        "unrestrictedBasisComplete": true,
+        "reduced": false,
+        "target": 5,
+        "modulus": 0,
+        "order": "degleftlex",
+        "runKey": "alg-b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c",
+        "identity": "b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c",
+        "bits": 64,
+        "shared": false,
+        "ioMode": "exclusive",
+        "executionMode": "wasm64-single",
+        "fallbacks": [
+          "Shared memory is unavailable: using the non-shared single-worker WASM build."
+        ],
+        "requestedBudgetBytes": 536870912,
+        "hostMailboxBytes": 0,
+        "linearMemoryBytes": 186253312,
+        "resumedFromDegree": 4,
+        "cacheHit": false,
+        "hilbert": {
+          "grading": "total-word-degree; all generators degree 1",
+          "field": "Q",
+          "coefficients": [
+            "1",
+            "2",
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          "certifiedThroughDegree": 5,
+          "finiteDimensionalProved": true,
+          "dimension": "4",
+          "rationalFunction": null,
+          "extrapolated": false,
+          "automatonStates": 6,
+          "temporaryBytes": 348,
+          "algorithm": "leading-word avoidance automaton + exact dynamically sized limb arithmetic",
+          "validity": "Exact coefficient prefix from the certified leading-word basis; not a guessed rational series or a gauge/trace projection.",
+          "basisCompletionProved": true,
+          "certification": "complete-basis"
+        },
+        "scheduler": {
+          "epochs": 0,
+          "dispatchedPairs": 0,
+          "rpcMessages": 0,
+          "reduceMs": 0,
+          "commitMs": 0,
+          "fallbacks": 0
+        },
+        "lanePairs": [
+          0
+        ],
+        "previewTruncated": false,
+        "textBytes": 103,
+        "fullBasisPath": "fomkyr/alg-b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c/result.gb",
+        "degreeTimings": [
+          {
+            "degree": 5,
+            "elapsedMs": 12,
+            "candidates": "0",
+            "scheduled": "0"
+          }
+        ],
+        "progressError": null,
+        "progress": {
+          "engine": "fomkyr",
+          "phase": "done",
+          "target": 5,
+          "currentDegree": 5,
+          "completedThroughDegree": 5,
+          "elapsedMs": 122,
+          "degreeElapsedMs": 42,
+          "overlaps": {
+            "total": "0",
+            "resolved": "0",
+            "enumerated": "0",
+            "scheduled": "0",
+            "committed": "0",
+            "monomialSkipped": "0",
+            "chainSkipped": "0",
+            "fraction": null,
+            "kind": "overlap-count-not-time",
+            "replay": 0
+          },
+          "activity": {
+            "activeLanes": 0,
+            "maxActiveRowTerms": "0",
+            "sampledReductions": "0",
+            "sampledReductionsPerSecond": 0,
+            "sampleIsApproximate": true
+          },
+          "eta": {
+            "currentDegreeSeconds": null,
+            "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+            "reason": "Current phase is not overlap reduction."
+          },
+          "forecast": {
+            "targetSeconds": null,
+            "reason": "Insufficient nontrivial degree timings."
+          },
+          "history": [
+            {
+              "degree": 5,
+              "elapsedMs": 12,
+              "candidates": "0",
+              "scheduled": "0"
+            }
+          ]
+        },
+        "elapsedSeconds": 0.094
+      },
+      "unlimited": {
+        "completedThroughDegree": 3,
+        "proved": true
+      },
+      "longWord": true,
+      "share": true,
+      "legacyMigration": true,
+      "cancellationAndRestart": true,
+      "metrics": true,
+      "stableReleaseBrand": true,
+      "unfinishedDraftRestore": true,
+      "noStaleHilbertSeries": true,
+      "fastDefaults": true,
+      "explicitPhases": true,
+      "engineSubmenu": true,
+      "mobileHelp": false,
+      "externalRequests": 0
+    },
+    {
+      "browser": "firefox",
+      "version": "155.0",
+      "mount": "/george/",
+      "isolated": true,
+      "first": {
+        "basisSize": 3,
+        "terms": 4,
+        "completedThroughDegree": 4,
+        "currentDegree": 0,
+        "allocatedBytes": 186227592,
+        "budgetBytes": 536870912,
+        "diskBytes": 192,
+        "pairs": 2,
+        "monomialPairsPruned": 2,
+        "zeroCommits": 2,
+        "workers": 4,
+        "prefixNodes": 3,
+        "peakAllocatedBytes": 186227920,
+        "monomialPruning": true,
+        "heapReduction": true,
+        "reductions": 4,
+        "monomialTermsPruned": 2,
+        "diskReads": 4,
+        "diskReadBytes": 272,
+        "reducerCacheHits": 2,
+        "costScheduling": true,
+        "wordCacheEntries": 256,
+        "wordCacheBytes": 0,
+        "chainPairsPruned": 0,
+        "matcherNodes": 6,
+        "matcherAllocatedBytes": 10240,
+        "matcherBuilds": 1,
+        "matcherFallbacks": 0,
+        "hashProbes": 9,
+        "matcherQueries": 4,
+        "matcherCharacters": 10,
+        "wordCacheHits": 0,
+        "heapAttempts": 0,
+        "heapSuccesses": 0,
+        "heapFallbacks": 0,
+        "insertionPrunes": 0,
+        "commutingPrunes": 0,
+        "quadraticSwaps": 0,
+        "engine": "fomkyr",
+        "version": "0.4.0",
+        "storage": "opfs",
+        "complete": true,
+        "unrestrictedBasisComplete": true,
+        "reduced": false,
+        "target": 4,
+        "modulus": 0,
+        "order": "degleftlex",
+        "runKey": "alg-b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c",
+        "identity": "b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c",
+        "bits": 32,
+        "shared": true,
+        "ioMode": "broker-exclusive",
+        "executionMode": "wasm32-shared",
+        "fallbacks": [],
+        "requestedBudgetBytes": 536870912,
+        "hostMailboxBytes": 262400,
+        "linearMemoryBytes": 186253312,
+        "resumedFromDegree": 0,
+        "cacheHit": false,
+        "hilbert": {
+          "grading": "total-word-degree; all generators degree 1",
+          "field": "Q",
+          "coefficients": [
+            "1",
+            "2",
+            "1",
+            "0",
+            "0"
+          ],
+          "certifiedThroughDegree": 4,
+          "finiteDimensionalProved": true,
+          "dimension": "4",
+          "rationalFunction": null,
+          "extrapolated": false,
+          "automatonStates": 6,
+          "temporaryBytes": 348,
+          "algorithm": "leading-word avoidance automaton + exact dynamically sized limb arithmetic",
+          "validity": "Exact coefficient prefix from the certified leading-word basis; not a guessed rational series or a gauge/trace projection.",
+          "basisCompletionProved": true,
+          "certification": "complete-basis"
+        },
+        "scheduler": {
+          "epochs": 1,
+          "dispatchedPairs": 2,
+          "rpcMessages": 8,
+          "reduceMs": 13.920000000000073,
+          "commitMs": 0.10000000000002274,
+          "fallbacks": 0
+        },
+        "lanePairs": [
+          1,
+          1,
+          0,
+          0
+        ],
+        "previewTruncated": false,
+        "textBytes": 103,
+        "fullBasisPath": "fomkyr/alg-b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c/result.gb",
+        "degreeTimings": [
+          {
+            "degree": 1,
+            "elapsedMs": 15.979999999999905,
+            "candidates": "0",
+            "scheduled": "0"
+          },
+          {
+            "degree": 2,
+            "elapsedMs": 16.779999999999973,
+            "candidates": "0",
+            "scheduled": "0"
+          },
+          {
+            "degree": 3,
+            "elapsedMs": 28.360000000000014,
+            "candidates": "4",
+            "scheduled": "2"
+          },
+          {
+            "degree": 4,
+            "elapsedMs": 11.120000000000005,
+            "candidates": "0",
+            "scheduled": "0"
+          }
+        ],
+        "progressError": null,
+        "progress": {
+          "engine": "fomkyr",
+          "phase": "done",
+          "target": 4,
+          "currentDegree": 4,
+          "completedThroughDegree": 4,
+          "elapsedMs": 544.4,
+          "degreeElapsedMs": 66.67999999999995,
+          "overlaps": {
+            "total": "0",
+            "resolved": "0",
+            "enumerated": "0",
+            "scheduled": "0",
+            "committed": "0",
+            "monomialSkipped": "0",
+            "chainSkipped": "0",
+            "fraction": null,
+            "kind": "overlap-count-not-time",
+            "replay": 0
+          },
+          "activity": {
+            "activeLanes": 0,
+            "maxActiveRowTerms": "0",
+            "sampledReductions": "4",
+            "sampledReductionsPerSecond": 0,
+            "sampleIsApproximate": true
+          },
+          "eta": {
+            "currentDegreeSeconds": null,
+            "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+            "reason": "Current phase is not overlap reduction."
+          },
+          "forecast": {
+            "targetSeconds": null,
+            "reason": "Insufficient nontrivial degree timings."
+          },
+          "history": [
+            {
+              "degree": 1,
+              "elapsedMs": 15.979999999999905,
+              "candidates": "0",
+              "scheduled": "0"
+            },
+            {
+              "degree": 2,
+              "elapsedMs": 16.779999999999973,
+              "candidates": "0",
+              "scheduled": "0"
+            },
+            {
+              "degree": 3,
+              "elapsedMs": 28.360000000000014,
+              "candidates": "4",
+              "scheduled": "2"
+            },
+            {
+              "degree": 4,
+              "elapsedMs": 11.120000000000005,
+              "candidates": "0",
+              "scheduled": "0"
+            }
+          ]
+        },
+        "elapsedSeconds": 0.49142
+      },
+      "second": {
+        "basisSize": 3,
+        "terms": 4,
+        "completedThroughDegree": 5,
+        "currentDegree": 0,
+        "allocatedBytes": 186227592,
+        "budgetBytes": 536870912,
+        "diskBytes": 192,
+        "pairs": 0,
+        "monomialPairsPruned": 0,
+        "zeroCommits": 0,
+        "workers": 4,
+        "prefixNodes": 3,
+        "peakAllocatedBytes": 186227920,
+        "monomialPruning": true,
+        "heapReduction": true,
+        "reductions": 0,
+        "monomialTermsPruned": 0,
+        "diskReads": 0,
+        "diskReadBytes": 0,
+        "reducerCacheHits": 0,
+        "costScheduling": true,
+        "wordCacheEntries": 256,
+        "wordCacheBytes": 0,
+        "chainPairsPruned": 0,
+        "matcherNodes": 6,
+        "matcherAllocatedBytes": 10240,
+        "matcherBuilds": 1,
+        "matcherFallbacks": 0,
+        "hashProbes": 0,
+        "matcherQueries": 0,
+        "matcherCharacters": 0,
+        "wordCacheHits": 0,
+        "heapAttempts": 0,
+        "heapSuccesses": 0,
+        "heapFallbacks": 0,
+        "insertionPrunes": 0,
+        "commutingPrunes": 0,
+        "quadraticSwaps": 0,
+        "engine": "fomkyr",
+        "version": "0.4.0",
+        "storage": "opfs",
+        "complete": true,
+        "unrestrictedBasisComplete": true,
+        "reduced": false,
+        "target": 5,
+        "modulus": 0,
+        "order": "degleftlex",
+        "runKey": "alg-b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c",
+        "identity": "b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c",
+        "bits": 64,
+        "shared": true,
+        "ioMode": "broker-exclusive",
+        "executionMode": "wasm64-shared",
+        "fallbacks": [],
+        "requestedBudgetBytes": 536870912,
+        "hostMailboxBytes": 262400,
+        "linearMemoryBytes": 186253312,
+        "resumedFromDegree": 4,
+        "cacheHit": false,
+        "hilbert": {
+          "grading": "total-word-degree; all generators degree 1",
+          "field": "Q",
+          "coefficients": [
+            "1",
+            "2",
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          "certifiedThroughDegree": 5,
+          "finiteDimensionalProved": true,
+          "dimension": "4",
+          "rationalFunction": null,
+          "extrapolated": false,
+          "automatonStates": 6,
+          "temporaryBytes": 348,
+          "algorithm": "leading-word avoidance automaton + exact dynamically sized limb arithmetic",
+          "validity": "Exact coefficient prefix from the certified leading-word basis; not a guessed rational series or a gauge/trace projection.",
+          "basisCompletionProved": true,
+          "certification": "complete-basis"
+        },
+        "scheduler": {
+          "epochs": 0,
+          "dispatchedPairs": 0,
+          "rpcMessages": 7,
+          "reduceMs": 0,
+          "commitMs": 0,
+          "fallbacks": 0
+        },
+        "lanePairs": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "previewTruncated": false,
+        "textBytes": 103,
+        "fullBasisPath": "fomkyr/alg-b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c/result.gb",
+        "degreeTimings": [
+          {
+            "degree": 5,
+            "elapsedMs": 11.600000000000023,
+            "candidates": "0",
+            "scheduled": "0"
+          }
+        ],
+        "progressError": null,
+        "progress": {
+          "engine": "fomkyr",
+          "phase": "done",
+          "target": 5,
+          "currentDegree": 5,
+          "completedThroughDegree": 5,
+          "elapsedMs": 392.42,
+          "degreeElapsedMs": 45.460000000000036,
+          "overlaps": {
+            "total": "0",
+            "resolved": "0",
+            "enumerated": "0",
+            "scheduled": "0",
+            "committed": "0",
+            "monomialSkipped": "0",
+            "chainSkipped": "0",
+            "fraction": null,
+            "kind": "overlap-count-not-time",
+            "replay": 0
+          },
+          "activity": {
+            "activeLanes": 0,
+            "maxActiveRowTerms": "0",
+            "sampledReductions": "0",
+            "sampledReductionsPerSecond": 0,
+            "sampleIsApproximate": true
+          },
+          "eta": {
+            "currentDegreeSeconds": null,
+            "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+            "reason": "Current phase is not overlap reduction."
+          },
+          "forecast": {
+            "targetSeconds": null,
+            "reason": "Insufficient nontrivial degree timings."
+          },
+          "history": [
+            {
+              "degree": 5,
+              "elapsedMs": 11.600000000000023,
+              "candidates": "0",
+              "scheduled": "0"
+            }
+          ]
+        },
+        "elapsedSeconds": 0.36078000000000005
+      },
+      "unlimited": {
+        "completedThroughDegree": 3,
+        "proved": true
+      },
+      "longWord": true,
+      "share": true,
+      "legacyMigration": true,
+      "cancellationAndRestart": true,
+      "metrics": true,
+      "stableReleaseBrand": true,
+      "unfinishedDraftRestore": true,
+      "noStaleHilbertSeries": true,
+      "fastDefaults": true,
+      "explicitPhases": true,
+      "engineSubmenu": true,
+      "mobileHelp": false,
+      "externalRequests": 0
+    },
+    {
+      "browser": "firefox",
+      "version": "155.0",
+      "mount": "/george/",
+      "isolated": false,
+      "first": {
+        "basisSize": 3,
+        "terms": 4,
+        "completedThroughDegree": 4,
+        "currentDegree": 0,
+        "allocatedBytes": 186227576,
+        "budgetBytes": 536870912,
+        "diskBytes": 192,
+        "pairs": 2,
+        "monomialPairsPruned": 2,
+        "zeroCommits": 2,
+        "workers": 1,
+        "prefixNodes": 3,
+        "peakAllocatedBytes": 186227904,
+        "monomialPruning": true,
+        "heapReduction": true,
+        "reductions": 4,
+        "monomialTermsPruned": 2,
+        "diskReads": 3,
+        "diskReadBytes": 192,
+        "reducerCacheHits": 3,
+        "costScheduling": true,
+        "wordCacheEntries": 256,
+        "wordCacheBytes": 0,
+        "chainPairsPruned": 0,
+        "matcherNodes": 6,
+        "matcherAllocatedBytes": 10240,
+        "matcherBuilds": 1,
+        "matcherFallbacks": 0,
+        "hashProbes": 9,
+        "matcherQueries": 4,
+        "matcherCharacters": 10,
+        "wordCacheHits": 0,
+        "heapAttempts": 0,
+        "heapSuccesses": 0,
+        "heapFallbacks": 0,
+        "insertionPrunes": 0,
+        "commutingPrunes": 0,
+        "quadraticSwaps": 0,
+        "engine": "fomkyr",
+        "version": "0.4.0",
+        "storage": "opfs",
+        "complete": true,
+        "unrestrictedBasisComplete": true,
+        "reduced": false,
+        "target": 4,
+        "modulus": 0,
+        "order": "degleftlex",
+        "runKey": "alg-b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c",
+        "identity": "b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c",
+        "bits": 32,
+        "shared": false,
+        "ioMode": "exclusive",
+        "executionMode": "wasm32-single",
+        "fallbacks": [
+          "Shared memory is unavailable: using the non-shared single-worker WASM build."
+        ],
+        "requestedBudgetBytes": 536870912,
+        "hostMailboxBytes": 0,
+        "linearMemoryBytes": 186253312,
+        "resumedFromDegree": 0,
+        "cacheHit": false,
+        "hilbert": {
+          "grading": "total-word-degree; all generators degree 1",
+          "field": "Q",
+          "coefficients": [
+            "1",
+            "2",
+            "1",
+            "0",
+            "0"
+          ],
+          "certifiedThroughDegree": 4,
+          "finiteDimensionalProved": true,
+          "dimension": "4",
+          "rationalFunction": null,
+          "extrapolated": false,
+          "automatonStates": 6,
+          "temporaryBytes": 348,
+          "algorithm": "leading-word avoidance automaton + exact dynamically sized limb arithmetic",
+          "validity": "Exact coefficient prefix from the certified leading-word basis; not a guessed rational series or a gauge/trace projection.",
+          "basisCompletionProved": true,
+          "certification": "complete-basis"
+        },
+        "scheduler": {
+          "epochs": 1,
+          "dispatchedPairs": 2,
+          "rpcMessages": 0,
+          "reduceMs": 2,
+          "commitMs": 0,
+          "fallbacks": 0
+        },
+        "lanePairs": [
+          2
+        ],
+        "previewTruncated": false,
+        "textBytes": 103,
+        "fullBasisPath": "fomkyr/alg-b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c/result.gb",
+        "degreeTimings": [
+          {
+            "degree": 1,
+            "elapsedMs": 12,
+            "candidates": "0",
+            "scheduled": "0"
+          },
+          {
+            "degree": 2,
+            "elapsedMs": 20,
+            "candidates": "0",
+            "scheduled": "0"
+          },
+          {
+            "degree": 3,
+            "elapsedMs": 13,
+            "candidates": "4",
+            "scheduled": "2"
+          },
+          {
+            "degree": 4,
+            "elapsedMs": 8,
+            "candidates": "0",
+            "scheduled": "0"
+          }
+        ],
+        "progressError": null,
+        "progress": {
+          "engine": "fomkyr",
+          "phase": "done",
+          "target": 4,
+          "currentDegree": 4,
+          "completedThroughDegree": 4,
+          "elapsedMs": 218,
+          "degreeElapsedMs": 59,
+          "overlaps": {
+            "total": "0",
+            "resolved": "0",
+            "enumerated": "0",
+            "scheduled": "0",
+            "committed": "0",
+            "monomialSkipped": "0",
+            "chainSkipped": "0",
+            "fraction": null,
+            "kind": "overlap-count-not-time",
+            "replay": 0
+          },
+          "activity": {
+            "activeLanes": 0,
+            "maxActiveRowTerms": "0",
+            "sampledReductions": "4",
+            "sampledReductionsPerSecond": 0,
+            "sampleIsApproximate": true
+          },
+          "eta": {
+            "currentDegreeSeconds": null,
+            "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+            "reason": "Current phase is not overlap reduction."
+          },
+          "forecast": {
+            "targetSeconds": null,
+            "reason": "Insufficient nontrivial degree timings."
+          },
+          "history": [
+            {
+              "degree": 1,
+              "elapsedMs": 12,
+              "candidates": "0",
+              "scheduled": "0"
+            },
+            {
+              "degree": 2,
+              "elapsedMs": 20,
+              "candidates": "0",
+              "scheduled": "0"
+            },
+            {
+              "degree": 3,
+              "elapsedMs": 13,
+              "candidates": "4",
+              "scheduled": "2"
+            },
+            {
+              "degree": 4,
+              "elapsedMs": 8,
+              "candidates": "0",
+              "scheduled": "0"
+            }
+          ]
+        },
+        "elapsedSeconds": 0.169
+      },
+      "second": {
+        "basisSize": 3,
+        "terms": 4,
+        "completedThroughDegree": 5,
+        "currentDegree": 0,
+        "allocatedBytes": 186227576,
+        "budgetBytes": 536870912,
+        "diskBytes": 192,
+        "pairs": 0,
+        "monomialPairsPruned": 0,
+        "zeroCommits": 0,
+        "workers": 1,
+        "prefixNodes": 3,
+        "peakAllocatedBytes": 186227904,
+        "monomialPruning": true,
+        "heapReduction": true,
+        "reductions": 0,
+        "monomialTermsPruned": 0,
+        "diskReads": 0,
+        "diskReadBytes": 0,
+        "reducerCacheHits": 0,
+        "costScheduling": true,
+        "wordCacheEntries": 256,
+        "wordCacheBytes": 0,
+        "chainPairsPruned": 0,
+        "matcherNodes": 6,
+        "matcherAllocatedBytes": 10240,
+        "matcherBuilds": 1,
+        "matcherFallbacks": 0,
+        "hashProbes": 0,
+        "matcherQueries": 0,
+        "matcherCharacters": 0,
+        "wordCacheHits": 0,
+        "heapAttempts": 0,
+        "heapSuccesses": 0,
+        "heapFallbacks": 0,
+        "insertionPrunes": 0,
+        "commutingPrunes": 0,
+        "quadraticSwaps": 0,
+        "engine": "fomkyr",
+        "version": "0.4.0",
+        "storage": "opfs",
+        "complete": true,
+        "unrestrictedBasisComplete": true,
+        "reduced": false,
+        "target": 5,
+        "modulus": 0,
+        "order": "degleftlex",
+        "runKey": "alg-b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c",
+        "identity": "b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c",
+        "bits": 64,
+        "shared": false,
+        "ioMode": "exclusive",
+        "executionMode": "wasm64-single",
+        "fallbacks": [
+          "Shared memory is unavailable: using the non-shared single-worker WASM build."
+        ],
+        "requestedBudgetBytes": 536870912,
+        "hostMailboxBytes": 0,
+        "linearMemoryBytes": 186253312,
+        "resumedFromDegree": 4,
+        "cacheHit": false,
+        "hilbert": {
+          "grading": "total-word-degree; all generators degree 1",
+          "field": "Q",
+          "coefficients": [
+            "1",
+            "2",
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          "certifiedThroughDegree": 5,
+          "finiteDimensionalProved": true,
+          "dimension": "4",
+          "rationalFunction": null,
+          "extrapolated": false,
+          "automatonStates": 6,
+          "temporaryBytes": 348,
+          "algorithm": "leading-word avoidance automaton + exact dynamically sized limb arithmetic",
+          "validity": "Exact coefficient prefix from the certified leading-word basis; not a guessed rational series or a gauge/trace projection.",
+          "basisCompletionProved": true,
+          "certification": "complete-basis"
+        },
+        "scheduler": {
+          "epochs": 0,
+          "dispatchedPairs": 0,
+          "rpcMessages": 0,
+          "reduceMs": 0,
+          "commitMs": 0,
+          "fallbacks": 0
+        },
+        "lanePairs": [
+          0
+        ],
+        "previewTruncated": false,
+        "textBytes": 103,
+        "fullBasisPath": "fomkyr/alg-b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c/result.gb",
+        "degreeTimings": [
+          {
+            "degree": 5,
+            "elapsedMs": 11,
+            "candidates": "0",
+            "scheduled": "0"
+          }
+        ],
+        "progressError": null,
+        "progress": {
+          "engine": "fomkyr",
+          "phase": "done",
+          "target": 5,
+          "currentDegree": 5,
+          "completedThroughDegree": 5,
+          "elapsedMs": 116,
+          "degreeElapsedMs": 38,
+          "overlaps": {
+            "total": "0",
+            "resolved": "0",
+            "enumerated": "0",
+            "scheduled": "0",
+            "committed": "0",
+            "monomialSkipped": "0",
+            "chainSkipped": "0",
+            "fraction": null,
+            "kind": "overlap-count-not-time",
+            "replay": 0
+          },
+          "activity": {
+            "activeLanes": 0,
+            "maxActiveRowTerms": "0",
+            "sampledReductions": "0",
+            "sampledReductionsPerSecond": 0,
+            "sampleIsApproximate": true
+          },
+          "eta": {
+            "currentDegreeSeconds": null,
+            "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+            "reason": "Current phase is not overlap reduction."
+          },
+          "forecast": {
+            "targetSeconds": null,
+            "reason": "Insufficient nontrivial degree timings."
+          },
+          "history": [
+            {
+              "degree": 5,
+              "elapsedMs": 11,
+              "candidates": "0",
+              "scheduled": "0"
+            }
+          ]
+        },
+        "elapsedSeconds": 0.091
+      },
+      "unlimited": {
+        "completedThroughDegree": 3,
+        "proved": true
+      },
+      "longWord": true,
+      "share": true,
+      "legacyMigration": true,
+      "cancellationAndRestart": true,
+      "metrics": true,
+      "stableReleaseBrand": true,
+      "unfinishedDraftRestore": true,
+      "noStaleHilbertSeries": true,
+      "fastDefaults": true,
+      "explicitPhases": true,
+      "engineSubmenu": true,
+      "mobileHelp": false,
+      "externalRequests": 0
+    }
+  ],
+  "errors": [],
+  "method": "Real browsers use the production George form, workers and OPFS. Tests are serial. Every computation has a 120-second deadline.",
+  "hashes": {
+    "web/src/app.js": "cdbdb12872576d8428a70e6556c2db2416d1ea304fcc93f6f79b349cbf27f0c2",
+    "web/src/engine.js": "08cd678a6240de4184e3b07faba6b7fbb0eccf28f5ba09d2b5b753008a965df7",
+    "web/src/share.js": "777d199a462870b42e60e86da912c87cbec948b4eb93147d6b5338b64b7c7b8d",
+    "web/src/fomkyr-options.js": "05f72a46be76877ae8dfa9c59d148faaf8e7ed562b3e8265f2e7609fac014a24",
+    "web/src/degree-progress.js": "b3df7934a5585229cf3880b1613567418307b662467272c27d59f62eb240cab5",
+    "web/engine/fomkyr/LICENSE.txt": "7ff623d315cf3fb1d87e5c03e3aa7bc3ef3f25dc24b8b1bffe9afb2d9c62a034",
+    "web/engine/fomkyr/backend-capabilities.js": "a2b5b4518f3ff684e2e7a6837e60f654a8d0f94dbe08cfbd72344acebf859214",
+    "web/engine/fomkyr/build-info.js": "038c67f65834be55c8be5f87297f064913b4ce12e07512dd49b816065ffa1f20",
+    "web/engine/fomkyr/build.json": "0bd6f6e69d4539061d44678e2fc14dd6030fd561d7c7cf0df2cda5649dd7fa80",
+    "web/engine/fomkyr/capabilities.js": "526e19b4f53f89c32135917d036d3f7ed7740197300bae9345cd5669fe0c9ccc",
+    "web/engine/fomkyr/controls.js": "27a37a1fd5896c9f52541712a241f7d5b016d6270ad5461fe25cb20351e48b60",
+    "web/engine/fomkyr/demo-worker.js": "18e7e077a8f6e9ba46b3c86b80a6e225d03cc0f488342decee7c30b9daba6dda",
+    "web/engine/fomkyr/demo.js": "4805cdd611774acdff74583661be3723774eaeca60b926bccdbfcb8c012ba3aa",
+    "web/engine/fomkyr/engine.js": "8244ee7500ef74bb66e3b357cafb97f09bff862b11ffe5d14b0848309dc1d4fb",
+    "web/engine/fomkyr/fomkyr-isolation-worker.js": "41bf71ff70c5e98858ace8dc2a9168911bf38f591307e2254f7314eb30ac49dc",
+    "web/engine/fomkyr/fomkyr32-single.wasm": "4100c0f57c49598c1fa327ef7819197f1ab53710d105f10057745db85210154a",
+    "web/engine/fomkyr/fomkyr32.wasm": "0f559a417dcdea967bb93443a18e4a88be138ce108183fd80bc27e3a702a92d2",
+    "web/engine/fomkyr/fomkyr64-single.wasm": "ee25551bc114b751a11af325176d8ab119abf64c89d7c4785393c810c56928a3",
+    "web/engine/fomkyr/fomkyr64.wasm": "0ea15fc3684b9b2cf1b9be32f03d83f5e82cc4eae3bbe266a01bd348e438cc98",
+    "web/engine/fomkyr/form-options.js": "c0aaa8109ceb5a767474ae0e82412875342d8d6a2c18c1d5405042be06ebf55c",
+    "web/engine/fomkyr/george-entry.js": "889ebc5bdbc6ca1549b1453a964a2ff90a970b246d28b40d52f04db2645b3dd9",
+    "web/engine/fomkyr/george-worker.js": "cc022686354ef6d5b82a54e3a2a442deb8372be70c0a544e5a64b75cc7248309",
+    "web/engine/fomkyr/hilbert.js": "2d61495ae34d3d121e437b34890e6f83a6df8be1e5a5bc59bc98d915da80c5b3",
+    "web/engine/fomkyr/io-broker.js": "8563ff332b073f75b8c4fac7d515293897016f2a489454a92bad1bc22cf2ecd6",
+    "web/engine/fomkyr/io-worker.js": "4078fc305789c5eaff6aaa8fc7c3c54cf55a9ab5c13bf68594adc9f7fe38735d",
+    "web/engine/fomkyr/isolation.js": "d16612ad79c3019392b3b46deaedd492b3c702a55e0e8e711a8470b217a8d4dc",
+    "web/engine/fomkyr/job-adapter.js": "cb31beb366a2b398df4e5be246a03f8ddc20256c9299d1be06161275e33fb0dc",
+    "web/engine/fomkyr/lane.js": "a506839398c3569fec0590b95c1e50416680c5c161a638808da6634e65b7db75",
+    "web/engine/fomkyr/module-cache.js": "c620c5bf208ed576cd2731bc6e51f01ff81727d4f9b8ea2ccdc957ef0b98cfcd",
+    "web/engine/fomkyr/progress-view.js": "f847737c6b9647911517db8248ca791e6f8deebee5b8765b86133807fdf7481e",
+    "web/engine/fomkyr/progress.js": "96b6b379166fc21d64ff824467fd9acdd10c447eaf50811685c27c6bf1efba5e",
+    "web/engine/fomkyr/result-links.js": "0bcdc961b8eab820736846ed99bb722573e41f58514af9d278e18efda38a2ec8",
+    "web/engine/fomkyr/runtime.js": "c66f6076a4d82bc793d8621085379b79d902fc5cd6c22338c830562ab220ea7e",
+    "web/engine/fomkyr/storage.js": "0c4c7f8c2338768c6d836cb80fd681731cab255119446c9fd5ebe415410d659f"
+  },
+  "latest": {
+    "browser": "firefox",
+    "mount": "/george/",
+    "isolated": false,
+    "first": {
+      "basisSize": 3,
+      "terms": 4,
+      "completedThroughDegree": 4,
+      "currentDegree": 0,
+      "allocatedBytes": 186227576,
+      "budgetBytes": 536870912,
+      "diskBytes": 192,
+      "pairs": 2,
+      "monomialPairsPruned": 2,
+      "zeroCommits": 2,
+      "workers": 1,
+      "prefixNodes": 3,
+      "peakAllocatedBytes": 186227904,
+      "monomialPruning": true,
+      "heapReduction": true,
+      "reductions": 4,
+      "monomialTermsPruned": 2,
+      "diskReads": 3,
+      "diskReadBytes": 192,
+      "reducerCacheHits": 3,
+      "costScheduling": true,
+      "wordCacheEntries": 256,
+      "wordCacheBytes": 0,
+      "chainPairsPruned": 0,
+      "matcherNodes": 6,
+      "matcherAllocatedBytes": 10240,
+      "matcherBuilds": 1,
+      "matcherFallbacks": 0,
+      "hashProbes": 9,
+      "matcherQueries": 4,
+      "matcherCharacters": 10,
+      "wordCacheHits": 0,
+      "heapAttempts": 0,
+      "heapSuccesses": 0,
+      "heapFallbacks": 0,
+      "insertionPrunes": 0,
+      "commutingPrunes": 0,
+      "quadraticSwaps": 0,
+      "engine": "fomkyr",
+      "version": "0.4.0",
+      "storage": "opfs",
+      "complete": true,
+      "unrestrictedBasisComplete": true,
+      "reduced": false,
+      "target": 4,
+      "modulus": 0,
+      "order": "degleftlex",
+      "runKey": "alg-b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c",
+      "identity": "b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c",
+      "bits": 32,
+      "shared": false,
+      "ioMode": "exclusive",
+      "executionMode": "wasm32-single",
+      "fallbacks": [
+        "Shared memory is unavailable: using the non-shared single-worker WASM build."
+      ],
+      "requestedBudgetBytes": 536870912,
+      "hostMailboxBytes": 0,
+      "linearMemoryBytes": 186253312,
+      "resumedFromDegree": 0,
+      "cacheHit": false,
+      "hilbert": {
+        "grading": "total-word-degree; all generators degree 1",
+        "field": "Q",
+        "coefficients": [
+          "1",
+          "2",
+          "1",
+          "0",
+          "0"
+        ],
+        "certifiedThroughDegree": 4,
+        "finiteDimensionalProved": true,
+        "dimension": "4",
+        "rationalFunction": null,
+        "extrapolated": false,
+        "automatonStates": 6,
+        "temporaryBytes": 348,
+        "algorithm": "leading-word avoidance automaton + exact dynamically sized limb arithmetic",
+        "validity": "Exact coefficient prefix from the certified leading-word basis; not a guessed rational series or a gauge/trace projection.",
+        "basisCompletionProved": true,
+        "certification": "complete-basis"
+      },
+      "scheduler": {
+        "epochs": 1,
+        "dispatchedPairs": 2,
+        "rpcMessages": 0,
+        "reduceMs": 2,
+        "commitMs": 0,
+        "fallbacks": 0
+      },
+      "lanePairs": [
+        2
+      ],
+      "previewTruncated": false,
+      "textBytes": 103,
+      "fullBasisPath": "fomkyr/alg-b97ca843095c252d9f81cda21ee250968dc51289387012911889f5219994559c/result.gb",
+      "degreeTimings": [
+        {
+          "degree": 1,
+          "elapsedMs": 12,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 2,
+          "elapsedMs": 20,
+          "candidates": "0",
+          "scheduled": "0"
+        },
+        {
+          "degree": 3,
+          "elapsedMs": 13,
+          "candidates": "4",
+          "scheduled": "2"
+        },
+        {
+          "degree": 4,
+          "elapsedMs": 8,
+          "candidates": "0",
+          "scheduled": "0"
+        }
+      ],
+      "progressError": null,
+      "progress": {
+        "engine": "fomkyr",
+        "phase": "done",
+        "target": 4,
+        "currentDegree": 4,
+        "completedThroughDegree": 4,
+        "elapsedMs": 218,
+        "degreeElapsedMs": 59,
+        "overlaps": {
+          "total": "0",
+          "resolved": "0",
+          "enumerated": "0",
+          "scheduled": "0",
+          "committed": "0",
+          "monomialSkipped": "0",
+          "chainSkipped": "0",
+          "fraction": null,
+          "kind": "overlap-count-not-time",
+          "replay": 0
+        },
+        "activity": {
+          "activeLanes": 0,
+          "maxActiveRowTerms": "0",
+          "sampledReductions": "4",
+          "sampledReductionsPerSecond": 0,
+          "sampleIsApproximate": true
+        },
+        "eta": {
+          "currentDegreeSeconds": null,
+          "label": "Heuristic current-degree estimate, not a statistical confidence interval.",
+          "reason": "Current phase is not overlap reduction."
+        },
+        "forecast": {
+          "targetSeconds": null,
+          "reason": "Insufficient nontrivial degree timings."
+        },
+        "history": [
+          {
+            "degree": 1,
+            "elapsedMs": 12,
+            "candidates": "0",
+            "scheduled": "0"
+          },
+          {
+            "degree": 2,
+            "elapsedMs": 20,
+            "candidates": "0",
+            "scheduled": "0"
+          },
+          {
+            "degree": 3,
+            "elapsedMs": 13,
+            "candidates": "4",
+            "scheduled": "2"
+          },
+          {
+            "degree": 4,
+            "elapsedMs": 8,
+            "candidates": "0",
+            "scheduled": "0"
+          }
+        ]
+      },
+      "elapsedSeconds": 0.169
+    }
+  },
+  "finishedAt": "2026-10-02T17:23:52.178Z"
+}

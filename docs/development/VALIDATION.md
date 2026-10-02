@@ -1,5 +1,75 @@
 # Validation and verification
 
+## fomkyr 0.4.0 upgrade — 2026-10-02
+
+All four packaged shared/unshared wasm32/wasm64 modules match the verified
+upstream archive byte for byte. The C kernel is unchanged. George's host
+adapters preserve seconds, result downloads, cancellation and checkpoint
+handling, and expose the new optimization controls and live counters.
+
+- **119 unit tests pass**: [log](validation/fomkyr-04-unit-tests-final.log).
+  New checks cover default-on optimizations, matcher/cache budgets, seconds
+  conversion, preserving explicit saved/Share choices and progress integers
+  beyond the JavaScript safe-integer range.
+- **15 imported suites pass** in a staging copy: native, extra, actual Wasm,
+  release, compatibility, integration, static-host unit, both installer
+  suites, optimizer edge cases, native and Wasm physics matrices, progress
+  unit/integration and UBSan. The native library was rebuilt with Clang
+  O3/LTO. One upstream physics test harness correction passes its loop's
+  `prime` to both native engines; otherwise its advertised field matrix
+  silently repeated Q. The corrected Q/F2/F101 matrix passes. Original
+  vendored files are unchanged; the correction is recorded in the report.
+  Node OPFS is emulated and is separate from browser evidence.
+- **79 algebra cases / 316 fomkyr runs** pass C/ECL and **79 bounded Singular**
+  comparisons: 48 seeded FK Latin hypercube samples, four anchors and
+  27 physics cases. The 17 LHS dimensions include every new optimizer,
+  small/large word caches and a zero matcher budget to exercise fallback.
+  FK ranks 3–6 cover Q and F2/F3/F5/F7/F101, degree 2–5 (rank 6 capped at 4),
+  variable permutations, sign/reversal, pruning, heap, cache and batching.
+  The submitted 15-variable case is checked at degrees 3/4; a separate
+  anchor produces a 155-bit coefficient. Physics cases cover commuting,
+  exterior, homogenized Weyl/Clifford/sl2/q-oscillator and braid algebras
+  through degree 4 over Q/F2/F101. All four actual Wasm variants agree by
+  mutual bounded ideal reductions, leading words and exact Hilbert prefixes;
+  **96,172 critical ambiguities** pass independently. Full report, logs,
+  generated Singular programs and bases:
+  [algebra evidence](validation/fomkyr-04/report.json).
+- **Eight production UI scenarios pass** in Chromium 153 and Firefox 155,
+  at root/project mounts with isolated four-worker and unshared one-worker
+  execution. Checks include the separate collapsed Engine submenu, math Hilbert
+  control outside it, optimizer defaults, explicit false settings, Share,
+  OPFS resume, cancellation/restart, blank bounds, long words, exact Hilbert
+  text, progress/RAM/seconds and 390 px EN/RU help. Firefox retains its
+  `broker-exclusive` multicore storage path. No external requests or page
+  errors occur: [report and mobile screenshots](validation/fomkyr-browser-04-final/report.json).
+- **Pages-style static hosts pass** in both browsers at both mount paths,
+  without server isolation headers. The existing service worker enables
+  actual two-worker OPFS in both widths, preferences survive reload, only
+  version-0.4 kernels are cached, and blocked service workers select the
+  unshared fallback: [Chromium](validation/fomkyr-static-04-final-chromium/report.json),
+  [Firefox](validation/fomkyr-static-04-final-firefox/report.json).
+- **Four real cross-version checkpoint checks pass**: old 0.3 wasm32 workers
+  write completed degree-4 checkpoints over Q and F101; production 0.4
+  memory64 resumes and completes degree 5 in each browser. Both results
+  agree with a fresh 0.4 run by exact mutual reductions and leading words,
+  and an independent degree-5 critical-pair certificate passes:
+  [upgrade report and bases](validation/fomkyr-upgrade-04/report.json).
+
+The completed-degree tracker is updated before checkpoint phase events,
+preventing a live progress payload from lagging by one completed degree.
+Overlap counts and sampled worker activity do not estimate a runtime
+percentage. Settings/default changes affect new jobs; old explicit settings
+and Share tokens retain their choices. George remains 0.6.0, with the
+experimental label only in the fomkyr engine chooser.
+
+Reproduce with `npm test`, `npm run test:fomkyr`,
+`npm run test:fomkyr:browser`, `npm run test:fomkyr:upgrade`,
+`npm run test:static`, and
+`node tools/validate-static-isolation.mjs OUTPUT --firefox`.
+Each computation has a deadline of at most 120 seconds. Timing evidence
+is separate in [PERFORMANCE.md](PERFORMANCE.md). No remote publication or
+fresh compilation of the four Wasm modules is claimed.
+
 ## Degree progress and fomkyr defaults — 2026-10-02
 
 The degree display now distinguishes an active degree (`11 … / 12`) from a
