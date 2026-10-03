@@ -17,13 +17,14 @@ import { applyBackendCapabilities, backendCapabilities } from './backend-capabil
 import { timeoutMilliseconds } from './time-limit.js';
 import { formatMemorySize } from './memory-monitor.js';
 import { attachFomkyrResultLinks, renderFomkyrSeries } from '../engine/fomkyr/result-links.js';
-import {installFomkyrControls, readFomkyrOptions, writeFomkyrOptions} from './fomkyr-options.js';
+import {installFomkyrControls, readFomkyrOptions, writeFomkyrOptions, updateFomkyrControlAvailability} from './fomkyr-options.js';
 import {degreeProgress,degreeLabel} from './degree-progress.js';
 import {groupRelations, polynomialTermCount} from './relation-preview.js';
 import {copyMathSelection} from './math-copy.js';
 import {basisSummary} from './basis-summary.js';
 import {elapsedSeconds} from './elapsed-time.js';
 import {nextBasisPreview} from './basis-preview.js';
+import {downloadZip} from './zip-download.js';
 
 const $ = (id) => document.getElementById(id);
 installFomkyrControls(document, t);
@@ -44,6 +45,8 @@ applyTheme(preferences.theme);
 let engineInfo = null;
 let engineError = null;
 let lastRendered = null;
+let zipSource = null;
+let zipBusy = false;
 let statusState = { key: 'status.idle', params: {}, busy: false };
 let guideGeneration = 0;
 let shareGeneration = 0;
@@ -73,6 +76,7 @@ const els = {
   timeMetric: $('timeMetric'), timeValue: $('timeValue'),
   share: $('share'), sharePanel: $('sharePanel'), shareLink: $('shareLink'), shareStatus: $('shareStatus'),
   tabs: $('tabs'), view: $('view-compute'), resultsDot: $('resultsDot'),
+  resultsZip: $('downloadResultsZip'), resultsZipStatus: $('resultsZipStatus'),
 };
 
 let loadedExample = null; // { id, snapshot } while the form still equals a bundled example
@@ -123,7 +127,7 @@ function readForm() {
 
 function writeForm(s, {restoreDraft = false} = {}) {
   if (s.backend === 'native') s = {...s, backend: 'fomkyr'};
-  writeFomkyrOptions(s.fomkyrOptions || {}, document, {strict: !restoreDraft});
+  writeFomkyrOptions(s.fomkyrOptions || {}, document, {strict: !restoreDraft && (s.backend ?? els.backend.value) === 'fomkyr'});
   setRadio('ring', s.ring || 'noncomm');
   fillOrders();
   els.vars.value = s.varsText ?? (s.vars || []).join(', ');
@@ -307,27 +311,38 @@ function refresh() {
   const consoleAvailable = backendCapabilities(els.backend.value).console !== false;
   document.querySelector('[data-view="console"]').setAttribute('aria-disabled', String(!consoleAvailable));
   consoleView.setEnabled(consoleAvailable);
+  const addressing32 = els.backend.value === 'fomkyr' && $('fomkyr-bits').value === '32';
+  const heapMaximum = addressing32 ? 4095 : BACKENDS[els.backend.value].maximumHeapMiB;
   for (const option of els.memoryMiB.options) {
-    option.hidden = option.disabled = !validMemoryMiB(Number(option.value), els.backend.value);
+    option.hidden = option.disabled = !validMemoryMiB(Number(option.value), els.backend.value)
+      || addressing32 && Number(option.value) > heapMaximum;
   }
-  if (!validMemoryMiB(Number(els.memoryMiB.value), els.backend.value)) els.memoryMiB.value = String(Math.min(Number(els.memoryMiB.value) || BACKENDS[els.backend.value].maximumHeapMiB, BACKENDS[els.backend.value].maximumHeapMiB));
+  if (!validMemoryMiB(Number(els.memoryMiB.value), els.backend.value) || addressing32 && Number(els.memoryMiB.value) > heapMaximum) els.memoryMiB.value = String(Math.min(Number(els.memoryMiB.value) || heapMaximum, heapMaximum));
   $('backendHint').textContent = t(els.backend.value === 'fomkyr' ? 'backend.nativeHint' : 'backend.hint');
   $('nativeWorkersField').hidden = els.backend.value !== 'fomkyr';
   $('fomkyrOptions').hidden = els.backend.value !== 'fomkyr';
   $('fomkyrMathOptions').hidden = els.backend.value !== 'fomkyr';
-  for (const input of document.querySelectorAll('#fomkyrOptions input, #fomkyrOptions select, #fomkyrMathOptions input')) input.disabled = els.backend.value !== 'fomkyr';
   $('memoryHint').textContent = t(els.backend.value === 'fomkyr' ? 'native.memoryHint' : 'memory.hint');
   const f = readForm();
   const task = TASK_BY_ID.get(f.task);
   els.matrixField.hidden = f.order !== 'matrix';
   els.rabbitField.hidden = f.strategy !== 'rabbit';
-  els.maxserdegField.hidden = f.task !== 'hilbert' && f.backend !== 'fomkyr';
+  const seriesEnabled = f.backend === 'fomkyr' ? f.fomkyrOptions.hilbert : f.task === 'hilbert';
+  els.maxserdegField.hidden = !seriesEnabled;
+  els.maxserdeg.disabled ||= !seriesEnabled;
+  // These Bergman modes do not alter Fomkyr's homogeneous reduction algorithm.
+  // Retain their values so older links and a later engine switch preserve them.
+  if (f.backend === 'fomkyr') for (const key of ['nonhomog', 'lowterms']) {
+    $(key).disabled = true;
+    $(key).closest('label')?.classList.add('backend-disabled');
+  }
   els.moduleFields.hidden = !task.module;
   els.nmodgenField.hidden = task.module === 'two';
   els.twoModFields.hidden = task.module !== 'two';
   els.monomialPruning.disabled ||= !monomialPruningAvailable(readForm());
   if (els.monomialPruning.disabled) els.monomialPruning.checked = false;
   else if (els.backend.value === 'fomkyr') els.monomialPruning.checked = fomkyrPruningChoice ?? true;
+  updateFomkyrControlAvailability(readForm(), document);
   els.go.textContent = t('task.' + readForm().task + '.b');
   const tutorial = TUTORIALS.find(item => els.preset.value === 'tutorial:' + item.id);
   $('presetDescription').textContent = tutorial ? tutorial.description[getLanguage()] : t('start.hint');
@@ -423,7 +438,7 @@ let lastJob = null;
 
 async function compute(ev) {
   ev.preventDefault();
-  if (running) return;
+  if (running || zipBusy) return;
   const { ok, anyNonhomog, form } = validate();
   if (!ok) {
     setStatus('status.fix');
@@ -439,6 +454,7 @@ async function compute(ev) {
   const generation = ++runGeneration;
   const t0 = performance.now();
   running = true;
+  updateZipButton();
   allocatedMemoryBytes = undefined;
   runStartedAt = t0;
   runDegree = null;
@@ -472,6 +488,7 @@ async function compute(ev) {
   } finally {
     if (generation !== runGeneration) return;
     running = false;
+    updateZipButton();
     els.go.disabled = false;
     els.stop.hidden = true;
     renderLog(job, stdout);
@@ -566,7 +583,7 @@ function renderResults(job, res) {
       $('resolutionOut').innerHTML = (res.homology?.shifted ? `<p>${t('res.shifted')}</p>` : '') + renderResolution(resolution, res);
     }
   }
-  renderFiles(job, files);
+  renderFiles(job, files, res);
   attachFomkyrResultLinks($('filesOut'), res.fomkyr, t);
 }
 
@@ -667,8 +684,11 @@ function codeBlock(name, text, { download = true } = {}) {
 
 let fileContents = new Map();
 
-function renderFiles(job, files) {
+function renderFiles(job, files, res) {
   const names = Object.keys(files);
+  zipSource = {job, files, meta:res?.fomkyr};
+  if(!zipBusy)els.resultsZipStatus.hidden=true;
+  updateZipButton();
   for (const n of names) fileContents.set(n, files[n]);
   $('filesOut').innerHTML = names.length
     ? names.map((n) => codeBlock(n, files[n])).join('')
@@ -686,6 +706,40 @@ function renderLog(job, stdout) {
 }
 
 // ------------------------------------------------------------ copy and download
+
+function updateZipButton() {
+  els.resultsZip.hidden = !zipSource || !Object.keys(zipSource.files).length;
+  els.resultsZip.disabled = running || zipBusy || els.resultsZip.hidden;
+}
+async function downloadResultsZip() {
+  if(running || zipBusy || !zipSource)return;
+  const source=zipSource,wasDisabled=els.go.disabled;
+  zipBusy=true;els.go.disabled=true;updateZipButton();
+  els.resultsZipStatus.hidden=false;els.resultsZipStatus.textContent=t('results.zipBusy');
+  try{
+    const degree=source.meta?.completedThroughDegree??source.job.degreeBound;
+    const filename='george-'+source.job.task+(degree?'-degree-'+degree:'')+'.zip';
+    await downloadZip(filename,async()=>{
+      const entries=[];
+      if(source.job.files['input.bg']!==undefined)entries.push({name:'input.txt',blob:new Blob([source.job.files['input.bg']],{type:'text/plain;charset=utf-8'})});
+      for(const [name,text] of Object.entries(source.files)){
+        let blob=new Blob([text],{type:'text/plain;charset=utf-8'});
+        if(name===source.job.outputs.gb && source.meta?.fullBasisPath){
+          const root=await navigator.storage.getDirectory();
+          const directory=await (await root.getDirectoryHandle('fomkyr')).getDirectoryHandle(source.meta.runKey);
+          blob=await (await directory.getFileHandle('result.gb')).getFile();
+        }else if(name===source.job.outputs.gb && source.meta?.previewTruncated)throw new Error(t('results.zipIncomplete'));
+        const archiveName=name===source.job.outputs.gb?'result.txt':name.replace(/\.(hs|pb|anick)$/i,'.$1.txt');
+        entries.push({name:archiveName,blob});
+      }
+      return entries;
+    });
+    els.resultsZipStatus.textContent=t('results.zipReady');
+  }catch(error){
+    if(error.name==='AbortError')els.resultsZipStatus.hidden=true;
+    else els.resultsZipStatus.textContent=t('results.zipError',{msg:error.message});
+  }finally{zipBusy=false;els.go.disabled=wasDisabled||running;updateZipButton();}
+}
 
 document.addEventListener('copy', copyMathSelection);
 
@@ -954,7 +1008,8 @@ async function init() {
   els.form.addEventListener('submit', compute);
   els.share.addEventListener('click', sharePresentation);
   els.shareLink.addEventListener('click', () => els.shareLink.select());
-  els.stop.addEventListener('click', () => { runGeneration++; engine.cancel(); running = false; els.go.disabled = false; els.stop.hidden = true; setStatus('status.stopped'); });
+  els.stop.addEventListener('click', () => { runGeneration++; engine.cancel(); running = false; updateZipButton(); els.go.disabled = false; els.stop.hidden = true; setStatus('status.stopped'); });
+  els.resultsZip.addEventListener('click',downloadResultsZip);
   els.tabs.addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) selectTab(b.dataset.tab); });
   els.tabs.addEventListener('keydown', (e) => {
     if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;

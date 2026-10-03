@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // A shared, bounded linear memory. No Emscripten/MEMFS and no full-heap JS view.
 export const HARD_BYTES = 15_000_000_000;
-export const ERRORS = Object.freeze({1:'MEMORY_BUDGET',2:'SCRATCH_BUDGET',3:'INVALID_INPUT',4:'IO_ERROR',5:'CANCELLED',6:'CORRUPT_RECORD',7:'STATE_ERROR',8:'BATCH_OUTPUT_FULL',9:'REPRESENTATION_LIMIT',10:'CANDIDATE_REJECTED'});
+export const ERRORS = Object.freeze({1:'MEMORY_BUDGET',2:'SCRATCH_BUDGET',3:'INVALID_INPUT',4:'IO_ERROR',5:'CANCELLED',6:'CORRUPT_RECORD',7:'STATE_ERROR',8:'BATCH_OUTPUT_FULL',9:'REPRESENTATION_LIMIT',10:'CANDIDATE_REJECTED',11:'DEFERRED_ROW',12:'WORKSPACE_PRESSURE'});
 export function checked(rc) {
   if (rc) { const e = new Error(`fomkyr: ${ERRORS[Math.abs(rc)] || rc}`); e.code = ERRORS[Math.abs(rc)] || 'KERNEL'; throw e; }
 }
@@ -65,31 +65,33 @@ export function hostFor(memory, bits, budget, handle = null, diskLimit = Infinit
 export function stats(e) {
   const keys = ['basisSize','terms','completedThroughDegree','currentDegree','allocatedBytes','budgetBytes','diskBytes','pairs','monomialPairsPruned','zeroCommits','workers','prefixNodes','peakAllocatedBytes'];
   const s = Object.fromEntries(keys.map((k,i)=>[k,Number(e.gn_stat(i))]));
+  const laneSlots=e.gn_memory_stat?Number(e.gn_memory_stat(1)):s.workers;
+  if(e.gn_memory_stat){s.automaticMemory=!!e.gn_memory_stat(0);s.workspaceRetryBatches=Number(e.gn_memory_stat(3));s.workspaceReplayedPairs=Number(e.gn_memory_stat(4));s.ordinaryScratchBytes=Number(e.gn_memory_stat(2));}
   s.rationalCompiledRewritesEnabled=!!e.gn_stat(48);
   s.modulus=e.gn_modulus?Number(e.gn_modulus()):null;
   s.monomialPruning=!!Number(e.gn_stat(21));s.heapReduction=!!Number(e.gn_stat(22));
   s.reductions = 0; s.monomialTermsPruned = 0; s.diskReads=0; s.diskReadBytes=0; s.reducerCacheHits=0;
-  for (let i=0;i<s.workers;i++) { s.reductions+=Number(e.gn_lane_stat(i,0)); s.monomialTermsPruned+=Number(e.gn_lane_stat(i,1)); s.diskReads+=Number(e.gn_lane_stat(i,2));s.diskReadBytes+=Number(e.gn_lane_stat(i,3));s.reducerCacheHits+=Number(e.gn_lane_stat(i,7)); }
+  for (let i=0;i<laneSlots;i++) { s.reductions+=Number(e.gn_lane_stat(i,0)); s.monomialTermsPruned+=Number(e.gn_lane_stat(i,1)); s.diskReads+=Number(e.gn_lane_stat(i,2));s.diskReadBytes+=Number(e.gn_lane_stat(i,3));s.reducerCacheHits+=Number(e.gn_lane_stat(i,7)); }
   for(const [name,key] of [['sharedReducerCacheBytes',39],['sharedReducerCacheUsedBytes',40],['rewriteDegree',41],['rewriteUsedBytes',42],['rewriteBudgetBytes',43],['rewriteEntries',44],['rewriteDeclined',45],['rewriteTableStatus',46],['rewriteSnapshot',47]])s[name]=Number(e.gn_stat(key));
   s.costScheduling=!!e.gn_stat(36);s.wordCacheEntries=Number(e.gn_stat(37));s.wordCacheBytes=Number(e.gn_stat(38));
   s.chainPairsPruned=Number(e.gn_stat(29));s.matcherNodes=Number(e.gn_stat(25));s.matcherAllocatedBytes=Number(e.gn_stat(26));s.matcherBuilds=Number(e.gn_stat(27));s.matcherFallbacks=Number(e.gn_stat(28));
   for(const [name,key] of [['hashProbes',8],['matcherQueries',9],['matcherCharacters',10],['wordCacheHits',11],['heapAttempts',12],['heapSuccesses',13],['heapFallbacks',14],['insertionPrunes',15],['commutingPrunes',16],['quadraticSwaps',17],['rationalHeapAttempts',21],['rationalHeapSuccesses',22],['rationalHeapFallbacks',23],['pinnedReducerHits',27],['localRewriteHits',26],['integerHeapSteps',24],['rationalHeapSteps',25]]){
-    s[name]=0;for(let i=0;i<s.workers;i++)s[name]+=Number(e.gn_lane_stat(i,key));
+    s[name]=0;for(let i=0;i<laneSlots;i++)s[name]+=Number(e.gn_lane_stat(i,key));
   }
   if(e.gn_deep_stat){
     for(const [k,name] of ['rationalCompiledRewriteHits','rationalWorkspaceMisses','rationalCoefficientMisses','rationalArithmeticMisses','rationalTableRetries'].entries()){
-      s[name]=0;for(let i=0;i<s.workers;i++)s[name]+=Number(e.gn_deep_stat(i,k));
+      s[name]=0;for(let i=0;i<laneSlots;i++)s[name]+=Number(e.gn_deep_stat(i,k));
     }
   }
   if(e.gn_exact_stat){
     const names=['bigRationalAttempts','bigRationalSuccesses','bigRationalFallbacks','bigRationalSteps','bigCoefficientCollections','bigPoolMisses','bigTableMisses','bigArithmeticWorkspaceMisses'];
-    for(const [k,name] of names.entries()){s[name]=0;for(let i=0;i<s.workers;i++)s[name]+=Number(e.gn_exact_stat(i,k));}
-    s.rationalInPlaceGrowths=0;for(let i=0;i<s.workers;i++)s.rationalInPlaceGrowths+=Number(e.gn_exact_stat(i,10));
+    for(const [k,name] of names.entries()){s[name]=0;for(let i=0;i<laneSlots;i++)s[name]+=Number(e.gn_exact_stat(i,k));}
+    s.rationalInPlaceGrowths=0;for(let i=0;i<laneSlots;i++)s.rationalInPlaceGrowths+=Number(e.gn_exact_stat(i,10));
     s.bigRationalEnabled=!!e.gn_exact_stat(0,8);s.fastBigDivision=!e.gn_exact_stat(0,9);s.growingRationalHeap=!!e.gn_exact_stat(0,11);
   }
   if(e.gn_reserve_stat){s.rowReserveBytes=Number(e.gn_reserve_stat(0,0));
-    for(const [key,name] of [[1,'reserveAttempts'],[2,'reserveSuccesses'],[3,'reserveBusy'],[4,'reserveMisses'],[6,'reservePromotions']]){s[name]=0;for(let lane=0;lane<s.workers;lane++)s[name]+=Number(e.gn_reserve_stat(lane,key));}
-    s.reserveInPlace=!!e.gn_reserve_stat(0,7);s.radixHeap=!!e.gn_reserve_stat(0,8);s.reserveLeased=!!e.gn_reserve_stat(0,9);s.reservePeakBytes=0;for(let lane=0;lane<s.workers;lane++)s.reservePeakBytes=Math.max(s.reservePeakBytes,Number(e.gn_reserve_stat(lane,5)));
+    for(const [key,name] of [[1,'reserveAttempts'],[2,'reserveSuccesses'],[3,'reserveBusy'],[4,'reserveMisses'],[6,'reservePromotions']]){s[name]=0;for(let lane=0;lane<laneSlots;lane++)s[name]+=Number(e.gn_reserve_stat(lane,key));}
+    s.reserveInPlace=!!e.gn_reserve_stat(0,7);s.radixHeap=!!e.gn_reserve_stat(0,8);s.reserveLeased=!!e.gn_reserve_stat(0,9);s.reservePeakBytes=0;for(let lane=0;lane<laneSlots;lane++)s.reservePeakBytes=Math.max(s.reservePeakBytes,Number(e.gn_reserve_stat(lane,5)));
   }
   return s;
 }

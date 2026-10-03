@@ -4,7 +4,7 @@ import {requestPersistentStorage,listCachedRuns,deleteCachedRun} from './storage
 import {browserCapabilities} from './capabilities.js';
 import {requestIsolation} from './isolation.js';
 const KEY='fomkyr-options-v3'; // keep existing user tuning on upgrade
-const defaults={arithmeticMode:'exact',modularMinPrimes:2,modularMaxPrimes:8,workers:0,execution:'auto',bits:'auto',spill:true,hilbert:true,resume:'auto',ioMode:'auto',monomialPruning:true,heapReduction:true,rationalHeap:true,bigRationalHeap:true,fastBigDivision:true,growingRationalHeap:true,radixHeap:true,reserveInPlace:true,rowReserveMiB:null,compiledRewrites:true,rewriteDegree:4,rewriteSupport:8,rewriteMiB:8,sharedCacheMiB:null,cachePercent:12,heapThreshold:16,batchPairs:null,hashBits:18,scratchMiB:null,hilbertMiB:256,wordMatcher:true,chainCriterion:true,eagerPruning:true,quadraticRewrite:true,costScheduling:true,wordCacheEntries:256,progress:true,progressIntervalMs:1000};
+const defaults={arithmeticMode:'exact',memoryPolicy:'auto',modularMinPrimes:2,modularMaxPrimes:8,workers:0,execution:'auto',bits:'auto',spill:true,hilbert:true,resume:'auto',ioMode:'auto',monomialPruning:true,heapReduction:true,rationalHeap:true,bigRationalHeap:true,fastBigDivision:true,growingRationalHeap:true,radixHeap:true,reserveInPlace:true,rowReserveMiB:null,compiledRewrites:true,rewriteDegree:4,rewriteSupport:8,rewriteMiB:8,sharedCacheMiB:null,cachePercent:12,heapThreshold:16,batchPairs:null,hashBits:18,scratchMiB:null,hilbertMiB:256,wordMatcher:true,chainCriterion:true,eagerPruning:true,quadraticRewrite:true,costScheduling:true,wordCacheEntries:256,progress:true,progressIntervalMs:1000};
 let state={...defaults};
 try{const saved=JSON.parse(globalThis.localStorage?.getItem(KEY)||'{}');for(const key of Object.keys(defaults))if(Object.hasOwn(saved,key))state[key]=saved[key];}catch{}
 // Public George controls retain only the measured direct mode. The explicit
@@ -18,6 +18,7 @@ export function readFomkyrOptions(){
   if(out.batchPairs===null)delete out.batchPairs;
   if(state.rowReserveMiB!==null)out.rowReserveBytes=Number(state.rowReserveMiB)*1048576;
   if(state.scratchMiB!==null)out.scratchBytes=Number(state.scratchMiB)*1048576;
+  if(state.memoryPolicy==='auto'){delete out.scratchBytes;delete out.rowReserveBytes;}
   out.hilbertBudgetBytes=Number(state.hilbertMiB)*1048576;
   if(typeof document!=='undefined'){
     const workers=document.getElementById('nativeWorkers'),prune=document.getElementById('monomialPruning');
@@ -37,6 +38,7 @@ export function installFomkyrControls(){
   choice('execution','Execution',[['auto','Automatic: shared multicore when available'],['single','Single worker: no shared-memory requirement'],['multicore','Require shared multicore; fail if isolation is unavailable']]);
   if(!document.getElementById('nativeWorkers'))number('workers','CPU lanes (0 = automatic)',0,32);
   choice('bits','WASM addressing',[['auto','Automatic: 32-bit unless the budget needs memory64'],['32','32-bit'],['64','64-bit, with capability fallback']]);
+  const memoryChoice=choice('memoryPolicy','Memory policy',[['auto','Automatic: one total ceiling, no per-degree tuning'],['manual','Manual: preserve explicit scratch/reserve settings']]);
   check('spill','Store the basis and degree checkpoints in OPFS');
   check('resume','Reuse the matching algebra checkpoint');
   check('hilbert','Compute exact Hilbert coefficients');
@@ -68,10 +70,12 @@ export function installFomkyrControls(){
   number('heapThreshold','Heap reduction minimum term count',1,1048576,details);
   number('batchPairs','Critical pairs per batch (blank = auto; 0 = low-memory scheduler)',0,512,details);
   number('hashBits','Lookup hash bits',8,26,details);
-  number('scratchMiB','Total reduction workspace, MiB (blank = automatic)',1,14303,details);
+  number('scratchMiB','Total reduction workspace, MiB (manual mode only)',1,14303,details);
+  const refreshMemory=()=>{for(const key of ['scratchMiB','rowReserveMiB']){const input=document.getElementById('fomkyr-'+key);if(input)input.disabled=state.memoryPolicy==='auto';}};
+  const saveMemory=memoryChoice.onchange;memoryChoice.onchange=()=>{saveMemory();refreshMemory();};refreshMemory();
   number('hilbertMiB','Additional Hilbert workspace, MiB',0,14304,details);
   choice('ioMode','Parallel file I/O',[['auto','Automatic: probe concurrent handles, otherwise broker'],['broker','Portable: one exclusive OPFS owner'],['direct','Prefer direct concurrent handles; broker if unsupported']],details);
-  const note=document.createElement('p');note.textContent='Leave George’s maximal degree blank for completion without a user degree bound. Homogeneous relations, unit weights, Q or a prime field and degleftlex are supported. Reversing the generator order, timeout and memory controls remain in the main form. Low-terms quick/safe are equivalent for homogeneous input. Rabbit, resolutions and weighted orders are not implemented. Save unsaved input before enabling isolation, which may reload this page.';box.append(note);
+  const note=document.createElement('p');note.textContent='Leave George’s maximal degree blank for completion without a user degree bound. Automatic memory uses George’s total budget, grows crowded rows and reduces concurrency at a safe batch barrier when necessary. It never discovers or claims the amount of free system RAM. Homogeneous relations, unit weights, Q or a prime field and degleftlex are supported. Reversing the generator order, timeout and memory controls remain in the main form. Low-terms quick/safe are equivalent for homogeneous input. Rabbit, resolutions and weighted orders are not implemented. Save unsaved input before enabling isolation, which may reload this page.';box.append(note);
   const pruneNote=document.createElement('p');pruneNote.textContent='For fomkyr, “monomial pruning” means exact zero-word shortcuts, not Bergman’s Lisp monomial-storage garbage collection. Both settings produce the same algebra; disabling shortcuts is useful for cross-checks.';box.append(pruneNote);
   const status=document.createElement('pre');status.id='fomkyr-runtime-status';status.style.whiteSpace='pre-wrap';
   function button(text,fn){const b=document.createElement('button');b.type='button';b.textContent=text;b.onclick=async()=>{try{await fn();}catch(e){status.textContent=e.message;}};box.append(b);return b;}
@@ -88,7 +92,7 @@ export function installFomkyrControls(){
     for(const r of runs){const row=document.createElement('p');row.textContent=`${r.key}: degree ${r.completedThroughDegree??'unverified'}, ${r.diskBytes} bytes `;
       const del=document.createElement('button');del.type='button';del.textContent='Delete this cache';del.onclick=async()=>{if(!confirm(`Delete cached algebra ${r.key}?`))return;try{await deleteCachedRun(r.key);row.remove();}catch(e){status.textContent=e.message;}};row.append(del);entries.append(row);}
   });
-  box.append(status,entries);select.parentElement.insertAdjacentElement('afterend',box);
+  box.append(status,entries);select.parentElement.insertAdjacentElement('afterend',box);refreshMemory();
   const originalTitles=new Map();
   function update(){
     const active=select.value==='fomkyr';box.hidden=!active;const progressPanel=document.getElementById('fomkyr-progress');if(progressPanel)progressPanel.hidden=!active||!state.progress;

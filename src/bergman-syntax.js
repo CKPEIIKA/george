@@ -419,7 +419,8 @@ export function validateSettings(form) {
     if (weights.length && (weights.length !== n || weights.some(w => w !== '1'))) errors.push('Fomkyr requires unit generator degrees.');
     try { fomkyrEngineOptions(form); } catch (error) { errors.push(error.message); }
   }
-  if (form.nativeWorkers !== undefined && !integer(form.nativeWorkers, 0, 32)) errors.push('Worker count must be an integer from 0 to 32 (0 means automatic).');
+  if (['fomkyr', 'native'].includes(form.backend) && !(form.backend === 'fomkyr' && form.fomkyrOptions?.execution === 'single')
+      && form.nativeWorkers !== undefined && !integer(form.nativeWorkers, 0, 32)) errors.push('Worker count must be an integer from 0 to 32 (0 means automatic).');
   if (caps.homogeneous || caps.relationDegrees || caps.maximumCoefficient) {
     try {
       const parsed = (form.rels || []).map(r => parseRelation(r, form.vars || [], form.backend === 'fomkyr' ? 0xfffffffe : 10000));

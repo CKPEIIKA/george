@@ -1,3 +1,4 @@
+import {planMemory,chooseMemoryPolicy} from './memory-policy.js';
 // SPDX-License-Identifier: MIT
 import {ProgressTracker,readProgressCounters} from './progress.js';
 import {HARD_BYTES,createMemory,hostFor,stats,checked,wordCode,recordTerms} from './runtime.js';
@@ -73,7 +74,7 @@ export class FomkyrEngine {
         this.module=await loadKernel(bits,o.wasmURL,!this.shared);
         this.host=hostFor(this.memory,bits,this.budget,null,Infinity,true);
         this.e=(await WebAssembly.instantiate(this.module,this.host.imports)).exports;
-        if(this.e.gn_abi()!==3||typeof this.e.gn_optimize!=='function'||typeof this.e.gn_word_cache!=='function'||typeof this.e.gn_progress_stat!=='function'||typeof this.e.gn_candidate_check!=='function'||typeof this.e.gn_local_rewrites!=='function'||typeof this.e.gn_pin_cache!=='function'||typeof this.e.gn_rational_rewrites!=='function'||typeof this.e.gn_modulus!=='function'||typeof this.e.gn_big_rational_heap!=='function'||typeof this.e.gn_legacy_big_division!=='function'||typeof this.e.gn_growing_rational!=='function'||typeof this.e.gn_row_reserve!=='function'||typeof this.e.gn_reserve_growth!=='function'||typeof this.e.gn_radix_queue!=='function')throw new Error('Kernel/host API mismatch. Deploy fomkyr 0.6.3 JS and WASM together.');
+        if(this.e.gn_abi()!==3||typeof this.e.gn_optimize!=='function'||typeof this.e.gn_word_cache!=='function'||typeof this.e.gn_progress_stat!=='function'||typeof this.e.gn_candidate_check!=='function'||typeof this.e.gn_local_rewrites!=='function'||typeof this.e.gn_pin_cache!=='function'||typeof this.e.gn_rational_rewrites!=='function'||typeof this.e.gn_modulus!=='function'||typeof this.e.gn_big_rational_heap!=='function'||typeof this.e.gn_legacy_big_division!=='function'||typeof this.e.gn_growing_rational!=='function'||typeof this.e.gn_row_reserve!=='function'||typeof this.e.gn_reserve_growth!=='function'||typeof this.e.gn_radix_queue!=='function'||typeof this.e.gn_memory_policy!=='function'||typeof this.e.gn_batch_retry!=='function')throw new Error('Kernel/host API mismatch. Deploy fomkyr 0.6.4 JS and WASM together.');
         break;
       }catch(error){
         if(bits!==64||o.strictCapabilities||o.wasmURL)throw error;
@@ -83,9 +84,12 @@ export class FomkyrEngine {
     this.requestedBudget=requested;
     this.workers=computeWorkers(o.workers,{shared:this.shared,execution});
     if(!Number.isFinite(this.workers))throw new Error('Invalid worker count');
-    this.scratch=Math.floor(Number(o.scratchBytes??Math.min(this.budget/3,512*MiB))/65536)*65536;
-    if(!Number.isFinite(this.scratch)||this.scratch<this.workers*MiB||this.scratch>=this.budget)throw new Error('scratchBytes must provide >=1 MiB per lane and fit in the kernel budget');
-    this.batchPairs=o.batchPairs===0?0:Math.min(512,Math.max(1,Math.floor(o.batchPairs??this.workers*8)));
+    this.memoryPlan=planMemory(this.budget,this.workers,o);
+    this.scratch=this.memoryPlan.ordinaryScratchBytes;
+    this.autoMemory=this.memoryPlan.policy==='auto';
+    if(this.memoryPlan.ignoredManualWorkspaceSettings)this.warn('Automatic memory management overrides saved scratch/reserve values; switch to manual policy to use them.');
+    this.emit('memory-plan',this.memoryPlan);
+    this.batchPairs=o.batchPairs===0?0:Math.min(512,Math.max(1,Math.floor(o.batchPairs??this.workers*(this.autoMemory&&this.scratch/this.workers>=128*MiB?32:8))));
     if(!Number.isFinite(this.batchPairs))throw new Error('Invalid batchPairs');
     this.spill=o.spill!==false;this.runKey=String(o.runKey??`run-${crypto.randomUUID()}`);
     if(!/^[a-zA-Z0-9_-]{1,100}$/.test(this.runKey))throw new Error('Invalid runKey');
@@ -148,6 +152,7 @@ export class FomkyrEngine {
   cancel(){this.cancelRequested=true;if(this.cancelView&&this.shared)Atomics.store(this.cancelView,0,1);else this.e?.gn_cancel(1);}
   async resetKernel(fixture,target,modulus){
     checked(this.e.gn_init(fixture.variables.length,target??0,this.workers,BigInt(this.budget),BigInt(this.scratch),this.options.hashBits??18,modulus,this.spill?1:0));
+    checked(this.e.gn_memory_policy(this.autoMemory?1:0));
     checked(this.e.gn_rational_heap(this.options.rationalHeap!==false?1:0));
     checked(this.e.gn_big_rational_heap(this.options.bigRationalHeap!==false?1:0));
     checked(this.e.gn_legacy_big_division(this.options.fastBigDivision===false?1:0));
@@ -166,7 +171,7 @@ export class FomkyrEngine {
     if(this.e.gn_radix_queue)checked(this.e.gn_radix_queue(this.options.radixHeap!==false?1:0));
     if(this.e.gn_reserve_growth)checked(this.e.gn_reserve_growth(this.options.reserveInPlace===false?0:1));
     if(this.e.gn_row_reserve){
-      const reserve=this.options.rowReserveBytes??(this.budget>=512*MiB?Math.min(this.budget/4,512*MiB):0);
+      const reserve=this.memoryPlan.rowReserveBytes;
       if(!Number.isSafeInteger(reserve)||reserve<0)throw new Error('rowReserveBytes must be a nonnegative integer');
       checked(this.e.gn_row_reserve(BigInt(reserve)));
     }
@@ -179,8 +184,20 @@ export class FomkyrEngine {
     const header=new Uint8Array(32),dv=new DataView(header.buffer);let off=0;
     for(let i=0;i<cp.basisSize;i++){
       if(off+32>cp.diskBytes||this.handle.read(header,{at:off})!==32)throw new Error('Truncated record header');
-      const size=dv.getUint32(4,true),ptr=this.e.gn_import_buffer();
-      if(size<56||size>this.e.gn_import_capacity()||off+size>cp.diskBytes)throw new Error('Bad or oversized checkpoint row; increase scratch for a valid large row');
+      const size=dv.getUint32(4,true);
+      if(size<56||off+size>cp.diskBytes)throw new Error('Invalid checkpoint record extent');
+      // Restore is a quiescent boundary: no lane holds an active polynomial.
+      // Already imported rules own permanent records, so re-partitioning scratch
+      // here cannot invalidate them. Do not ask the user to tune an I/O arena.
+      while(size>this.e.gn_import_capacity()&&this.autoMemory&&this.workers>1){
+        const before=this.workers;this.workers=Math.max(1,Math.floor(before/2));
+        checked(this.e.gn_workers(this.workers));
+        this.emit('memory-adaptation',{reason:'checkpoint row capacity',previousWorkers:before,
+          workers:this.workers,scratchBytes:this.scratch,bytesPerLane:Math.floor(this.scratch/this.workers),
+          replay:'none: completed checkpoint records are retained',budgetBytes:this.budget});
+      }
+      if(size>this.e.gn_import_capacity())throw new Error(this.autoMemory?'Checkpoint row exceeds the available single-lane workspace; raise the overall memory ceiling':'Checkpoint row exceeds the manual I/O workspace');
+      const ptr=this.e.gn_import_buffer();
       if(!this.host.imports.host.read(BigInt(off),ptr,size))throw new Error('Checkpoint read failed');
       checked(this.e.gn_restore_rule(size,BigInt(off)));off+=size;
     }
@@ -206,6 +223,43 @@ export class FomkyrEngine {
     checked(this.e.gn_batch_fallback());checked(this.e.gn_rewind_degree());this.batchPairs=0;this.scheduler.fallbacks++;
     this.emit('stdout',{text:'Bounded batch output/scratch exhausted: using the lower-memory single-pair scheduler and replaying this degree.\n'});
   }
+  retryWorkspace(first,reason){
+    if(!this.autoMemory||this.workers<=1)return false;
+    const before=this.workers,after=Math.max(1,Math.floor(before/2));
+    checked(this.e.gn_batch_retry(after,first));this.workers=after;
+    this.scheduler.memoryRetries=(this.scheduler.memoryRetries??0)+1;
+    this.emit('memory-adaptation',{reason,previousWorkers:before,workers:after,
+      scratchBytes:this.scratch,bytesPerLane:Math.floor(this.scratch/after),
+      replayFromTask:first,replay:'pending-batch-suffix-only',budgetBytes:this.budget});
+    return true;
+  }
+  async executeBatch(n){
+    let first=0;
+    for(;;){
+      let start=performance.now();const pending=[];
+      for(let lane=1;lane<this.workers&&lane<n-first;lane++)pending.push(this.rpc(this.pool[lane],{command:'batch'}));
+      this.setPhase('reducing',false);const local=this.e.gn_batch_reduce(0);
+      const remote=await Promise.all(pending);checked(local);remote.forEach(checked);
+      this.scheduler.reduceMs+=performance.now()-start;
+      const rcs=Array.from({length:n-first},(_,i)=>this.e.gn_batch_status(i+first));
+      rcs.filter(rc=>![2,8,11,12].includes(rc)).forEach(checked);
+      if(rcs.some(rc=>[2,8,12].includes(rc))){
+        if(this.retryWorkspace(first,'active row or pending-output capacity'))continue;
+        if(rcs.includes(12))checked(2);this.fallbackEpoch();return;
+      }
+      this.setPhase('committing',false);start=performance.now();let retry=false;
+      for(let i=first;i<n;i++){
+        const rc=this.e.gn_batch_commit(i);
+        if([2,8,12].includes(rc)){
+          if(this.retryWorkspace(i,'ordered commit workspace')){first=i;retry=true;break;}
+          if(rc===12)checked(2);this.fallbackEpoch();return;
+        }
+        checked(rc);
+      }
+      this.scheduler.commitMs+=performance.now()-start;
+      if(!retry)return;
+    }
+  }
   async completeDegree(){
     let lastYield=performance.now();
     for(;;){
@@ -214,20 +268,8 @@ export class FomkyrEngine {
       if(this.batchPairs){
         const n=this.e.gn_batch_fill(this.batchPairs);if(n<0)checked(n);if(!n)break;
         this.scheduler.epochs++;this.scheduler.dispatchedPairs+=n;
-        let start=performance.now();
-        const pending=[];
-        for(let lane=1;lane<this.workers&&lane<n;lane++)pending.push(this.rpc(this.pool[lane],{command:'batch'}));
-        this.setPhase('reducing',false);const localResult=this.e.gn_batch_reduce(0);const remoteResults=await Promise.all(pending);checked(localResult);remoteResults.forEach(checked);
-        this.scheduler.reduceMs+=performance.now()-start;
-        const rcs=Array.from({length:n},(_,i)=>this.e.gn_batch_status(i));
-        rcs.filter(rc=>rc!==2&&rc!==8&&rc!==11).forEach(checked);
-        if(rcs.includes(2)||rcs.includes(8)){this.fallbackEpoch();continue;}
-        this.setPhase('committing',false);start=performance.now();let replay=false;
-        for(let i=0;i<n;i++){
-          const rc=this.e.gn_batch_commit(i);
-          if(rc===2){this.fallbackEpoch();replay=true;break;}checked(rc);
-        }
-        this.scheduler.commitMs+=performance.now()-start;if(replay)continue;
+        await this.executeBatch(n);
+
       }else{
         const batch=[];
         for(let lane=0;lane<this.workers;lane++){const rc=this.e.gn_next_pair(lane);if(rc<0)checked(rc);if(!rc)break;batch.push(lane);}
@@ -324,7 +366,7 @@ export class FomkyrEngine {
           hilbert={available:false,error:error.message,certifiedThroughDegree:null};this.emit('warning',{message:`GB completed; Hilbert calculation unavailable: ${error.message}`});
         }
       }
-      const result={...stats(this.e),engine:'fomkyr',version:VERSION,storage:this.spill?'opfs':'memory',complete:true,unrestrictedBasisComplete:globallyComplete(),reduced:false,target,modulus,order:'degleftlex',runKey:this.runKey,identity,bits:this.bits,shared:this.shared,ioMode:this.ioMode,executionMode:`wasm${this.bits}-${this.shared?'shared':'single'}`,fallbacks:this.fallbacks??[],requestedBudgetBytes:this.requestedBudget,hostMailboxBytes:this.brokerClients.length*(IO_HEADER+IO_CHUNK),linearMemoryBytes:this.memory.buffer.byteLength,resumedFromDegree:restored,cacheHit:target!==null&&restored>=target,hilbert,scheduler:{...this.scheduler},lanePairs:Array.from({length:this.workers},(_,i)=>Number(this.e.gn_lane_stat(i,6))),elapsedMs:performance.now()-start};
+      const result={...stats(this.e),engine:'fomkyr',version:VERSION,memoryPlan:this.memoryPlan,storage:this.spill?'opfs':'memory',complete:true,unrestrictedBasisComplete:globallyComplete(),reduced:false,target,modulus,order:'degleftlex',runKey:this.runKey,identity,bits:this.bits,shared:this.shared,ioMode:this.ioMode,executionMode:`wasm${this.bits}-${this.shared?'shared':'single'}`,fallbacks:this.fallbacks??[],requestedBudgetBytes:this.requestedBudget,hostMailboxBytes:this.brokerClients.length*(IO_HEADER+IO_CHUNK),linearMemoryBytes:this.memory.buffer.byteLength,resumedFromDegree:restored,cacheHit:target!==null&&restored>=target,hilbert,scheduler:{...this.scheduler},lanePairs:Array.from({length:this.workers},(_,i)=>Number(this.e.gn_lane_stat(i,6))),elapsedMs:performance.now()-start};
       if(this.options.exportText!==false){this.setPhase('export');Object.assign(result,await this.exportText(fixture.variables));}
       result.degreeTimings=[...this.tracker.history];result.progressError=this.progressError??null;
       if(this.directory){
