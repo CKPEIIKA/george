@@ -47,5 +47,5 @@ test('worker count uses bit 31 without changing old Share links',async()=>{
     const decoded=await readShareLink(new URL(link).hash);assert.equal(decoded.nativeWorkers,nativeWorkers);assert.equal(decoded.backend,'native');
   }
   const old=await readShareLink('#s=1u'+btoa('["0"]').replace(/=+$/,''));assert.equal(old.nativeWorkers,0);
-  for(const nativeWorkers of [-1,33,0.5,'4'])await assert.rejects(createShareLink({nativeWorkers},'https://example.org/'),/share.invalid/);
+  for(const nativeWorkers of [-1,33,0.5,'4'])await assert.rejects(createShareLink({backend:'native',nativeWorkers},'https://example.org/'),/share.invalid/);
 });

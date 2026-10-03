@@ -2,7 +2,7 @@
 import {parentPort, workerData} from 'node:worker_threads';
 import fs from 'node:fs';
 import path from 'node:path';
-import {setup} from '../../vendor/fomkyr-0.6.1/tests/node-host.mjs';
+import {setup} from '../../fomkyr/tests/node-host.mjs';
 import {FomkyrEngine} from '../../web/engine/fomkyr/engine.js';
 import {parseNativeJob} from '../../web/engine/fomkyr/job-adapter.js';
 setup(workerData.directory);

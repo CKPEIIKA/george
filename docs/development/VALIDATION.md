@@ -11,6 +11,10 @@ The [0.6.2 arithmetic summary](fomkyr-0.6.2-validation.json) is retained separat
 
 ## Commands
 
+For release updates, use the resumable command in
+[Preparing a release](RELEASING.md). It avoids overlapping suite execution and
+reuses complete independent references while checking the new engine outputs.
+
 ```sh
 npm test
 npm run test:fomkyr
@@ -65,3 +69,4 @@ cancellation; cleanup latency is measured from that request. Imported test
 sources remain unchanged; deadline adjustments are applied in staging copies.
 `test:fk6:prefixes` accepts `--singular-report <report>` to reuse and recheck
 saved Singular leading ideals on the identical input without repeating timings.
+It also accepts `--resume` for the same source snapshot.

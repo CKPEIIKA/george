@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import {VERSION} from '../web/engine/fomkyr/storage.js';
-const sourceDirectory='vendor/fomkyr-'+VERSION;
+const sourceDirectory='fomkyr';
 const inventory=JSON.parse(fs.readFileSync(sourceDirectory+'/SOURCE.json'));
 const directory = 'web/engine/fomkyr';
 const names = fs.readdirSync(directory).filter(name => /\.(?:js|wasm)$/.test(name) || name === 'LICENSE.txt').sort();
@@ -15,9 +15,9 @@ fs.writeFileSync(directory + '/build.json', JSON.stringify({
   compiler: {language: 'C', libraryOptimization: 'O3', linkOptimization: 'O3', lto: true},
   variants: ['wasm32-shared', 'wasm32-single', 'wasm64-shared', 'wasm64-single'],
   memory: {defaultHeapMiB: 3584, maximumHeapMiB: 14304},
-  defaults: {arithmeticMode:'exact',budgetBytes:3584*1048576,scratchBytes:2048*1048576,
+  defaults: {arithmeticMode:'exact',memoryPolicy:'auto',budgetBytes:3584*1048576,scratchBytes:2048*1048576,
     rowReserveBytes:512*1048576,batchPairs:128,radixHeap:true,reserveInPlace:true,
-    smallerBudgets:'Automatic workspaces scale down; explicit saved choices are retained.'},
+    smallerBudgets:'Automatic scratch uses 4/7 of the effective budget; rational overflow reserve uses 1/7. Saved workspace choices apply in manual mode.'},
   provenance: {archiveSha256: inventory.archiveSha256, kernelChanged: false, hostAdapted: true,
     curatedSources:true,sourceInventory:sourceDirectory+'/SOURCE.json'},
   files,

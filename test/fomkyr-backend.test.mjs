@@ -1,4 +1,5 @@
 import test from 'node:test';
+import {planMemory} from '../web/engine/fomkyr/memory-policy.js';
 import {VERSION} from '../web/engine/fomkyr/storage.js';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -33,19 +34,19 @@ test('fomkyr ships all shared/unshared variants with exact asset hashes', () => 
   for (const bits of [32,64]) for (const suffix of ['', '-single']) {
     const name = `fomkyr${bits}${suffix}.wasm`;
     assert.ok(manifest.files[name]);
-    assert.deepEqual(fs.readFileSync('web/engine/fomkyr/'+name),fs.readFileSync('vendor/fomkyr-'+VERSION+'/dist/'+name));
+    assert.deepEqual(fs.readFileSync('web/engine/fomkyr/'+name),fs.readFileSync('fomkyr/dist/'+name));
   }
 });
 test('shared row reserve settings preserve automatic, disabled and explicit budgets', async () => {
   assert.equal(buildJob(form).fomkyrOptions.rowReserveBytes,undefined);
   for(const rowReserveMiB of [0,16,128]) {
-    const options={rowReserveMiB,radixHeap:false,reserveInPlace:false};
+    const options={memoryPolicy:'manual',rowReserveMiB,radixHeap:false,reserveInPlace:false};
     const decoded=await readShareLink(new URL(await createShareLink({...form,memoryMiB:512,fomkyrOptions:options},'https://example.org/')).hash);
     const actual=buildJob({...form,memoryMiB:512,fomkyrOptions:decoded.fomkyrOptions}).fomkyrOptions;
     assert.equal(actual.rowReserveBytes,rowReserveMiB*1048576);
     assert.equal(actual.radixHeap,false);assert.equal(actual.reserveInPlace,false);
   }
-  for(const rowReserveMiB of [-1,0.5,512,'16'])assert.throws(()=>buildJob({...form,memoryMiB:512,fomkyrOptions:{rowReserveMiB}}));
+  for(const rowReserveMiB of [-1,0.5,512,'16'])assert.throws(()=>buildJob({...form,memoryMiB:512,fomkyrOptions:{memoryPolicy:'manual',rowReserveMiB}}));
 });
 test('George form controls are authoritative for fomkyr workers, pruning and Hilbert degree', () => {
   for (const monomialPruning of [true,false]) {
@@ -71,11 +72,13 @@ test('new fomkyr jobs default to pruning, disk, resume and heap with optional co
   assert.equal(options.rewriteBudgetBytes,undefined);assert.equal(options.sharedReducerCacheBytes,undefined);
   assert.equal(options.wordCacheEntries,256);assert.equal(options.progressIntervalMs,1000);assert.equal(options.matcherBudgetBytes,undefined);
   assert.equal(job.memoryMiB,3584);assert.equal(options.arithmeticMode,'exact');
-  assert.equal(options.workers,undefined);assert.equal(options.batchPairs,128);assert.equal(options.scratchBytes,2048*1048576);
+  assert.equal(options.workers,undefined);assert.equal(options.batchPairs,128);assert.equal(options.memoryPolicy,'auto');assert.equal(options.scratchBytes,undefined);
+  assert.equal(planMemory(job.memoryMiB*1048576,3,options).ordinaryScratchBytes,2048*1048576);
   assert.equal(buildJob({...form,fomkyrOptions:{batchPairs:null}}).fomkyrOptions.batchPairs,128);
   for(const memoryMiB of [128,256,512,1024,2048]) {
     const small=buildJob({...form,memoryMiB,fomkyrOptions:{}}).fomkyrOptions;
-    assert.ok(small.scratchBytes<memoryMiB*1048576);assert.ok(small.scratchBytes>=32*1048576);
+    const workspace=planMemory(memoryMiB*1048576,3,small);
+    assert.ok(workspace.ordinaryScratchBytes<memoryMiB*1048576);assert.ok(workspace.ordinaryScratchBytes>=32*1048576);
   }
   assert.equal(job.outputs.hs,undefined);
   assert.equal(buildJob({...form,monomialPruning:false,fomkyrOptions:{hilbert:true}}).fomkyrOptions.monomialPruning,false);
@@ -94,7 +97,7 @@ test('unsupported fomkyr jobs and invalid runtime options are rejected before ex
   for (const change of [{task:'anick'}, {ring:'comm',order:'deglex'}, {order:'lex'}, {legacy:true},
     {weights:'1 2'}, {weights:'1'}, {rels:['a^2-a']}, {rels:['1']}, {nativeWorkers:33},
     {rels:['4611686018427387904*a']}, {maxdeg:'4294967295'}, {fomkyrOptions:{bits:64}},
-    {fomkyrOptions:{batchPairs:513}}, {fomkyrOptions:{scratchMiB:512},memoryMiB:128},
+    {fomkyrOptions:{batchPairs:513}}, {fomkyrOptions:{memoryPolicy:'manual',scratchMiB:512},memoryMiB:128},
     {fomkyrOptions:{wordCacheEntries:257}},{fomkyrOptions:{matcherMiB:128},memoryMiB:128},
     {fomkyrOptions:{progressIntervalSeconds:0}},{fomkyrOptions:{wordMatcher:1}}]) {
     assert.ok(validateSettings({...form,...change}).length,JSON.stringify(change));
@@ -137,8 +140,8 @@ test('unfinished local fomkyr drafts remain editable without accepting invalid s
   assert.equal(readFomkyrOptions(root).cachePercent,99);
   assert.equal(readFomkyrOptions(root).heapThreshold,null);
   assert.equal(readFomkyrOptions(root).bits,'64');
-  assert.equal(buildJob({...form,memoryMiB:128,fomkyrOptions:{execution:'single',scratchMiB:1}}).fomkyrOptions.scratchBytes,1048576);
-  assert.throws(()=>buildJob({...form,memoryMiB:128,fomkyrOptions:{scratchMiB:1}}));
+  assert.equal(buildJob({...form,memoryMiB:128,fomkyrOptions:{execution:'single',memoryPolicy:'manual',scratchMiB:1}}).fomkyrOptions.scratchBytes,1048576);
+  assert.throws(()=>buildJob({...form,memoryMiB:128,fomkyrOptions:{memoryPolicy:'manual',scratchMiB:1}}));
 });
 test('optimizer budgets and update seconds reach the engine without changing old form choices',()=>{
   const options=buildJob({...form,memoryMiB:128,fomkyrOptions:{wordMatcher:false,chainCriterion:false,matcherMiB:0,wordCacheEntries:4096,progressIntervalSeconds:0.25}}).fomkyrOptions;
@@ -168,7 +171,7 @@ test('fomkyr LHS is reproducible and covers every declared stratum', () => {
   for(const key of ['rewriteMiB','sharedCacheMiB'])assert.deepEqual(new Set(design.cases.map(row=>row.form.fomkyrOptions[key])),new Set([0,1,null]));
 });
 test('publication checks include the complete fomkyr runtime', () => {
-  const base=['index.html','style.css','isolation-worker.js','engine/build.json','engine/worker.js','engine/runner.js','sources/george-source.tar.gz'];
+  const base=['index.html','style.css','isolation-worker.js','engine/build.json','engine/worker.js','engine/runner.js','sources/george-source.tar.gz','fomkyr/index.html'];
   const files=fs.readdirSync('web/engine/fomkyr').map(name=>'engine/fomkyr/'+name);
   const selected=publicationAssets([...base,...files]);
   for(const file of files)assert.ok(selected.includes(file),file);

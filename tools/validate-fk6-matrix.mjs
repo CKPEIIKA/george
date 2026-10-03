@@ -9,7 +9,7 @@ import {buildJob,readInputFile,parseRelation,toBergman,parseBasis} from '../web/
 import {BackendClient} from '../test/support/backend-client.mjs';
 import {algebra} from '../test/support/algebra.mjs';
 import {normalWordCounts} from '../test/support/normal-word-counts.mjs';
-import {oraclePolynomial} from '../vendor/fomkyr-0.6.1/tools/oracle-format.mjs';
+import {oraclePolynomial} from '../fomkyr/tools/oracle-format.mjs';
 
 const out=path.resolve(process.argv[2]??'build/validation/fk6-matrix');fs.mkdirSync(out,{recursive:true});
 const finiteProfile=process.argv.includes('--finite');

@@ -2,7 +2,7 @@
 import {automaticWorkers} from '../engine/fomkyr/worker-count.js';
 import {defaultMemoryMiB} from './backends.js';
 export const FOMKYR_DEFAULTS = Object.freeze({
-  execution: 'auto', bits: 'auto', spill: true, resume: 'auto', hilbert: false,
+  execution: 'auto', bits: 'auto', memoryPolicy: 'auto', spill: true, resume: 'auto', hilbert: false,
   heapReduction: true, cachePercent: 12, heapThreshold: 16, batchPairs: 128,
   hashBits: 18, scratchMiB: null, hilbertMiB: 256, ioMode: 'auto',
   wordMatcher: true, chainCriterion: true, eagerPruning: true,
@@ -16,6 +16,7 @@ export const FOMKYR_DEFAULTS = Object.freeze({
 export const FOMKYR_FIELDS = Object.freeze([
   ['execution', 'select', ['auto', 'single', 'multicore']],
   ['bits', 'select', ['auto', '32', '64']],
+  ['memoryPolicy', 'select', ['auto', 'manual']],
   ['spill', 'checkbox'], ['resume', 'checkbox'], ['hilbert', 'checkbox'],
   ['heapReduction', 'checkbox'], ['cachePercent', 'number', 0, 40],
   ['rationalHeap', 'checkbox'], ['rationalRewrites', 'checkbox'], ['compiledRewrites', 'checkbox'],
@@ -45,29 +46,69 @@ export function validateFomkyrOptions(options = {}) {
   }
   return values;
 }
+// Keep saved choices intact while showing which settings the kernel uses.
+// The matcher is shared by divisor lookup and the chain criterion. The exact
+// integer divider is also used by the general reducer, outside heap reduction.
+export function fomkyrControlAvailability(form) {
+  const o = {...FOMKYR_DEFAULTS, ...form.fomkyrOptions};
+  const enabled = form.backend === 'fomkyr';
+  const rational = (form.field ?? '0') === '0';
+  const heap = o.heapReduction;
+  const rewrites = heap && o.compiledRewrites && o.rewriteMiB !== 0;
+  const reserve = rational && heap && (o.rationalHeap || o.bigRationalHeap);
+  return Object.fromEntries(FOMKYR_FIELDS.map(([key]) => [key, enabled && ({
+    resume: o.spill, ioMode: o.spill && o.execution !== 'single' && Number(form.nativeWorkers) !== 1,
+    sharedCacheMiB: o.spill, progressIntervalSeconds: o.progress,
+    hilbertMiB: o.hilbert, heapThreshold: heap, radixHeap: heap,
+    rationalHeap: rational && heap, bigRationalHeap: rational && heap,
+    fastBigDivision: rational, growingRationalHeap: rational && heap && o.rationalHeap,
+    rationalRewrites: rational && rewrites && (o.rationalHeap || o.bigRationalHeap),
+    compiledRewrites: heap,
+    rewriteDegree: rewrites, rewriteSupport: rewrites,
+    rewriteMiB: heap && o.compiledRewrites,
+    scratchMiB: o.memoryPolicy === 'manual',
+    rowReserveMiB: reserve && o.memoryPolicy === 'manual',
+    reserveInPlace: reserve && o.rationalHeap && (o.memoryPolicy === 'auto' || o.rowReserveMiB !== 0),
+    matcherMiB: o.wordMatcher || o.chainCriterion,
+    eagerPruning: heap && form.monomialPruning !== false,
+    quadraticRewrite: heap,
+    costScheduling: o.batchPairs !== 0 && o.execution !== 'single' && Number(form.nativeWorkers) !== 1,
+  }[key] ?? true)]));
+}
+export function updateFomkyrControlAvailability(form, root = document) {
+  const availability = fomkyrControlAvailability(form);
+  availability.nativeWorkers = form.backend === 'fomkyr' && (form.fomkyrOptions?.execution ?? FOMKYR_DEFAULTS.execution) !== 'single';
+  for (const [key, enabled] of Object.entries(availability)) {
+    const input = root.getElementById(key === 'nativeWorkers' ? key : 'fomkyr-' + key);
+    input.disabled = !enabled;
+    input.closest('label')?.classList.toggle('backend-disabled', !enabled);
+  }
+}
 export function fomkyrEngineOptions(form) {
   const options = validateFomkyrOptions(form.fomkyrOptions);
   const {scratchMiB, hilbertMiB, matcherMiB, rewriteMiB, sharedCacheMiB, rowReserveMiB, progressIntervalSeconds, ...engine} = options;
   const memoryMiB=Number(form.memoryMiB??defaultMemoryMiB('fomkyr'));
+  const availability = fomkyrControlAvailability({...form, backend: 'fomkyr', fomkyrOptions: options});
   engine.arithmeticMode='exact';
   if (engine.batchPairs === null) engine.batchPairs=FOMKYR_DEFAULTS.batchPairs;
-  if (scratchMiB !== null) {
+  if (options.memoryPolicy === 'manual' && scratchMiB !== null) {
     const lanes = engine.execution === 'single' ? 1 : Number(form.nativeWorkers) || automaticWorkers();
-    if (scratchMiB >= Number(form.memoryMiB ?? 512) || scratchMiB < lanes) throw new Error('Fomkyr scratch space must fit the memory budget and provide at least 1 MiB per worker.');
+    if (scratchMiB >= memoryMiB || scratchMiB < lanes) throw new Error('Fomkyr scratch space must fit the memory budget and provide at least 1 MiB per worker.');
     engine.scratchBytes = scratchMiB * 1048576;
-  } else {
+  } else if (options.memoryPolicy === 'manual') {
     // At 3.5 GiB and above, use 2 GiB. Smaller allowances retain bounded
     // workspace and room for hash tables, reducer caches and the reserve.
     engine.scratchBytes=Math.floor(Math.min(2048,Math.max(memoryMiB/3,memoryMiB-1536)))*1048576;
   }
   engine.hilbertBudgetBytes = hilbertMiB * 1048576;
   if (matcherMiB !== null) {
-    if (matcherMiB >= Number(form.memoryMiB ?? 512)) throw new Error('Fomkyr matcher space must fit the memory budget.');
+    if (availability.matcherMiB && matcherMiB >= memoryMiB) throw new Error('Fomkyr matcher space must fit the memory budget.');
     engine.matcherBudgetBytes = matcherMiB * 1048576;
   }
-  for (const [key, value] of [['rewriteBudgetBytes', rewriteMiB], ['sharedReducerCacheBytes', sharedCacheMiB], ['rowReserveBytes', rowReserveMiB]]) {
+  for (const [key, value, control] of [['rewriteBudgetBytes', rewriteMiB, 'rewriteMiB'], ['sharedReducerCacheBytes', sharedCacheMiB, 'sharedCacheMiB'], ['rowReserveBytes', rowReserveMiB, 'rowReserveMiB']]) {
+    if (control === 'rowReserveMiB' && options.memoryPolicy === 'auto') continue;
     if (value !== null) {
-      if (value >= Number(form.memoryMiB ?? 512)) throw new Error('Fomkyr cache space must fit the memory budget.');
+      if (availability[control] && value >= memoryMiB) throw new Error('Fomkyr cache space must fit the memory budget.');
       engine[key] = value * 1048576;
     }
   }

@@ -134,6 +134,7 @@ code, .code { font-family: var(--mono); font-size: 0.9em; }
   padding: 10px var(--gutter) 6px;
 }
 .brand { text-decoration: none; display: flex; align-items: baseline; gap: 8px; min-width: 0; white-space: nowrap; }
+.brand-home { display: flex; align-items: baseline; gap: 8px; text-decoration: none; min-width: 0; }
 .brand-version { font: 400 0.8rem/1 var(--sans); color: var(--ink-2); }
 .brand-name { font: 600 1.6rem/1 var(--serif); letter-spacing: 0.005em; }
 /* the diamond of the diamond lemma */
@@ -142,6 +143,7 @@ code, .code { font-family: var(--mono); font-size: 0.9em; }
 .logo-edge { fill: none; stroke: var(--ink); stroke-width: 1.7; stroke-linejoin: round; }
 .logo circle { fill: var(--ink); }
 .brand-sub { font: italic 400 1rem/1 var(--serif); color: var(--ink-2); }
+.brand-sub a { color: inherit; text-underline-offset: 3px; }
 .views { display: flex; gap: 2px; margin-left: auto; }
 .views a {
   text-decoration: none;
@@ -211,6 +213,11 @@ code, .code { font-family: var(--mono); font-size: 0.9em; }
 .guide { max-width: 960px; }
 .guide section { scroll-margin-top: 16px; }
 .guide-contents { display: flex; flex-wrap: wrap; gap: 8px 18px; padding: 12px 0; border-block: 1px solid var(--rule); }
+.guide h3 { font: 600 1.05rem/1.35 var(--serif); margin: 20px 0 6px; }
+.guide table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+.guide th, .guide td { padding: 8px 10px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--rule); }
+.guide th { font-weight: 600; }
+.guide td:first-child { width: 28%; }
 .guide code { overflow-wrap: anywhere; }
 .guide mjx-container { color: inherit; max-width: 100%; overflow-x: auto; overflow-y: hidden; padding-block: 2px; }
 .example-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr)); gap: 14px; }
@@ -259,10 +266,11 @@ legend { position: relative; }
 /* phones: brand and preferences on one line, the views on a second line that never wraps */
 @media (max-width: 760px) {
   .top { flex-wrap: wrap; row-gap: 4px; padding-top: 8px; }
-  .brand { order: 1; display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 4px 7px; white-space: normal; max-width: 100%; }
-  .brand .logo { grid-row: 1 / 3; width: 22px; height: 22px; }
+  .brand { order: 1; display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; white-space: normal; max-width: 100%; }
+  .brand-home { gap: 7px; }
+  .brand .logo { width: 22px; height: 22px; }
   .brand-name { line-height: 1.15; }
-  .brand-sub { grid-column: 2; }
+  .brand-sub { padding-left: 29px; }
   .preferences { order: 2; margin-left: auto; }
   .views {
     order: 3;
@@ -501,6 +509,9 @@ button { font: inherit; cursor: pointer; }
 @media (max-width: 960px) { .results { position: static; } }
 .results-head { position: relative; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .results-head h2 { font: 600 1.2rem/1.2 var(--serif); margin: 0; }
+.results-title { display: flex; align-items: center; gap: 8px; }
+.zip-download { display: inline-flex; align-items: center; justify-content: center; padding: 4px 6px; }
+.zip-status { margin: 6px 0; }
 .run-info { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
 .run-metrics { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .run-metric { margin: 0; }

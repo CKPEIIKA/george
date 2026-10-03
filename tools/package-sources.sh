@@ -5,6 +5,7 @@ root=$(cd "$(dirname "$0")/.." && pwd)
 toolchain=${GEORGE_TOOLCHAIN:-$root/build/toolchain}
 mkdir -p "$root/web/sources" "$root/web/licenses"
 node "$root/tools/package-ui.mjs"
+node "$root/tools/package-fomkyr-docs.mjs"
 cp "$root/licenses/BGPL.txt" "$root/licenses/GPL-2.0.txt" "$root/web/licenses/"
 cp "$toolchain/ecl-src/LICENSE" "$root/web/licenses/ECL-NOTICE.txt"
 cp "$toolchain/ecl-src/COPYING" "$root/web/licenses/LGPL-2.1.txt"
@@ -34,13 +35,15 @@ git -C "$toolchain/ecl-src" archive --format=tar --prefix=ecl/ 59f60e09102961bf5
 # fixtures are retained. ECL and its bundled dependencies have their own archive.
 git -C "$root" ls-files -z -- \
   README.md LICENSE.md package.json package-lock.json .gitignore .gitattributes .github \
-  licenses ports tools test docs vendor web | \
+  licenses ports tools test docs vendor fomkyr web | \
   tar -C "$root" --exclude='web/sources/*' --exclude='web/engine/ecl.*' \
+    --mtime='@0' --owner=0 --group=0 --numeric-owner \
     --exclude='web/engine/*/ecl.*' \
     --exclude='*.wasm' --exclude='*.so' --exclude='*.o' --exclude='*.a' \
     --exclude='docs/development/validation/*' --exclude='docs/development/HANDOFF.md' \
-    --exclude='vendor/fomkyr-*/results/*/storage/*' \
-    --null -czf "$root/web/sources/george-source.tar.gz" --files-from=-
+    --exclude='vendor/fomkyr-*/results/*' --exclude='fomkyr/results/*' --exclude='fomkyr/.cache/*' \
+    --exclude='*.log' --exclude='*/__pycache__/*' --exclude='*.pyc' \
+    --null -cf - --files-from=- | gzip -n >"$root/web/sources/george-source.tar.gz"
 python3 - "$root/web/sources/george-source.tar.gz" <<'PY'
 import pathlib, sys
 archive = pathlib.Path(sys.argv[1])

@@ -38,9 +38,16 @@ function validateState(state) {
   }
   if (!ORDERS[state.ring].some(order => order.id === state.order)) throw new Error('share.invalid');
   if (!validMemoryMiB(state.memoryMiB, state.backend)) throw new Error('share.invalid');
-  if (!Number.isInteger(state.nativeWorkers) || state.nativeWorkers < 0 || state.nativeWorkers > 32) throw new Error('share.invalid');
   try { timeoutMilliseconds(state.timeoutMinutes); } catch { throw new Error('share.invalid'); }
-  try { if (state.fomkyrOptions) validateFomkyrOptions(JSON.parse(state.fomkyrOptions)); } catch { throw new Error('share.invalid'); }
+  let options;
+  try {
+    if (state.fomkyrOptions) {
+      options = JSON.parse(state.fomkyrOptions);
+      if (state.backend === 'fomkyr') validateFomkyrOptions(options);
+    }
+  } catch { throw new Error('share.invalid'); }
+  if (['fomkyr', 'native'].includes(state.backend) && !(state.backend === 'fomkyr' && options?.execution === 'single')
+      && (!Number.isInteger(state.nativeWorkers) || state.nativeWorkers < 0 || state.nativeWorkers > 32)) throw new Error('share.invalid');
   return state;
 }
 

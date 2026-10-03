@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {algebra} from '../test/support/algebra.mjs';
 import {readInputFile} from '../web/src/bergman-syntax.js';
-import {oraclePolynomial} from '../vendor/fomkyr-0.6.1/tools/oracle-format.mjs';
+import {oraclePolynomial} from '../fomkyr/tools/oracle-format.mjs';
 import {normalWordCounts} from '../test/support/normal-word-counts.mjs';
 import {randomGrowingForm} from '../test/support/random-growing-form.mjs';
 

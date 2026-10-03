@@ -1,0 +1,184 @@
+{
+  "schemaVersion": 1,
+  "appVersion": "0.6.4",
+  "coreVersion": "0.6.4",
+  "importedArchiveSha256": "63209429895636d6237671405aadbe454aeb8a44e165343a8476f4b87332aeb7",
+  "kernelHashes": {
+    "fomkyr32-single.wasm": "75c8af467c16edf69cd20430e8c30d19ee0dac88e03e5deec455d19d48015816",
+    "fomkyr32.wasm": "151c90c70ceebe4c42f979071d5286e9a6f6a63da7794f3e9c152e3746591d95",
+    "fomkyr64-single.wasm": "3d11e5f442c686f8bdc47ae3350f0d52675bbf907b254f880b4b5e240f2d3652",
+    "fomkyr64.wasm": "9e18043c910cfb676834ed86224338e1a33c33a7a683695b7f822fe12d81b07f"
+  },
+  "defaults": {
+    "arithmeticMode": "exact",
+    "memoryPolicy": "auto",
+    "budgetBytes": 3758096384,
+    "scratchBytes": 2147483648,
+    "rowReserveBytes": 536870912,
+    "batchPairs": 128,
+    "radixHeap": true,
+    "reserveInPlace": true,
+    "smallerBudgets": "Automatic scratch uses 4/7 of the effective budget; rational overflow reserve uses 1/7. Saved workspace choices apply in manual mode."
+  },
+  "unitTestsPassed": 147,
+  "exactChecks": {
+    "passed": 19,
+    "names": [
+      "native-build",
+      "big-integer-division",
+      "big-exact-fractions",
+      "held-out-presentations",
+      "four-wasm-exact-paths",
+      "radix-property-build",
+      "radix-properties",
+      "nearby-fk-queue-parity",
+      "four-wasm-overflow-reserve",
+      "cancel-acquired-reserve",
+      "upstream-control-roundtrip",
+      "automatic-memory-planner",
+      "automatic-control-upgrade",
+      "pending-suffix-exact-parity",
+      "pending-suffix-ubsan",
+      "automatic-four-wasm-and-certificate",
+      "cancel-automatic-retry",
+      "automatic-large-record-restore",
+      "automatic-small-budgets"
+    ]
+  },
+  "automaticMemory": {
+    "nativeRetryCases": 9,
+    "wasmCertificateCases": 9,
+    "smallBudgetCases": 6,
+    "cancellationAndResume": true,
+    "largeCheckpointRowRestore": true,
+    "ubsan": true
+  },
+  "parityMatrix": {
+    "cases": 95,
+    "fomkyrRuns": 380,
+    "singularCases": 95,
+    "ambiguities": 105376
+  },
+  "publishedCases": [
+    {
+      "name": "q-serre-q2",
+      "degree": 12,
+      "singularPassed": true,
+      "wasmVariants": 4
+    },
+    {
+      "name": "q-serre-q3",
+      "degree": 12,
+      "singularPassed": true,
+      "wasmVariants": 4
+    },
+    {
+      "name": "q-serre-q4",
+      "degree": 8,
+      "singularPassed": true,
+      "wasmVariants": 4
+    },
+    {
+      "name": "q-serre-q5",
+      "degree": 8,
+      "singularPassed": true,
+      "wasmVariants": 4
+    },
+    {
+      "name": "sklyanin",
+      "degree": 6,
+      "singularPassed": true,
+      "wasmVariants": 4
+    }
+  ],
+  "fk6": {
+    "degrees": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "wasmVariantsPerDegree": 4,
+    "singularVerifiedDegrees": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "singularCensoredDegrees": [
+      9
+    ],
+    "independentJobDeadlineSeconds": 120,
+    "retainedOracleEvidence": true
+  },
+  "browsers": [
+    {
+      "browser": "chromium",
+      "fullTextZip": true,
+      "truncatedTotals": true,
+      "allDegreeCounts": true,
+      "expandedPolynomials": 265,
+      "fk6Degree9Rules": 1451,
+      "timerOnlySeconds": true,
+      "coefficientRules": 21,
+      "defaultWorkspace": {
+        "budgetMiB": 3584,
+        "scratchMiB": 2048,
+        "reserveMiB": 512,
+        "batchPairs": 128,
+        "verified": true
+      }
+    },
+    {
+      "browser": "firefox",
+      "fullTextZip": true,
+      "truncatedTotals": true,
+      "allDegreeCounts": true,
+      "expandedPolynomials": 265,
+      "fk6Degree9Rules": 1451,
+      "timerOnlySeconds": true,
+      "coefficientRules": 21,
+      "defaultWorkspace": {
+        "budgetMiB": 3584,
+        "scratchMiB": 2048,
+        "reserveMiB": 512,
+        "batchPairs": 128,
+        "verified": true
+      }
+    }
+  ],
+  "staticHosting": {
+    "chromium": {
+      "passed": 4
+    },
+    "firefox": {
+      "passed": 4
+    }
+  },
+  "checkpointUpgrade": {
+    "from": "0.6.3",
+    "to": "0.6.4",
+    "passed": 4,
+    "fields": [
+      0,
+      101
+    ],
+    "oldBits": 32,
+    "newBits": 64
+  },
+  "limitations": [
+    "Routine release profile; inherited complete suite was not rerun.",
+    "Node mathematical tests emulate OPFS; real browser checks are recorded separately.",
+    "FK6 degree 9 Singular reference remains censored at 120 seconds.",
+    "No FK6 degree 14 completion or new speedup claim."
+  ]
+}

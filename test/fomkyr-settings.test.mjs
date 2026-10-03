@@ -1,0 +1,92 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {FOMKYR_DEFAULTS, FOMKYR_FIELDS, fomkyrControlAvailability, fomkyrEngineOptions,
+  updateFomkyrControlAvailability} from '../web/src/fomkyr-options.js';
+import {validateSettings} from '../web/src/bergman-syntax.js';
+import {createShareLink, readShareLink} from '../web/src/share.js';
+
+const form = {backend:'fomkyr',field:'0',nativeWorkers:4,monomialPruning:true};
+const available = change => fomkyrControlAvailability({...form,...change});
+
+test('Fomkyr controls have unique names and hide inactive engine settings', () => {
+  assert.equal(new Set(FOMKYR_FIELDS.map(([key])=>key)).size,FOMKYR_FIELDS.length);
+  assert.ok(Object.values(available({backend:'compiled'})).every(value=>value===false));
+  const nodes = Object.fromEntries([...FOMKYR_FIELDS.map(([key])=>'fomkyr-'+key),'nativeWorkers']
+    .map(key=>[key,{disabled:false,closest:()=>null}]));
+  const root = {getElementById:key=>nodes[key]};
+  updateFomkyrControlAvailability({...form,backend:'standard',fomkyrOptions:FOMKYR_DEFAULTS},root);
+  assert.ok(Object.values(nodes).every(node=>node.disabled));
+});
+
+test('Fomkyr dependent controls follow disk, counting, telemetry and rewrite choices', () => {
+  const a=available({fomkyrOptions:{spill:false,hilbert:false,progress:false,compiledRewrites:false}});
+  for (const key of ['resume','ioMode','sharedCacheMiB','hilbertMiB','progressIntervalSeconds',
+    'rewriteDegree','rewriteSupport','rewriteMiB','rationalRewrites']) assert.equal(a[key],false,key);
+  for (const key of ['spill','hilbert','progress','compiledRewrites','wordMatcher','chainCriterion',
+    'batchPairs']) assert.equal(a[key],true,key);
+  const b=available({fomkyrOptions:{execution:'single'}});
+  assert.equal(b.ioMode,false);
+  assert.equal(b.costScheduling,false);
+  assert.equal(available({monomialPruning:false}).eagerPruning,false);
+  assert.equal(available({fomkyrOptions:{batchPairs:0}}).costScheduling,false);
+});
+
+test('Fomkyr prime fields disable rational controls and heap toggles retain the general divider', () => {
+  for (const field of ['2','p']) for (const key of ['rationalHeap','bigRationalHeap','rationalRewrites',
+    'growingRationalHeap','fastBigDivision','rowReserveMiB','reserveInPlace']) {
+    assert.equal(available({field})[key],false,key);
+  }
+  const a=available({fomkyrOptions:{heapReduction:false}});
+  assert.equal(a.fastBigDivision,true);
+  for (const key of ['heapThreshold','radixHeap','rationalHeap','bigRationalHeap','compiledRewrites',
+    'rowReserveMiB','reserveInPlace','eagerPruning','quadraticRewrite']) assert.equal(a[key],false,key);
+  assert.equal(available({fomkyrOptions:{rationalHeap:false}}).rationalRewrites,true);
+  assert.equal(available({fomkyrOptions:{memoryPolicy:'manual',rowReserveMiB:0}}).reserveInPlace,false);
+});
+
+test('word index is available to either word matching or the chain criterion', () => {
+  for (const [wordMatcher,chainCriterion,wanted] of [[true,true,true],[false,true,true],[true,false,true],[false,false,false]]) {
+    assert.equal(available({fomkyrOptions:{wordMatcher,chainCriterion}}).matcherMiB,wanted);
+  }
+});
+
+test('explicit workspace checks use the resolved default memory allowance', () => {
+  const options=fomkyrEngineOptions({...form,fomkyrOptions:{memoryPolicy:'manual',scratchMiB:2048,matcherMiB:600,rowReserveMiB:512}});
+  assert.equal(options.scratchBytes,2048*1048576);
+  assert.equal(options.matcherBudgetBytes,600*1048576);
+  assert.equal(options.rowReserveBytes,512*1048576);
+  assert.throws(()=>fomkyrEngineOptions({...form,fomkyrOptions:{memoryPolicy:'manual',scratchMiB:3584}}));
+  assert.doesNotThrow(()=>fomkyrEngineOptions({...form,field:'p',memoryMiB:128,fomkyrOptions:{rowReserveMiB:256}}));
+});
+
+test('unused Fomkyr draft settings cannot block a Bergman job or its share link', async () => {
+  const values={...form,backend:'compiled',task:'gb',ring:'noncomm',order:'degleftlex',
+    vars:['x','y'],rels:['x^2'],varsText:'x,y',relsText:'x^2',nonhomog:'auto',
+    nativeWorkers:99,fomkyrOptions:{cachePercent:99}};
+  assert.deepEqual(validateSettings(values),[]);
+  const link=await createShareLink(values,'https://example.org/george/');
+  const decoded=await readShareLink(new URL(link).hash);
+  assert.equal(decoded.nativeWorkers,99);
+  assert.equal(decoded.fomkyrOptions.cachePercent,99);
+  assert.ok(validateSettings({...values,backend:'fomkyr'}).length);
+  const single={...values,backend:'fomkyr',fomkyrOptions:{execution:'single'}};
+  assert.deepEqual(validateSettings(single),[]);
+  const singleLink=await createShareLink(single,'https://example.org/george/');
+  assert.equal((await readShareLink(new URL(singleLink).hash)).nativeWorkers,99);
+});
+
+ test('automatic memory ignores saved workspace sizes and manual mode restores them',async()=>{
+  const saved={scratchMiB:4096,rowReserveMiB:4096,radixHeap:false,batchPairs:64};
+  const automatic=fomkyrEngineOptions({...form,memoryMiB:128,fomkyrOptions:saved});
+  assert.equal(automatic.memoryPolicy,'auto');assert.equal(automatic.scratchBytes,undefined);
+  assert.equal(automatic.rowReserveBytes,undefined);assert.equal(automatic.radixHeap,false);
+  assert.equal(automatic.batchPairs,64);assert.equal(available({fomkyrOptions:saved}).scratchMiB,false);
+  assert.equal(available({fomkyrOptions:saved}).rowReserveMiB,false);
+  assert.equal(available({fomkyrOptions:{rowReserveMiB:0}}).reserveInPlace,true);
+  assert.equal(available({fomkyrOptions:{memoryPolicy:'manual'}}).scratchMiB,true);
+  assert.equal(available({fomkyrOptions:{memoryPolicy:'manual'}}).rowReserveMiB,true);
+  const manual=fomkyrEngineOptions({...form,fomkyrOptions:{memoryPolicy:'manual',scratchMiB:2048,rowReserveMiB:512}});
+  assert.equal(manual.scratchBytes,2048*1048576);assert.equal(manual.rowReserveBytes,512*1048576);
+  const share=await createShareLink({...form,varsText:'a,b',relsText:'a^2',fomkyrOptions:saved},'https://example.org/');
+  assert.deepEqual((await readShareLink(new URL(share).hash)).fomkyrOptions.scratchMiB,4096);
+});

@@ -16,7 +16,11 @@ coefficients. Unsupported controls are disabled. Exact Hilbert counting is optio
 
 Fomkyr 0.6.3 kernel binaries are unchanged upstream binaries. The source
 inventory and original archive digest are in
-[the source inventory](../../vendor/fomkyr-0.6.3/SOURCE.json).
+[the source inventory](../../fomkyr/SOURCE.json).
+The stable [Fomkyr subproject](../../fomkyr/README.md) contains the current
+C sources, fixtures, tests and MIT license. Core updates go in `fomkyr/`;
+the browser build stages that directory and keeps George's host adapter.
+Historical vendor directories retain small browser runtimes for upgrade checks.
 The adapted browser coordinator uses real workers and browser disk storage;
 Firefox uses a portable I/O owner. Checkpoints preserve exact polynomial data.
 The basis has primitive coefficients and may retain unreduced tails.

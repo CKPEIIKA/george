@@ -1,10 +1,13 @@
 {
   "name": "george",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "description": "Gr\u00f6bner bases, Hilbert series and Anick resolutions in the browser, an interface to bergman and more",
   "private": true,
   "type": "module",
   "scripts": {
+    "release:check": "node tools/release.mjs",
+    "release:package": "node tools/release.mjs --package",
+    "release:prepare": "node tools/release.mjs --prepare",
     "serve": "node tools/serve.mjs web 8000",
     "examples": "node tools/make-examples.mjs",
     "ui:package": "node tools/package-ui.mjs",

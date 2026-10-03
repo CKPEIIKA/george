@@ -27,6 +27,7 @@ export async function dispatchFomkyr(message,send=postMessage){
       }else {
         if(event.type==='warning'){const text='fomkyr warning: '+event.message+'\n';stdout=(stdout+text).slice(-32768);send({id,event:{type:'stdout',text}});}
         if(event.type==='capabilities'){const text=`fomkyr runtime: wasm${event.bits}, ${event.shared?'shared':'single-worker'}, ${event.workers} CPU lane(s), ${event.ioMode}; budget ${event.effectiveBudgetBytes} bytes.\n`;stdout=(stdout+text).slice(-32768);send({id,event:{type:'stdout',text}});}
+        if(event.type==='memory-plan'||event.type==='memory-adaptation'){const text='fomkyr '+event.type+': '+JSON.stringify(event)+'\n';stdout=(stdout+text).slice(-32768);send({id,event:{type:'stdout',text}});}
         send({id,event});
       }
     }});owned=engine;

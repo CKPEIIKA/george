@@ -32,6 +32,13 @@ explains the current controls. No universal tuning optimum is claimed.
 
 ## Comparing core updates
 
+`node tools/benchmark-fomkyr-update.mjs --baseline-report <completed-comparison-directory>`
+measures the current engine only and reuses the saved engine's timings and exact
+outputs. Inputs, reported machine and measurement settings must match. Saved
+measurements retain their dates; speed ratios can also reflect changes in host
+load between sessions. Output audits run after measurement, and the plots use
+linear axes.
+
 `node tools/benchmark-fomkyr-update.mjs --baseline-root <saved-engine-directory>`
 compares a saved production runtime with the current one. It alternates old/new
 cold browser jobs on FK6, its invertibly scaled form, and two q-Serre presentations.

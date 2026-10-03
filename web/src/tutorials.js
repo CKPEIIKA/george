@@ -1,6 +1,7 @@
-// Small, deterministic presentations for exploring the controls.
+// Deterministic presentations with bounded starting degrees.
 import { EXAMPLES } from './examples.js';
 import { exampleForm } from './bergman-syntax.js';
+import { TUTORIAL_PRESENTATIONS } from './tutorial-presentations.js';
 
 export const TUTORIALS = [
   { id: 'hilbert', example: 'hilb',
@@ -29,6 +30,27 @@ export const TUTORIALS = [
     title: { en: 'A nonhomogeneous idempotent', ru: 'Неоднородное идемпотентное соотношение' },
     description: { en: 'For x² = x, use itemwise completion and augmentation to 0. Compare the ungraded Betti numbers with the raw graded table; the latter is insufficient here.', ru: 'Для x² = x используйте поэлементное пополнение и аугментацию в 0. Сравните неградуированные числа Бетти с исходной градуированной таблицей: здесь её недостаточно.' },
     form: { vars: ['x', 'y'], rels: ['x^2-x'], task: 'anick', augmentation: 'graded', nonhomog: 'itemwise' } },
+  { id: 'fk6',
+    title: { en: 'Fomin–Kirillov algebra FK6', ru: 'Алгебра Фомина–Кириллова FK6' },
+    description: { en: 'The tested 15-generator presentation with 100 quadratic relations, in its original generator order. Start through degree 4 and increase the bound to explore basis growth.', ru: 'Проверенное представление с 15 образующими и 100 квадратичными соотношениями, с исходным порядком образующих. Начните со степени 4 и увеличивайте предел, чтобы исследовать рост базиса.' },
+    form: TUTORIAL_PRESENTATIONS.fk6 },
+  { id: 'oscillator',
+    title: { en: 'Bosonic creation and annihilation operators', ru: 'Бозонные операторы рождения и уничтожения' },
+    description: { en: 'Two independent oscillator modes with central t and [a_i, b_j] = δ_ij t². Setting t = 1 gives the canonical commutators. Explore normal ordering through degree 6.', ru: 'Две независимые моды осциллятора: t центрально, [a_i, b_j] = δ_ij t². При t = 1 получаются канонические коммутаторы. Исследуйте нормальное упорядочение до степени 6.' },
+    form: TUTORIAL_PRESENTATIONS.oscillator },
+  { id: 'clifford',
+    title: { en: 'Clifford algebra and Euclidean Dirac matrices', ru: 'Алгебра Клиффорда и евклидовы матрицы Дирака' },
+    description: { en: 'Four gamma generators satisfy g_i g_j + g_j g_i = 2δ_ij t², with central t. Setting t = 1 recovers the Euclidean Clifford relations; compare the ordered products through degree 6.', ru: 'Четыре гамма-образующие удовлетворяют g_i g_j + g_j g_i = 2δ_ij t², где t центрально. При t = 1 получаются евклидовы соотношения Клиффорда. Сравните упорядоченные произведения до степени 6.' },
+    form: TUTORIAL_PRESENTATIONS.clifford },
+  { id: 'spin',
+    title: { en: 'Angular momentum and raising/lowering operators', ru: 'Момент импульса и повышающие/понижающие операторы' },
+    description: { en: 'Homogenized sl₂ commutators with central t. At t = 1, [h, e] = 2e, [h, f] = −2f and [e, f] = h; identify h = 2J_z, e = J_+ and f = J_−. Start through degree 6.', ru: 'Однородные коммутаторы sl₂ с центральным t. При t = 1: [h, e] = 2e, [h, f] = −2f, [e, f] = h; положите h = 2J_z, e = J_+, f = J_−. Начальный предел — степень 6.' },
+    form: TUTORIAL_PRESENTATIONS.spin },
+  { id: 'yang-mills',
+    title: { en: 'Four-dimensional Yang–Mills algebra', ru: 'Четырёхмерная алгебра Янга–Миллса' },
+    description: { en: 'Four covariant-derivative generators satisfy Σ_μ [X_μ, [X_μ, X_ν]] = 0 for the Euclidean metric. These cubic relations encode the Yang–Mills equations in an associative algebra. Start through degree 5.', ru: 'Четыре образующие ковариантных производных удовлетворяют Σ_μ [X_μ, [X_μ, X_ν]] = 0 для евклидовой метрики. Эти кубические соотношения записывают уравнения Янга–Миллса в ассоциативной алгебре. Начальный предел — степень 5.' },
+    source: { title: 'Connes & Dubois-Violette (2004)', url: 'https://arxiv.org/html/math-ph/0411062' },
+    form: TUTORIAL_PRESENTATIONS.yangMills },
 ];
 
 export function tutorialForm(id) {

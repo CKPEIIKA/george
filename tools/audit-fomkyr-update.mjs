@@ -8,7 +8,7 @@ const out=path.resolve(process.argv[2]);
 const summary={state:'running',scenarios:[]};
 const median=values=>{const sorted=[...values].sort((a,b)=>a-b);return sorted.length%2?sorted[sorted.length>>1]:(sorted[sorted.length/2-1]+sorted[sorted.length/2])/2;};
 for(const scenario of ['fk6','scaled-fk6','q-serre-q2','q-serre-q3']) {
- const directory=path.join(out,scenario),report=JSON.parse(fs.readFileSync(path.join(directory,'report.json')));
+ const directory=path.join(out,scenario),report=JSON.parse(fs.readFileSync(path.join(directory,fs.existsSync(path.join(directory,'comparison-report.json'))?'comparison-report.json':'report.json')));
  assert.equal(report.state,'complete');
  const {vars,rels}=readInputFile('(ALGFORMINPUT)\n'+JSON.parse(fs.readFileSync(report.inputFile)).inputText),a=algebra(vars);
  const input=rels.map(a.parse),canonical=p=>JSON.stringify([...p].sort(([x],[y])=>x.localeCompare(y)).map(([w,[n,d]])=>[w,n.toString(),d.toString()]));
@@ -41,4 +41,4 @@ for(const scenario of ['fk6','scaled-fk6','q-serre-q2','q-serre-q3']) {
  summary.scenarios.push({scenario,completedOutputs:audits.length,audits,comparisons});
 }
 summary.state='complete';fs.writeFileSync(path.join(out,'comparison.json'),JSON.stringify(summary,null,2)+'\n');
-console.log('Matched outputs and bounded q-Serre critical compositions PASS');
+console.log('Compared outputs and bounded q-Serre critical compositions PASS');

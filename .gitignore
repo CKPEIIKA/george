@@ -6,12 +6,12 @@
 /docs/development/HANDOFF.md
 # Imported/generated upstream reports and native build products.
 /vendor/fomkyr-*/results/**
-!/vendor/fomkyr-*/results/speed/
-!/vendor/fomkyr-*/results/speed/d9-baseline-w4-p1-r0.gnb
-!/vendor/fomkyr-*/results/speed/d9-baseline-w4-p1-r0.json
-!/vendor/fomkyr-*/results/speed/d10-optimized-w4-p1-r0.gnb
-!/vendor/fomkyr-*/results/speed/d10-optimized-w4-p0-r0.gnb
 /vendor/fomkyr-*/dist/*.so
+/fomkyr/results/
+/fomkyr/dist/*.so
+/fomkyr/dist/*.o
+/fomkyr/dist/*.a
+/fomkyr/.cache/
 node_modules/
 *.fas
 *.fasl
@@ -26,6 +26,7 @@ node_modules/
 .nfs*
 __pycache__/
 *.pyc
+*.log
 *.swp
 *.swo
 *~

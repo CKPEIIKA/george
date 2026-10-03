@@ -101,6 +101,8 @@ with plt.rc_context(STYLE):
                 marker = 'D' if previous else '^'
             version = next((r.get('native', {}).get('version') for r in rows if r['id'] == ident and r.get('native')), '?')
             label = f"{version} / {'Firefox' if firefox else 'Chromium'}"
+            if any(r.get('savedTiming') for r in rows if r['id'] == ident):
+                label += " (saved)"
         else:
             _, color, linestyle, marker = CURVES[ident]
             label = config['label']

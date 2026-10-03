@@ -6,6 +6,7 @@ import {chromium,firefox} from 'playwright-core';
 import {staticServer} from './serve.mjs';
 import {createShareLink} from '../web/src/share.js';
 import {readInputFile} from '../web/src/bergman-syntax.js';
+import {execFileSync} from 'node:child_process';
 const output=path.resolve(process.argv[2]??'local/validation/correction-release');
 fs.mkdirSync(output,{recursive:true});
 const fixture=JSON.parse(fs.readFileSync('test/fixtures/fomin-kirillov-user.json'));
@@ -52,6 +53,19 @@ try {
    assert.doesNotMatch(await page.locator('#basisOut').textContent(),/computation did not finish|incomplete/i);
    assert.deepEqual(await page.locator('#basisOut .degree h3').allTextContents(),['Degree 2100 elements','Degree 376 elements','Degree 489 elements']);
    assert.ok(await page.locator('#basisOut .polys li').count()<265);
+   // Download while the screen contains only a short preview: the ZIP must
+   // still contain the complete OPFS text and usable algebraic notation.
+   await page.evaluate(()=>{window.showSaveFilePicker=undefined;});
+   const downloadPromise=page.waitForEvent('download');
+   await page.locator('#downloadResultsZip').click();
+   const download=await downloadPromise,zip=path.join(output,name+'-degree4.zip');
+   await download.saveAs(zip);
+   const exported=JSON.parse(execFileSync('python3',['-c',
+    'import sys,zipfile,json;z=zipfile.ZipFile(sys.argv[1]);assert z.testzip() is None;print(json.dumps({n:z.read(n).decode() for n in z.namelist()}))',zip],{encoding:'utf8'}));
+   assert.ok(exported['input.txt']);assert.ok(exported['fomkyr-result.json']);
+   assert.ok(exported['result.txt'].includes('a^2'));assert.ok(exported['result.txt'].length>128);
+   assert.equal(JSON.parse(exported['fomkyr-result.json']).basisSize,265);
+   fs.writeFileSync(path.join(output,name+'-degree4-zip.gb'),exported['result.txt']);
    await page.locator('#basisMore').click();await page.waitForFunction(()=>!document.getElementById('basisMore'),null,{timeout:15000});
    assert.equal(await page.locator('#basisOut .polys li').count(),265);
    assert.equal((await page.locator('#basisOut [data-math-source="a^2"]').count()),1);
@@ -78,19 +92,23 @@ try {
    let defaultWorkspace;
    if(process.argv.includes('--defaults-case')) {
     await page.locator('#engineSettings').evaluate(node=>node.open=true);
-    await page.locator('#memoryMiB').selectOption('3584');await page.locator('#fomkyr-scratchMiB').fill('');
-    await page.locator('#fomkyr-rowReserveMiB').fill('');await page.locator('#fomkyr-batchPairs').fill('');
+    await page.locator('#memoryMiB').selectOption('3584');
+    assert.equal(await page.locator('#fomkyr-memoryPolicy').inputValue(),'auto');
+    assert.equal(await page.locator('#fomkyr-scratchMiB').isDisabled(),true);
+    assert.equal(await page.locator('#fomkyr-rowReserveMiB').isDisabled(),true);
+    await page.locator('#fomkyr-batchPairs').fill('');
     for(const key of ['radixHeap','reserveInPlace'])assert.equal(await page.locator('#fomkyr-'+key).isChecked(),true);
     await page.locator('#vars').fill(vars.join(','));await page.locator('#rels').fill(rels.join(','));await page.locator('#maxdeg').fill('9');
     const calculated=await compute();assert.equal(calculated.basisSize,1451);assert.equal(calculated.completedThroughDegree,9);
     const job=await page.evaluate(()=>window.__lastFomkyrJob);
     assert.equal(job.memoryMiB,3584);assert.equal(job.fomkyrOptions.arithmeticMode,'exact');
-    assert.equal(job.fomkyrOptions.scratchBytes,2048*1048576);assert.equal(job.fomkyrOptions.batchPairs,128);
+    assert.equal(job.fomkyrOptions.memoryPolicy,'auto');assert.equal(job.fomkyrOptions.scratchBytes,undefined);
+    assert.equal(calculated.memoryPlan.ordinaryScratchBytes,2048*1048576);assert.equal(job.fomkyrOptions.batchPairs,128);
     assert.equal(calculated.rowReserveBytes,512*1048576);assert.equal(calculated.radixHeap,true);
     assert.equal(calculated.reserveInPlace,true);assert.equal(calculated.reserveLeased,false);
     defaultWorkspace={budgetMiB:3584,scratchMiB:2048,reserveMiB:512,batchPairs:128,verified:true};
    }
-   assert.deepEqual(errors,[]);report.checks.push({browser:name,truncatedTotals:true,allDegreeCounts:true,expandedPolynomials:265,fk6Degree9Rules:1451,timerOnlySeconds:true,coefficientRules,defaultWorkspace});
+   assert.deepEqual(errors,[]);report.checks.push({browser:name,fullTextZip:true,truncatedTotals:true,allDegreeCounts:true,expandedPolynomials:265,fk6Degree9Rules:1451,timerOnlySeconds:true,coefficientRules,defaultWorkspace});
    console.log(name,'PASS');await context.close();
   } finally {await browser.close();}
  }

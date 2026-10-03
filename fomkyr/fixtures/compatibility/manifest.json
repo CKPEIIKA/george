@@ -1,0 +1,24 @@
+{
+  "description": "Historical record streams used for checkpoint and telemetry compatibility; original bytes are verified after decompression.",
+  "sourceVersion": "0.3.0",
+  "records": {
+    "d10-optimized-w4-p0-r0.gnb": {
+      "file": "d10-optimized-w4-p0-r0.gnb.gz",
+      "bytes": 1941464,
+      "sha256": "d20b35b7b49f8fb13ed1f1a537f0b822bf8f70920e4336a7cfa129c68f688091",
+      "compressedSha256": "bc87c9e750e2e6e2c83e62537aef9fe2b5b0f72fee88a7bd775aca76e1e348a6"
+    },
+    "d10-optimized-w4-p1-r0.gnb": {
+      "file": "d10-optimized-w4-p1-r0.gnb.gz",
+      "bytes": 1941464,
+      "sha256": "d20b35b7b49f8fb13ed1f1a537f0b822bf8f70920e4336a7cfa129c68f688091",
+      "compressedSha256": "bc87c9e750e2e6e2c83e62537aef9fe2b5b0f72fee88a7bd775aca76e1e348a6"
+    },
+    "d9-baseline-w4-p1-r0.gnb": {
+      "file": "d9-baseline-w4-p1-r0.gnb.gz",
+      "bytes": 750040,
+      "sha256": "2ea32188eff6d840af973010f9f87fff9e7654cb039e065d91cfd82f76e283e3",
+      "compressedSha256": "f9434dfa7d4397e6ff9d38d60b513e03af2de951ee98a20796382b1b70b8203f"
+    }
+  }
+}

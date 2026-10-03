@@ -2,8 +2,28 @@
 
 The application's **User guide** tab is at `#guide`. It contains English and
 Russian explanations, locally rendered equations, original source references
-and eight buttons that load complete presentations. The maintained text is
+and buttons that load complete presentations. The maintained text is
 [web/src/guide.js](../web/src/guide.js).
+
+The guide is organized by implementation:
+
+- **Bergman** (`#guide-bergman`): the existing introduction to presentations,
+  fields, orders, results, Anick resolutions and the console, with a link to
+  [a local copy of *Mathematical Computations Using Bergman*](../web/manual/bergman/manual.html).
+- **bergman-fix** (`#guide-bergman-fix`): the default corrections and the
+  purpose of Legacy mode.
+- **Fomkyr** (`#guide-fomkyr`): supported presentations, completed-degree
+  progress, memory and worker settings, checkpoints and exact Hilbert
+  coefficients.
+- **Shared examples** (`#guide-examples`): the common presentation format,
+  with engine compatibility explained before the example buttons.
+
+The subtitle's **more…** link opens the Fomkyr section directly. Engine
+settings are under **Engine**; mathematical settings are under **More settings**.
+
+The full Bergman manual and its four screenshots are preserved under
+`web/manual/bergman/`, with the original notices and a source reference.
+The manual link opens a separate tab so the current calculation can continue.
 
 ## Original-source basis
 
@@ -37,9 +57,21 @@ file remains Bergman's original text. See [the export format](RESOLUTION-EXPORT.
 | Anick chains | Graded Betti table and differentials |
 | Group relation x² = 1 | Augmentation to 1, shifted generators, ungraded homology |
 | Idempotent x² = x | Itemwise completion, augmentation to 0, exact ungraded ranks |
+| Fomin–Kirillov FK6 | Exact tested 15-generator / 100-relation input; starts at degree 4 |
+| Two bosonic oscillator modes | Homogenized canonical commutators; normal ordering through degree 6 |
+| Euclidean Clifford algebra | Four gamma generators; ordered products through degree 6 |
+| Angular momentum / sl₂ | Homogenized raising/lowering commutators through degree 6 |
+| Four-dimensional Yang–Mills algebra | Four cubic covariant-derivative relations through degree 5 |
 
 These supplement the fourteen original presets and six configurable families.
-The first six reuse original inputs; the last two are algebraic sanity cases.
+The first six reuse original Bergman inputs; the group and idempotent examples
+are algebraic sanity cases. FK6 and the physics examples preserve the
+generator and relation order from the Fomkyr 0.6.3 regression fixtures. Their
+browser-ready presentations are in `web/src/tutorial-presentations.js`.
+Oscillator, Clifford and sl₂ inputs retain a central homogenizing variable
+`t`; specializing `t = 1` recovers the usual operator relations. The
+Yang–Mills example uses the Euclidean metric and links to
+[Connes and Dubois-Violette's defining presentation](https://arxiv.org/html/math-ph/0411062).
 Loading an example sets its documented computational options and preserves
 the computation engine selection.
 Changing display language preserves the current presentation and output files.
@@ -56,17 +88,25 @@ recipient's saved form. Opening a link loads the form; press Compute to run it.
 The state is stored in the link using a compact versioned schema and
 [browser compression](https://compression.spec.whatwg.org/), without a
 short-link service. Larger presentations produce longer links. Times are
-displayed in seconds, with up to two decimal places; Russian uses a decimal
-comma, for example **302,49 с**.
+displayed in seconds; Russian uses a decimal comma.
 
-## Computation engines (George 0.4)
+## Computation engines
 
-**More settings → Computation engine** offers **Lisp / ECL O2**, **Lisp / ECL
-O3 + LTO**, and **C / ECL O3 + LTO**. The C backend is selected by default.
+**Engine → Computation engine** offers **Lisp / ECL O2**, **Lisp / ECL
+O3 + LTO**, **C / ECL O3 + LTO**, its **memory64** variant, and **Fomkyr**.
+The memory64 C/ECL engine is selected by default when supported; otherwise
+the 32-bit C/ECL engine is selected.
 It compiles Bergman's existing Lisp functions to C and then WebAssembly;
 some auxiliary functions still run as Lisp bytecode. The two Lisp options
 run the algebra routines as bytecode, with different compiler settings for
-ECL and its libraries. All three use the same algebraic algorithms.
+ECL and its libraries. These Bergman variants use the same algebraic algorithms.
+
+Fomkyr is an independent C engine for homogeneous noncommutative Gröbner
+bases on 1–16 generators, with unit weights and degree/left lexicographic
+order. It supports exact rational arithmetic and prime fields, optional
+exact Hilbert coefficients, shared multicore and local checkpoints.
+Unsupported controls are disabled; the Lisp console requires Bergman.
+Fomkyr's engine chooser entry remains experimental.
 
 The selection is saved and included in Share links. Earlier links select
 the original O2 backend. Changing engines starts a new console session.
@@ -74,17 +114,23 @@ Each computation submitted through the form starts in a fresh session.
 
 ## Memory
 
-Large presentations can use **More settings → Memory limit**. The default
-Lisp heap limit is 2 GiB, and the largest choice is 3.5 GiB. Allocations grow
-on demand; the 4 GiB Wasm ceiling also includes engine and file storage.
-If the Lisp heap is exhausted, George displays saved basis output as partial
-and releases the worker. A larger allowance can advance the calculation
-further, but an unbounded basis can still exceed memory or take a long time.
+Large presentations can use **Engine → Memory limit**. The default
+memory64 Bergman allowance is 16077 MiB (15.7 GiB); 32-bit engines default
+to 2048 MiB and allow up to 4095 MiB. Memory64 offers allowances up to
+16384 MiB and **No heap cap**. Removing the heap cap still leaves the
+build's 16 GiB Wasm limit and the browser's available memory.
 
-The console starts with a 2 GiB allowance. To enlarge that console session,
-evaluate `(ext:set-limit 'ext:heap-size 3758096384)` for 3.5 GiB. A memory
-failure resets the session; download files you want to retain before a large
-console calculation.
+Fomkyr defaults to 3584 MiB when no allowance is supplied and permits up
+to 14304 MiB. Its allowance includes the reduction pool, caches and shared
+overflow workspace. Automatic addressing selects memory64 when needed;
+the UI reports the effective limit if the browser falls back. Saved forms
+and Share links retain their selected allowances.
+
+Allocated Wasm memory is displayed beside progress. Browser and JavaScript
+memory is additional. A larger allowance can advance a calculation further;
+an unbounded basis may still exceed memory or take a long time. Saved output
+after a memory failure is partial. Download session files before resetting
+or changing a Bergman engine.
 
 ## Console
 

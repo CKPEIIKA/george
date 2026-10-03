@@ -11,27 +11,32 @@ import {fominKirillovSamples, fominKirillov} from '../test/support/fomin-kirillo
 import {BackendClient} from '../test/support/backend-client.mjs';
 import {algebra} from '../test/support/algebra.mjs';
 import {stageBoundedReserveTests} from './stage-fomkyr-tests.mjs';
+import {engineHashes, validationSnapshot, CheckTimings, writeJSON} from './release-support.mjs';
+import {OracleCache, singularIdentity, bergmanIdentity} from './oracle-cache.mjs';
+import {oraclePolynomial} from '../fomkyr/tools/oracle-format.mjs';
+import {copyFomkyrSource} from './fomkyr-source.mjs';
 
 const currentManifest=JSON.parse(fs.readFileSync('web/engine/fomkyr/build.json'));
-const sourceDirectory='vendor/fomkyr-'+currentManifest.version;
+const sourceDirectory='fomkyr';
 const out=path.resolve(process.argv[2] || `build/validation/fomkyr-${Date.now()}`);
 const sha=file=>crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
 fs.mkdirSync(out,{recursive:true});
+const timings=new CheckTimings(out),cache=new OracleCache({refresh:process.argv.includes('--refresh-oracles')});
 const report={state:'running',startedAt:new Date().toISOString(),upstreamVersion:currentManifest.version,
   importedArchiveSha256:currentManifest.provenance.archiveSha256,
-  engineHashes:Object.fromEntries(['fomkyr32.wasm','fomkyr64.wasm','fomkyr32-single.wasm','fomkyr64-single.wasm','engine.js','runtime.js','job-adapter.js'].map(n=>[n,sha('web/engine/fomkyr/'+n)])),
+  engineHashes:engineHashes(),validationSourceHashes:validationSnapshot(),
   bergmanManifest:JSON.parse(fs.readFileSync('web/engine/compiled/build.json')),upstreamTests:[],cases:[],
   method:'Fomkyr primitive unreduced bases are compared by two-way bounded reduction and critical-pair certificates, not byte equality. Singular uses the same degree bound. Node OPFS is emulated; browser evidence is separate.'};
-const save=()=>fs.writeFileSync(path.join(out,'report.json'),JSON.stringify(report,null,2)+'\n');
+const save=()=>writeJSON(path.join(out,'report.json'),report);
 if(process.argv.includes('--resume') && fs.existsSync(path.join(out,'report.json'))) {
   const previous=JSON.parse(fs.readFileSync(path.join(out,'report.json')));
   assert.deepEqual(previous.engineHashes,report.engineHashes,'Cannot resume after engine changes');
+  assert.deepEqual(previous.validationSourceHashes,report.validationSourceHashes,'Cannot resume after validation source changes; use a new output directory.');
+  report.startedAt=previous.startedAt;
   report.upstreamTests=previous.upstreamTests;report.cases=previous.cases;report.design=previous.design;
 }
 function run(command,args,{cwd=out,input,env=process.env,name,timeout=120000}={}){
-  const r=spawnSync(command,args,{cwd,input,env,timeout,encoding:'utf8',maxBuffer:16e6,killSignal:'SIGKILL'});
-  fs.writeFileSync(path.join(out,name+'.log'),(r.stdout||'')+(r.stderr||''));
-  assert.ifError(r.error);assert.equal(r.status,0,name+': '+r.stderr);return r.stdout;
+  return timings.run(name,command,args,{cwd,input,env,timeout});
 }
 save();
 try {
@@ -42,12 +47,16 @@ try {
     assert.equal(evidence.state,'complete');assert.equal(evidence.upstreamVersion,report.upstreamVersion);
     assert.equal(evidence.importedArchiveSha256,report.importedArchiveSha256);
     assert.deepEqual(evidence.engineHashes,report.engineHashes);
+    assert.equal(evidence.upstreamHost,'production');
     assert.ok(evidence.upstreamTests.length>=25);assert.ok(evidence.upstreamTests.every(row=>row.passed));
-    report.upstreamTests=evidence.upstreamTests;report.upstreamEvidence={file:evidenceFile,sha256:sha(evidenceFile)};
-  }else{
+    report.upstreamTests=evidence.upstreamTests;report.upstreamHost=evidence.upstreamHost;report.upstreamEvidence={file:evidenceFile,sha256:sha(evidenceFile)};
+  }else if(!process.argv.includes('--matrix-only')){
   const stage=path.join(out,'upstream');
-  fs.cpSync(sourceDirectory,stage,{recursive:true});fs.mkdirSync(path.join(stage,'results'),{recursive:true});
-  for(const version of ['0.5','0.6','0.6.1','0.6.2','0.6.3'])fs.mkdirSync(path.join(stage,'results',version),{recursive:true});
+  copyFomkyrSource(stage);fs.mkdirSync(path.join(stage,'results'),{recursive:true});
+  // Shared suite evidence is valid only for the actual production host.
+  fs.cpSync('web/engine/fomkyr',path.join(stage,'web'),{recursive:true});
+  report.upstreamHost='production';
+  for(const version of ['0.5','0.6','0.6.1','0.6.2','0.6.3','0.6.4'])fs.mkdirSync(path.join(stage,'results',version),{recursive:true});
   stageBoundedReserveTests(stage);
   // Older archives omitted the native field argument. Apply that correction
   // only when needed, retaining the original source and kernel.
@@ -156,53 +165,65 @@ try {
     for(const prime of [0,2,101])cases.push({id:`physics-${fixture.name}-p${prime}`,form:{...fromFixture(fixture),field:prime===0?'0':prime===2?'2':'p',modulus:String(prime),maxdeg:'4'}});
   const root=path.resolve('build/oracles/root'),singular=path.join(root,'usr/bin/Singular');
   const env={...process.env,LD_LIBRARY_PATH:`${root}/usr/lib/x86_64-linux-gnu:${root}/usr/lib/x86_64-linux-gnu/singular/MOD`,
+    SINGULAR_PROCS_DIR:path.join(root,'usr/lib/x86_64-linux-gnu/singular/MOD'),
     SINGULARPATH:`${root}/usr/share/singular/LIB:${root}/usr/lib/x86_64-linux-gnu/singular/MOD`};
+  const singularBuild=singularIdentity(root),bergmanBuild=bergmanIdentity();
   for (const c of cases) {
     if(report.cases.some(result=>result.id===c.id))continue;
     const form={task:'gb',ring:'noncomm',order:'degleftlex',field:'0',...c.form,
       nonhomog:'degreewise',strategy:'default',lowterms:'quick',outmode:'ALG',legacy:false,memoryMiB:128};
     const dir=path.join(out,c.id);fs.mkdirSync(dir,{recursive:true});
-    const referenceClient=new BackendClient(path.resolve('web/engine/compiled'),{timeoutMs:30000});
-    let reference;
-    try{reference=await referenceClient.run(buildJob({...form,backend:'compiled'}));}finally{await referenceClient.close();}
-    fs.writeFileSync(path.join(dir,'bergman.gb'),reference.files['result.gb']);
+    const referenceJob=buildJob({...form,backend:'compiled'});
+    const reference=await cache.obtain('bergman-basis',{files:referenceJob.files,script:referenceJob.script},bergmanBuild,
+      ()=>timings.measure(c.id+'-bergman',async()=>{
+        const client=new BackendClient(path.resolve('web/engine/compiled'),{timeoutMs:30000});
+        try{return (await client.run(referenceJob)).files['result.gb'];}finally{await client.close();}
+      }),text=>assert.equal(parseBasis(text).done,true));
+    fs.writeFileSync(path.join(dir,'bergman.gb'),reference.value);
     const vars=form.reverseVars?[...form.vars].reverse():form.vars;
     const modulus=form.field==='0'?0:form.field==='2'?2:Number(form.modulus);
     const degree=Number(form.maxdeg),a=algebra(vars,false,modulus);
-    const expected=a.basis(reference.files['result.gb']),input=form.rels.map(r=>a.parse(r));
-    const row={id:c.id,degree,vars,modulus,dimensions:a.hilbert(expected,degree),engines:[]};
+    const expected=a.basis(reference.value),input=form.rels.map(r=>a.parse(r));
+    const names=vars.map((v,i)=>'gn_var_'+i),ids=Object.fromEntries(vars.map((v,i)=>[v,names[i]]));
+    const convert=p=>toBergman(parseRelation(p,vars).map(t=>({...t,factors:t.factors.map(f=>({...f,v:ids[f.v]}))})));
+    // The oracle script depends solely on the presentation, never on candidate output.
+    const code=`LIB "freegb.lib";\nring gn_r=${modulus},(${[...names].reverse().join(',')}),Dp;\ndef gn_a=freeAlgebra(gn_r,${degree});\nsetring gn_a;\nideal I=${form.rels.map(convert).join(',')||'0'};\nideal G=twostd(I);\nfor(int j=1;j<=size(G);j++){print("POLY:"+string(G[j]));}\nprint("ORACLE_DONE");\nquit;\n`;
+    fs.writeFileSync(path.join(dir,'singular.sing'),code);
+    const singularReference=await cache.obtain('singular-basis',{source:code},singularBuild,
+      ()=>run(singular,['-q'],{cwd:dir,input:code,env,name:c.id+'-singular',timeout:30000}),log=>{
+        assert.doesNotMatch(log,/^\s*\?|Could not find dynamic library/m);assert.match(log,/ORACLE_DONE/);
+      });
+    fs.writeFileSync(path.join(dir,'singular.log'),singularReference.value);
+    const oracle=algebra(names,false,modulus),oracleBasis=[...singularReference.value.matchAll(/^POLY:(.+)$/gm)]
+      .map(m=>oracle.monic(oraclePolynomial(m[1],oracle,names))).filter(p=>p.size);
+    const row={id:c.id,degree,vars,modulus,dimensions:a.hilbert(expected,degree),engines:[],
+      references:{bergman:{key:reference.key,reused:reference.reused},singular:{key:singularReference.key,reused:singularReference.reused}}};
     for(const [bits,execution,workers] of [[32,'single',1],[32,'multicore',4],[64,'single',1],[64,'multicore',4]]) {
       const client=new BackendClient(path.join(dir,`storage-${bits}-${execution}`),{timeoutMs:30000,workerURL:new URL('../test/support/fomkyr-worker.mjs',import.meta.url)});
       let r;
-      try{r=await client.run({...buildJob({...form,backend:'fomkyr'}),fomkyrOptions:{...buildJob({...form,backend:'fomkyr'}).fomkyrOptions,bits,execution,workers,scratchBytes:32*1048576,spill:true,resume:false,hilbert:true}});}finally{await client.close();}
+      try{r=await timings.measure(c.id+`-${bits}-${execution}`,()=>client.run({...buildJob({...form,backend:'fomkyr'}),fomkyrOptions:{...buildJob({...form,backend:'fomkyr'}).fomkyrOptions,bits,execution,workers,spill:true,resume:false,hilbert:true}}));}finally{await client.close();}
       const text=r.files['result.gb'];assert.equal(parseBasis(text).done,true);
       fs.writeFileSync(path.join(dir,`fomkyr-${bits}-${execution}.gb`),text);
       const gb=a.basis(text),ambiguities=a.certify(input,gb,degree);
       for(const p of gb)assert.equal(a.nf(p,expected).size,0,c.id+': native belongs to reference ideal');
       for(const p of expected)assert.equal(a.nf(p,gb).size,0,c.id+': reference belongs to native ideal');
+      for(const p of gb)assert.equal(a.nf(p,oracleBasis).size,0,c.id+': native belongs to Singular ideal');
+      for(const p of oracleBasis)assert.equal(a.nf(p,gb).size,0,c.id+': Singular belongs to native ideal');
+      assert.deepEqual(oracleBasis.map(oracle.lead).sort(),gb.map(a.lead).sort());
       assert.deepEqual(a.hilbert(gb,degree),row.dimensions);
       if(c.coefficientBits)assert.ok([...text.matchAll(/\d+\*/g)].some(m=>BigInt(m[0].slice(0,-1)).toString(2).length===c.coefficientBits));
       assert.equal(r.bits,bits);assert.equal(r.shared,execution==='multicore');assert.equal(r.workers,workers);
       assert.deepEqual(r.hilbert.coefficients,row.dimensions.map(String));
       row.engines.push({bits,execution,workers,passed:true,ambiguities,basisSize:gb.length,elapsedSeconds:r.elapsedMs/1000,memoryBytes:r.memoryBytes,hilbertMatches:true});
       if(bits===32 && execution==='single') {
-        const names=vars.map((v,i)=>'gn_var_'+i),ids=Object.fromEntries(vars.map((v,i)=>[v,names[i]]));
-        const convert=p=>toBergman(parseRelation(p,vars).map(t=>({...t,factors:t.factors.map(f=>({...f,v:ids[f.v]}))})));
-        const polys=parseBasis(text).groups.flatMap(g=>g.polys);
-        const code=`LIB "freegb.lib";\nring gn_r=${modulus},(${[...names].reverse().join(',')}),Dp;\ndef gn_a=freeAlgebra(gn_r,${degree});\nsetring gn_a;\nideal I=${form.rels.map(convert).join(',')||'0'};\nideal B=${polys.map(convert).join(',')||'0'};\nideal G=twostd(I);\nideal H=twostd(B);\nprint("ORACLE:"+string(size(reduce(B,G)))+":"+string(size(reduce(I,H))));\nfor(int j=1;j<=size(G);j++){print("LEAD:"+string(lead(G[j])));}\nquit;\n`;
-        fs.writeFileSync(path.join(dir,'singular.sing'),code);
-        const log=run(singular,['-q'],{cwd:dir,input:code,env,name:c.id+'-singular',timeout:30000});
-        assert.doesNotMatch(log,/^\s*\?/m);assert.match(log,/ORACLE:0:0/);
-        const oracle=algebra(names,false,modulus),leaders=[...log.matchAll(/^LEAD:(.+)$/gm)].map(m=>oracle.parse(m[1]));
-        assert.deepEqual(oracle.hilbert(leaders,degree),row.dimensions);
-        const leading=leaders.map(oracle.lead).sort();
-        assert.deepEqual(leading,gb.map(a.lead).sort());
+        assert.deepEqual(oracle.hilbert(oracleBasis,degree),row.dimensions);
         row.singular={passed:true,degreeBound:degree,mutualIdealMembership:true,leadingWordsMatch:true,dimensions:row.dimensions};
       }
     }
     report.cases.push(row);save();console.log(c.id,'four WASM variants + Bergman + Singular PASS');
   }
   report.state='complete';report.summary={cases:report.cases.length,fomkyrRuns:report.cases.length*4,
-    singularCases:report.cases.length,ambiguities:report.cases.reduce((n,c)=>n+c.engines.reduce((s,e)=>s+e.ambiguities,0),0)};
+    singularCases:report.cases.length,oracleCacheHits:cache.hits,oracleCalculations:cache.misses,
+    ambiguities:report.cases.reduce((n,c)=>n+c.engines.reduce((s,e)=>s+e.ambiguities,0),0)};
 } catch(error) {report.state='failed';report.error=error.stack||String(error);throw error;}
 finally {report.finishedAt=new Date().toISOString();save();}

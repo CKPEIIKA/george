@@ -32,7 +32,7 @@ Gröbner bases in free associative and commutative algebras over ℚ, 𝔽₂ an
 𝔽ₚ, Hilbert and Poincaré–Betti series, Anick resolutions, Betti numbers of
 algebras and modules, and Hochschild homology. Arithmetic is exact.
 
-**George 0.6.3** adds the independent fomkyr backend
+**George 0.6.4** adds the independent [fomkyr subproject](fomkyr/README.md)
 for homogeneous noncommutative Gröbner bases and optional exact Hilbert coefficients.
 
 ## ARCHITECTURE
@@ -101,7 +101,7 @@ and results are compared with a native SBCL build, Bergman 2 and Singular
   and sparse heap reduction, exact rational reduction and compiled local rewrites.
   Rewrite and shared reducer caches have bounded automatic allowances;
   their tuning controls are in **Engine**. Exact Hilbert counting is off until selected;
-  workers, batches and workspace are automatic. Saved settings and Share
+  workers and workspace are automatic, and new batches use 128 pairs. Saved settings and Share
   links retain their explicit choices.
   Output has primitive coefficients; earlier polynomial tails are not globally
   interreduced. Large results have a preview and full disk downloads. Old
@@ -134,9 +134,10 @@ and results are compared with a native SBCL build, Bergman 2 and Singular
   The degree tooltip shows the last completed degree, pair/reduction counts,
   and whether the engine is saving a checkpoint, counting Hilbert coefficients
   or exporting results. A dash means the engine has not reported its degree.
-  Memory includes reserved workspace; fomkyr can reserve up to 512 MiB
-  for scratch space. It does not measure total browser RAM or live objects,
-  and disk checkpoints are separate.
+  Memory includes reserved workspace. With a 3.5 GiB fomkyr allowance,
+  automatic scratch space is 2 GiB and the shared overflow reserve is up to
+  512 MiB; smaller allowances scale down. Browser RAM, live objects and disk
+  checkpoints have separate sizes.
 
 **Output**
 : The basis by degree, series, Betti tables, Anick differentials, the raw
@@ -194,7 +195,7 @@ and results are compared with a native SBCL build, Bergman 2 and Singular
 
 ## VERSION
 
-George **0.6.3** includes fomkyr 0.6.3, configurable multicore execution,
+George **0.6.4** includes fomkyr 0.6.4, configurable multicore execution,
 disk checkpoints and full result downloads. Unsupported tasks and settings
 are disabled for this backend. Live allocated Wasm memory appears beside
 the computation status, alongside degree progress and elapsed seconds.
