@@ -32,7 +32,7 @@ Gröbner bases in free associative and commutative algebras over ℚ, 𝔽₂ an
 𝔽ₚ, Hilbert and Poincaré–Betti series, Anick resolutions, Betti numbers of
 algebras and modules, and Hochschild homology. Arithmetic is exact.
 
-**George 0.6** adds the independent fomkyr backend
+**George 0.6.1** adds the independent fomkyr backend
 for homogeneous noncommutative Gröbner bases and optional exact Hilbert coefficients.
 
 ## ARCHITECTURE
@@ -194,7 +194,7 @@ and results are compared with a native SBCL build, Bergman 2 and Singular
 
 ## VERSION
 
-George **0.6** includes fomkyr 0.6.1, configurable multicore execution,
+George **0.6.1** includes fomkyr 0.6.1, configurable multicore execution,
 disk checkpoints and full result downloads. Unsupported tasks and settings
 are disabled for this backend. Live allocated Wasm memory appears beside
 the computation status, alongside degree progress and elapsed seconds.
@@ -203,7 +203,9 @@ Mathematical options appear in **More settings**; runtime controls are in the se
 jobs enable its reduction optimizations and pruning, with optional Hilbert
 counting off. The default is Bergman memory64 with a 15.7 GiB allowance.
 Parsed relations can be folded, and relations and basis results share compact
-rows grouped by term count. Mathematical copying preserves plain-text powers.
+rows grouped by term count. Mathematical copying preserves plain-text powers. Basis totals and degree counts
+come from engine metadata; previews can be expanded from the saved full result.
+The elapsed counter stays in seconds.
 
 George 0.5 added the **C / ECL O3 + LTO (memory64)** engine, allowances up to
 16 GiB and a **No heap cap** setting. It also adds optional monomial pruning

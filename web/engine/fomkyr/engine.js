@@ -332,7 +332,8 @@ export class FomkyrEngine {
   }
   async exportText(variables) {
     const e=this.e;let preview='',previewTruncated=false,used=0,currentDegree=0,textOffset=0;
-    const cap=Math.min(Number(this.options.previewBytes??256*1024),1024*1024);
+    const cap=Math.min(Number(this.options.previewBytes??1024*1024),1024*1024);
+    const degreeCounts=new Map();
     let handle=null;
     if(this.directory){handle=await (await this.directory.getFileHandle('result.gb',{create:true})).createSyncAccessHandle();handle.truncate(0);}
     // Stream each term. A giant polynomial never becomes one giant JS string.
@@ -343,6 +344,7 @@ export class FomkyrEngine {
       emit(`% fomkyr; completed through degree ${Number(e.gn_stat(2))}; not a claim of a finite complete GB\n`);
       for(let id=1;id<=Number(e.gn_stat(0));id++) {
         const degree=Number(e.gn_rule_stat(id,2));
+        degreeCounts.set(degree,(degreeCounts.get(degree)??0)+1);
         if(degree!==currentDegree){emit(`\n% ${degree}\n`);currentDegree=degree;}
         const off=e.gn_export_rule(id);if(!off)throw new Error('Export row exceeds I/O workspace or is corrupted');
         const before=preview.length;let started=!previewTruncated;
@@ -350,9 +352,10 @@ export class FomkyrEngine {
         emit(',\n');
         if(started&&previewTruncated)preview=preview.slice(0,before); // Never expose half a polynomial.
       }
+      const previewByteLength=enc.encode(preview).length;
       if(previewTruncated)preview+='\n% PREVIEW TRUNCATED. Full result.gb is in OPFS; no Done marker here.\n';
       emit('Done\n',!previewTruncated);flush();handle?.flush();
-      return {preview,previewTruncated,textBytes:textOffset,fullBasisPath:this.directory?`fomkyr/${this.runKey}/result.gb`:null};
+      return {preview,previewTruncated,previewByteLength,basisByDegree:Array.from(degreeCounts,([degree,count])=>({degree,count})).sort((a,b)=>a.degree-b.degree),textBytes:textOffset,fullBasisPath:this.directory?`fomkyr/${this.runKey}/result.gb`:null};
     } finally {handle?.close();}
   }
   async closeStorage(){

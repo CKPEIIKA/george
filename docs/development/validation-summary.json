@@ -1,0 +1,7030 @@
+{
+  "schemaVersion": 1,
+  "appVersion": "0.6.0",
+  "mathematicalKernel": {
+    "version": "0.6.1",
+    "archiveSha256": "ee286ecc55dea5275f7568abfd721bb380cc57b9df9772ab4348aad7ca411492",
+    "hashes": {
+      "fomkyr32.wasm": "c82d7c239de53b39b714ebf7de48f6f3f1d8c3197ee65407a2d1e677b88d4878",
+      "fomkyr64.wasm": "75eb6f6e765a2c93cb2df0ccc4ad453ae0f48a18c600c8200f48d4c3e4d8aca2",
+      "fomkyr32-single.wasm": "3e95af0fcd6bfd1d4d3b0d9c2b764770defdfcef11c2a91e31d6ada5afcd7b4f",
+      "fomkyr64-single.wasm": "91b23485de2011692578988fe86bb36f968d41ac98c655684636116093263570"
+    }
+  },
+  "unitTests": {
+    "passed": 132,
+    "scope": "Release prior to public-data curation; subsequent results are recorded separately."
+  },
+  "importedSuites": [
+    {
+      "name": "native",
+      "passed": true
+    },
+    {
+      "name": "extra",
+      "passed": true
+    },
+    {
+      "name": "wasm",
+      "passed": true
+    },
+    {
+      "name": "release",
+      "passed": true
+    },
+    {
+      "name": "compatibility",
+      "passed": true
+    },
+    {
+      "name": "integration",
+      "passed": true
+    },
+    {
+      "name": "static-host-unit",
+      "passed": true
+    },
+    {
+      "name": "installer",
+      "passed": true
+    },
+    {
+      "name": "installer-modern",
+      "passed": true
+    },
+    {
+      "name": "optimizer-edge",
+      "passed": true
+    },
+    {
+      "name": "physics-matrix",
+      "passed": true
+    },
+    {
+      "name": "physics-wasm-matrix",
+      "passed": true
+    },
+    {
+      "name": "progress-unit",
+      "passed": true
+    },
+    {
+      "name": "progress-integration",
+      "passed": true
+    },
+    {
+      "name": "rational-arithmetic",
+      "passed": true
+    },
+    {
+      "name": "rational-cases",
+      "passed": true
+    },
+    {
+      "name": "compiled-edge",
+      "passed": true
+    },
+    {
+      "name": "compiled-fk6-certificate",
+      "passed": true
+    },
+    {
+      "name": "compiled-wasm",
+      "passed": true
+    },
+    {
+      "name": "direct-controls",
+      "passed": true
+    },
+    {
+      "name": "modular-compatibility",
+      "passed": true
+    },
+    {
+      "name": "audit",
+      "passed": true
+    },
+    {
+      "name": "oracle-format",
+      "passed": true
+    },
+    {
+      "name": "rational-rewrite-wasm",
+      "passed": true
+    },
+    {
+      "name": "ubsan",
+      "passed": true
+    }
+  ],
+  "algebraCoverage": {
+    "cases": [
+      {
+        "id": "fomkyr-lhs-001",
+        "degree": 3,
+        "vars": [
+          "x_1_6",
+          "x_3_6",
+          "x_2_6",
+          "x_2_5",
+          "x_3_4",
+          "x_4_6",
+          "x_1_3",
+          "x_5_6",
+          "x_4_5",
+          "x_2_4",
+          "x_1_2",
+          "x_3_5",
+          "x_1_4",
+          "x_2_3",
+          "x_1_5"
+        ],
+        "modulus": 101,
+        "dimensions": [
+          1,
+          15,
+          125,
+          765
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 788,
+            "basisSize": 166,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 788,
+            "basisSize": 166,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 788,
+            "basisSize": 166,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 788,
+            "basisSize": 166,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 3,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            15,
+            125,
+            765
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-002",
+        "degree": 2,
+        "vars": [
+          "x_4_5",
+          "x_1_5",
+          "x_3_5",
+          "x_1_4",
+          "x_1_3",
+          "x_2_5",
+          "x_2_3",
+          "x_1_2",
+          "x_2_4",
+          "x_3_4"
+        ],
+        "modulus": 2,
+        "dimensions": [
+          1,
+          10,
+          55
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 90,
+            "basisSize": 45,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 90,
+            "basisSize": 45,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 90,
+            "basisSize": 45,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 90,
+            "basisSize": 45,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 2,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            10,
+            55
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-003",
+        "degree": 2,
+        "vars": [
+          "x_2_3",
+          "x_1_4",
+          "x_1_2",
+          "x_1_3",
+          "x_2_4",
+          "x_3_4"
+        ],
+        "modulus": 7,
+        "dimensions": [
+          1,
+          6,
+          19
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 34,
+            "basisSize": 17,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 34,
+            "basisSize": 17,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 34,
+            "basisSize": 17,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 34,
+            "basisSize": 17,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 2,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            6,
+            19
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-004",
+        "degree": 2,
+        "vars": [
+          "x_4_5",
+          "x_5_6",
+          "x_2_5",
+          "x_3_5",
+          "x_2_4",
+          "x_1_3",
+          "x_2_6",
+          "x_2_3",
+          "x_1_5",
+          "x_3_6",
+          "x_1_6",
+          "x_4_6",
+          "x_1_4",
+          "x_1_2",
+          "x_3_4"
+        ],
+        "modulus": 0,
+        "dimensions": [
+          1,
+          15,
+          125
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 200,
+            "basisSize": 100,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 200,
+            "basisSize": 100,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 200,
+            "basisSize": 100,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 200,
+            "basisSize": 100,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 2,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            15,
+            125
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-005",
+        "degree": 4,
+        "vars": [
+          "x_2_3",
+          "x_1_4",
+          "x_1_3",
+          "x_3_4",
+          "x_2_4",
+          "x_1_2"
+        ],
+        "modulus": 7,
+        "dimensions": [
+          1,
+          6,
+          19,
+          42,
+          71
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 126,
+            "basisSize": 27,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 126,
+            "basisSize": 27,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 126,
+            "basisSize": 27,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 126,
+            "basisSize": 27,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            6,
+            19,
+            42,
+            71
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-006",
+        "degree": 4,
+        "vars": [
+          "x_1_3",
+          "x_1_4",
+          "x_2_4",
+          "x_1_2",
+          "x_3_4",
+          "x_2_3"
+        ],
+        "modulus": 0,
+        "dimensions": [
+          1,
+          6,
+          19,
+          42,
+          71
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 129,
+            "basisSize": 28,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 129,
+            "basisSize": 28,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 129,
+            "basisSize": 28,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 129,
+            "basisSize": 28,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            6,
+            19,
+            42,
+            71
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-007",
+        "degree": 5,
+        "vars": [
+          "x_2_3",
+          "x_1_2",
+          "x_1_3"
+        ],
+        "modulus": 7,
+        "dimensions": [
+          1,
+          3,
+          4,
+          3,
+          1,
+          0
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 23,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 23,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 23,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 23,
+            "basisSize": 6,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 5,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            3,
+            4,
+            3,
+            1,
+            0
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-008",
+        "degree": 4,
+        "vars": [
+          "x_1_2",
+          "x_1_3",
+          "x_2_3"
+        ],
+        "modulus": 101,
+        "dimensions": [
+          1,
+          3,
+          4,
+          3,
+          1
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 22,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 22,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 22,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 22,
+            "basisSize": 6,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            3,
+            4,
+            3,
+            1
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-009",
+        "degree": 5,
+        "vars": [
+          "x_1_2",
+          "x_1_3",
+          "x_2_3"
+        ],
+        "modulus": 0,
+        "dimensions": [
+          1,
+          3,
+          4,
+          3,
+          1,
+          0
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 23,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 23,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 23,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 23,
+            "basisSize": 6,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 5,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            3,
+            4,
+            3,
+            1,
+            0
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-010",
+        "degree": 3,
+        "vars": [
+          "x_3_6",
+          "x_4_5",
+          "x_3_4",
+          "x_4_6",
+          "x_1_4",
+          "x_1_3",
+          "x_2_3",
+          "x_5_6",
+          "x_1_5",
+          "x_2_4",
+          "x_1_2",
+          "x_2_6",
+          "x_2_5",
+          "x_1_6",
+          "x_3_5"
+        ],
+        "modulus": 2,
+        "dimensions": [
+          1,
+          15,
+          125,
+          765
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 767,
+            "basisSize": 159,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 767,
+            "basisSize": 159,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 767,
+            "basisSize": 159,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 767,
+            "basisSize": 159,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 3,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            15,
+            125,
+            765
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-011",
+        "degree": 4,
+        "vars": [
+          "x_1_4",
+          "x_3_4",
+          "x_2_5",
+          "x_3_5",
+          "x_2_4",
+          "x_1_5",
+          "x_1_3",
+          "x_1_2",
+          "x_2_3",
+          "x_4_5"
+        ],
+        "modulus": 5,
+        "dimensions": [
+          1,
+          10,
+          55,
+          220,
+          711
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 432,
+            "basisSize": 77,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 432,
+            "basisSize": 77,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 432,
+            "basisSize": 77,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 432,
+            "basisSize": 77,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            10,
+            55,
+            220,
+            711
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-012",
+        "degree": 4,
+        "vars": [
+          "x_1_2",
+          "x_2_3",
+          "x_1_3"
+        ],
+        "modulus": 7,
+        "dimensions": [
+          1,
+          3,
+          4,
+          3,
+          1
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 22,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 22,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 22,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 22,
+            "basisSize": 6,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            3,
+            4,
+            3,
+            1
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-013",
+        "degree": 2,
+        "vars": [
+          "x_1_3",
+          "x_2_3",
+          "x_1_2"
+        ],
+        "modulus": 5,
+        "dimensions": [
+          1,
+          3,
+          4
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 10,
+            "basisSize": 5,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 10,
+            "basisSize": 5,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 10,
+            "basisSize": 5,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 10,
+            "basisSize": 5,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 2,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            3,
+            4
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-014",
+        "degree": 2,
+        "vars": [
+          "x_1_2",
+          "x_1_3",
+          "x_4_6",
+          "x_2_5",
+          "x_4_5",
+          "x_1_6",
+          "x_2_6",
+          "x_1_5",
+          "x_2_4",
+          "x_3_5",
+          "x_2_3",
+          "x_3_4",
+          "x_1_4",
+          "x_5_6",
+          "x_3_6"
+        ],
+        "modulus": 7,
+        "dimensions": [
+          1,
+          15,
+          125
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 200,
+            "basisSize": 100,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 200,
+            "basisSize": 100,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 200,
+            "basisSize": 100,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 200,
+            "basisSize": 100,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 2,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            15,
+            125
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-015",
+        "degree": 4,
+        "vars": [
+          "x_1_4",
+          "x_3_5",
+          "x_2_3",
+          "x_5_6",
+          "x_3_4",
+          "x_1_5",
+          "x_2_6",
+          "x_3_6",
+          "x_4_5",
+          "x_2_4",
+          "x_4_6",
+          "x_1_2",
+          "x_1_3",
+          "x_2_5",
+          "x_1_6"
+        ],
+        "modulus": 101,
+        "dimensions": [
+          1,
+          15,
+          125,
+          765,
+          3831
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 1802,
+            "basisSize": 259,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 1802,
+            "basisSize": 259,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 1802,
+            "basisSize": 259,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 1802,
+            "basisSize": 259,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            15,
+            125,
+            765,
+            3831
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-016",
+        "degree": 2,
+        "vars": [
+          "x_2_3",
+          "x_1_2",
+          "x_2_4",
+          "x_3_5",
+          "x_3_6",
+          "x_1_6",
+          "x_1_5",
+          "x_4_5",
+          "x_1_3",
+          "x_2_6",
+          "x_1_4",
+          "x_2_5",
+          "x_4_6",
+          "x_5_6",
+          "x_3_4"
+        ],
+        "modulus": 101,
+        "dimensions": [
+          1,
+          15,
+          125
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 200,
+            "basisSize": 100,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 200,
+            "basisSize": 100,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 200,
+            "basisSize": 100,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 200,
+            "basisSize": 100,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 2,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            15,
+            125
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-017",
+        "degree": 5,
+        "vars": [
+          "x_1_3",
+          "x_1_2",
+          "x_2_3"
+        ],
+        "modulus": 3,
+        "dimensions": [
+          1,
+          3,
+          4,
+          3,
+          1,
+          0
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 23,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 23,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 23,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 23,
+            "basisSize": 6,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 5,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            3,
+            4,
+            3,
+            1,
+            0
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-018",
+        "degree": 4,
+        "vars": [
+          "x_1_3",
+          "x_2_3",
+          "x_1_2"
+        ],
+        "modulus": 5,
+        "dimensions": [
+          1,
+          3,
+          4,
+          3,
+          1
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 22,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 22,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 22,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 22,
+            "basisSize": 6,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            3,
+            4,
+            3,
+            1
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-019",
+        "degree": 5,
+        "vars": [
+          "x_1_3",
+          "x_1_2",
+          "x_2_4",
+          "x_3_4",
+          "x_1_4",
+          "x_2_3"
+        ],
+        "modulus": 3,
+        "dimensions": [
+          1,
+          6,
+          19,
+          42,
+          71,
+          96
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 142,
+            "basisSize": 27,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 142,
+            "basisSize": 27,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 142,
+            "basisSize": 27,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 142,
+            "basisSize": 27,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 5,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            6,
+            19,
+            42,
+            71,
+            96
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-020",
+        "degree": 4,
+        "vars": [
+          "x_4_5",
+          "x_2_6",
+          "x_3_5",
+          "x_1_2",
+          "x_3_6",
+          "x_1_6",
+          "x_5_6",
+          "x_2_4",
+          "x_1_5",
+          "x_4_6",
+          "x_2_3",
+          "x_1_4",
+          "x_2_5",
+          "x_1_3",
+          "x_3_4"
+        ],
+        "modulus": 101,
+        "dimensions": [
+          1,
+          15,
+          125,
+          765,
+          3831
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 1804,
+            "basisSize": 260,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 1804,
+            "basisSize": 260,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 1804,
+            "basisSize": 260,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 1804,
+            "basisSize": 260,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            15,
+            125,
+            765,
+            3831
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-021",
+        "degree": 3,
+        "vars": [
+          "x_2_3",
+          "x_2_5",
+          "x_3_5",
+          "x_1_2",
+          "x_1_6",
+          "x_1_3",
+          "x_3_6",
+          "x_4_6",
+          "x_4_5",
+          "x_2_4",
+          "x_1_5",
+          "x_3_4",
+          "x_1_4",
+          "x_5_6",
+          "x_2_6"
+        ],
+        "modulus": 0,
+        "dimensions": [
+          1,
+          15,
+          125,
+          765
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 809,
+            "basisSize": 173,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 809,
+            "basisSize": 173,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 809,
+            "basisSize": 173,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 809,
+            "basisSize": 173,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 3,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            15,
+            125,
+            765
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-022",
+        "degree": 4,
+        "vars": [
+          "x_1_4",
+          "x_1_3",
+          "x_3_5",
+          "x_2_5",
+          "x_1_5",
+          "x_1_2",
+          "x_2_3",
+          "x_4_5",
+          "x_2_4",
+          "x_3_4"
+        ],
+        "modulus": 7,
+        "dimensions": [
+          1,
+          10,
+          55,
+          220,
+          711
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 511,
+            "basisSize": 89,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 511,
+            "basisSize": 89,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 511,
+            "basisSize": 89,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 511,
+            "basisSize": 89,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            10,
+            55,
+            220,
+            711
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-023",
+        "degree": 3,
+        "vars": [
+          "x_2_5",
+          "x_3_5",
+          "x_4_5",
+          "x_2_4",
+          "x_1_3",
+          "x_1_4",
+          "x_3_4",
+          "x_1_5",
+          "x_1_2",
+          "x_2_3"
+        ],
+        "modulus": 101,
+        "dimensions": [
+          1,
+          10,
+          55,
+          220
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 279,
+            "basisSize": 68,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 279,
+            "basisSize": 68,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 279,
+            "basisSize": 68,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 279,
+            "basisSize": 68,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 3,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            10,
+            55,
+            220
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-024",
+        "degree": 4,
+        "vars": [
+          "x_4_6",
+          "x_2_5",
+          "x_1_3",
+          "x_2_3",
+          "x_1_5",
+          "x_2_4",
+          "x_1_6",
+          "x_5_6",
+          "x_4_5",
+          "x_1_2",
+          "x_2_6",
+          "x_1_4",
+          "x_3_6",
+          "x_3_5",
+          "x_3_4"
+        ],
+        "modulus": 3,
+        "dimensions": [
+          1,
+          15,
+          125,
+          765,
+          3831
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 1906,
+            "basisSize": 274,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 1906,
+            "basisSize": 274,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 1906,
+            "basisSize": 274,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 1906,
+            "basisSize": 274,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            15,
+            125,
+            765,
+            3831
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-025",
+        "degree": 2,
+        "vars": [
+          "x_4_6",
+          "x_2_3",
+          "x_3_6",
+          "x_2_5",
+          "x_2_4",
+          "x_4_5",
+          "x_1_2",
+          "x_3_5",
+          "x_1_6",
+          "x_1_4",
+          "x_5_6",
+          "x_1_5",
+          "x_2_6",
+          "x_3_4",
+          "x_1_3"
+        ],
+        "modulus": 0,
+        "dimensions": [
+          1,
+          15,
+          125
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 200,
+            "basisSize": 100,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 200,
+            "basisSize": 100,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 200,
+            "basisSize": 100,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 200,
+            "basisSize": 100,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 2,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            15,
+            125
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-026",
+        "degree": 4,
+        "vars": [
+          "x_2_4",
+          "x_1_2",
+          "x_3_4",
+          "x_1_4",
+          "x_1_3",
+          "x_2_3"
+        ],
+        "modulus": 5,
+        "dimensions": [
+          1,
+          6,
+          19,
+          42,
+          71
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 128,
+            "basisSize": 28,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 128,
+            "basisSize": 28,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 128,
+            "basisSize": 28,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 128,
+            "basisSize": 28,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            6,
+            19,
+            42,
+            71
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-027",
+        "degree": 2,
+        "vars": [
+          "x_3_4",
+          "x_1_6",
+          "x_1_5",
+          "x_2_4",
+          "x_1_2",
+          "x_4_6",
+          "x_3_6",
+          "x_2_5",
+          "x_3_5",
+          "x_1_3",
+          "x_4_5",
+          "x_1_4",
+          "x_2_3",
+          "x_5_6",
+          "x_2_6"
+        ],
+        "modulus": 3,
+        "dimensions": [
+          1,
+          15,
+          125
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 200,
+            "basisSize": 100,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 200,
+            "basisSize": 100,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 200,
+            "basisSize": 100,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 200,
+            "basisSize": 100,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 2,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            15,
+            125
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-028",
+        "degree": 5,
+        "vars": [
+          "x_1_3",
+          "x_2_5",
+          "x_3_4",
+          "x_4_5",
+          "x_1_2",
+          "x_2_4",
+          "x_1_5",
+          "x_2_3",
+          "x_1_4",
+          "x_3_5"
+        ],
+        "modulus": 3,
+        "dimensions": [
+          1,
+          10,
+          55,
+          220,
+          711,
+          1960
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 824,
+            "basisSize": 109,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 824,
+            "basisSize": 109,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 824,
+            "basisSize": 109,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 824,
+            "basisSize": 109,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 5,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            10,
+            55,
+            220,
+            711,
+            1960
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-029",
+        "degree": 4,
+        "vars": [
+          "x_2_5",
+          "x_1_5",
+          "x_1_4",
+          "x_3_4",
+          "x_3_5",
+          "x_2_4",
+          "x_1_3",
+          "x_2_3",
+          "x_4_5",
+          "x_1_2"
+        ],
+        "modulus": 0,
+        "dimensions": [
+          1,
+          10,
+          55,
+          220,
+          711
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 435,
+            "basisSize": 78,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 435,
+            "basisSize": 78,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 435,
+            "basisSize": 78,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 435,
+            "basisSize": 78,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            10,
+            55,
+            220,
+            711
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-030",
+        "degree": 2,
+        "vars": [
+          "x_2_3",
+          "x_1_4",
+          "x_3_4",
+          "x_1_2",
+          "x_2_4",
+          "x_1_3"
+        ],
+        "modulus": 5,
+        "dimensions": [
+          1,
+          6,
+          19
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 34,
+            "basisSize": 17,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 34,
+            "basisSize": 17,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 34,
+            "basisSize": 17,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 34,
+            "basisSize": 17,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 2,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            6,
+            19
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-031",
+        "degree": 3,
+        "vars": [
+          "x_1_5",
+          "x_2_4",
+          "x_3_5",
+          "x_1_4",
+          "x_3_4",
+          "x_1_3",
+          "x_1_2",
+          "x_2_3",
+          "x_4_5",
+          "x_2_5"
+        ],
+        "modulus": 3,
+        "dimensions": [
+          1,
+          10,
+          55,
+          220
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 288,
+            "basisSize": 71,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 288,
+            "basisSize": 71,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 288,
+            "basisSize": 71,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 288,
+            "basisSize": 71,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 3,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            10,
+            55,
+            220
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-032",
+        "degree": 2,
+        "vars": [
+          "x_3_5",
+          "x_1_4",
+          "x_2_4",
+          "x_1_2",
+          "x_1_3",
+          "x_1_5",
+          "x_2_5",
+          "x_3_4",
+          "x_4_5",
+          "x_2_3"
+        ],
+        "modulus": 3,
+        "dimensions": [
+          1,
+          10,
+          55
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 90,
+            "basisSize": 45,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 90,
+            "basisSize": 45,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 90,
+            "basisSize": 45,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 90,
+            "basisSize": 45,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 2,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            10,
+            55
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-033",
+        "degree": 2,
+        "vars": [
+          "x_1_3",
+          "x_2_4",
+          "x_1_4",
+          "x_3_5",
+          "x_1_2",
+          "x_2_3",
+          "x_3_4",
+          "x_4_5",
+          "x_2_5",
+          "x_1_5"
+        ],
+        "modulus": 0,
+        "dimensions": [
+          1,
+          10,
+          55
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 90,
+            "basisSize": 45,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 90,
+            "basisSize": 45,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 90,
+            "basisSize": 45,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 90,
+            "basisSize": 45,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 2,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            10,
+            55
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-034",
+        "degree": 5,
+        "vars": [
+          "x_1_2",
+          "x_1_3",
+          "x_2_3"
+        ],
+        "modulus": 5,
+        "dimensions": [
+          1,
+          3,
+          4,
+          3,
+          1,
+          0
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 23,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 23,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 23,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 23,
+            "basisSize": 6,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 5,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            3,
+            4,
+            3,
+            1,
+            0
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-035",
+        "degree": 5,
+        "vars": [
+          "x_2_5",
+          "x_1_2",
+          "x_2_4",
+          "x_1_3",
+          "x_3_4",
+          "x_3_5",
+          "x_4_5",
+          "x_1_4",
+          "x_2_3",
+          "x_1_5"
+        ],
+        "modulus": 7,
+        "dimensions": [
+          1,
+          10,
+          55,
+          220,
+          711,
+          1960
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 583,
+            "basisSize": 88,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 583,
+            "basisSize": 88,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 583,
+            "basisSize": 88,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 583,
+            "basisSize": 88,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 5,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            10,
+            55,
+            220,
+            711,
+            1960
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-036",
+        "degree": 3,
+        "vars": [
+          "x_3_4",
+          "x_2_3",
+          "x_1_5",
+          "x_1_2",
+          "x_1_3",
+          "x_2_5",
+          "x_1_4",
+          "x_2_4",
+          "x_3_5",
+          "x_4_5"
+        ],
+        "modulus": 5,
+        "dimensions": [
+          1,
+          10,
+          55,
+          220
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 288,
+            "basisSize": 71,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 288,
+            "basisSize": 71,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 288,
+            "basisSize": 71,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 288,
+            "basisSize": 71,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 3,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            10,
+            55,
+            220
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-037",
+        "degree": 2,
+        "vars": [
+          "x_2_3",
+          "x_1_2",
+          "x_1_3",
+          "x_1_4",
+          "x_3_4",
+          "x_2_4"
+        ],
+        "modulus": 7,
+        "dimensions": [
+          1,
+          6,
+          19
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 34,
+            "basisSize": 17,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 34,
+            "basisSize": 17,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 34,
+            "basisSize": 17,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 34,
+            "basisSize": 17,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 2,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            6,
+            19
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-038",
+        "degree": 3,
+        "vars": [
+          "x_1_4",
+          "x_2_3",
+          "x_4_5",
+          "x_3_4",
+          "x_3_5",
+          "x_1_3",
+          "x_1_5",
+          "x_1_2",
+          "x_2_5",
+          "x_2_4"
+        ],
+        "modulus": 2,
+        "dimensions": [
+          1,
+          10,
+          55,
+          220
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 279,
+            "basisSize": 68,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 279,
+            "basisSize": 68,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 279,
+            "basisSize": 68,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 279,
+            "basisSize": 68,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 3,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            10,
+            55,
+            220
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-039",
+        "degree": 5,
+        "vars": [
+          "x_2_4",
+          "x_1_2",
+          "x_3_4",
+          "x_1_4",
+          "x_2_3",
+          "x_1_3"
+        ],
+        "modulus": 3,
+        "dimensions": [
+          1,
+          6,
+          19,
+          42,
+          71,
+          96
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 159,
+            "basisSize": 28,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 159,
+            "basisSize": 28,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 159,
+            "basisSize": 28,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 159,
+            "basisSize": 28,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 5,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            6,
+            19,
+            42,
+            71,
+            96
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-040",
+        "degree": 3,
+        "vars": [
+          "x_1_5",
+          "x_4_5",
+          "x_1_2",
+          "x_3_6",
+          "x_4_6",
+          "x_2_6",
+          "x_5_6",
+          "x_2_3",
+          "x_2_5",
+          "x_2_4",
+          "x_3_5",
+          "x_1_3",
+          "x_1_4",
+          "x_3_4",
+          "x_1_6"
+        ],
+        "modulus": 3,
+        "dimensions": [
+          1,
+          15,
+          125,
+          765
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 791,
+            "basisSize": 167,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 791,
+            "basisSize": 167,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 791,
+            "basisSize": 167,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 791,
+            "basisSize": 167,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 3,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            15,
+            125,
+            765
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-041",
+        "degree": 5,
+        "vars": [
+          "x_1_2",
+          "x_2_5",
+          "x_3_5",
+          "x_2_4",
+          "x_1_4",
+          "x_4_5",
+          "x_3_4",
+          "x_1_3",
+          "x_2_3",
+          "x_1_5"
+        ],
+        "modulus": 2,
+        "dimensions": [
+          1,
+          10,
+          55,
+          220,
+          711,
+          1960
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 762,
+            "basisSize": 106,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 762,
+            "basisSize": 106,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 762,
+            "basisSize": 106,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 762,
+            "basisSize": 106,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 5,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            10,
+            55,
+            220,
+            711,
+            1960
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-042",
+        "degree": 3,
+        "vars": [
+          "x_1_2",
+          "x_2_3",
+          "x_1_3"
+        ],
+        "modulus": 7,
+        "dimensions": [
+          1,
+          3,
+          4,
+          3
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 19,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 19,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 19,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 19,
+            "basisSize": 6,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 3,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            3,
+            4,
+            3
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-043",
+        "degree": 3,
+        "vars": [
+          "x_2_3",
+          "x_1_2",
+          "x_1_3"
+        ],
+        "modulus": 5,
+        "dimensions": [
+          1,
+          3,
+          4,
+          3
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 19,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 19,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 19,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 19,
+            "basisSize": 6,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 3,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            3,
+            4,
+            3
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-044",
+        "degree": 2,
+        "vars": [
+          "x_2_4",
+          "x_3_4",
+          "x_1_2",
+          "x_1_3",
+          "x_2_3",
+          "x_1_4"
+        ],
+        "modulus": 7,
+        "dimensions": [
+          1,
+          6,
+          19
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 34,
+            "basisSize": 17,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 34,
+            "basisSize": 17,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 34,
+            "basisSize": 17,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 34,
+            "basisSize": 17,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 2,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            6,
+            19
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-045",
+        "degree": 3,
+        "vars": [
+          "x_2_3",
+          "x_1_3",
+          "x_1_2"
+        ],
+        "modulus": 5,
+        "dimensions": [
+          1,
+          3,
+          4,
+          3
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 19,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 19,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 19,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 19,
+            "basisSize": 6,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 3,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            3,
+            4,
+            3
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-046",
+        "degree": 2,
+        "vars": [
+          "x_1_4",
+          "x_4_5",
+          "x_1_5",
+          "x_2_3",
+          "x_2_5",
+          "x_1_2",
+          "x_3_4",
+          "x_1_3",
+          "x_3_5",
+          "x_2_4"
+        ],
+        "modulus": 5,
+        "dimensions": [
+          1,
+          10,
+          55
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 90,
+            "basisSize": 45,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 90,
+            "basisSize": 45,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 90,
+            "basisSize": 45,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 90,
+            "basisSize": 45,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 2,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            10,
+            55
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-047",
+        "degree": 4,
+        "vars": [
+          "x_1_3",
+          "x_1_2",
+          "x_2_3"
+        ],
+        "modulus": 0,
+        "dimensions": [
+          1,
+          3,
+          4,
+          3,
+          1
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 22,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 22,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 22,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 22,
+            "basisSize": 6,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            3,
+            4,
+            3,
+            1
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-048",
+        "degree": 4,
+        "vars": [
+          "x_4_6",
+          "x_3_5",
+          "x_3_4",
+          "x_4_5",
+          "x_1_3",
+          "x_3_6",
+          "x_1_2",
+          "x_5_6",
+          "x_2_6",
+          "x_2_5",
+          "x_1_6",
+          "x_1_5",
+          "x_2_4",
+          "x_2_3",
+          "x_1_4"
+        ],
+        "modulus": 7,
+        "dimensions": [
+          1,
+          15,
+          125,
+          765,
+          3831
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 1710,
+            "basisSize": 242,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 1710,
+            "basisSize": 242,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 1710,
+            "basisSize": 242,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 1710,
+            "basisSize": 242,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            15,
+            125,
+            765,
+            3831
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-049",
+        "degree": 5,
+        "vars": [
+          "x_2_3",
+          "x_1_2",
+          "x_1_3"
+        ],
+        "modulus": 2,
+        "dimensions": [
+          1,
+          3,
+          4,
+          3,
+          1,
+          0
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 23,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 23,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 23,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 23,
+            "basisSize": 6,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 5,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            3,
+            4,
+            3,
+            1,
+            0
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-050",
+        "degree": 4,
+        "vars": [
+          "x_1_2",
+          "x_2_3",
+          "x_4_5",
+          "x_2_5",
+          "x_1_4",
+          "x_1_5",
+          "x_1_3",
+          "x_3_5",
+          "x_3_4",
+          "x_2_4"
+        ],
+        "modulus": 2,
+        "dimensions": [
+          1,
+          10,
+          55,
+          220,
+          711
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 470,
+            "basisSize": 83,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 470,
+            "basisSize": 83,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 470,
+            "basisSize": 83,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 470,
+            "basisSize": 83,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            10,
+            55,
+            220,
+            711
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-051",
+        "degree": 2,
+        "vars": [
+          "x_2_3",
+          "x_3_4",
+          "x_1_4",
+          "x_2_4",
+          "x_1_3",
+          "x_1_2"
+        ],
+        "modulus": 2,
+        "dimensions": [
+          1,
+          6,
+          19
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 34,
+            "basisSize": 17,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 34,
+            "basisSize": 17,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 34,
+            "basisSize": 17,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 34,
+            "basisSize": 17,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 2,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            6,
+            19
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-052",
+        "degree": 4,
+        "vars": [
+          "x_1_2",
+          "x_1_3",
+          "x_2_4",
+          "x_1_4",
+          "x_2_3",
+          "x_3_4"
+        ],
+        "modulus": 3,
+        "dimensions": [
+          1,
+          6,
+          19,
+          42,
+          71
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 129,
+            "basisSize": 28,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 129,
+            "basisSize": 28,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 129,
+            "basisSize": 28,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 129,
+            "basisSize": 28,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            6,
+            19,
+            42,
+            71
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-053",
+        "degree": 3,
+        "vars": [
+          "x_3_5",
+          "x_2_4",
+          "x_4_5",
+          "x_1_4",
+          "x_3_4",
+          "x_1_5",
+          "x_1_3",
+          "x_2_3",
+          "x_1_2",
+          "x_2_5"
+        ],
+        "modulus": 101,
+        "dimensions": [
+          1,
+          10,
+          55,
+          220
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 273,
+            "basisSize": 66,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 273,
+            "basisSize": 66,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 273,
+            "basisSize": 66,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 273,
+            "basisSize": 66,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 3,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            10,
+            55,
+            220
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-054",
+        "degree": 3,
+        "vars": [
+          "x_1_3",
+          "x_2_4",
+          "x_1_2",
+          "x_3_4",
+          "x_1_4",
+          "x_2_3"
+        ],
+        "modulus": 0,
+        "dimensions": [
+          1,
+          6,
+          19,
+          42
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 82,
+            "basisSize": 23,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 82,
+            "basisSize": 23,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 82,
+            "basisSize": 23,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 82,
+            "basisSize": 23,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 3,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            6,
+            19,
+            42
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-055",
+        "degree": 3,
+        "vars": [
+          "x_2_4",
+          "x_2_3",
+          "x_1_4",
+          "x_3_4",
+          "x_1_2",
+          "x_1_3"
+        ],
+        "modulus": 2,
+        "dimensions": [
+          1,
+          6,
+          19,
+          42
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 85,
+            "basisSize": 24,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 85,
+            "basisSize": 24,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 85,
+            "basisSize": 24,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 85,
+            "basisSize": 24,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 3,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            6,
+            19,
+            42
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-056",
+        "degree": 4,
+        "vars": [
+          "x_4_5",
+          "x_1_3",
+          "x_3_5",
+          "x_5_6",
+          "x_4_6",
+          "x_2_4",
+          "x_2_6",
+          "x_2_5",
+          "x_3_6",
+          "x_1_6",
+          "x_1_4",
+          "x_3_4",
+          "x_1_5",
+          "x_2_3",
+          "x_1_2"
+        ],
+        "modulus": 0,
+        "dimensions": [
+          1,
+          15,
+          125,
+          765,
+          3831
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 1890,
+            "basisSize": 270,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 1890,
+            "basisSize": 270,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 1890,
+            "basisSize": 270,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 1890,
+            "basisSize": 270,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            15,
+            125,
+            765,
+            3831
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-057",
+        "degree": 4,
+        "vars": [
+          "x_4_5",
+          "x_1_2",
+          "x_4_6",
+          "x_2_3",
+          "x_3_4",
+          "x_3_5",
+          "x_1_6",
+          "x_3_6",
+          "x_5_6",
+          "x_2_4",
+          "x_1_3",
+          "x_1_4",
+          "x_2_6",
+          "x_2_5",
+          "x_1_5"
+        ],
+        "modulus": 101,
+        "dimensions": [
+          1,
+          15,
+          125,
+          765,
+          3831
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 1855,
+            "basisSize": 266,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 1855,
+            "basisSize": 266,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 1855,
+            "basisSize": 266,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 1855,
+            "basisSize": 266,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            15,
+            125,
+            765,
+            3831
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-058",
+        "degree": 4,
+        "vars": [
+          "x_2_3",
+          "x_1_2",
+          "x_1_3"
+        ],
+        "modulus": 101,
+        "dimensions": [
+          1,
+          3,
+          4,
+          3,
+          1
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 22,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 22,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 22,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 22,
+            "basisSize": 6,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            3,
+            4,
+            3,
+            1
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-059",
+        "degree": 2,
+        "vars": [
+          "x_1_3",
+          "x_1_2",
+          "x_4_6",
+          "x_1_5",
+          "x_2_5",
+          "x_3_4",
+          "x_5_6",
+          "x_3_5",
+          "x_3_6",
+          "x_2_6",
+          "x_1_6",
+          "x_2_4",
+          "x_4_5",
+          "x_1_4",
+          "x_2_3"
+        ],
+        "modulus": 0,
+        "dimensions": [
+          1,
+          15,
+          125
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 200,
+            "basisSize": 100,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 200,
+            "basisSize": 100,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 200,
+            "basisSize": 100,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 200,
+            "basisSize": 100,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 2,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            15,
+            125
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-060",
+        "degree": 4,
+        "vars": [
+          "x_1_2",
+          "x_2_3",
+          "x_3_4",
+          "x_1_4",
+          "x_1_3",
+          "x_2_4"
+        ],
+        "modulus": 101,
+        "dimensions": [
+          1,
+          6,
+          19,
+          42,
+          71
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 115,
+            "basisSize": 25,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 115,
+            "basisSize": 25,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 115,
+            "basisSize": 25,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 115,
+            "basisSize": 25,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            6,
+            19,
+            42,
+            71
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-061",
+        "degree": 5,
+        "vars": [
+          "x_2_3",
+          "x_1_3",
+          "x_1_2"
+        ],
+        "modulus": 2,
+        "dimensions": [
+          1,
+          3,
+          4,
+          3,
+          1,
+          0
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 23,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 23,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 23,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 23,
+            "basisSize": 6,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 5,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            3,
+            4,
+            3,
+            1,
+            0
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-062",
+        "degree": 5,
+        "vars": [
+          "x_1_2",
+          "x_2_4",
+          "x_1_3",
+          "x_1_4",
+          "x_3_4",
+          "x_2_3"
+        ],
+        "modulus": 2,
+        "dimensions": [
+          1,
+          6,
+          19,
+          42,
+          71,
+          96
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 159,
+            "basisSize": 28,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 159,
+            "basisSize": 28,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 159,
+            "basisSize": 28,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 159,
+            "basisSize": 28,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 5,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            6,
+            19,
+            42,
+            71,
+            96
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-063",
+        "degree": 3,
+        "vars": [
+          "x_1_3",
+          "x_1_2",
+          "x_2_3"
+        ],
+        "modulus": 3,
+        "dimensions": [
+          1,
+          3,
+          4,
+          3
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 19,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 19,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 19,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 19,
+            "basisSize": 6,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 3,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            3,
+            4,
+            3
+          ]
+        }
+      },
+      {
+        "id": "fomkyr-lhs-064",
+        "degree": 3,
+        "vars": [
+          "x_1_2",
+          "x_3_4",
+          "x_1_4",
+          "x_2_3",
+          "x_1_3",
+          "x_2_4"
+        ],
+        "modulus": 7,
+        "dimensions": [
+          1,
+          6,
+          19,
+          42
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 82,
+            "basisSize": 23,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 82,
+            "basisSize": 23,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 82,
+            "basisSize": 23,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 82,
+            "basisSize": 23,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 3,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            6,
+            19,
+            42
+          ]
+        }
+      },
+      {
+        "id": "fk-E3-degree4",
+        "degree": 4,
+        "vars": [
+          "x_1_2",
+          "x_1_3",
+          "x_2_3"
+        ],
+        "modulus": 0,
+        "dimensions": [
+          1,
+          3,
+          4,
+          3,
+          1
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 22,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 22,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 22,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 22,
+            "basisSize": 6,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            3,
+            4,
+            3,
+            1
+          ]
+        }
+      },
+      {
+        "id": "submitted-degree3",
+        "degree": 3,
+        "vars": [
+          "a",
+          "b",
+          "c",
+          "d",
+          "e",
+          "f",
+          "g",
+          "h",
+          "k",
+          "m",
+          "n",
+          "p",
+          "q",
+          "r",
+          "s"
+        ],
+        "modulus": 0,
+        "dimensions": [
+          1,
+          15,
+          125,
+          765
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 818,
+            "basisSize": 176,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 818,
+            "basisSize": 176,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 818,
+            "basisSize": 176,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 818,
+            "basisSize": 176,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 3,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            15,
+            125,
+            765
+          ]
+        }
+      },
+      {
+        "id": "submitted-degree4",
+        "degree": 4,
+        "vars": [
+          "a",
+          "b",
+          "c",
+          "d",
+          "e",
+          "f",
+          "g",
+          "h",
+          "k",
+          "m",
+          "n",
+          "p",
+          "q",
+          "r",
+          "s"
+        ],
+        "modulus": 0,
+        "dimensions": [
+          1,
+          15,
+          125,
+          765,
+          3831
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 1823,
+            "basisSize": 265,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 1823,
+            "basisSize": 265,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 1823,
+            "basisSize": 265,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 1823,
+            "basisSize": 265,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            15,
+            125,
+            765,
+            3831
+          ]
+        }
+      },
+      {
+        "id": "archive-155-bit-coefficients",
+        "degree": 5,
+        "vars": [
+          "a",
+          "b",
+          "c"
+        ],
+        "modulus": 0,
+        "dimensions": [
+          1,
+          3,
+          7,
+          15,
+          31,
+          63
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 12,
+            "basisSize": 4,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 12,
+            "basisSize": 4,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 12,
+            "basisSize": 4,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 12,
+            "basisSize": 4,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 5,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            3,
+            7,
+            15,
+            31,
+            63
+          ]
+        }
+      },
+      {
+        "id": "physics-commuting-polynomial-4-p0",
+        "degree": 4,
+        "vars": [
+          "x0",
+          "x1",
+          "x2",
+          "x3"
+        ],
+        "modulus": 0,
+        "dimensions": [
+          1,
+          4,
+          10,
+          20,
+          35
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 16,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 16,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 16,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 16,
+            "basisSize": 6,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            4,
+            10,
+            20,
+            35
+          ]
+        }
+      },
+      {
+        "id": "physics-commuting-polynomial-4-p2",
+        "degree": 4,
+        "vars": [
+          "x0",
+          "x1",
+          "x2",
+          "x3"
+        ],
+        "modulus": 2,
+        "dimensions": [
+          1,
+          4,
+          10,
+          20,
+          35
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 16,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 16,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 16,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 16,
+            "basisSize": 6,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            4,
+            10,
+            20,
+            35
+          ]
+        }
+      },
+      {
+        "id": "physics-commuting-polynomial-4-p101",
+        "degree": 4,
+        "vars": [
+          "x0",
+          "x1",
+          "x2",
+          "x3"
+        ],
+        "modulus": 101,
+        "dimensions": [
+          1,
+          4,
+          10,
+          20,
+          35
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 16,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 16,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 16,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 16,
+            "basisSize": 6,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            4,
+            10,
+            20,
+            35
+          ]
+        }
+      },
+      {
+        "id": "physics-exterior-6-p0",
+        "degree": 4,
+        "vars": [
+          "e0",
+          "e1",
+          "e2",
+          "e3",
+          "e4",
+          "e5"
+        ],
+        "modulus": 0,
+        "dimensions": [
+          1,
+          6,
+          15,
+          20,
+          15
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 98,
+            "basisSize": 21,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 98,
+            "basisSize": 21,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 98,
+            "basisSize": 21,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 98,
+            "basisSize": 21,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            6,
+            15,
+            20,
+            15
+          ]
+        }
+      },
+      {
+        "id": "physics-exterior-6-p2",
+        "degree": 4,
+        "vars": [
+          "e0",
+          "e1",
+          "e2",
+          "e3",
+          "e4",
+          "e5"
+        ],
+        "modulus": 2,
+        "dimensions": [
+          1,
+          6,
+          15,
+          20,
+          15
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 98,
+            "basisSize": 21,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 98,
+            "basisSize": 21,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 98,
+            "basisSize": 21,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 98,
+            "basisSize": 21,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            6,
+            15,
+            20,
+            15
+          ]
+        }
+      },
+      {
+        "id": "physics-exterior-6-p101",
+        "degree": 4,
+        "vars": [
+          "e0",
+          "e1",
+          "e2",
+          "e3",
+          "e4",
+          "e5"
+        ],
+        "modulus": 101,
+        "dimensions": [
+          1,
+          6,
+          15,
+          20,
+          15
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 98,
+            "basisSize": 21,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 98,
+            "basisSize": 21,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 98,
+            "basisSize": 21,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 98,
+            "basisSize": 21,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            6,
+            15,
+            20,
+            15
+          ]
+        }
+      },
+      {
+        "id": "physics-homogenized-Weyl-1-mode-p0",
+        "degree": 4,
+        "vars": [
+          "t",
+          "b0",
+          "a0"
+        ],
+        "modulus": 0,
+        "dimensions": [
+          1,
+          3,
+          6,
+          10,
+          15
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 7,
+            "basisSize": 3,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 7,
+            "basisSize": 3,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 7,
+            "basisSize": 3,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 7,
+            "basisSize": 3,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            3,
+            6,
+            10,
+            15
+          ]
+        }
+      },
+      {
+        "id": "physics-homogenized-Weyl-1-mode-p2",
+        "degree": 4,
+        "vars": [
+          "t",
+          "b0",
+          "a0"
+        ],
+        "modulus": 2,
+        "dimensions": [
+          1,
+          3,
+          6,
+          10,
+          15
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 7,
+            "basisSize": 3,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 7,
+            "basisSize": 3,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 7,
+            "basisSize": 3,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 7,
+            "basisSize": 3,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            3,
+            6,
+            10,
+            15
+          ]
+        }
+      },
+      {
+        "id": "physics-homogenized-Weyl-1-mode-p101",
+        "degree": 4,
+        "vars": [
+          "t",
+          "b0",
+          "a0"
+        ],
+        "modulus": 101,
+        "dimensions": [
+          1,
+          3,
+          6,
+          10,
+          15
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 7,
+            "basisSize": 3,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 7,
+            "basisSize": 3,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 7,
+            "basisSize": 3,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 7,
+            "basisSize": 3,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            3,
+            6,
+            10,
+            15
+          ]
+        }
+      },
+      {
+        "id": "physics-homogenized-Weyl-2-mode-p0",
+        "degree": 4,
+        "vars": [
+          "t",
+          "b0",
+          "a0",
+          "b1",
+          "a1"
+        ],
+        "modulus": 0,
+        "dimensions": [
+          1,
+          5,
+          15,
+          35,
+          70
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 30,
+            "basisSize": 10,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 30,
+            "basisSize": 10,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 30,
+            "basisSize": 10,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 30,
+            "basisSize": 10,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            5,
+            15,
+            35,
+            70
+          ]
+        }
+      },
+      {
+        "id": "physics-homogenized-Weyl-2-mode-p2",
+        "degree": 4,
+        "vars": [
+          "t",
+          "b0",
+          "a0",
+          "b1",
+          "a1"
+        ],
+        "modulus": 2,
+        "dimensions": [
+          1,
+          5,
+          15,
+          35,
+          70
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 30,
+            "basisSize": 10,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 30,
+            "basisSize": 10,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 30,
+            "basisSize": 10,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 30,
+            "basisSize": 10,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            5,
+            15,
+            35,
+            70
+          ]
+        }
+      },
+      {
+        "id": "physics-homogenized-Weyl-2-mode-p101",
+        "degree": 4,
+        "vars": [
+          "t",
+          "b0",
+          "a0",
+          "b1",
+          "a1"
+        ],
+        "modulus": 101,
+        "dimensions": [
+          1,
+          5,
+          15,
+          35,
+          70
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 30,
+            "basisSize": 10,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 30,
+            "basisSize": 10,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 30,
+            "basisSize": 10,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 30,
+            "basisSize": 10,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            5,
+            15,
+            35,
+            70
+          ]
+        }
+      },
+      {
+        "id": "physics-homogenized-Clifford-4-p0",
+        "degree": 4,
+        "vars": [
+          "t",
+          "g1",
+          "g2",
+          "g3",
+          "g4"
+        ],
+        "modulus": 0,
+        "dimensions": [
+          1,
+          5,
+          11,
+          15,
+          16
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 58,
+            "basisSize": 14,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 58,
+            "basisSize": 14,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 58,
+            "basisSize": 14,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 58,
+            "basisSize": 14,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            5,
+            11,
+            15,
+            16
+          ]
+        }
+      },
+      {
+        "id": "physics-homogenized-Clifford-4-p2",
+        "degree": 4,
+        "vars": [
+          "t",
+          "g1",
+          "g2",
+          "g3",
+          "g4"
+        ],
+        "modulus": 2,
+        "dimensions": [
+          1,
+          5,
+          11,
+          15,
+          16
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 58,
+            "basisSize": 14,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 58,
+            "basisSize": 14,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 58,
+            "basisSize": 14,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 58,
+            "basisSize": 14,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            5,
+            11,
+            15,
+            16
+          ]
+        }
+      },
+      {
+        "id": "physics-homogenized-Clifford-4-p101",
+        "degree": 4,
+        "vars": [
+          "t",
+          "g1",
+          "g2",
+          "g3",
+          "g4"
+        ],
+        "modulus": 101,
+        "dimensions": [
+          1,
+          5,
+          11,
+          15,
+          16
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 58,
+            "basisSize": 14,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 58,
+            "basisSize": 14,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 58,
+            "basisSize": 14,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 58,
+            "basisSize": 14,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            5,
+            11,
+            15,
+            16
+          ]
+        }
+      },
+      {
+        "id": "physics-homogenized-sl2-p0",
+        "degree": 4,
+        "vars": [
+          "t",
+          "f",
+          "h",
+          "e"
+        ],
+        "modulus": 0,
+        "dimensions": [
+          1,
+          4,
+          10,
+          20,
+          35
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 16,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 16,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 16,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 16,
+            "basisSize": 6,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            4,
+            10,
+            20,
+            35
+          ]
+        }
+      },
+      {
+        "id": "physics-homogenized-sl2-p2",
+        "degree": 4,
+        "vars": [
+          "t",
+          "f",
+          "h",
+          "e"
+        ],
+        "modulus": 2,
+        "dimensions": [
+          1,
+          4,
+          10,
+          20,
+          35
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 16,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 16,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 16,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 16,
+            "basisSize": 6,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            4,
+            10,
+            20,
+            35
+          ]
+        }
+      },
+      {
+        "id": "physics-homogenized-sl2-p101",
+        "degree": 4,
+        "vars": [
+          "t",
+          "f",
+          "h",
+          "e"
+        ],
+        "modulus": 101,
+        "dimensions": [
+          1,
+          4,
+          10,
+          20,
+          35
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 16,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 16,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 16,
+            "basisSize": 6,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 16,
+            "basisSize": 6,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            4,
+            10,
+            20,
+            35
+          ]
+        }
+      },
+      {
+        "id": "physics-homogenized-q-oscillator-2-p0",
+        "degree": 4,
+        "vars": [
+          "t",
+          "b",
+          "a"
+        ],
+        "modulus": 0,
+        "dimensions": [
+          1,
+          3,
+          6,
+          10,
+          15
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 7,
+            "basisSize": 3,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 7,
+            "basisSize": 3,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 7,
+            "basisSize": 3,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 7,
+            "basisSize": 3,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            3,
+            6,
+            10,
+            15
+          ]
+        }
+      },
+      {
+        "id": "physics-homogenized-q-oscillator-2-p2",
+        "degree": 4,
+        "vars": [
+          "t",
+          "b",
+          "a"
+        ],
+        "modulus": 2,
+        "dimensions": [
+          1,
+          3,
+          6,
+          10,
+          15
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 7,
+            "basisSize": 3,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 7,
+            "basisSize": 3,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 7,
+            "basisSize": 3,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 7,
+            "basisSize": 3,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            3,
+            6,
+            10,
+            15
+          ]
+        }
+      },
+      {
+        "id": "physics-homogenized-q-oscillator-2-p101",
+        "degree": 4,
+        "vars": [
+          "t",
+          "b",
+          "a"
+        ],
+        "modulus": 101,
+        "dimensions": [
+          1,
+          3,
+          6,
+          10,
+          15
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 7,
+            "basisSize": 3,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 7,
+            "basisSize": 3,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 7,
+            "basisSize": 3,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 7,
+            "basisSize": 3,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            3,
+            6,
+            10,
+            15
+          ]
+        }
+      },
+      {
+        "id": "physics-homogenized-q-oscillator-1073741827-p0",
+        "degree": 4,
+        "vars": [
+          "t",
+          "b",
+          "a"
+        ],
+        "modulus": 0,
+        "dimensions": [
+          1,
+          3,
+          6,
+          10,
+          15
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 7,
+            "basisSize": 3,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 7,
+            "basisSize": 3,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 7,
+            "basisSize": 3,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 7,
+            "basisSize": 3,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            3,
+            6,
+            10,
+            15
+          ]
+        }
+      },
+      {
+        "id": "physics-homogenized-q-oscillator-1073741827-p2",
+        "degree": 4,
+        "vars": [
+          "t",
+          "b",
+          "a"
+        ],
+        "modulus": 2,
+        "dimensions": [
+          1,
+          3,
+          6,
+          10,
+          15
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 7,
+            "basisSize": 3,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 7,
+            "basisSize": 3,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 7,
+            "basisSize": 3,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 7,
+            "basisSize": 3,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            3,
+            6,
+            10,
+            15
+          ]
+        }
+      },
+      {
+        "id": "physics-homogenized-q-oscillator-1073741827-p101",
+        "degree": 4,
+        "vars": [
+          "t",
+          "b",
+          "a"
+        ],
+        "modulus": 101,
+        "dimensions": [
+          1,
+          3,
+          6,
+          10,
+          15
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 7,
+            "basisSize": 3,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 7,
+            "basisSize": 3,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 7,
+            "basisSize": 3,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 7,
+            "basisSize": 3,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            3,
+            6,
+            10,
+            15
+          ]
+        }
+      },
+      {
+        "id": "physics-homogeneous-braid-3-p0",
+        "degree": 4,
+        "vars": [
+          "a",
+          "b"
+        ],
+        "modulus": 0,
+        "dimensions": [
+          1,
+          2,
+          4,
+          7,
+          12
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 2,
+            "basisSize": 1,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 2,
+            "basisSize": 1,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 2,
+            "basisSize": 1,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 2,
+            "basisSize": 1,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            2,
+            4,
+            7,
+            12
+          ]
+        }
+      },
+      {
+        "id": "physics-homogeneous-braid-3-p2",
+        "degree": 4,
+        "vars": [
+          "a",
+          "b"
+        ],
+        "modulus": 2,
+        "dimensions": [
+          1,
+          2,
+          4,
+          7,
+          12
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 2,
+            "basisSize": 1,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 2,
+            "basisSize": 1,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 2,
+            "basisSize": 1,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 2,
+            "basisSize": 1,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            2,
+            4,
+            7,
+            12
+          ]
+        }
+      },
+      {
+        "id": "physics-homogeneous-braid-3-p101",
+        "degree": 4,
+        "vars": [
+          "a",
+          "b"
+        ],
+        "modulus": 101,
+        "dimensions": [
+          1,
+          2,
+          4,
+          7,
+          12
+        ],
+        "engines": [
+          {
+            "bits": 32,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 2,
+            "basisSize": 1,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 32,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 2,
+            "basisSize": 1,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "single",
+            "workers": 1,
+            "passed": true,
+            "ambiguities": 2,
+            "basisSize": 1,
+            "hilbertMatches": true
+          },
+          {
+            "bits": 64,
+            "execution": "multicore",
+            "workers": 4,
+            "passed": true,
+            "ambiguities": 2,
+            "basisSize": 1,
+            "hilbertMatches": true
+          }
+        ],
+        "singular": {
+          "passed": true,
+          "degreeBound": 4,
+          "mutualIdealMembership": true,
+          "leadingWordsMatch": true,
+          "dimensions": [
+            1,
+            2,
+            4,
+            7,
+            12
+          ]
+        }
+      }
+    ],
+    "fomkyrRuns": 380,
+    "singularCases": 95,
+    "ambiguities": 105376,
+    "design": {
+      "seed": 1179332662,
+      "count": 64,
+      "dimensions": [
+        "rank",
+        "field",
+        "degree",
+        "generatorOrder",
+        "signs",
+        "reverse",
+        "pruning",
+        "heap",
+        "cache",
+        "batch",
+        "matcher",
+        "chains",
+        "eager",
+        "quadratic",
+        "scheduling",
+        "wordCache",
+        "matcherBudget",
+        "rationalHeap",
+        "compiledRewrites",
+        "rewriteLength",
+        "rewriteSupport",
+        "rewriteBudget",
+        "sharedCache",
+        "rationalRewrites"
+      ]
+    }
+  },
+  "fk6": {
+    "commonDegreeBound": 8,
+    "cases": 16,
+    "fomkyrRuns": 64,
+    "singularCases": 16,
+    "certificateDegreeBound": 4,
+    "fixture": "test/fixtures/fk6-growing-matrix.json",
+    "oracle": "Singular Letterplace; exact rational coefficients and packaged arithmetic module",
+    "excludedDegree": 9,
+    "excludedReason": "Oracle did not complete within the fixed 120-second deadline."
+  },
+  "finiteRandom": {
+    "commonDegreeBound": 6,
+    "cases": 12,
+    "fomkyrRuns": 48,
+    "singularCases": 12,
+    "fixture": "test/fixtures/fk6-matrix.json",
+    "firstZeroDegree": 6,
+    "dimension": "678"
+  },
+  "interface": {
+    "browserScenarios": 8,
+    "staticChromium": "complete",
+    "staticFirefox": "complete",
+    "checkpointExtensions": [
+      {
+        "state": "complete",
+        "checks": 4
+      },
+      {
+        "state": "complete",
+        "checks": 4
+      }
+    ],
+    "mathLayouts": 32
+  },
+  "bergman": {
+    "historicalOutputsPerMode": 37,
+    "readerRecoveryCases": 46,
+    "nativeReaderCases": 8,
+    "basisCases": 42,
+    "criticalAmbiguities": 597,
+    "resolutionCases": 9,
+    "differentialIdentities": 560,
+    "longerNameCases": 20,
+    "longerNameDifferentialIdentities": 258,
+    "upstreamCases": 90,
+    "upstreamCompleteCases": 78,
+    "upstreamBoundedCases": 12,
+    "upstreamAmbiguities": 3379,
+    "sympyCases": 39,
+    "pluralCases": 6,
+    "braidCases": 20,
+    "braidDifferentialIdentities": 860,
+    "unresolvedResolutionCases": 0
+  },
+  "limitations": [
+    "Node filesystem OPFS emulation is separate from browser conformance.",
+    "FK6 coefficients are certified only through the recorded degree bound.",
+    "Distinct small-degree bases receive exact critical-pair certificates; higher-degree comparisons use exact membership and leading words.",
+    "Raw timings, hardware information, screenshots and development notes are local artifacts."
+  ],
+  "correctionRelease": {
+    "appVersion": "0.6.1",
+    "unitTestsPassed": 138,
+    "browsers": [
+      {
+        "browser": "chromium",
+        "truncatedTotals": true,
+        "allDegreeCounts": true,
+        "expandedPolynomials": 265,
+        "fk6Degree9Rules": 1451,
+        "timerOnlySeconds": true
+      },
+      {
+        "browser": "firefox",
+        "truncatedTotals": true,
+        "allDegreeCounts": true,
+        "expandedPolynomials": 265,
+        "fk6Degree9Rules": 1451,
+        "timerOnlySeconds": true
+      }
+    ],
+    "scope": "UI and export metadata correction; unchanged mathematical kernel. Previous oracle certificates are retained above."
+  }
+}

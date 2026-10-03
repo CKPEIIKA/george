@@ -121,7 +121,7 @@ test('optimizer budgets and update seconds reach the engine without changing old
 });
 test('George 0.6 release keeps its experimental label only in the engine chooser', () => {
   const html = fs.readFileSync('web/index.html','utf8');
-  assert.match(html,/<title>George 0\.6<\/title>/);
+  assert.match(html,/<title>George 0\.6\.1<\/title>/);
   assert.doesNotMatch(html,/class="release-tag"/);
   const mentions = html.split('\n').filter(line=>/experimental/.test(line));
   assert.equal(mentions.length,1);assert.match(mentions[0],/<option value="fomkyr"/);

@@ -1,5 +1,17 @@
 # local builds (SBCL reference build, ECL/WebAssembly builds)
 /build/
+/local/
+# Raw reports and personal development notes stay local. Publish summaries only.
+/docs/development/validation/
+/docs/development/HANDOFF.md
+# Imported/generated upstream reports and native build products.
+/vendor/fomkyr-*/results/**
+!/vendor/fomkyr-0.6.1/results/speed/
+!/vendor/fomkyr-0.6.1/results/speed/d9-baseline-w4-p1-r0.gnb
+!/vendor/fomkyr-0.6.1/results/speed/d9-baseline-w4-p1-r0.json
+!/vendor/fomkyr-0.6.1/results/speed/d10-optimized-w4-p1-r0.gnb
+!/vendor/fomkyr-0.6.1/results/speed/d10-optimized-w4-p0-r0.gnb
+/vendor/fomkyr-*/dist/*.so
 node_modules/
 *.fas
 *.fasl

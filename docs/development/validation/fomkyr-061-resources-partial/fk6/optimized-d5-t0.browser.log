@@ -1,8 +1,0 @@
-[1289518:1289537:1003/021611.297312:ERROR:pto/nss_util.cc:377] After loading Root Certs, loaded==false: NSS error code: -8018
-[1289518:1289542:1003/021613.984701:ERROR:gle_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR
-[1289518:1289542:1003/021613.987299:ERROR:gle_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR
-[1289518:1289542:1003/021613.989993:ERROR:gle_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR
-[1289518:1289542:1003/021614.537407:ERROR:gle_apis/gcm/engine/mcs_client.cc:702]   Error code: 401  Error message: Authentication Failed: wrong_secret
-[1289518:1289542:1003/021614.537464:ERROR:gle_apis/gcm/engine/mcs_client.cc:704] Failed to log in to GCM, resetting connection.
-[1289518:1289542:1003/021634.768366:ERROR:gle_apis/gcm/engine/registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT
-[1289518:1289542:1003/021734.826299:ERROR:gle_apis/gcm/engine/registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT

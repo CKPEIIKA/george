@@ -13,6 +13,6 @@ fs.writeFileSync(directory + '/build.json', JSON.stringify({
   variants: ['wasm32-shared', 'wasm32-single', 'wasm64-shared', 'wasm64-single'],
   memory: {defaultHeapMiB: 512, maximumHeapMiB: 14304},
   provenance: {archiveSha256: 'ee286ecc55dea5275f7568abfd721bb380cc57b9df9772ab4348aad7ca411492', kernelChanged: false, hostAdapted: true,
-    upstreamManifestStale:true,importAudit:'docs/development/validation/fomkyr-061-import.json'},
+    curatedSources:true,sourceInventory:'vendor/fomkyr-0.6.1/SOURCE.json'},
   files,
 }, null, 2) + '\n');

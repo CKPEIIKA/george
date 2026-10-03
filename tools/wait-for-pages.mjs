@@ -1,7 +1,7 @@
 // Confirm the pushed commit's workflow and the served release, without gh.
 import {execFileSync} from 'node:child_process';
-import crypto from 'node:crypto';
 import {publicationAssets} from './publication-assets.mjs';
+import {streamSha256, gitBlobSha256} from './stream-hash.mjs';
 
 const commit=process.argv[2];
 if(!/^[0-9a-f]{40}$/.test(commit||''))throw Error('Supply the prepared gh-pages commit.');
@@ -11,9 +11,9 @@ const match=remote.match(/^(?:git@github\.com:|https:\/\/github\.com\/|ssh:\/\/g
 if(!match)throw Error('Deployment verification requires a github.com origin.');
 const [,owner,repo]=match;
 const site=`https://${owner.toLowerCase()}.github.io/${repo}/`;
-const sha=data=>crypto.createHash('sha256').update(data).digest('hex');
 const files=publicationAssets(git(['ls-tree','-r','--name-only',commit]).split('\n'));
-const expected=Object.fromEntries(files.map(file=>[file,sha(execFileSync('git',['show',`${commit}:${file}`],{maxBuffer:32e6}))]));
+const expected={};
+for(const file of files)expected[file]=await gitBlobSha256(commit,file);
 const token=process.env.GH_TOKEN||process.env.GITHUB_TOKEN;
 const headers={Accept:'application/vnd.github+json',...(token?{Authorization:`Bearer ${token}`}:{})};
 const runs=`https://api.github.com/repos/${owner}/${repo}/actions/workflows/pages.yml/runs?branch=gh-pages&head_sha=${commit}&per_page=5`;
@@ -42,7 +42,7 @@ while(Date.now()<deadline){
       for(const file of files){
         const url=new URL(file,site);url.searchParams.set('release',commit);
         const response=await fetch(url,{cache:'no-store',signal:AbortSignal.timeout(30000)});
-        if(!response.ok||sha(Buffer.from(await response.arrayBuffer()))!==expected[file]){matches=false;break;}
+        if(!response.ok||await streamSha256(response.body)!==expected[file]){matches=false;break;}
       }
       if(matches){console.log(`Published and verified: ${site}`);process.exit(0);}
       progress('Waiting for GitHub Pages to serve the exact release files.');

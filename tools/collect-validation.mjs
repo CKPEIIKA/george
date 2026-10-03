@@ -1,9 +1,9 @@
-// Keep small, reviewable release evidence outside the ignored build directory.
+// Collect full evidence locally. The separate exporter publishes compact summaries.
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import assert from 'node:assert/strict';
-const root='build/validation',out='docs/development/validation';fs.mkdirSync(out,{recursive:true});
+const root='build/validation',out='local/validation';fs.mkdirSync(out,{recursive:true});
 const latest=prefix=>fs.readdirSync(root).filter(n=>n.startsWith(prefix)&&fs.existsSync(`${root}/${n}/report.json`)).sort((a,b)=>fs.statSync(`${root}/${b}/report.json`).mtimeMs-fs.statSync(`${root}/${a}/report.json`).mtimeMs)[0];
 const sources={
  'engine.json':'web/engine/build.json',

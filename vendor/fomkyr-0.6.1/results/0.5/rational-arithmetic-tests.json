@@ -1,7 +1,0 @@
-{
-  "passed": true,
-  "accepted": 3269,
-  "exactFallback": 6731,
-  "total": 10000,
-  "oracle": "Python Fraction, seeded independent arithmetic"
-}

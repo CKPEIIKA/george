@@ -12,9 +12,7 @@ const input=JSON.parse(fs.readFileSync('test/fixtures/fomin-kirillov-user.json')
 const {vars,rels}=readInputFile('(ALGFORMINPUT)\n'+input),a=algebra(vars);
 const canonical=p=>JSON.stringify([...p].sort(([x],[y])=>x.localeCompare(y)).map(([word,[n,d]])=>[word,n.toString(),d.toString()]));
 const median=values=>{const s=[...values].sort((x,y)=>x-y),n=s.length;return n%2?s[n>>1]:(s[n/2-1]+s[n/2])/2;};
-const referenceFiles={8:'docs/development/validation/fomkyr-04-speed-current/fomkyr-d8-t0.gb',
-  9:'docs/development/validation/fomkyr-04-speed-current/fomkyr-d9-t0.gb',
-  10:'docs/development/validation/fomkyr-04-speed-degree10/fomkyr-d10-t0.gb'};
+const referenceFiles=Object.fromEntries([8,9,10].map(degree=>[degree,`test/fixtures/fk6-bases/d${degree}.gb`]));
 const references=new Map(),membershipCache=new Set(),audits=[],summaries=[];
 for(const directory of directories){
   const report=JSON.parse(fs.readFileSync(path.join(directory,'report.json')));

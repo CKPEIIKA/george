@@ -45,7 +45,10 @@ the deployment workflow uploads already committed assets.
 The site includes its own isolation service worker. On a first secure visit,
 the entry module registers it in the site directory and reloads once before
 starting the app. It adds COOP/COEP to same-origin network responses, enabling
-Native NC's shared Wasm workers on Pages without changing repository settings.
+fomkyr's shared Wasm workers on Pages without changing repository settings.
 It does not store an offline asset cache; GET requests revalidate assets.
-Service-worker or isolation failures leave Native disabled and Bergman available.
+Service-worker or isolation failures leave fomkyr disabled and Bergman available.
 Both root and project-directory hosting must be checked before publication.
+
+Deployment verification streams archive hashing; large source downloads do not
+require an in-memory Git subprocess buffer.

@@ -64,10 +64,10 @@ unequal weights and reversed generators. Native and Wasm basis, raw Anick
 output and structural export agree exactly. They pass 860 full d² identities,
 220 basis ambiguities, projectivity checks and a legacy-mode switching probe.
 Chromium additionally computes the braid at `/` and `/george/` and verifies
-the weighted cutoff notice. See [braid.json](validation/braid.json) and
-[the diagnostic history](validation/resolution-limits.json).
+the weighted cutoff notice. See braid.json (generated locally) and
+the diagnostic history (generated locally).
 
 The original 37-output suites in both modes, all 24 OCaml aliases, all 51
 algebra/oracle cases, twenty longer-name cases, extra sessions and form
 presets are rerun for the new engine. Their current evidence is linked from
-[summary.json](validation/summary.json).
+summary.json (generated locally).

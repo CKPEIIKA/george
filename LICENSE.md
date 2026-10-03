@@ -66,6 +66,14 @@ original notice are in `vendor/george-native-0.1.0/`; the browser modules and
 their notice are in `web/engine/native/`. It is an independent C implementation
 and does not link ECL or Bergman. `tools/build-native-backend.sh` rebuilds it.
 
+### fomkyr
+
+fomkyr 0.6.1 is MIT licensed. Its unchanged C sources, build scripts, mathematical
+tests and notice are retained in `vendor/fomkyr-0.6.1/`. Its original archive digest
+and retained-file inventory are in `SOURCE.json`. Runtime binaries and their
+notice are in `web/engine/fomkyr/`. Generated benchmark stores and reports are
+not part of the corresponding source.
+
 ### Bergman / ECL
 
 The WebAssembly engine statically links:

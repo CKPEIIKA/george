@@ -12,7 +12,7 @@ test('published backend labels match compiler settings and asset hashes', () => 
   for (const [id, backend] of Object.entries(BERGMAN_BACKENDS)) {
     const directory = new URL(backend.directory, new URL('../web/src/backends.js', import.meta.url));
     const manifest = JSON.parse(fs.readFileSync(new URL('build.json', directory)));
-    assert.equal(manifest.backend, id); assert.equal(manifest.appVersion, '0.6.0');
+    assert.equal(manifest.backend, id); assert.equal(manifest.appVersion, JSON.parse(fs.readFileSync('package.json')).version);
     assert.equal(manifest.compiler.libraryOptimization, id === 'standard' ? 'O2' : 'O3');
     assert.equal(manifest.compiler.linkOptimization, id === 'standard' ? 'O2' : 'O3');
     assert.equal(!!manifest.compiler.lto, id !== 'standard');

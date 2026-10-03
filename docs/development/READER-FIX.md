@@ -62,4 +62,4 @@ in both modes on native, Node/Wasm and Chromium; the independent algebra,
 braid, longer-name and OCaml checks are rerun for the rebuilt release.
 
 Exact source and engine hashes accompany
-[reader.json](validation/reader.json) and [ui.json](validation/ui.json).
+reader.json (generated locally) and ui.json (generated locally).

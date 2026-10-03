@@ -1,9 +1,0 @@
-{
-  "throughDegree": 12,
-  "rules": 22,
-  "equalLeadingSets": true,
-  "differentUnreducedTails": 0,
-  "mutualExactReduction": true,
-  "seconds": 0.004406535000043732,
-  "scope": "Differential against previous exact engine, not independent completion to this degree"
-}

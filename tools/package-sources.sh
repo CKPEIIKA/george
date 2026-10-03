@@ -30,19 +30,21 @@ EOF
 git -C "$toolchain/ecl-src" archive --format=tar --prefix=ecl/ 59f60e09102961bf5872c672fdd9d200b2e83d6b | gzip -n >"$root/web/sources/ecl-source.tar.gz"
 # Only tracked or staged files belong to the release. Concurrent untracked
 # work stays in the workspace and cannot enter the downloadable archive.
-# Generated upstream benchmark OPFS stores stay in the original Git imports.
-# Sources, tests and the separate checkpoint fixtures used by tests are included.
+# Generated binaries and reports are omitted; build inputs and regression
+# fixtures are retained. ECL and its bundled dependencies have their own archive.
 git -C "$root" ls-files -z -- \
   README.md LICENSE.md package.json package-lock.json .gitignore .gitattributes .github \
   licenses ports tools test docs vendor web | \
   tar -C "$root" --exclude='web/sources/*' --exclude='web/engine/ecl.*' \
     --exclude='web/engine/*/ecl.*' \
+    --exclude='*.wasm' --exclude='*.so' --exclude='*.o' --exclude='*.a' \
+    --exclude='docs/development/validation/*' --exclude='docs/development/HANDOFF.md' \
     --exclude='vendor/fomkyr-*/results/*/storage/*' \
     --null -czf "$root/web/sources/george-source.tar.gz" --files-from=-
 python3 - "$root/web/sources/george-source.tar.gz" <<'PY'
 import pathlib, sys
 archive = pathlib.Path(sys.argv[1])
-if archive.stat().st_size >= 99 * 1024 * 1024:
-    raise SystemExit('George source archive exceeds the 99 MiB publication allowance.')
+if archive.stat().st_size >= 20 * 1024 * 1024:
+    raise SystemExit('George source archive exceeds the 20 MiB source-package allowance.')
 PY
 sha256sum "$root/web/sources/"*.tar.gz >"$root/build/source-archives.sha256"

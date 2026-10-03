@@ -24,7 +24,7 @@ const sha = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 const cases = [...design.cases, ...TUTORIALS.map(t => ({id: `tutorial-${t.id}`, group: 'anchor', form: tutorialForm(t.id)})),
   ...EXAMPLES.filter(e => TASK_BY_ID.get(e.task)?.module || ['factalg', 'hochschild'].includes(e.task))
     .map(e => ({id: `example-${e.id}`, group: 'module', form: exampleForm(e)})), ...largeBackendAnchors(), ...oracleBackendAnchors()];
-const input = JSON.parse(fs.readFileSync('docs/development/validation/memory.json', 'utf8')).presentationAssessment.inputText;
+const input = JSON.parse(fs.readFileSync('test/fixtures/fomin-kirillov-user.json', 'utf8')).inputText;
 const parsed = readInputFile('(ALGFORMINPUT)\n' + input);
 cases.push({id: 'submitted-15-generators-100-relations', group: 'anchor', form: {
   task: 'gb', ring: 'noncomm', field: '0', order: 'degleftlex', maxdeg: '4', memoryMiB: 3584,

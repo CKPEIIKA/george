@@ -36,7 +36,7 @@ fs.writeFileSync(path.join(out,'startup.log'),stdout);
 let job, expected, expectedHash;
 if (/^gb[34678]$/.test(caseId)) {
   const degree = Number(caseId.slice(2));
-  const inputText=JSON.parse(fs.readFileSync('docs/development/validation/memory.json','utf8')).presentationAssessment.inputText;
+  const inputText=JSON.parse(fs.readFileSync('test/fixtures/fomin-kirillov-user.json','utf8')).inputText;
   const parsed = readInputFile('(ALGFORMINPUT)\n'+inputText);
   job = buildJob({task:'gb',ring:'noncomm',field:'0',order:'degleftlex',maxdeg:String(degree),
     vars:parsed.vars,rels:parsed.rels,weights:'',memoryMiB:3584});
@@ -44,7 +44,7 @@ if (/^gb[34678]$/.test(caseId)) {
   if (degree!==3) {
     const reference=`build/diagnosis-15-generators/${directory}/result.gb`;
     if(fs.existsSync(reference)) expected={'result.gb':fs.readFileSync(reference,'utf8')};
-    else expectedHash=JSON.parse(fs.readFileSync('docs/development/validation/performance.json','utf8')).nativeOutputs[String(degree)].sha256;
+    else expectedHash=JSON.parse(fs.readFileSync('test/fixtures/fk6-degree-prefixes.json','utf8')).degrees.find(row=>row.degree===degree)?.referenceSha256;
   }
 } else if (caseId==='legacy' || caseId==='fixed') {
   ({job,expected} = regressionJob(caseId==='legacy'));

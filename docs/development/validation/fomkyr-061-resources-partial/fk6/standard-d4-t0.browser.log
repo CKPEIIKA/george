@@ -1,4 +1,0 @@
-[1287957:1287978:1003/021231.078285:ERROR:pto/nss_util.cc:377] After loading Root Certs, loaded==false: NSS error code: -8018
-[1287957:1287982:1003/021233.232053:ERROR:gle_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR
-[1287957:1287982:1003/021233.236302:ERROR:gle_apis/gcm/engine/registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT
-[1287957:1287982:1003/021302.649532:ERROR:gle_apis/gcm/engine/registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT

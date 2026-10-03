@@ -4,7 +4,7 @@ The fixture [upstream-cases.json](../../test/fixtures/upstream-cases.json)
 records 30 presentations, each run over Q, F₂ and F₅: 90 field cases.
 Its 17 source files have immutable revision URLs, SHA256 values, source
 licenses, locations and explicit adaptation notes. The small release report
-is retained in [validation/upstream.json](validation/upstream.json).
+is retained in validation/upstream.json (generated locally).
 
 The final run passed all 90 native/Wasm cases and 3,379 exact critical
 ambiguities: 78 complete-basis certificates and 12 bounded certificates.
@@ -75,7 +75,7 @@ a bounded certificate is not a complete-basis certificate.
 
 ```sh
 python3 tools/setup-upstream-tests.py
-BERGMAN_SBCL=build/sbcl-upstream-final-20260930/bin/clisp/unix/bergman \
+BERGMAN_SBCL=build/sbcl-reference/bin/clisp/unix/bergman \
   npm run test:upstream
 ```
 

@@ -1,8 +1,0 @@
-{
-  "passed": true,
-  "fixture": "minimal public-source-shaped files, not full checkout",
-  "dryRun": true,
-  "idempotent": true,
-  "sourceMismatchRefusal": true,
-  "javascriptSyntax": true
-}

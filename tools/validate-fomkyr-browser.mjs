@@ -113,7 +113,7 @@ try {
           console.log(name,'UI ready');
           assert.equal(await page.evaluate(()=>crossOriginIsolated),isolated);
           assert.equal(await page.locator('#backend').inputValue(),'fomkyr');
-          assert.equal(await page.title(),'George 0.6');
+          assert.equal(await page.title(),'George 0.6.1');
           assert.equal(await page.locator('.release-tag').count(),0);
           assert.equal(await page.locator('#backend option[value="fomkyr"]').evaluate(node=>node.disabled),false);
           assert.equal(new URL(page.url()).hash,new URL(legacy).hash);
