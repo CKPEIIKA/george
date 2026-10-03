@@ -1,0 +1,209 @@
+{
+  "engine": "fomkyr 0.6.1 unchanged",
+  "cases": [
+    {
+      "name": "yang-mills-3",
+      "variables": [
+        "a",
+        "b",
+        "c"
+      ],
+      "definingDegrees": [
+        3
+      ],
+      "testDegree": 20,
+      "sources": [
+        {
+          "title": "Connes and Dubois-Violette, Yang-Mills and some related algebras (2004)",
+          "url": "https://arxiv.org/html/math-ph/0411062",
+          "location": "Sections 0.3 and 0.4, equations (16), (28), (30), (32)"
+        }
+      ],
+      "interpretation": "Euclidean Yang-Mills covariant-derivative algebra with 3 generators; sum_mu [X_mu,[X_mu,X_nu]]=0.",
+      "adaptation": "none: rational specialization stated explicitly",
+      "expectedHilbertFormula": "1/(1-3*t+3*t^3-t^4)"
+    },
+    {
+      "name": "yang-mills-4",
+      "variables": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ],
+      "definingDegrees": [
+        3
+      ],
+      "testDegree": 20,
+      "sources": [
+        {
+          "title": "Connes and Dubois-Violette, Yang-Mills and some related algebras (2004)",
+          "url": "https://arxiv.org/html/math-ph/0411062",
+          "location": "Sections 0.3 and 0.4, equations (16), (28), (30), (32)"
+        }
+      ],
+      "interpretation": "Euclidean Yang-Mills covariant-derivative algebra with 4 generators; sum_mu [X_mu,[X_mu,X_nu]]=0.",
+      "adaptation": "none: rational specialization stated explicitly",
+      "expectedHilbertFormula": "1/(1-4*t+4*t^3-t^4)"
+    },
+    {
+      "name": "super-yang-mills-3",
+      "variables": [
+        "a",
+        "b",
+        "c"
+      ],
+      "definingDegrees": [
+        3
+      ],
+      "testDegree": 20,
+      "sources": [
+        {
+          "title": "Connes and Dubois-Violette, Yang-Mills and some related algebras (2004)",
+          "url": "https://arxiv.org/html/math-ph/0411062",
+          "location": "Sections 0.3 and 0.4, equations (16), (28), (30), (32)"
+        }
+      ],
+      "interpretation": "Associative super-Yang-Mills presentation: [sum X_mu^2,X_nu]=0; no extra Grassmann relations.",
+      "adaptation": "none: rational specialization stated explicitly",
+      "expectedHilbertFormula": "1/(1-3*t+3*t^3-t^4)"
+    },
+    {
+      "name": "affine-q-serre-q2",
+      "variables": [
+        "a",
+        "b"
+      ],
+      "definingDegrees": [
+        4
+      ],
+      "testDegree": 15,
+      "sources": [
+        {
+          "title": "Terwilliger, The q-Onsager algebra and the positive part of U_q(affine sl2) (2015)",
+          "url": "https://arxiv.org/html/1506.08666v1",
+          "location": "Equations (1)-(4); PBW basis and graded algebra"
+        }
+      ],
+      "interpretation": "Positive part U_q(affine sl2) at q=2, over Q. Relations have total degree FOUR although called cubic q-Serre in the literature.",
+      "adaptation": "Exact q=2 specialization; nonzero, not a root of unity over Q; no commutative replacement.",
+      "expectedHilbertFormula": "product_(k>=1) (1-t^(2k-1))^-2 (1-t^(2k))^-1"
+    },
+    {
+      "name": "affine-q-serre-q3",
+      "variables": [
+        "a",
+        "b"
+      ],
+      "definingDegrees": [
+        4
+      ],
+      "testDegree": 15,
+      "sources": [
+        {
+          "title": "Terwilliger, The q-Onsager algebra and the positive part of U_q(affine sl2) (2015)",
+          "url": "https://arxiv.org/html/1506.08666v1",
+          "location": "Equations (1)-(4); PBW basis and graded algebra"
+        }
+      ],
+      "interpretation": "Positive part U_q(affine sl2) at q=3, over Q. Relations have total degree FOUR although called cubic q-Serre in the literature.",
+      "adaptation": "Exact q=3 specialization; nonzero, not a root of unity over Q; no commutative replacement.",
+      "expectedHilbertFormula": "product_(k>=1) (1-t^(2k-1))^-2 (1-t^(2k))^-1"
+    },
+    {
+      "name": "homogenized-q-onsager-q2",
+      "variables": [
+        "t",
+        "a",
+        "b"
+      ],
+      "definingDegrees": [
+        2,
+        4
+      ],
+      "testDegree": 15,
+      "sources": [
+        {
+          "title": "Terwilliger, The q-Onsager algebra and the positive part of U_q(affine sl2) (2015)",
+          "url": "https://arxiv.org/html/1506.08666v1",
+          "location": "Equations (1)-(4); PBW basis and graded algebra"
+        }
+      ],
+      "interpretation": "Central homogenization of q-Onsager at q=2; the dehomogenization t=1 is the source algebra.",
+      "adaptation": "Explicit central homogenization. Not the original nonhomogeneous input; no Hilbert series is assumed merely from homogenizing relations.",
+      "expectedHilbertFormula": null
+    },
+    {
+      "name": "sklyanin-1-2-3",
+      "variables": [
+        "x",
+        "y",
+        "z"
+      ],
+      "definingDegrees": [
+        2
+      ],
+      "testDegree": 15,
+      "sources": [
+        {
+          "title": "Iyudu and Shkarin, Sklyanin algebras and a cubic root of 1 (2021)",
+          "url": "https://arxiv.org/html/2108.06290",
+          "location": "Definition in abstract/introduction and Theorem 1.1"
+        },
+        {
+          "title": "Walton, Representation theory of three-dimensional Sklyanin algebras",
+          "url": "https://math.rice.edu/~notlaw/RepThySkly_NucPhys_revised_final.pdf",
+          "location": "Section 2.1: superpotential interpretation"
+        }
+      ],
+      "interpretation": "Quadratic Sklyanin algebra with parameters (1,2,3); supersymmetric gauge-theory superpotential relations. Included for difficulty, not because its defining degree is high.",
+      "adaptation": "Exact rational parameters (p,q,r)=(1,2,3), satisfying the cited nondegeneracy condition.",
+      "expectedHilbertFormula": "1/(1-t)^3"
+    },
+    {
+      "name": "metab3",
+      "variables": [
+        "x",
+        "y",
+        "z"
+      ],
+      "definingDegrees": [
+        4
+      ],
+      "testDegree": 16,
+      "sources": [
+        {
+          "title": "Hofstadler and Levandovskyy, Modular Algorithms for Computing Groebner Bases in Free Algebras (2025)",
+          "url": "https://arxiv.org/html/2502.11606v1",
+          "location": "Section 5 benchmark examples (1) and (3)"
+        }
+      ],
+      "interpretation": "Published algorithmic stress test: enveloping algebra of the free metabelian Lie algebra on three generators. Not claimed as a distinct physical theory.",
+      "adaptation": "Six signed nonzero commutator-of-commutator generators; deleting duplicates would leave the same ideal but this keeps six as in the cited benchmark.",
+      "expectedHilbertFormula": null
+    },
+    {
+      "name": "lp1",
+      "variables": [
+        "x",
+        "y",
+        "z"
+      ],
+      "definingDegrees": [
+        3,
+        4
+      ],
+      "testDegree": 16,
+      "sources": [
+        {
+          "title": "Hofstadler and Levandovskyy, Modular Algorithms for Computing Groebner Bases in Free Algebras (2025)",
+          "url": "https://arxiv.org/html/2502.11606v1",
+          "location": "Section 5 benchmark examples (1) and (3)"
+        }
+      ],
+      "interpretation": "Published mixed defining-degree (3 and 4), homogeneous-per-relation algebraic stress test; not assigned an invented physical interpretation.",
+      "adaptation": "Same displayed polynomials; order z>y>x explicitly fixed. Paper signature-degree bounds are not identical to our inclusive polynomial-degree bounds.",
+      "expectedHilbertFormula": null
+    }
+  ]
+}

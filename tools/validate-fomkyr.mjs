@@ -10,12 +10,15 @@ import {fomkyrSamples} from '../test/support/fomkyr-lhs.mjs';
 import {fominKirillovSamples, fominKirillov} from '../test/support/fomin-kirillov.mjs';
 import {BackendClient} from '../test/support/backend-client.mjs';
 import {algebra} from '../test/support/algebra.mjs';
+import {stageBoundedReserveTests} from './stage-fomkyr-tests.mjs';
 
+const currentManifest=JSON.parse(fs.readFileSync('web/engine/fomkyr/build.json'));
+const sourceDirectory='vendor/fomkyr-'+currentManifest.version;
 const out=path.resolve(process.argv[2] || `build/validation/fomkyr-${Date.now()}`);
 const sha=file=>crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
 fs.mkdirSync(out,{recursive:true});
-const report={state:'running',startedAt:new Date().toISOString(),upstreamVersion:'0.6.1',
-  importedArchiveSha256:'ee286ecc55dea5275f7568abfd721bb380cc57b9df9772ab4348aad7ca411492',
+const report={state:'running',startedAt:new Date().toISOString(),upstreamVersion:currentManifest.version,
+  importedArchiveSha256:currentManifest.provenance.archiveSha256,
   engineHashes:Object.fromEntries(['fomkyr32.wasm','fomkyr64.wasm','fomkyr32-single.wasm','fomkyr64-single.wasm','engine.js','runtime.js','job-adapter.js'].map(n=>[n,sha('web/engine/fomkyr/'+n)])),
   bergmanManifest:JSON.parse(fs.readFileSync('web/engine/compiled/build.json')),upstreamTests:[],cases:[],
   method:'Fomkyr primitive unreduced bases are compared by two-way bounded reduction and critical-pair certificates, not byte equality. Singular uses the same degree bound. Node OPFS is emulated; browser evidence is separate.'};
@@ -39,11 +42,13 @@ try {
     assert.equal(evidence.state,'complete');assert.equal(evidence.upstreamVersion,report.upstreamVersion);
     assert.equal(evidence.importedArchiveSha256,report.importedArchiveSha256);
     assert.deepEqual(evidence.engineHashes,report.engineHashes);
-    assert.equal(evidence.upstreamTests.length,25);assert.ok(evidence.upstreamTests.every(row=>row.passed));
+    assert.ok(evidence.upstreamTests.length>=25);assert.ok(evidence.upstreamTests.every(row=>row.passed));
     report.upstreamTests=evidence.upstreamTests;report.upstreamEvidence={file:evidenceFile,sha256:sha(evidenceFile)};
   }else{
   const stage=path.join(out,'upstream');
-  fs.cpSync('vendor/fomkyr-0.6.1',stage,{recursive:true});fs.mkdirSync(path.join(stage,'results'),{recursive:true});
+  fs.cpSync(sourceDirectory,stage,{recursive:true});fs.mkdirSync(path.join(stage,'results'),{recursive:true});
+  for(const version of ['0.5','0.6','0.6.1','0.6.2','0.6.3'])fs.mkdirSync(path.join(stage,'results',version),{recursive:true});
+  stageBoundedReserveTests(stage);
   // Older archives omitted the native field argument. Apply that correction
   // only when needed, retaining the original source and kernel.
   const nativeMatrix=path.join(stage,'tests/test_physics_matrix.py');
@@ -101,16 +106,32 @@ try {
     ['oracle-format',process.execPath,['tests/test_oracle_format.mjs']],
     ['rational-rewrite-wasm',process.execPath,['tests/test_deep_polish_wasm.mjs']],
     ['ubsan','bash',['tools/test_ubsan.sh']],
+    ...(fs.existsSync(path.join(stage,'tests/test_062_wasm.mjs'))?[
+      ['big-integer-division','python3',['tests/test_big_division.py']],
+      ['big-exact-fractions','python3',['tests/test_big_fraction.py']],
+      ['held-out-presentations','python3',['tests/test_062_presentations.py']],
+      ['four-wasm-exact-paths',process.execPath,['tests/test_062_wasm.mjs']],
+    ]:[]),
+    ...(fs.existsSync(path.join(stage,'tests/test_063_wasm.mjs'))?[
+      ['nearby-fk-queue-parity','python3',['tests/test_063_native.py']],
+      ['four-wasm-overflow-reserve',process.execPath,['tests/test_063_wasm.mjs']],
+      ['cancel-acquired-reserve',process.execPath,['tests/test_063_cancel_leased.mjs']],
+      ['upstream-control-roundtrip',process.execPath,['tests/test_063_controls.mjs']],
+    ]:[]),
   ]) {
     if(report.upstreamTests.some(result=>result.name===name&&result.passed))continue;
-    run(executable,args,{cwd:stage,name:'upstream-'+name,env:upstreamEnv,timeout:name==='compiled-wasm'?1800000:120000});
+    const stdout=run(executable,args,{cwd:stage,name:'upstream-'+name,env:upstreamEnv,timeout:['compiled-wasm','four-wasm-overflow-reserve','cancel-acquired-reserve'].includes(name)?1800000:120000});
     const reportName={release:'fomkyr-tests.json','static-host-unit':'static-host-unit-tests.json',
       'rational-arithmetic':'0.5/rational-arithmetic-tests.json','rational-cases':'0.5/rational-cases.json',
       'compiled-edge':'0.6/compiled-edge-tests.json','compiled-fk6-certificate':'0.6/compiled-fk6-certificate.json',
       'compiled-wasm':'0.6/compiled-wasm-tests.json','direct-controls':'0.6/direct-controls-tests.json',
       'modular-compatibility':'0.5/modular-tests.json'}[name]??(name.startsWith('physics-')?name+'.json':name+'-tests.json');
-    const special={'oracle-format':{exactInterchange:true,passed:true}}[name];
-    const actualName={'audit':'0.6.1/audit-tests.json','rational-rewrite-wasm':'0.6.1/deep-polish-wasm.json'}[name]??reportName;
+    const special={'oracle-format':{exactInterchange:true,passed:true},'upstream-control-roundtrip':{savedPreferencesPreserved:true,passed:true},
+      ...(['big-integer-division','big-exact-fractions'].includes(name)?{[name]:JSON.parse(stdout.trim().split('\n').at(-1))}:{})}[name];
+    const actualName={'audit':'0.6.1/audit-tests.json','rational-rewrite-wasm':'0.6.1/deep-polish-wasm.json',
+      'held-out-presentations':'0.6.2/presentation-regressions.json','four-wasm-exact-paths':'0.6.2/wasm-exact.json',
+      'nearby-fk-queue-parity':'0.6.3/fk-nearby.json','four-wasm-overflow-reserve':'0.6.3/reserve-wasm.json',
+      'cancel-acquired-reserve':'0.6.3/cancel-leased.json'}[name]??reportName;
     report.upstreamTests.push({name,passed:true,report:name==='ubsan'?{sanitizer:'undefined',passed:true}:special??JSON.parse(fs.readFileSync(path.join(stage,'results',actualName)))});save();
     console.log('Upstream',name,'PASS');
   }
@@ -124,13 +145,13 @@ try {
     {id:'fk-E3-degree4',form:{...fominKirillov(3),field:'0',maxdeg:'4'}},
     ...[3,4].map(degree=>({id:'submitted-degree'+degree,form:{vars:submitted.vars,rels:submitted.rels,field:'0',maxdeg:String(degree),maxserdeg:String(degree)}}))];
   // Reuse the archive's coefficient and word-boundary anchors with our coordinator.
-  const big=JSON.parse(fs.readFileSync('vendor/fomkyr-0.6.1/fixtures/big-coefficients.json'));
+  const big=JSON.parse(fs.readFileSync(sourceDirectory+'/fixtures/big-coefficients.json'));
   const fromFixture=f=>({vars:f.variables,rels:f.relations.map(r=>r.terms.map((t,i)=>{
     const c=BigInt(t.coefficient),abs=c<0n?-c:c;
     return (c<0n?'-':i?'+':'')+(abs===1n?'':abs+'*')+t.word.map(k=>f.variables[k]).join('*');
   }).join(''))});
   cases.push({id:'archive-155-bit-coefficients',form:{...fromFixture(big),field:'0',maxdeg:'5'},coefficientBits:155});
-  const physics=JSON.parse(fs.readFileSync('vendor/fomkyr-0.6.1/fixtures/physics-matrix.json'));
+  const physics=JSON.parse(fs.readFileSync(sourceDirectory+'/fixtures/physics-matrix.json'));
   for(const fixture of physics.filter(f=>f.name.startsWith('homogenized-')||['commuting-polynomial-4','exterior-6','homogeneous-braid-3'].includes(f.name)))
     for(const prime of [0,2,101])cases.push({id:`physics-${fixture.name}-p${prime}`,form:{...fromFixture(fixture),field:prime===0?'0':prime===2?'2':'p',modulus:String(prime),maxdeg:'4'}});
   const root=path.resolve('build/oracles/root'),singular=path.join(root,'usr/bin/Singular');

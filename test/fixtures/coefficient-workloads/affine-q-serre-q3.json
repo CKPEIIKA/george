@@ -1,0 +1,5 @@
+{
+  "description": "affine-q-serre-q3",
+  "sourceFixture": "vendor/fomkyr-0.6.3/fixtures/published/affine-q-serre-q3.json",
+  "inputText": "vars a,b;\n\n9*b*a*a*a-91*a*b*a*a+91*a*a*b*a-9*a*a*a*b,\n9*b*b*b*a-91*b*b*a*b+91*b*a*b*b-9*a*b*b*b;\n"
+}

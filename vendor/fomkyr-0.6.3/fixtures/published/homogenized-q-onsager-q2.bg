@@ -1,0 +1,6 @@
+vars t,a,b;
+
+16*b*a*a*a-84*a*b*a*a+84*a*a*b*a-16*a*a*a*b+225*t*t*b*a-225*t*t*a*b,
+16*b*b*b*a-84*b*b*a*b+84*b*a*b*b-16*a*b*b*b+225*t*t*b*a-225*t*t*a*b,
+a*t-t*a,
+b*t-t*b;

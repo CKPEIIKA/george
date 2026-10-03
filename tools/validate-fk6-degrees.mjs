@@ -15,9 +15,14 @@ const {vars,rels}=readInputFile('(ALGFORMINPUT)\n'+JSON.parse(fs.readFileSync(fi
 const a=algebra(vars),sha=file=>crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
 const manifest=JSON.parse(fs.readFileSync('web/engine/fomkyr/build.json'));
 const expected=JSON.parse(fs.readFileSync('test/fixtures/fk6-degree-prefixes.json'));
+const retainedAt=process.argv.indexOf('--singular-report');
+const retainedFile=retainedAt<0?null:path.resolve(process.argv[retainedAt+1]);
+const retained=retainedFile?JSON.parse(fs.readFileSync(retainedFile)):null;
+if(retained){assert.equal(retained.state,'complete');assert.equal(retained.inputSha256,sha(fixtureFile));}
 const report={state:'running',version:manifest.version,inputSha256:sha(fixtureFile),timeLimitSeconds:120,
   kernelHashes:Object.fromEntries(['fomkyr32.wasm','fomkyr64.wasm','fomkyr32-single.wasm','fomkyr64-single.wasm'].map(n=>[n,sha('web/engine/fomkyr/'+n)])),
   method:'Fresh degree 1–9 jobs for each of the four Wasm variants. Exact leading words, independent BigInt normal-word DP, input membership and changed-tail mutual reductions against archived reference bases. Full critical-pair certificates through degree 5. Singular bounded leading ideals are checked until its first two-minute limit; higher skipped oracles are explicitly recorded.',cases:[]};
+if(retained)report.retainedSingular={sourceReportSha256:sha(retainedFile),method:'Reuse recorded Singular calculations on the identical input; reread and check their leading words against each exact reference. No independent oracle timing is repeated.'};
 const save=()=>fs.writeFileSync(path.join(out,'report.json'),JSON.stringify(report,null,2)+'\n');save();
 const canonical=p=>JSON.stringify([...p].sort(([x],[y])=>x.localeCompare(y)).map(([w,[n,d]])=>[w,n.toString(),d.toString()]));
 const root=path.resolve('build/oracles/root'),singular=path.join(root,'usr/bin/Singular');
@@ -53,7 +58,17 @@ try {
       row.engines.push({bits,execution,workers,passed:true,inputMembership:true,leadingWordsMatch:true,mutualIdealMembership:true,differingTails,ambiguities,hilbertMatches:true,elapsedSeconds:result.elapsedMs/1000});
       console.log('FK6',degree,bits,execution,'PASS');
     }
-    if(singularLimit)row.singular={status:'skipped',reason:singularLimit};
+    if(retained){
+      const previous=retained.cases.find(c=>c.degree===degree);assert.ok(previous?.singular);
+      row.singular={...previous.singular,retained:true};
+      if(previous.singular.passed){
+        const logFile=path.join(path.dirname(retainedFile),'degree-'+degree,'singular.log');
+        const log=fs.readFileSync(logFile,'utf8');assert.match(log,/ORACLE_DONE/);assert.doesNotMatch(log,/^\s*\?/m);
+        const s=algebra(vars.map((_,i)=>'fk_var_'+i)),heads=[...log.matchAll(/^LEAD:(.+)$/gm)].map(m=>s.lead(s.parse(m[1]))).sort();
+        assert.deepEqual(heads,reference.map(a.lead).sort());assert.deepEqual(normalWordCounts(vars.length,heads,degree),anchor.hilbert);
+        row.singular.logSha256=sha(logFile);
+      }
+    }else if(singularLimit)row.singular={status:'skipped',reason:singularLimit};
     else {
       const names=vars.map((_,i)=>'fk_var_'+i),ids=Object.fromEntries(vars.map((v,i)=>[v,names[i]]));
       const convert=p=>toBergman(parseRelation(p,vars).map(t=>({...t,factors:t.factors.map(f=>({...f,v:ids[f.v]}))})));

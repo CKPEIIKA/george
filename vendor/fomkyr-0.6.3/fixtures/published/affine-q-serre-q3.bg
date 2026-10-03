@@ -1,0 +1,4 @@
+vars a,b;
+
+9*b*a*a*a-91*a*b*a*a+91*a*a*b*a-9*a*a*a*b,
+9*b*b*b*a-91*b*b*a*b+91*b*a*b*b-9*a*b*b*b;

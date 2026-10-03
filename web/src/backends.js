@@ -12,7 +12,7 @@ export const BACKENDS = Object.freeze({
     label: 'backend.native', kind: 'native', experimental: true, defaultHeapMiB: 512,
     maximumHeapMiB: 14304, capabilities: NATIVE_CAPABILITIES}),
   fomkyr: Object.freeze({directory: '../engine/fomkyr/', worker: '../engine/fomkyr/george-worker.js',
-    label: 'backend.fomkyr', kind: 'native', experimental: true, defaultHeapMiB: 512,
+    label: 'backend.fomkyr', kind: 'native', experimental: true, defaultHeapMiB: 3584,
     maximumHeapMiB: 14304, capabilities: {...FOMKYR_CAPABILITIES, maximumCoefficient: '4611686018427387903'}}),
 });
 

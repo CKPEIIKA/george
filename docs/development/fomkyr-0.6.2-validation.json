@@ -1,0 +1,485 @@
+{
+  "schemaVersion": 1,
+  "coreVersion": "0.6.2",
+  "sourceArchiveSha256": "35de48a9e0c1ede42cb8de3c5e4d42b282cc83e93a4baf0872dc102f3b648d64",
+  "kernelHashes": {
+    "fomkyr32-single.wasm": "3ccfaa185d911d18613b5ebe93ab436347058d7a27ab973f6fe6ef9329354487",
+    "fomkyr32.wasm": "b5ff1a241451885999395c0b2e0121047e8d1c2affbbaf8b2498d362b4920686",
+    "fomkyr64-single.wasm": "156c375b994b094d9ccded03bc6ebd5bbfe0e2f8de691927b1036c3ed3c7262a",
+    "fomkyr64.wasm": "ab54e903210403cc8313de56624e5c49fd566a9c3a4654021ee0b631a6d2ada7"
+  },
+  "scope": "Focused arithmetic and production-host update checks; no claim that every inherited upstream suite was rerun.",
+  "unitTestsPassed": 139,
+  "integerAudit": {
+    "fastCases": 9680,
+    "legacyCases": 510
+  },
+  "fractionCases": 4000,
+  "heldOutPresentations": [
+    {
+      "name": "held-out-q-serre-4",
+      "degree": 12,
+      "passed": true,
+      "independentCompletion": true
+    },
+    {
+      "name": "held-out-q-serre-5",
+      "degree": 12,
+      "passed": true,
+      "independentCompletion": true
+    },
+    {
+      "name": "affine-q-serre-q2-reordered-scaled",
+      "degree": 11,
+      "passed": true,
+      "independentCompletion": true
+    },
+    {
+      "name": "affine-q-serre-q2-swapped-generators",
+      "degree": 11,
+      "passed": true,
+      "independentCompletion": true
+    },
+    {
+      "name": "affine-q-serre-q3-reordered-scaled",
+      "degree": 11,
+      "passed": true,
+      "independentCompletion": true
+    },
+    {
+      "name": "affine-q-serre-q3-swapped-generators",
+      "degree": 11,
+      "passed": true,
+      "independentCompletion": true
+    },
+    {
+      "name": "sklyanin-1-2-3-reordered-scaled",
+      "degree": 7,
+      "passed": true,
+      "independentCompletion": true
+    },
+    {
+      "name": "sklyanin-1-2-3-swapped-generators",
+      "degree": 7,
+      "passed": true,
+      "independentCompletion": true
+    },
+    {
+      "name": "q-serre-shear-a-plus-2b",
+      "degree": 6,
+      "passed": true,
+      "independentCompletion": true
+    }
+  ],
+  "wasmExactOracles": [
+    {
+      "name": "check-0",
+      "degree": 14,
+      "modulus": 0,
+      "rules": 21,
+      "compositions": 75,
+      "passed": true
+    },
+    {
+      "name": "check-1",
+      "degree": 14,
+      "modulus": 0,
+      "rules": 21,
+      "compositions": 75,
+      "passed": true
+    },
+    {
+      "name": "check-2",
+      "degree": 14,
+      "modulus": 0,
+      "rules": 21,
+      "compositions": 75,
+      "passed": true
+    },
+    {
+      "name": "check-3",
+      "degree": 14,
+      "modulus": 0,
+      "rules": 21,
+      "compositions": 75,
+      "passed": true
+    },
+    {
+      "name": "check-4",
+      "degree": 14,
+      "modulus": 0,
+      "rules": 21,
+      "compositions": 75,
+      "passed": true
+    },
+    {
+      "name": "check-5",
+      "degree": 14,
+      "modulus": 0,
+      "rules": 21,
+      "compositions": 75,
+      "passed": true
+    },
+    {
+      "name": "check-6",
+      "degree": 14,
+      "modulus": 0,
+      "rules": 21,
+      "compositions": 75,
+      "passed": true
+    },
+    {
+      "name": "check-7",
+      "degree": 14,
+      "modulus": 0,
+      "rules": 21,
+      "compositions": 75,
+      "passed": true
+    },
+    {
+      "name": "check-8",
+      "degree": 8,
+      "modulus": 2,
+      "rules": 5,
+      "compositions": 10,
+      "passed": true
+    },
+    {
+      "name": "check-9",
+      "degree": 8,
+      "modulus": 5,
+      "rules": 7,
+      "compositions": 12,
+      "passed": true
+    },
+    {
+      "name": "check-10",
+      "degree": 8,
+      "modulus": 101,
+      "rules": 7,
+      "compositions": 12,
+      "passed": true
+    },
+    {
+      "name": "check-11",
+      "degree": 16,
+      "modulus": 0,
+      "rules": 29,
+      "compositions": 115,
+      "passed": true
+    },
+    {
+      "name": "check-12",
+      "degree": 9,
+      "modulus": 0,
+      "rules": 26,
+      "compositions": 152,
+      "passed": true
+    },
+    {
+      "name": "resume",
+      "degree": 14,
+      "modulus": 0,
+      "rules": 21,
+      "compositions": 75,
+      "passed": true
+    }
+  ],
+  "fk6": {
+    "degreeBounds": 9,
+    "fomkyrRuns": 36,
+    "singularPassed": 8,
+    "singularCensored": 1
+  },
+  "browsers": [
+    {
+      "browser": "chromium",
+      "truncatedTotals": true,
+      "allDegreeCounts": true,
+      "expandedPolynomials": 265,
+      "fk6Degree9Rules": 1451,
+      "timerOnlySeconds": true,
+      "coefficientRules": 21
+    },
+    {
+      "browser": "firefox",
+      "truncatedTotals": true,
+      "allDegreeCounts": true,
+      "expandedPolynomials": 265,
+      "fk6Degree9Rules": 1451,
+      "timerOnlySeconds": true,
+      "coefficientRules": 21
+    }
+  ],
+  "publishedSingularCases": [
+    {
+      "name": "q-serre-q2",
+      "degree": 12,
+      "singularPassed": true,
+      "variants": [
+        {
+          "bits": 32,
+          "execution": "single",
+          "passed": true,
+          "rules": 16,
+          "ambiguities": 62,
+          "leadingWordsMatch": true,
+          "mutualIdealMembership": true
+        },
+        {
+          "bits": 32,
+          "execution": "multicore",
+          "passed": true,
+          "rules": 16,
+          "ambiguities": 62,
+          "leadingWordsMatch": true,
+          "mutualIdealMembership": true
+        },
+        {
+          "bits": 64,
+          "execution": "single",
+          "passed": true,
+          "rules": 16,
+          "ambiguities": 62,
+          "leadingWordsMatch": true,
+          "mutualIdealMembership": true
+        },
+        {
+          "bits": 64,
+          "execution": "multicore",
+          "passed": true,
+          "rules": 16,
+          "ambiguities": 62,
+          "leadingWordsMatch": true,
+          "mutualIdealMembership": true
+        }
+      ]
+    },
+    {
+      "name": "q-serre-q3",
+      "degree": 12,
+      "singularPassed": true,
+      "variants": [
+        {
+          "bits": 32,
+          "execution": "single",
+          "passed": true,
+          "rules": 16,
+          "ambiguities": 62,
+          "leadingWordsMatch": true,
+          "mutualIdealMembership": true
+        },
+        {
+          "bits": 32,
+          "execution": "multicore",
+          "passed": true,
+          "rules": 16,
+          "ambiguities": 62,
+          "leadingWordsMatch": true,
+          "mutualIdealMembership": true
+        },
+        {
+          "bits": 64,
+          "execution": "single",
+          "passed": true,
+          "rules": 16,
+          "ambiguities": 62,
+          "leadingWordsMatch": true,
+          "mutualIdealMembership": true
+        },
+        {
+          "bits": 64,
+          "execution": "multicore",
+          "passed": true,
+          "rules": 16,
+          "ambiguities": 62,
+          "leadingWordsMatch": true,
+          "mutualIdealMembership": true
+        }
+      ]
+    },
+    {
+      "name": "q-serre-q4",
+      "degree": 8,
+      "singularPassed": true,
+      "variants": [
+        {
+          "bits": 32,
+          "execution": "single",
+          "passed": true,
+          "rules": 7,
+          "ambiguities": 19,
+          "leadingWordsMatch": true,
+          "mutualIdealMembership": true
+        },
+        {
+          "bits": 32,
+          "execution": "multicore",
+          "passed": true,
+          "rules": 7,
+          "ambiguities": 19,
+          "leadingWordsMatch": true,
+          "mutualIdealMembership": true
+        },
+        {
+          "bits": 64,
+          "execution": "single",
+          "passed": true,
+          "rules": 7,
+          "ambiguities": 19,
+          "leadingWordsMatch": true,
+          "mutualIdealMembership": true
+        },
+        {
+          "bits": 64,
+          "execution": "multicore",
+          "passed": true,
+          "rules": 7,
+          "ambiguities": 19,
+          "leadingWordsMatch": true,
+          "mutualIdealMembership": true
+        }
+      ]
+    },
+    {
+      "name": "q-serre-q5",
+      "degree": 8,
+      "singularPassed": true,
+      "variants": [
+        {
+          "bits": 32,
+          "execution": "single",
+          "passed": true,
+          "rules": 7,
+          "ambiguities": 19,
+          "leadingWordsMatch": true,
+          "mutualIdealMembership": true
+        },
+        {
+          "bits": 32,
+          "execution": "multicore",
+          "passed": true,
+          "rules": 7,
+          "ambiguities": 19,
+          "leadingWordsMatch": true,
+          "mutualIdealMembership": true
+        },
+        {
+          "bits": 64,
+          "execution": "single",
+          "passed": true,
+          "rules": 7,
+          "ambiguities": 19,
+          "leadingWordsMatch": true,
+          "mutualIdealMembership": true
+        },
+        {
+          "bits": 64,
+          "execution": "multicore",
+          "passed": true,
+          "rules": 7,
+          "ambiguities": 19,
+          "leadingWordsMatch": true,
+          "mutualIdealMembership": true
+        }
+      ]
+    },
+    {
+      "name": "sklyanin",
+      "degree": 6,
+      "singularPassed": true,
+      "variants": [
+        {
+          "bits": 32,
+          "execution": "single",
+          "passed": true,
+          "rules": 13,
+          "ambiguities": 58,
+          "leadingWordsMatch": true,
+          "mutualIdealMembership": true
+        },
+        {
+          "bits": 32,
+          "execution": "multicore",
+          "passed": true,
+          "rules": 13,
+          "ambiguities": 58,
+          "leadingWordsMatch": true,
+          "mutualIdealMembership": true
+        },
+        {
+          "bits": 64,
+          "execution": "single",
+          "passed": true,
+          "rules": 13,
+          "ambiguities": 58,
+          "leadingWordsMatch": true,
+          "mutualIdealMembership": true
+        },
+        {
+          "bits": 64,
+          "execution": "multicore",
+          "passed": true,
+          "rules": 13,
+          "ambiguities": 58,
+          "leadingWordsMatch": true,
+          "mutualIdealMembership": true
+        }
+      ]
+    }
+  ],
+  "checkpointUpgrade": [
+    {
+      "browser": "chromium",
+      "modulus": 0,
+      "oldVersion": "0.6.1",
+      "newVersion": "0.6.2",
+      "resumedFromDegree": 4,
+      "completedThroughDegree": 5,
+      "bits": 64,
+      "workers": 2,
+      "rules": 360,
+      "ambiguities": 3460,
+      "mutualReduction": true
+    },
+    {
+      "browser": "chromium",
+      "modulus": 101,
+      "oldVersion": "0.6.1",
+      "newVersion": "0.6.2",
+      "resumedFromDegree": 4,
+      "completedThroughDegree": 5,
+      "bits": 64,
+      "workers": 2,
+      "rules": 360,
+      "ambiguities": 3460,
+      "mutualReduction": true
+    },
+    {
+      "browser": "firefox",
+      "modulus": 0,
+      "oldVersion": "0.6.1",
+      "newVersion": "0.6.2",
+      "resumedFromDegree": 4,
+      "completedThroughDegree": 5,
+      "bits": 64,
+      "workers": 2,
+      "rules": 360,
+      "ambiguities": 3460,
+      "mutualReduction": true
+    },
+    {
+      "browser": "firefox",
+      "modulus": 101,
+      "oldVersion": "0.6.1",
+      "newVersion": "0.6.2",
+      "resumedFromDegree": 4,
+      "completedThroughDegree": 5,
+      "bits": 64,
+      "workers": 2,
+      "rules": 360,
+      "ambiguities": 3460,
+      "mutualReduction": true
+    }
+  ]
+}

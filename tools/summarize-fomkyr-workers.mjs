@@ -21,7 +21,7 @@ for(const directory of directories){
   for(const row of report.rows){
     if(row.status!=='complete'){audits.push({file:null,browser:row.browser,degree:row.degree,status:row.status});continue;}
     const file=path.join(directory,row.basisFile),text=fs.readFileSync(file,'utf8'),basis=a.basis(text);
-    assert.ok(['0.4.0','0.6.0','0.6.1'].includes(row.native.version));assert.equal(row.native.bits,64);assert.equal(row.native.shared,true);
+    assert.ok(['0.4.0','0.6.0','0.6.1','0.6.2','0.6.3'].includes(row.native.version));assert.equal(row.native.bits,64);assert.equal(row.native.shared,true);
     assert.equal(row.outputHasDone,true);assert.equal(row.native.completedThroughDegree,row.degree);
     const expected=row.requestedWorkers||Math.min(32,Math.max(1,row.environment.hardwareConcurrency-1));
     assert.equal(row.native.workers,expected);

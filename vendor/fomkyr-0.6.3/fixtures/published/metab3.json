@@ -1,0 +1,489 @@
+{
+  "name": "metab3",
+  "variables": [
+    "x",
+    "y",
+    "z"
+  ],
+  "relations": [
+    {
+      "degree": 4,
+      "terms": [
+        {
+          "word": [
+            2,
+            0,
+            1,
+            0
+          ],
+          "coefficient": "1"
+        },
+        {
+          "word": [
+            2,
+            0,
+            0,
+            1
+          ],
+          "coefficient": "-1"
+        },
+        {
+          "word": [
+            1,
+            0,
+            2,
+            0
+          ],
+          "coefficient": "-1"
+        },
+        {
+          "word": [
+            1,
+            0,
+            0,
+            2
+          ],
+          "coefficient": "1"
+        },
+        {
+          "word": [
+            0,
+            2,
+            1,
+            0
+          ],
+          "coefficient": "-1"
+        },
+        {
+          "word": [
+            0,
+            2,
+            0,
+            1
+          ],
+          "coefficient": "1"
+        },
+        {
+          "word": [
+            0,
+            1,
+            2,
+            0
+          ],
+          "coefficient": "1"
+        },
+        {
+          "word": [
+            0,
+            1,
+            0,
+            2
+          ],
+          "coefficient": "-1"
+        }
+      ]
+    },
+    {
+      "degree": 4,
+      "terms": [
+        {
+          "word": [
+            2,
+            1,
+            1,
+            0
+          ],
+          "coefficient": "1"
+        },
+        {
+          "word": [
+            2,
+            1,
+            0,
+            1
+          ],
+          "coefficient": "-1"
+        },
+        {
+          "word": [
+            1,
+            2,
+            1,
+            0
+          ],
+          "coefficient": "-1"
+        },
+        {
+          "word": [
+            1,
+            2,
+            0,
+            1
+          ],
+          "coefficient": "1"
+        },
+        {
+          "word": [
+            1,
+            0,
+            2,
+            1
+          ],
+          "coefficient": "-1"
+        },
+        {
+          "word": [
+            1,
+            0,
+            1,
+            2
+          ],
+          "coefficient": "1"
+        },
+        {
+          "word": [
+            0,
+            1,
+            2,
+            1
+          ],
+          "coefficient": "1"
+        },
+        {
+          "word": [
+            0,
+            1,
+            1,
+            2
+          ],
+          "coefficient": "-1"
+        }
+      ]
+    },
+    {
+      "degree": 4,
+      "terms": [
+        {
+          "word": [
+            2,
+            0,
+            1,
+            0
+          ],
+          "coefficient": "1"
+        },
+        {
+          "word": [
+            2,
+            0,
+            0,
+            1
+          ],
+          "coefficient": "-1"
+        },
+        {
+          "word": [
+            1,
+            0,
+            2,
+            0
+          ],
+          "coefficient": "-1"
+        },
+        {
+          "word": [
+            1,
+            0,
+            0,
+            2
+          ],
+          "coefficient": "1"
+        },
+        {
+          "word": [
+            0,
+            2,
+            1,
+            0
+          ],
+          "coefficient": "-1"
+        },
+        {
+          "word": [
+            0,
+            2,
+            0,
+            1
+          ],
+          "coefficient": "1"
+        },
+        {
+          "word": [
+            0,
+            1,
+            2,
+            0
+          ],
+          "coefficient": "1"
+        },
+        {
+          "word": [
+            0,
+            1,
+            0,
+            2
+          ],
+          "coefficient": "-1"
+        }
+      ]
+    },
+    {
+      "degree": 4,
+      "terms": [
+        {
+          "word": [
+            2,
+            1,
+            2,
+            0
+          ],
+          "coefficient": "1"
+        },
+        {
+          "word": [
+            2,
+            1,
+            0,
+            2
+          ],
+          "coefficient": "-1"
+        },
+        {
+          "word": [
+            2,
+            0,
+            2,
+            1
+          ],
+          "coefficient": "-1"
+        },
+        {
+          "word": [
+            2,
+            0,
+            1,
+            2
+          ],
+          "coefficient": "1"
+        },
+        {
+          "word": [
+            1,
+            2,
+            2,
+            0
+          ],
+          "coefficient": "-1"
+        },
+        {
+          "word": [
+            1,
+            2,
+            0,
+            2
+          ],
+          "coefficient": "1"
+        },
+        {
+          "word": [
+            0,
+            2,
+            2,
+            1
+          ],
+          "coefficient": "1"
+        },
+        {
+          "word": [
+            0,
+            2,
+            1,
+            2
+          ],
+          "coefficient": "-1"
+        }
+      ]
+    },
+    {
+      "degree": 4,
+      "terms": [
+        {
+          "word": [
+            2,
+            1,
+            1,
+            0
+          ],
+          "coefficient": "1"
+        },
+        {
+          "word": [
+            2,
+            1,
+            0,
+            1
+          ],
+          "coefficient": "-1"
+        },
+        {
+          "word": [
+            1,
+            2,
+            1,
+            0
+          ],
+          "coefficient": "-1"
+        },
+        {
+          "word": [
+            1,
+            2,
+            0,
+            1
+          ],
+          "coefficient": "1"
+        },
+        {
+          "word": [
+            1,
+            0,
+            2,
+            1
+          ],
+          "coefficient": "-1"
+        },
+        {
+          "word": [
+            1,
+            0,
+            1,
+            2
+          ],
+          "coefficient": "1"
+        },
+        {
+          "word": [
+            0,
+            1,
+            2,
+            1
+          ],
+          "coefficient": "1"
+        },
+        {
+          "word": [
+            0,
+            1,
+            1,
+            2
+          ],
+          "coefficient": "-1"
+        }
+      ]
+    },
+    {
+      "degree": 4,
+      "terms": [
+        {
+          "word": [
+            2,
+            1,
+            2,
+            0
+          ],
+          "coefficient": "1"
+        },
+        {
+          "word": [
+            2,
+            1,
+            0,
+            2
+          ],
+          "coefficient": "-1"
+        },
+        {
+          "word": [
+            2,
+            0,
+            2,
+            1
+          ],
+          "coefficient": "-1"
+        },
+        {
+          "word": [
+            2,
+            0,
+            1,
+            2
+          ],
+          "coefficient": "1"
+        },
+        {
+          "word": [
+            1,
+            2,
+            2,
+            0
+          ],
+          "coefficient": "-1"
+        },
+        {
+          "word": [
+            1,
+            2,
+            0,
+            2
+          ],
+          "coefficient": "1"
+        },
+        {
+          "word": [
+            0,
+            2,
+            2,
+            1
+          ],
+          "coefficient": "1"
+        },
+        {
+          "word": [
+            0,
+            2,
+            1,
+            2
+          ],
+          "coefficient": "-1"
+        }
+      ]
+    }
+  ],
+  "testDegree": 16,
+  "field": "Q",
+  "order": "degree-left-lex; last declared generator is largest",
+  "sources": [
+    {
+      "title": "Hofstadler and Levandovskyy, Modular Algorithms for Computing Groebner Bases in Free Algebras (2025)",
+      "url": "https://arxiv.org/html/2502.11606v1",
+      "location": "Section 5 benchmark examples (1) and (3)"
+    }
+  ],
+  "interpretation": "Published algorithmic stress test: enveloping algebra of the free metabelian Lie algebra on three generators. Not claimed as a distinct physical theory.",
+  "adaptation": "Six signed nonzero commutator-of-commutator generators; deleting duplicates would leave the same ideal but this keeps six as in the cited benchmark.",
+  "definingDegrees": [
+    4
+  ],
+  "expectedHilbert": null,
+  "expectedHilbertFormula": null
+}

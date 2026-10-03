@@ -1,5 +1,6 @@
 // Real George UI, real Wasm/OPFS: Chromium and Firefox, isolated and plain hosts.
 import fs from 'node:fs';
+import {VERSION} from '../web/engine/fomkyr/storage.js';
 import path from 'node:path';
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
@@ -113,7 +114,7 @@ try {
           console.log(name,'UI ready');
           assert.equal(await page.evaluate(()=>crossOriginIsolated),isolated);
           assert.equal(await page.locator('#backend').inputValue(),'fomkyr');
-          assert.equal(await page.title(),'George 0.6.1');
+          assert.equal(await page.title(),'George '+JSON.parse(fs.readFileSync('package.json')).version);
           assert.equal(await page.locator('.release-tag').count(),0);
           assert.equal(await page.locator('#backend option[value="fomkyr"]').evaluate(node=>node.disabled),false);
           assert.equal(new URL(page.url()).hash,new URL(legacy).hash);
@@ -136,7 +137,7 @@ try {
           assert.equal(first.monomialPruning,true);
           assert.deepEqual(await page.evaluate(()=>[...new Set(window.__fomkyrPhases)]),['checkpoint','hilbert','export']);
           assert.match(await page.locator('#degreeMetric').getAttribute('aria-label'),/Basis completed through degree/);
-          assert.equal(first.version,'0.6.1');assert.equal(first.progress.phase,'done');
+          assert.equal(first.version,VERSION);assert.equal(first.progress.phase,'done');
           await page.locator('#fomkyr-bits').selectOption('64');
           await page.locator('#fomkyr-ioMode').selectOption('broker');
           await page.locator('#maxdeg').fill('5');await page.locator('#maxserdeg').fill('5');

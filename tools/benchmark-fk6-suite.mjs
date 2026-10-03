@@ -1,10 +1,11 @@
 // Serial degree 1–9 measurements of the updated fomkyr on both recorded forms.
 // Existing baselines remain archived. --all-backends explicitly remeasures them.
 import path from 'node:path';
+import {VERSION} from '../web/engine/fomkyr/storage.js';
 import fs from 'node:fs';
 import {spawnSync} from 'node:child_process';
 const allBackends=process.argv.includes('--all-backends');
-const out=path.resolve(process.argv.slice(2).find(value=>!value.startsWith('--'))??'build/validation/fomkyr-061-resources');fs.mkdirSync(out,{recursive:true});
+const out=path.resolve(process.argv.slice(2).find(value=>!value.startsWith('--'))??'local/benchmarks/fomkyr-'+VERSION+'-resources');fs.mkdirSync(out,{recursive:true});
 const run=(command,args)=>{const result=spawnSync(command,args,{stdio:'inherit'});if(result.error)throw result.error;if(result.status!==0)throw new Error(command+' exited '+result.status);};
 const scenarios=[['fk6','test/fixtures/fomin-kirillov-user.json'],['random-fk6','test/fixtures/random-fk6-growing.json']];
 for(const [name,input] of scenarios){

@@ -1,13 +1,16 @@
 // Public, persisted options for Fomkyr (upstream fomkyr 0.6).
 import {automaticWorkers} from '../engine/fomkyr/worker-count.js';
+import {defaultMemoryMiB} from './backends.js';
 export const FOMKYR_DEFAULTS = Object.freeze({
   execution: 'auto', bits: 'auto', spill: true, resume: 'auto', hilbert: false,
-  heapReduction: true, cachePercent: 12, heapThreshold: 16, batchPairs: null,
+  heapReduction: true, cachePercent: 12, heapThreshold: 16, batchPairs: 128,
   hashBits: 18, scratchMiB: null, hilbertMiB: 256, ioMode: 'auto',
   wordMatcher: true, chainCriterion: true, eagerPruning: true,
   quadraticRewrite: true, costScheduling: true, wordCacheEntries: 256,
   matcherMiB: null, progress: true, progressIntervalSeconds: 1,
   rationalHeap: true, rationalRewrites: true, compiledRewrites: true, rewriteDegree: 4, rewriteSupport: 8,
+  bigRationalHeap: true, fastBigDivision: true, growingRationalHeap: true,
+  radixHeap: true, reserveInPlace: true, rowReserveMiB: null,
   rewriteMiB: null, sharedCacheMiB: null,
 });
 export const FOMKYR_FIELDS = Object.freeze([
@@ -16,6 +19,8 @@ export const FOMKYR_FIELDS = Object.freeze([
   ['spill', 'checkbox'], ['resume', 'checkbox'], ['hilbert', 'checkbox'],
   ['heapReduction', 'checkbox'], ['cachePercent', 'number', 0, 40],
   ['rationalHeap', 'checkbox'], ['rationalRewrites', 'checkbox'], ['compiledRewrites', 'checkbox'],
+  ['bigRationalHeap', 'checkbox'], ['fastBigDivision', 'checkbox'], ['growingRationalHeap', 'checkbox'],
+  ['radixHeap', 'checkbox'], ['reserveInPlace', 'checkbox'], ['rowReserveMiB', 'number', 0, 14304],
   ['rewriteDegree', 'number', 2, 4], ['rewriteSupport', 'number', 1, 64],
   ['rewriteMiB', 'number', 0, 256], ['sharedCacheMiB', 'number', 0, 256],
   ['wordMatcher', 'checkbox'], ['chainCriterion', 'checkbox'], ['eagerPruning', 'checkbox'],
@@ -34,7 +39,7 @@ export function validateFomkyrOptions(options = {}) {
     const value = values[key];
     const valid = type === 'select' ? min.includes(value)
       : type === 'checkbox' ? (key === 'resume' ? value === 'auto' || value === false : typeof value === 'boolean')
-      : value === null && FOMKYR_DEFAULTS[key] === null || (key === 'progressIntervalSeconds' ? Number.isFinite(value) : Number.isInteger(value)) && value >= min && value <= max;
+      : value === null && (FOMKYR_DEFAULTS[key] === null || key === 'batchPairs') || (key === 'progressIntervalSeconds' ? Number.isFinite(value) : Number.isInteger(value)) && value >= min && value <= max;
     if (!valid) throw new Error('Invalid Fomkyr option: ' + key);
     if (key === 'wordCacheEntries' && (value & (value - 1)) !== 0) throw new Error('Fomkyr word cache entries must be a power of two.');
   }
@@ -42,19 +47,25 @@ export function validateFomkyrOptions(options = {}) {
 }
 export function fomkyrEngineOptions(form) {
   const options = validateFomkyrOptions(form.fomkyrOptions);
-  const {scratchMiB, hilbertMiB, matcherMiB, rewriteMiB, sharedCacheMiB, progressIntervalSeconds, ...engine} = options;
-  if (engine.batchPairs === null) delete engine.batchPairs;
+  const {scratchMiB, hilbertMiB, matcherMiB, rewriteMiB, sharedCacheMiB, rowReserveMiB, progressIntervalSeconds, ...engine} = options;
+  const memoryMiB=Number(form.memoryMiB??defaultMemoryMiB('fomkyr'));
+  engine.arithmeticMode='exact';
+  if (engine.batchPairs === null) engine.batchPairs=FOMKYR_DEFAULTS.batchPairs;
   if (scratchMiB !== null) {
     const lanes = engine.execution === 'single' ? 1 : Number(form.nativeWorkers) || automaticWorkers();
     if (scratchMiB >= Number(form.memoryMiB ?? 512) || scratchMiB < lanes) throw new Error('Fomkyr scratch space must fit the memory budget and provide at least 1 MiB per worker.');
     engine.scratchBytes = scratchMiB * 1048576;
+  } else {
+    // At 3.5 GiB and above, use 2 GiB. Smaller allowances retain bounded
+    // workspace and room for hash tables, reducer caches and the reserve.
+    engine.scratchBytes=Math.floor(Math.min(2048,Math.max(memoryMiB/3,memoryMiB-1536)))*1048576;
   }
   engine.hilbertBudgetBytes = hilbertMiB * 1048576;
   if (matcherMiB !== null) {
     if (matcherMiB >= Number(form.memoryMiB ?? 512)) throw new Error('Fomkyr matcher space must fit the memory budget.');
     engine.matcherBudgetBytes = matcherMiB * 1048576;
   }
-  for (const [key, value] of [['rewriteBudgetBytes', rewriteMiB], ['sharedReducerCacheBytes', sharedCacheMiB]]) {
+  for (const [key, value] of [['rewriteBudgetBytes', rewriteMiB], ['sharedReducerCacheBytes', sharedCacheMiB], ['rowReserveBytes', rowReserveMiB]]) {
     if (value !== null) {
       if (value >= Number(form.memoryMiB ?? 512)) throw new Error('Fomkyr cache space must fit the memory budget.');
       engine[key] = value * 1048576;

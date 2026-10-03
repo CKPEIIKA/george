@@ -41,7 +41,7 @@ const siteTree=pagesTree(main);
 const out='build/publication';fs.mkdirSync(out,{recursive:true});
 const body=path.resolve(out,'pages-message.txt');
 const version=JSON.parse(fs.readFileSync('package.json','utf8')).version;
-fs.writeFileSync(body,`Publish George ${version} and validated bergman-1.001-fix engine\n`);
+fs.writeFileSync(body,`Publish George ${version} with Bergman and fomkyr engines\n`);
 const pages=git(['commit-tree',siteTree,'-p',pagesParent,'-F',body]);
 const leases=Object.fromEntries(['main','gh-pages'].map(branch=>[branch,git(['rev-parse','refs/remotes/origin/'+branch])]));
 if(fastForward){

@@ -1,0 +1,13 @@
+LIB "freegb.lib";
+ring r=0,(c,b,a),Dp;
+def A=freeAlgebra(r,20);
+setring A;
+ideal I=c*c*a+b*b*a-a*c*c-a*b*b,
+c*c*b-b*c*c-b*a*a+a*a*b,
+c*b*b+c*a*a-b*b*c-a*a*c;
+int started=timer;
+ideal G=twostd(I);
+print("COMPUTATION_TIMER_TICKS:"+string(timer-started));
+print("RULES:"+string(size(G)));
+for(int j=1;j<=size(G);j++){print("BASIS:"+string(G[j]));}
+quit;

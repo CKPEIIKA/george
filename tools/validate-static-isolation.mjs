@@ -1,5 +1,6 @@
 // Verify the release on a Pages-like server without COOP/COEP headers.
 import fs from 'node:fs';
+import {VERSION} from '../web/engine/fomkyr/storage.js';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import assert from 'node:assert/strict';
@@ -35,8 +36,8 @@ try {
       await page.locator('#engineNote.live').waitFor({timeout: 120000});
       assert.equal(await page.evaluate(() => crossOriginIsolated), true);
       assert.equal(await page.evaluate(() => !!navigator.serviceWorker.controller), true);
-      assert.equal(await page.locator('.brand-version').textContent(), '0.6');
-      assert.equal(await page.title(), 'George 0.6');
+      assert.equal(await page.locator('.brand-version').textContent(), report.version);
+      assert.equal(await page.title(), 'George '+report.version);
       assert.equal(await page.locator('.release-tag').count(), 0);
       assert.equal(await page.locator('#backend option[value="fomkyr"]').textContent(), 'fomkyr / C O3 + LTO (experimental)');
       assert.equal(await page.locator('#backend option[value="fomkyr"]').evaluate(el => el.disabled), false);
@@ -63,7 +64,7 @@ try {
       assert.equal(await page.locator('#backend').inputValue(), 'fomkyr');
       assert.equal(await page.locator('#nativeWorkers').inputValue(), '2');
       assert.equal(await page.evaluate(async () => (await fetch('./index.html')).headers.get('cross-origin-opener-policy')), 'same-origin');
-      assert.deepEqual(await page.evaluate(() => caches.keys()), ['fomkyr-kernel-0.6.1']);
+      assert.deepEqual(await page.evaluate(() => caches.keys()), ['fomkyr-kernel-'+VERSION]);
       await page.locator('[data-lang="ru"]').click();
       assert.equal(await page.locator('.release-tag').count(), 0);
       assert.equal(await page.locator('#backend option[value="fomkyr"]').textContent(), 'fomkyr / C O3 + LTO (экспериментальный)');

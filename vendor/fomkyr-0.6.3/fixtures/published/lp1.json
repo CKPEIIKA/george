@@ -1,0 +1,127 @@
+{
+  "name": "lp1",
+  "variables": [
+    "x",
+    "y",
+    "z"
+  ],
+  "relations": [
+    {
+      "degree": 4,
+      "terms": [
+        {
+          "word": [
+            2,
+            2,
+            2,
+            2
+          ],
+          "coefficient": "1"
+        },
+        {
+          "word": [
+            2,
+            1,
+            0,
+            2
+          ],
+          "coefficient": "-3"
+        },
+        {
+          "word": [
+            1,
+            0,
+            1,
+            0
+          ],
+          "coefficient": "1"
+        },
+        {
+          "word": [
+            0,
+            1,
+            1,
+            0
+          ],
+          "coefficient": "-1"
+        }
+      ]
+    },
+    {
+      "degree": 3,
+      "terms": [
+        {
+          "word": [
+            1,
+            0,
+            1
+          ],
+          "coefficient": "1"
+        },
+        {
+          "word": [
+            0,
+            1,
+            0
+          ],
+          "coefficient": "-1"
+        },
+        {
+          "word": [
+            0,
+            0,
+            0
+          ],
+          "coefficient": "1"
+        }
+      ]
+    },
+    {
+      "degree": 3,
+      "terms": [
+        {
+          "word": [
+            2,
+            1,
+            0
+          ],
+          "coefficient": "1"
+        },
+        {
+          "word": [
+            2,
+            0,
+            2
+          ],
+          "coefficient": "1"
+        },
+        {
+          "word": [
+            0,
+            1,
+            2
+          ],
+          "coefficient": "-1"
+        }
+      ]
+    }
+  ],
+  "testDegree": 16,
+  "field": "Q",
+  "order": "degree-left-lex; last declared generator is largest",
+  "sources": [
+    {
+      "title": "Hofstadler and Levandovskyy, Modular Algorithms for Computing Groebner Bases in Free Algebras (2025)",
+      "url": "https://arxiv.org/html/2502.11606v1",
+      "location": "Section 5 benchmark examples (1) and (3)"
+    }
+  ],
+  "interpretation": "Published mixed defining-degree (3 and 4), homogeneous-per-relation algebraic stress test; not assigned an invented physical interpretation.",
+  "adaptation": "Same displayed polynomials; order z>y>x explicitly fixed. Paper signature-degree bounds are not identical to our inclusive polynomial-degree bounds.",
+  "definingDegrees": [
+    3,
+    4
+  ],
+  "expectedHilbert": null,
+  "expectedHilbertFormula": null
+}

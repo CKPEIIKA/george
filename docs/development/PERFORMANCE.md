@@ -29,3 +29,13 @@ operations limit scaling. Hash tables, scratch space, reducer caches and rewrite
 caches trade memory for reduced lookup or reduction work. A larger memory
 allowance permits larger jobs; it does not guarantee shorter runs. Engine help
 explains the current controls. No universal tuning optimum is claimed.
+
+## Comparing core updates
+
+`node tools/benchmark-fomkyr-update.mjs --baseline-root <saved-engine-directory>`
+compares a saved production runtime with the current one. It alternates old/new
+cold browser jobs on FK6, its invertibly scaled form, and two q-Serre presentations.
+Degrees 1–9 are retained for the growing FK6 forms; coefficient-heavy cases use
+selected bounds through 15. The highest bound has three trials in each browser.
+Exact output audits run after all measurements. Plots use linear axes and keep
+method notes in the reports. The comparison retains earlier unrelated baselines.

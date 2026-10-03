@@ -1,4 +1,5 @@
 import test from 'node:test';
+import {VERSION} from '../web/engine/fomkyr/storage.js';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
@@ -24,7 +25,7 @@ test('automatic workers scale with available CPU threads up to the engine limit'
 test('fomkyr ships all shared/unshared variants with exact asset hashes', () => {
   assert.match(getBackend('fomkyr').worker, /fomkyr\/george-worker\.js$/);
   const manifest = JSON.parse(fs.readFileSync('web/engine/fomkyr/build.json'));
-  assert.equal(manifest.version,'0.6.1'); assert.equal(manifest.provenance.kernelChanged,false);
+  assert.equal(manifest.version,VERSION); assert.equal(manifest.provenance.kernelChanged,false);
   for (const [name, record] of Object.entries(manifest.files)) {
     const bytes = fs.readFileSync('web/engine/fomkyr/' + name);
     assert.equal(bytes.length,record.bytes); assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'),record.sha256,name);
@@ -32,8 +33,19 @@ test('fomkyr ships all shared/unshared variants with exact asset hashes', () => 
   for (const bits of [32,64]) for (const suffix of ['', '-single']) {
     const name = `fomkyr${bits}${suffix}.wasm`;
     assert.ok(manifest.files[name]);
-    assert.deepEqual(fs.readFileSync('web/engine/fomkyr/'+name),fs.readFileSync('vendor/fomkyr-0.6.1/dist/'+name));
+    assert.deepEqual(fs.readFileSync('web/engine/fomkyr/'+name),fs.readFileSync('vendor/fomkyr-'+VERSION+'/dist/'+name));
   }
+});
+test('shared row reserve settings preserve automatic, disabled and explicit budgets', async () => {
+  assert.equal(buildJob(form).fomkyrOptions.rowReserveBytes,undefined);
+  for(const rowReserveMiB of [0,16,128]) {
+    const options={rowReserveMiB,radixHeap:false,reserveInPlace:false};
+    const decoded=await readShareLink(new URL(await createShareLink({...form,memoryMiB:512,fomkyrOptions:options},'https://example.org/')).hash);
+    const actual=buildJob({...form,memoryMiB:512,fomkyrOptions:decoded.fomkyrOptions}).fomkyrOptions;
+    assert.equal(actual.rowReserveBytes,rowReserveMiB*1048576);
+    assert.equal(actual.radixHeap,false);assert.equal(actual.reserveInPlace,false);
+  }
+  for(const rowReserveMiB of [-1,0.5,512,'16'])assert.throws(()=>buildJob({...form,memoryMiB:512,fomkyrOptions:{rowReserveMiB}}));
 });
 test('George form controls are authoritative for fomkyr workers, pruning and Hilbert degree', () => {
   for (const monomialPruning of [true,false]) {
@@ -58,9 +70,25 @@ test('new fomkyr jobs default to pruning, disk, resume and heap with optional co
   assert.equal(options.rewriteDegree,4);assert.equal(options.rewriteSupport,8);
   assert.equal(options.rewriteBudgetBytes,undefined);assert.equal(options.sharedReducerCacheBytes,undefined);
   assert.equal(options.wordCacheEntries,256);assert.equal(options.progressIntervalMs,1000);assert.equal(options.matcherBudgetBytes,undefined);
-  assert.equal(options.workers,undefined);assert.equal(options.batchPairs,undefined);assert.equal(options.scratchBytes,undefined);
+  assert.equal(job.memoryMiB,3584);assert.equal(options.arithmeticMode,'exact');
+  assert.equal(options.workers,undefined);assert.equal(options.batchPairs,128);assert.equal(options.scratchBytes,2048*1048576);
+  assert.equal(buildJob({...form,fomkyrOptions:{batchPairs:null}}).fomkyrOptions.batchPairs,128);
+  for(const memoryMiB of [128,256,512,1024,2048]) {
+    const small=buildJob({...form,memoryMiB,fomkyrOptions:{}}).fomkyrOptions;
+    assert.ok(small.scratchBytes<memoryMiB*1048576);assert.ok(small.scratchBytes>=32*1048576);
+  }
   assert.equal(job.outputs.hs,undefined);
   assert.equal(buildJob({...form,monomialPruning:false,fomkyrOptions:{hilbert:true}}).fomkyrOptions.monomialPruning,false);
+});
+test('large-coefficient optimizers default on and round-trip explicit ablations',async()=>{
+  for(const key of ['bigRationalHeap','fastBigDivision','growingRationalHeap','radixHeap','reserveInPlace']) {
+    assert.equal(buildJob(form).fomkyrOptions[key],true);
+    const options={...FOMKYR_DEFAULTS,[key]:false};
+    const decoded=await readShareLink(new URL(await createShareLink({...form,fomkyrOptions:options},'https://example.org/')).hash);
+    assert.equal(decoded.fomkyrOptions[key],false);
+    assert.equal(buildJob({...form,fomkyrOptions:decoded.fomkyrOptions}).fomkyrOptions[key],false);
+    assert.throws(()=>validateFomkyrOptions({[key]:'false'}));
+  }
 });
 test('unsupported fomkyr jobs and invalid runtime options are rejected before execution', () => {
   for (const change of [{task:'anick'}, {ring:'comm',order:'deglex'}, {order:'lex'}, {legacy:true},
@@ -121,7 +149,7 @@ test('optimizer budgets and update seconds reach the engine without changing old
 });
 test('George 0.6 release keeps its experimental label only in the engine chooser', () => {
   const html = fs.readFileSync('web/index.html','utf8');
-  assert.match(html,/<title>George 0\.6\.1<\/title>/);
+  assert.ok(html.includes('<title>George '+JSON.parse(fs.readFileSync('package.json')).version+'</title>'));
   assert.doesNotMatch(html,/class="release-tag"/);
   const mentions = html.split('\n').filter(line=>/experimental/.test(line));
   assert.equal(mentions.length,1);assert.match(mentions[0],/<option value="fomkyr"/);

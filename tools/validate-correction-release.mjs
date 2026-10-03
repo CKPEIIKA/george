@@ -25,6 +25,7 @@ try {
     const Base=Worker;
     window.Worker=class extends Base {
      postMessage(message,...args) {
+      if(message.job?.backend==='fomkyr')window.__lastFomkyrJob=structuredClone(message.job);
       if(message.job?.backend==='fomkyr'&&window.__previewCap!==null)message.job.fomkyrOptions={...message.job.fomkyrOptions,previewBytes:window.__previewCap};
       return super.postMessage(message,...args);
      }
@@ -38,7 +39,7 @@ try {
    const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
    const share=await createShareLink({backend:'fomkyr',varsText:vars.join(','),relsText:rels.join(','),maxdeg:'4',memoryMiB:512,nativeWorkers:4,monomialPruning:true,timeoutMinutes:2,fomkyrOptions:{resume:false,hilbert:false,scratchMiB:32}},url);
    await page.goto(share);await page.locator('#engineNote.live').waitFor({timeout:120000});
-   assert.equal(await page.title(),'George 0.6.1');
+   assert.equal(await page.title(),'George '+JSON.parse(fs.readFileSync('package.json')).version);
    async function compute() {
     await page.locator('#go').click();await page.waitForFunction(()=>document.getElementById('stop').hidden,null,{timeout:120000});
     assert.match(await page.locator('#runStatus').textContent(),/^Computed in \d+\.\d{2} s\./);
@@ -61,7 +62,35 @@ try {
    assert.equal(large.basisByDegree.reduce((n,row)=>n+row.count,0),1451);
    if(!large.previewTruncated)assert.equal(await page.locator('#basisOut .polys li').count(),1451);
    const timers=await page.evaluate(()=>window.__timerSamples);assert.ok(timers.length);assert.ok(timers.every(s=>/^\d+\.\d s$/.test(s)),JSON.stringify(timers));
-   assert.deepEqual(errors,[]);report.checks.push({browser:name,truncatedTotals:true,allDegreeCounts:true,expandedPolynomials:265,fk6Degree9Rules:1451,timerOnlySeconds:true});
+   let coefficientRules;
+   if(process.argv.includes('--coefficient-case')) {
+    await page.locator('#engineSettings').evaluate(node=>node.open=true);
+    for(const key of ['bigRationalHeap','fastBigDivision','growingRationalHeap'])assert.equal(await page.locator('#fomkyr-'+key).isChecked(),true);
+    const input=JSON.parse(fs.readFileSync('test/fixtures/coefficient-workloads/affine-q-serre-q2.json')).inputText;
+    const parsed=readInputFile('(ALGFORMINPUT)\n'+input);
+    await page.locator('#vars').fill(parsed.vars.join(','));await page.locator('#rels').fill(parsed.rels.join(','));await page.locator('#maxdeg').fill('14');
+    const coefficient=await compute();assert.equal(coefficient.basisSize,21);assert.equal(coefficient.completedThroughDegree,14);
+    assert.ok(coefficient.bigRationalSuccesses>0);assert.equal(coefficient.fastBigDivision,true);assert.equal(coefficient.growingRationalHeap,true);
+    coefficientRules=coefficient.basisSize;
+    const basis=await page.locator('#filesOut .file').evaluateAll(nodes=>nodes.find(n=>n.querySelector('.name').textContent==='result.gb').querySelector('pre').textContent);
+    fs.writeFileSync(path.join(output,name+'-q-serre-d14.gb'),basis);
+   }
+   let defaultWorkspace;
+   if(process.argv.includes('--defaults-case')) {
+    await page.locator('#engineSettings').evaluate(node=>node.open=true);
+    await page.locator('#memoryMiB').selectOption('3584');await page.locator('#fomkyr-scratchMiB').fill('');
+    await page.locator('#fomkyr-rowReserveMiB').fill('');await page.locator('#fomkyr-batchPairs').fill('');
+    for(const key of ['radixHeap','reserveInPlace'])assert.equal(await page.locator('#fomkyr-'+key).isChecked(),true);
+    await page.locator('#vars').fill(vars.join(','));await page.locator('#rels').fill(rels.join(','));await page.locator('#maxdeg').fill('9');
+    const calculated=await compute();assert.equal(calculated.basisSize,1451);assert.equal(calculated.completedThroughDegree,9);
+    const job=await page.evaluate(()=>window.__lastFomkyrJob);
+    assert.equal(job.memoryMiB,3584);assert.equal(job.fomkyrOptions.arithmeticMode,'exact');
+    assert.equal(job.fomkyrOptions.scratchBytes,2048*1048576);assert.equal(job.fomkyrOptions.batchPairs,128);
+    assert.equal(calculated.rowReserveBytes,512*1048576);assert.equal(calculated.radixHeap,true);
+    assert.equal(calculated.reserveInPlace,true);assert.equal(calculated.reserveLeased,false);
+    defaultWorkspace={budgetMiB:3584,scratchMiB:2048,reserveMiB:512,batchPairs:128,verified:true};
+   }
+   assert.deepEqual(errors,[]);report.checks.push({browser:name,truncatedTotals:true,allDegreeCounts:true,expandedPolynomials:265,fk6Degree9Rules:1451,timerOnlySeconds:true,coefficientRules,defaultWorkspace});
    console.log(name,'PASS');await context.close();
   } finally {await browser.close();}
  }

@@ -1,0 +1,16 @@
+LIB "freegb.lib";
+ring r=0,(z,y,x),Dp;
+def A=freeAlgebra(r,16);
+setring A;
+ideal I=z*x*y*x-z*x*x*y-y*x*z*x+y*x*x*z-x*z*y*x+x*z*x*y+x*y*z*x-x*y*x*z,
+z*y*y*x-z*y*x*y-y*z*y*x+y*z*x*y-y*x*z*y+y*x*y*z+x*y*z*y-x*y*y*z,
+z*x*y*x-z*x*x*y-y*x*z*x+y*x*x*z-x*z*y*x+x*z*x*y+x*y*z*x-x*y*x*z,
+z*y*z*x-z*y*x*z-z*x*z*y+z*x*y*z-y*z*z*x+y*z*x*z+x*z*z*y-x*z*y*z,
+z*y*y*x-z*y*x*y-y*z*y*x+y*z*x*y-y*x*z*y+y*x*y*z+x*y*z*y-x*y*y*z,
+z*y*z*x-z*y*x*z-z*x*z*y+z*x*y*z-y*z*z*x+y*z*x*z+x*z*z*y-x*z*y*z;
+int started=timer;
+ideal G=twostd(I);
+print("COMPUTATION_TIMER_TICKS:"+string(timer-started));
+print("RULES:"+string(size(G)));
+for(int j=1;j<=size(G);j++){print("BASIS:"+string(G[j]));}
+quit;

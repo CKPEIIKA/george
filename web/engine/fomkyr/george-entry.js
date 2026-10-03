@@ -17,7 +17,7 @@ export async function dispatchFomkyr(message,send=postMessage){
     if(!job)throw new Error('fomkyr does not evaluate Lisp. Use a homogeneous presentation and the Gröbner basis task.');
     const {fixture,target,modulus}=parseNativeJob(job);
     const options=job.fomkyrOptions??job.nativeOptions??{};
-    engine=new FomkyrEngine({budgetBytes:Number(job.memoryMiB??2048)*1048576,timeoutMs:job.timeoutMs??0,...options,onEvent:event=>{
+    engine=new FomkyrEngine({budgetBytes:Number(job.memoryMiB??3584)*1048576,timeoutMs:job.timeoutMs??0,...options,onEvent:event=>{
       if(['degree-start','degree','progress','phase','capabilities'].includes(event.type)&&engine?.memory)send({id,event:{type:'memory',bytes:engine.memory.buffer.byteLength}});
       if(event.type==='degree')send({id,event});
       if(event.type==='cache'&&event.resumedFromDegree>0)send({id,event:{type:'degree',completedThroughDegree:event.resumedFromDegree,source:'checkpoint'}});

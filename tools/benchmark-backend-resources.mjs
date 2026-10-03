@@ -20,7 +20,7 @@ const memoryMiB = Number(arg('--memory-mib', '2048'));
 const trials = Number(arg('--trials', '1'));
 const sampleMs = 250;
 if (process.platform !== 'linux') throw new Error('Resource sampling requires Linux /proc.');
-if (degrees.some(d => !Number.isInteger(d) || d < 1 || d > 12)) throw new Error('Choose degrees 1..12.');
+if (degrees.some(d => !Number.isInteger(d) || d < 1 || d > 32)) throw new Error('Choose degrees 1..32.');
 if (!Number.isInteger(trials) || trials < 1 || trials > 20) throw new Error('Choose 1..20 trials.');
 fs.mkdirSync(out, {recursive: true});
 const temporary = path.join(out, 'browser-profiles');
@@ -39,6 +39,8 @@ if(fs.existsSync(finiteCertificateFile)){
   if(zero)finiteCertificate={file:finiteCertificateFile,firstZeroDegree:zero.degree,dimension:zero.hilbert.reduce((sum,n)=>sum+BigInt(n),0n).toString()};
 }
 const fomkyrVersion = JSON.parse(fs.readFileSync('web/engine/fomkyr/build.json')).version;
+const baselineRoot=arg('--baseline-root',null);
+const baselineManifest=baselineRoot?JSON.parse(fs.readFileSync(path.join(baselineRoot,'build.json'))):null;
 const configurations = [
   {id: 'standard', backend: 'standard', browser: 'chromium', label: 'Lisp / ECL O2'},
   {id: 'optimized', backend: 'optimized', browser: 'chromium', label: 'Lisp / ECL O3 + LTO'},
@@ -48,6 +50,10 @@ const configurations = [
   {id: 'native-firefox', backend: 'native', browser: 'firefox', label: 'Native NC (memory64, Firefox)', workers: 4},
   {id: 'fomkyr', backend: 'fomkyr', browser: 'chromium', label: `fomkyr ${fomkyrVersion} (memory64, Chromium, 4 workers)`, workers: 4},
   {id: 'fomkyr-firefox', backend: 'fomkyr', browser: 'firefox', label: `fomkyr ${fomkyrVersion} (memory64, Firefox, 4 workers)`, workers: 4},
+  ...(baselineRoot?[
+    {id:'fomkyr-previous',backend:'fomkyr',browser:'chromium',label:`${baselineManifest.version} / Chromium`,workers:4,workerPath:'/__baseline-runtime/george-worker.js'},
+    {id:'fomkyr-previous-firefox',backend:'fomkyr',browser:'firefox',label:`${baselineManifest.version} / Firefox`,workers:4,workerPath:'/__baseline-runtime/george-worker.js'},
+  ]:[]),
 ];
 const selected = arg('--configs', configurations.map(c => c.id).join(',')).split(',');
 let configs = selected.map(id => {
@@ -75,6 +81,7 @@ const sourceFiles = ['tools/benchmark-backend-resources.mjs','web/src/bergman-sy
   ...fs.readdirSync('web/engine/fomkyr').filter(name=>/\.(?:js|wasm)$/.test(name)).map(name=>'web/engine/fomkyr/'+name)];
 if(fs.existsSync(finiteCertificateFile))sourceFiles.push(finiteCertificateFile);
 const sourceHashes = Object.fromEntries(sourceFiles.map(file => [file, sha(file)]));
+if(baselineRoot)for(const name of fs.readdirSync(baselineRoot).filter(name=>/\.(?:js|wasm|json)$/.test(name)))sourceHashes['baseline/'+name]=sha(path.join(baselineRoot,name));
 if (previous && (JSON.stringify(previous.sourceHashes) !== JSON.stringify(sourceHashes)
   || previous.memoryMiB !== memoryMiB || previous.batchPairs !== batchPairs || previous.inputSha256 !== sha(inputFile)
   || JSON.stringify(previous.configurations)!==JSON.stringify(configs))) throw new Error('Cannot resume across source, memory or scheduling changes.');
@@ -95,7 +102,7 @@ const report = previous ?? {
 };
 report.state = 'running';
 report.configurations = configs;
-report.degrees = degrees;
+report.degrees = [...new Set([...(previous?.degrees??[]),...degrees])].sort((a,b)=>a-b);
 report.requestedTrials = trials;
 report.timeLimitSeconds = timeoutSeconds;
 report.workerCounts = workerCounts??null;
@@ -158,6 +165,12 @@ class Sampler {
 
 async function browserJob() {
   const {config, job} = await (await fetch('/__resource/data')).json();
+  if(config.workerPath){
+    const Base=Worker;
+    globalThis.Worker=class extends Base{
+      constructor(url,options){super(new URL(url,location.href).pathname.endsWith('/fomkyr/george-worker.js')?config.workerPath:url,options);}
+    };
+  }
   const {EclEngine} = await import('/src/engine.js');
   const post = (kind, data) => fetch('/__resource/' + kind, {method: 'POST', body: JSON.stringify(data)});
   const memory = [];
@@ -196,6 +209,8 @@ async function browserJob() {
         localRewriteHits:native.localRewriteHits, rewriteEntries:native.rewriteEntries,
         rewriteUsedBytes:native.rewriteUsedBytes, pinnedReducerHits:native.pinnedReducerHits,
         sharedReducerCacheUsedBytes:native.sharedReducerCacheUsedBytes,
+        bigRationalSuccesses:native.bigRationalSuccesses, bigRationalAttempts:native.bigRationalAttempts,
+        rationalInPlaceGrowths:native.rationalInPlaceGrowths,
         previewTruncated: !!native.previewTruncated, kernelWallSeconds: native.elapsedMs / 1000} : null,
       basis, stdout: result.stdout, lastDegree, lastProgress});
   } catch (error) {
@@ -218,8 +233,11 @@ async function run(config, degree, trial) {
   let finish, browser, sampler, row, watchdog;
   const done = new Promise(resolve => {finish = resolve;});
   const server = staticServer('web', '/', {isolate: true});
+  const baselineServer=baselineRoot?staticServer(baselineRoot,'/__baseline-runtime/',{isolate:true}):null;
+  const baselineServe=baselineServer?.listeners('request')[0];
   const serve = server.listeners('request')[0]; server.removeAllListeners('request');
   server.on('request', async (req, res) => {
+    if(req.url.startsWith('/__baseline-runtime/')&&baselineServe){baselineServe(req,res);return;}
     if (req.url.startsWith('/__resource/')) {
       try {
         res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');

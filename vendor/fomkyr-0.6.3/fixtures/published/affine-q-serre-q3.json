@@ -1,0 +1,130 @@
+{
+  "name": "affine-q-serre-q3",
+  "variables": [
+    "a",
+    "b"
+  ],
+  "relations": [
+    {
+      "degree": 4,
+      "terms": [
+        {
+          "word": [
+            1,
+            0,
+            0,
+            0
+          ],
+          "coefficient": "9"
+        },
+        {
+          "word": [
+            0,
+            1,
+            0,
+            0
+          ],
+          "coefficient": "-91"
+        },
+        {
+          "word": [
+            0,
+            0,
+            1,
+            0
+          ],
+          "coefficient": "91"
+        },
+        {
+          "word": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "coefficient": "-9"
+        }
+      ]
+    },
+    {
+      "degree": 4,
+      "terms": [
+        {
+          "word": [
+            1,
+            1,
+            1,
+            0
+          ],
+          "coefficient": "9"
+        },
+        {
+          "word": [
+            1,
+            1,
+            0,
+            1
+          ],
+          "coefficient": "-91"
+        },
+        {
+          "word": [
+            1,
+            0,
+            1,
+            1
+          ],
+          "coefficient": "91"
+        },
+        {
+          "word": [
+            0,
+            1,
+            1,
+            1
+          ],
+          "coefficient": "-9"
+        }
+      ]
+    }
+  ],
+  "testDegree": 15,
+  "field": "Q",
+  "order": "degree-left-lex; last declared generator is largest",
+  "sources": [
+    {
+      "title": "Terwilliger, The q-Onsager algebra and the positive part of U_q(affine sl2) (2015)",
+      "url": "https://arxiv.org/html/1506.08666v1",
+      "location": "Equations (1)-(4); PBW basis and graded algebra"
+    }
+  ],
+  "interpretation": "Positive part U_q(affine sl2) at q=3, over Q. Relations have total degree FOUR although called cubic q-Serre in the literature.",
+  "adaptation": "Exact q=3 specialization; nonzero, not a root of unity over Q; no commutative replacement.",
+  "definingDegrees": [
+    4
+  ],
+  "expectedHilbert": [
+    "1",
+    "2",
+    "4",
+    "8",
+    "14",
+    "24",
+    "40",
+    "64",
+    "100",
+    "154",
+    "232",
+    "344",
+    "504",
+    "728",
+    "1040",
+    "1472",
+    "2062",
+    "2864",
+    "3948",
+    "5400",
+    "7336"
+  ],
+  "expectedHilbertFormula": "product_(k>=1) (1-t^(2k-1))^-2 (1-t^(2k))^-1"
+}

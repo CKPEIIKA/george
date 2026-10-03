@@ -1,0 +1,184 @@
+{
+  "name": "homogenized-q-onsager-q2",
+  "variables": [
+    "t",
+    "a",
+    "b"
+  ],
+  "relations": [
+    {
+      "degree": 4,
+      "terms": [
+        {
+          "word": [
+            2,
+            1,
+            1,
+            1
+          ],
+          "coefficient": "16"
+        },
+        {
+          "word": [
+            1,
+            2,
+            1,
+            1
+          ],
+          "coefficient": "-84"
+        },
+        {
+          "word": [
+            1,
+            1,
+            2,
+            1
+          ],
+          "coefficient": "84"
+        },
+        {
+          "word": [
+            1,
+            1,
+            1,
+            2
+          ],
+          "coefficient": "-16"
+        },
+        {
+          "word": [
+            0,
+            0,
+            2,
+            1
+          ],
+          "coefficient": "225"
+        },
+        {
+          "word": [
+            0,
+            0,
+            1,
+            2
+          ],
+          "coefficient": "-225"
+        }
+      ]
+    },
+    {
+      "degree": 4,
+      "terms": [
+        {
+          "word": [
+            2,
+            2,
+            2,
+            1
+          ],
+          "coefficient": "16"
+        },
+        {
+          "word": [
+            2,
+            2,
+            1,
+            2
+          ],
+          "coefficient": "-84"
+        },
+        {
+          "word": [
+            2,
+            1,
+            2,
+            2
+          ],
+          "coefficient": "84"
+        },
+        {
+          "word": [
+            1,
+            2,
+            2,
+            2
+          ],
+          "coefficient": "-16"
+        },
+        {
+          "word": [
+            0,
+            0,
+            2,
+            1
+          ],
+          "coefficient": "225"
+        },
+        {
+          "word": [
+            0,
+            0,
+            1,
+            2
+          ],
+          "coefficient": "-225"
+        }
+      ]
+    },
+    {
+      "degree": 2,
+      "terms": [
+        {
+          "word": [
+            1,
+            0
+          ],
+          "coefficient": "1"
+        },
+        {
+          "word": [
+            0,
+            1
+          ],
+          "coefficient": "-1"
+        }
+      ]
+    },
+    {
+      "degree": 2,
+      "terms": [
+        {
+          "word": [
+            2,
+            0
+          ],
+          "coefficient": "1"
+        },
+        {
+          "word": [
+            0,
+            2
+          ],
+          "coefficient": "-1"
+        }
+      ]
+    }
+  ],
+  "testDegree": 15,
+  "field": "Q",
+  "order": "degree-left-lex; last declared generator is largest",
+  "sources": [
+    {
+      "title": "Terwilliger, The q-Onsager algebra and the positive part of U_q(affine sl2) (2015)",
+      "url": "https://arxiv.org/html/1506.08666v1",
+      "location": "Equations (1)-(4); PBW basis and graded algebra"
+    }
+  ],
+  "interpretation": "Central homogenization of q-Onsager at q=2; the dehomogenization t=1 is the source algebra.",
+  "adaptation": "Explicit central homogenization. Not the original nonhomogeneous input; no Hilbert series is assumed merely from homogenizing relations.",
+  "definingDegrees": [
+    2,
+    4
+  ],
+  "expectedHilbert": null,
+  "expectedHilbertFormula": null
+}

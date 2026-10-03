@@ -10,12 +10,14 @@ os.environ.setdefault("MPLCONFIGDIR", "/tmp/george-matplotlib")
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.ticker import MaxNLocator, NullFormatter, FuncFormatter
+from matplotlib.ticker import MaxNLocator
+from matplotlib.lines import Line2D
 import numpy as np
 
 parser = argparse.ArgumentParser()
 parser.add_argument("report", type=Path)
 parser.add_argument("--out", type=Path)
+parser.add_argument("--title", default=None)
 args = parser.parse_args()
 report = json.loads(args.report.read_text())
 out = args.out or args.report.parent
@@ -86,20 +88,40 @@ with (out / "backend-resources-capped.csv").open("w", newline="") as file:
     writer.writerows({key: row.get(key, "") for key in fields} for row in plot_rows)
 
 with plt.rc_context(STYLE):
-    fig, axes = plt.subplots(1, 2, figsize=(190 / 25.4, 132 / 25.4))
+    fig, axes = plt.subplots(1, 2, figsize=(190 / 25.4, 84 / 25.4))
     handles, labels = [], []
     for config in report["configurations"]:
         ident = config["id"]
-        _, color, linestyle, marker = CURVES[ident]
-        label = config['label']
+        if ident.startswith('fomkyr'):
+            firefox = config['browser'] == 'firefox'
+            previous = 'previous' in ident
+            color = '#994455' if firefox else '#004488'
+            linestyle, marker = ('--', 's') if previous else ('-', 'o')
+            if firefox:
+                marker = 'D' if previous else '^'
+            version = next((r.get('native', {}).get('version') for r in rows if r['id'] == ident and r.get('native')), '?')
+            label = f"{version} / {'Firefox' if firefox else 'Chromium'}"
+        else:
+            _, color, linestyle, marker = CURVES[ident]
+            label = config['label']
         cpu, ram = [], []
+        cpu_ranges, ram_ranges = [], []
         for degree in degrees:
             matches = [r for r in plot_rows if r["id"] == ident and r["degree"] == degree and r["status"] == "complete"]
             cpu.append(float(np.median([r["cpuSeconds"] for r in matches])) if matches and all(r["cpuSeconds"] <= limit for r in matches) else np.nan)
             ram.append(float(np.median([r["additionalPssMiB"] for r in matches])) if matches else np.nan)
-        for ax, values in zip(axes, [cpu, ram]):
+            cpu_ranges.append([min(r["cpuSeconds"] for r in matches), max(r["cpuSeconds"] for r in matches)] if len(matches) > 1 else [np.nan, np.nan])
+            ram_ranges.append([min(r["additionalPssMiB"] for r in matches), max(r["additionalPssMiB"] for r in matches)] if len(matches) > 1 else [np.nan, np.nan])
+        for ax, values, ranges in zip(axes, [cpu, ram], [cpu_ranges, ram_ranges]):
             line, = ax.plot(degrees, values, color=color, linestyle=linestyle, marker=marker,
                             markerfacecolor="white", label=label)
+            values_array = np.asarray(values)
+            ranges_array = np.asarray(ranges)
+            finite = np.isfinite(values_array) & np.all(np.isfinite(ranges_array), axis=1)
+            if finite.any():
+                values_finite = values_array[finite]
+                ranges_finite = ranges_array[finite]
+                ax.errorbar(np.asarray(degrees)[finite], values_finite, yerr=np.array([values_finite - ranges_finite[:, 0], ranges_finite[:, 1] - values_finite]), fmt="none", ecolor=color, elinewidth=0.7, capsize=2)
             if ax is axes[0]:
                 handles.append(line)
                 labels.append(label)
@@ -115,24 +137,23 @@ with plt.rc_context(STYLE):
                     continue
                 if value is not None and value > 0:
                     y = min(value, limit) if ax is axes[0] else value
-                    x = row["degree"] + ({"standard": -0.035, "optimized": 0.035}.get(ident, 0))
+                    offset = (-0.06 if config['browser'] == 'chromium' else 0.06) if row['cpuAbovePlotLimit'] else 0
+                    x = row["degree"] + ({"standard": -0.035, "optimized": 0.035}.get(ident, offset))
                     ax.scatter([x], [y], marker="x" if row["status"] != "complete" else "^",
                                s=26, color=color, zorder=4, clip_on=False)
+    if any(r["status"] != "complete" and r["id"] not in {"standard", "optimized"} for r in plot_rows):
+        handles.append(Line2D([], [], color="0.3", marker="x", linestyle="none")); labels.append("Unfinished")
+    if any(r["cpuAbovePlotLimit"] and r["status"] == "complete" for r in plot_rows):
+        handles.append(Line2D([], [], color="0.3", marker="^", linestyle="none")); labels.append(f"> {limit:g} core s")
     axes[0].set_title("(a) CPU time", loc="left", fontweight="bold")
     axes[1].set_title("(b) Additional physical RAM", loc="left", fontweight="bold")
     axes[0].set_ylabel("Total CPU time (core s)")
-    axes[0].set_yscale("log")
-    positive = [r["cpuSeconds"] for r in plot_rows if r["cpuSeconds"] > 0]
-    axes[0].set_ylim(bottom=min(positive) / 1.5, top=limit)
-    ticks = [10.0 ** n for n in range(-6, 4) if min(positive) / 1.5 <= 10.0 ** n <= limit / 2]
-    axes[0].set_yticks(ticks + [limit])
-    axes[0].yaxis.set_major_formatter(FuncFormatter(lambda value, _: f"{value:g}"))
-    axes[0].yaxis.set_minor_formatter(NullFormatter())
+    largest = max((r['cpuSeconds'] for r in plot_rows if r['status'] == 'complete'), default=1)
+    axes[0].set_ylim(0, min(limit, max(1, largest * 1.12)))
+    axes[0].yaxis.set_major_locator(MaxNLocator(nbins=5))
     lisp_censored = [row['degree'] for row in plot_rows if row['id'] in {'standard', 'optimized'} and row['status'] != 'complete']
     if lisp_censored:
-        axes[0].text(0.04, 0.91, f"Lisp / ECL: {limit:g} s wall cap\nfrom degree {min(lisp_censored)}", transform=axes[0].transAxes,
-                     fontsize=7, va='top')
-        axes[0].annotate('', xy=(0.67, 1.035), xytext=(0.67, 0.86), xycoords='axes fraction',
+        axes[0].annotate('', xy=(-0.03, 1.02), xytext=(-0.03, 0.85), xycoords='axes fraction',
                          arrowprops={'arrowstyle': '-|>', 'color': '#222222', 'lw': 1.0}, annotation_clip=False)
     axes[1].set_ylabel("Peak PSS above idle baseline (MiB)")
     axes[1].set_ylim(bottom=0)
@@ -143,18 +164,10 @@ with plt.rc_context(STYLE):
         ax.set_xlim(min(degrees) - 0.15, max(degrees) + 0.25)
         ax.spines[["right", "top"]].set_visible(False)
     case_name = 'Randomly scaled FK6 case' if 'random-fk6-growing' in report['inputFile'] else 'Random FK6-like case' if 'random-big' in report['inputFile'] else 'Fomin–Kirillov case'
-    fig.suptitle(f"{case_name}: {report['variables']} generators, {report['relations']} relations over Q",
-                 y=0.98, fontsize=10, fontweight="bold")
-    fig.subplots_adjust(left=0.085, right=0.985, top=0.89, bottom=0.41, wspace=0.30)
-    fig.legend(handles, labels, loc="lower center", bbox_to_anchor=(0.5, 0.16), ncol=2,
+    fig.suptitle(args.title or case_name, y=0.98, fontsize=9)
+    fig.subplots_adjust(left=0.085, right=0.985, top=0.85, bottom=0.26, wspace=0.30)
+    fig.legend(handles, labels, loc="lower center", bbox_to_anchor=(0.5, 0.01), ncol=2,
                columnspacing=2, handlelength=2.7, labelspacing=0.6)
-    trial_note = "One cold trial per attempted point." if report.get('requestedTrials', 1) == 1 else "Median of available cold runs; see CSV for trial counts."
-    fig.text(0.085, 0.125, f"Serial cold jobs; {limit:g} s cap. Browser budgets: {report['memoryMiB'] / 1024:g} GiB. Pruning enabled.", fontsize=7)
-    fig.text(0.085, 0.094, "CPU includes engine startup, computation and export. PSS subtracts each run’s pre-engine baseline.", fontsize=7)
-    fig.text(0.085, 0.063, f"RAM: browsers 0.25 s, CLI 0.02 s. × unfinished; ▲ CPU > {limit:g} core s. Unfinished Lisp points omitted (↑).", fontsize=7)
-    fig.text(0.085, 0.032, trial_note + " Browser curves use Chromium except the labelled Firefox curve.", fontsize=7)
-    provenance_note = "Raw traces and version hashes are retained. Higher degrees after a time or memory limit are skipped."
-    fig.text(0.085, 0.011, provenance_note, fontsize=7)
     for extension in ["pdf", "svg", "png"]:
         fig.savefig(out / ("backend-resources." + extension))
     # Grayscale preview for the line/marker and label audit.

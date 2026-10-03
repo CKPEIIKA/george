@@ -1,0 +1,14 @@
+LIB "freegb.lib";
+ring r=0,(d,c,b,a),Dp;
+def A=freeAlgebra(r,20);
+setring A;
+ideal I=d*d*a-2*d*a*d+c*c*a-2*c*a*c+b*b*a-2*b*a*b+a*d*d+a*c*c+a*b*b,
+d*d*b-2*d*b*d+c*c*b-2*c*b*c+b*d*d+b*c*c+b*a*a-2*a*b*a+a*a*b,
+d*d*c-2*d*c*d+c*d*d+c*b*b+c*a*a-2*b*c*b+b*b*c-2*a*c*a+a*a*c,
+d*c*c+d*b*b+d*a*a-2*c*d*c+c*c*d-2*b*d*b+b*b*d-2*a*d*a+a*a*d;
+int started=timer;
+ideal G=twostd(I);
+print("COMPUTATION_TIMER_TICKS:"+string(timer-started));
+print("RULES:"+string(size(G)));
+for(int j=1;j<=size(G);j++){print("BASIS:"+string(G[j]));}
+quit;
