@@ -73,7 +73,7 @@ export class FomkyrEngine {
         this.module=await loadKernel(bits,o.wasmURL,!this.shared);
         this.host=hostFor(this.memory,bits,this.budget,null,Infinity,true);
         this.e=(await WebAssembly.instantiate(this.module,this.host.imports)).exports;
-        if(this.e.gn_abi()!==3||typeof this.e.gn_optimize!=='function'||typeof this.e.gn_word_cache!=='function'||typeof this.e.gn_progress_stat!=='function'||typeof this.e.gn_candidate_check!=='function'||typeof this.e.gn_local_rewrites!=='function'||typeof this.e.gn_pin_cache!=='function'||typeof this.e.gn_rational_rewrites!=='function'||typeof this.e.gn_modulus!=='function')throw new Error('Kernel/host API mismatch. Deploy fomkyr 0.6.1 JS and WASM together.');
+        if(this.e.gn_abi()!==3||typeof this.e.gn_optimize!=='function'||typeof this.e.gn_word_cache!=='function'||typeof this.e.gn_progress_stat!=='function'||typeof this.e.gn_candidate_check!=='function'||typeof this.e.gn_local_rewrites!=='function'||typeof this.e.gn_pin_cache!=='function'||typeof this.e.gn_rational_rewrites!=='function'||typeof this.e.gn_modulus!=='function'||typeof this.e.gn_big_rational_heap!=='function'||typeof this.e.gn_legacy_big_division!=='function'||typeof this.e.gn_growing_rational!=='function'||typeof this.e.gn_row_reserve!=='function'||typeof this.e.gn_reserve_growth!=='function'||typeof this.e.gn_radix_queue!=='function')throw new Error('Kernel/host API mismatch. Deploy fomkyr 0.6.3 JS and WASM together.');
         break;
       }catch(error){
         if(bits!==64||o.strictCapabilities||o.wasmURL)throw error;
@@ -149,17 +149,27 @@ export class FomkyrEngine {
   async resetKernel(fixture,target,modulus){
     checked(this.e.gn_init(fixture.variables.length,target??0,this.workers,BigInt(this.budget),BigInt(this.scratch),this.options.hashBits??18,modulus,this.spill?1:0));
     checked(this.e.gn_rational_heap(this.options.rationalHeap!==false?1:0));
+    checked(this.e.gn_big_rational_heap(this.options.bigRationalHeap!==false?1:0));
+    checked(this.e.gn_legacy_big_division(this.options.fastBigDivision===false?1:0));
+    checked(this.e.gn_growing_rational(this.options.growingRationalHeap!==false?1:0));
     checked(this.e.gn_rational_rewrites(this.options.rationalRewrites!==false?1:0));
     const pin=this.options.sharedReducerCacheBytes??Math.min(this.budget/16,64*MiB);
     const local=this.options.rewriteBudgetBytes??Math.min(this.budget/16,8*MiB);
     for(const [name,value] of [['sharedReducerCacheBytes',pin],['rewriteBudgetBytes',local]])if(!Number.isSafeInteger(value)||value<0)throw new Error(`${name} must be a nonnegative integer`);
     const localDegree=this.options.rewriteDegree??4,localSupport=this.options.rewriteSupport??8;
-    if(![2,3,4].includes(localDegree)||!Number.isInteger(localSupport)||localSupport<1||localSupport>64)throw new Error('Rewrite degree must be 2, 3 or 4 and rewrite support must be 1..64');
+    if(![2,3,4].includes(localDegree)||!Number.isInteger(localSupport)||localSupport<1||localSupport>64)throw new Error('Rewrite degree must be 2..4 and rewrite support must be 1..64');
     checked(this.e.gn_pin_cache(BigInt(pin)));
     checked(this.e.gn_local_rewrites(this.options.compiledRewrites===false?0:localDegree,BigInt(local),localSupport));
     checked(this.e.gn_tune((this.options.monomialPruning!==false?1:0)|(this.options.heapReduction!==false?2:0),this.options.cachePercent??12,this.options.heapThreshold??16));
     checked(this.e.gn_optimize((this.options.wordMatcher!==false?1:0)|(this.options.chainCriterion!==false?2:0)|(this.options.progress!==false?4:0)|(this.options.eagerPruning!==false?8:0)|(this.options.quadraticRewrite!==false?16:0)|(this.options.costScheduling!==false?32:0),BigInt(this.options.matcherBudgetBytes??Math.min(this.budget/16,64*MiB))));
     checked(this.e.gn_word_cache(this.options.wordCacheEntries??256));
+    if(this.e.gn_radix_queue)checked(this.e.gn_radix_queue(this.options.radixHeap!==false?1:0));
+    if(this.e.gn_reserve_growth)checked(this.e.gn_reserve_growth(this.options.reserveInPlace===false?0:1));
+    if(this.e.gn_row_reserve){
+      const reserve=this.options.rowReserveBytes??(this.budget>=512*MiB?Math.min(this.budget/4,512*MiB):0);
+      if(!Number.isSafeInteger(reserve)||reserve<0)throw new Error('rowReserveBytes must be a nonnegative integer');
+      checked(this.e.gn_row_reserve(BigInt(reserve)));
+    }
     if(this.batchPairs)checked(this.e.gn_batch_mode(1));
     this.cancelView=new Int32Array(this.memory.buffer,Number(this.e.gn_cancel_ptr()),1);
     this.emit('control',this.shared?{memory:this.memory,cancelOffset:Number(this.e.gn_cancel_ptr()),runKey:this.runKey,shared:true}:{runKey:this.runKey,shared:false,cancellation:'worker-message'});
@@ -210,7 +220,7 @@ export class FomkyrEngine {
         this.setPhase('reducing',false);const localResult=this.e.gn_batch_reduce(0);const remoteResults=await Promise.all(pending);checked(localResult);remoteResults.forEach(checked);
         this.scheduler.reduceMs+=performance.now()-start;
         const rcs=Array.from({length:n},(_,i)=>this.e.gn_batch_status(i));
-        rcs.filter(rc=>rc!==2&&rc!==8).forEach(checked);
+        rcs.filter(rc=>rc!==2&&rc!==8&&rc!==11).forEach(checked);
         if(rcs.includes(2)||rcs.includes(8)){this.fallbackEpoch();continue;}
         this.setPhase('committing',false);start=performance.now();let replay=false;
         for(let i=0;i<n;i++){
@@ -227,7 +237,9 @@ export class FomkyrEngine {
         const pending=batch.slice(1).map(lane=>this.rpc(this.pool[lane],{command:'reduce'}));
         this.setPhase('reducing',false);const rcs=[this.e.gn_reduce_pair(0),...await Promise.all(pending)];
         this.scheduler.reduceMs+=performance.now()-start;
-        if(rcs.includes(2)&&await this.shrinkAndReplay())continue;rcs.forEach(checked);
+        if(rcs.includes(2)&&await this.shrinkAndReplay())continue;
+        for(let i=0;i<rcs.length;i++)if(rcs[i]===11)rcs[i]=this.e.gn_reduce_pair(batch[i]);
+        rcs.forEach(checked);
         this.setPhase('committing',false);let replay=false;start=performance.now();
         for(const lane of batch){const rc=this.e.gn_commit(lane);if(rc===2&&await this.shrinkAndReplay()){replay=true;break;}checked(rc);}
         this.scheduler.commitMs+=performance.now()-start;if(replay)continue;

@@ -4,7 +4,7 @@ import {requestPersistentStorage,listCachedRuns,deleteCachedRun} from './storage
 import {browserCapabilities} from './capabilities.js';
 import {requestIsolation} from './isolation.js';
 const KEY='fomkyr-options-v3'; // keep existing user tuning on upgrade
-const defaults={arithmeticMode:'exact',modularMinPrimes:2,modularMaxPrimes:8,workers:0,execution:'auto',bits:'auto',spill:true,hilbert:true,resume:'auto',ioMode:'auto',monomialPruning:true,heapReduction:true,rationalHeap:true,compiledRewrites:true,rewriteDegree:4,rewriteSupport:8,rewriteMiB:8,sharedCacheMiB:null,cachePercent:12,heapThreshold:16,batchPairs:null,hashBits:18,scratchMiB:null,hilbertMiB:256,wordMatcher:true,chainCriterion:true,eagerPruning:true,quadraticRewrite:true,costScheduling:true,wordCacheEntries:256,progress:true,progressIntervalMs:1000};
+const defaults={arithmeticMode:'exact',modularMinPrimes:2,modularMaxPrimes:8,workers:0,execution:'auto',bits:'auto',spill:true,hilbert:true,resume:'auto',ioMode:'auto',monomialPruning:true,heapReduction:true,rationalHeap:true,bigRationalHeap:true,fastBigDivision:true,growingRationalHeap:true,radixHeap:true,reserveInPlace:true,rowReserveMiB:null,compiledRewrites:true,rewriteDegree:4,rewriteSupport:8,rewriteMiB:8,sharedCacheMiB:null,cachePercent:12,heapThreshold:16,batchPairs:null,hashBits:18,scratchMiB:null,hilbertMiB:256,wordMatcher:true,chainCriterion:true,eagerPruning:true,quadraticRewrite:true,costScheduling:true,wordCacheEntries:256,progress:true,progressIntervalMs:1000};
 let state={...defaults};
 try{const saved=JSON.parse(globalThis.localStorage?.getItem(KEY)||'{}');for(const key of Object.keys(defaults))if(Object.hasOwn(saved,key))state[key]=saved[key];}catch{}
 // Public George controls retain only the measured direct mode. The explicit
@@ -12,10 +12,11 @@ try{const saved=JSON.parse(globalThis.localStorage?.getItem(KEY)||'{}');for(cons
 state.arithmeticMode='exact';
 function persist(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch{}}
 export function readFomkyrOptions(){
-  const out={...state};delete out.scratchMiB;delete out.hilbertMiB;delete out.rewriteMiB;delete out.sharedCacheMiB;
+  const out={...state};delete out.scratchMiB;delete out.hilbertMiB;delete out.rewriteMiB;delete out.sharedCacheMiB;delete out.rowReserveMiB;
   out.rewriteBudgetBytes=Number(state.rewriteMiB??8)*1048576;
   if(state.sharedCacheMiB!==null)out.sharedReducerCacheBytes=Number(state.sharedCacheMiB)*1048576;
   if(out.batchPairs===null)delete out.batchPairs;
+  if(state.rowReserveMiB!==null)out.rowReserveBytes=Number(state.rowReserveMiB)*1048576;
   if(state.scratchMiB!==null)out.scratchBytes=Number(state.scratchMiB)*1048576;
   out.hilbertBudgetBytes=Number(state.hilbertMiB)*1048576;
   if(typeof document!=='undefined'){
@@ -42,19 +43,25 @@ export function installFomkyrControls(){
   const pruneOriginal=document.getElementById('monomialPruning');
   if(!pruneOriginal)check('monomialPruning','Prune consequences of monomial zero relations');
   const details=document.createElement('details');const summary=document.createElement('summary');summary.textContent='Advanced tuning';details.append(summary);box.append(details);
-  check('compiledRewrites','Compile exact short-context rewrites with bounded expansion',details);
-  number('rewriteDegree','Compiled local word length',2,4,details);
+  check('compiledRewrites','Compile exact short-context rewrites (bounded expansion; exact fallback)',details);
+  number('rewriteDegree','Compiled local word length (not the calculation degree)',2,4,details);
   number('rewriteSupport','Maximum terms per compiled rewrite',1,64,details);
   number('rewriteMiB','Compiled rewrite cache budget, MiB',0,256,details);
   number('sharedCacheMiB','Shared immutable reducer cache, MiB (blank = bounded automatic; 0 = disabled)',0,256,details);
-  check('rationalHeap','Exact rational heap for non-monic rows (safe arbitrary-precision fallback)',details);
+  check('rationalHeap','Compact exact rational heap for non-monic rows',details);
+  check('bigRationalHeap','Sparse arbitrary-precision rational heap (exact, budgeted fallback)',details);
+  check('fastBigDivision','Normalized large-integer division (exact)',details);
+  check('growingRationalHeap','Grow compact rational tables without replaying reductions',details);
+  check('radixHeap','Monotone radix word queue (same exact leading-word order)',details);
+  check('reserveInPlace','Promote a crowded rational row into the shared reserve without replay',details);
+  number('rowReserveMiB','Shared overflow workspace, MiB (blank = bounded automatic; 0 = disabled)',0,14304,details);
   check('wordMatcher','Indexed leading-word matching (same monomial order)',details);
   check('chainCriterion','Skip overlaps certified by lower-degree chains',details);
   check('eagerPruning','Discard proved square/commutation zeros before heap insertion',details);
   check('quadraticRewrite','Pre-rewrite known monic quadratic binomials',details);
   check('costScheduling','Dispatch larger input pairs first; keep exact commit order',details);
   number('wordCacheEntries','Exact word-cache entries per lane (power of two; 256 = small cache)',256,1048576,details);
-  check('progress','Live overlap counts and worker activity',details);
+  check('progress','Live overlap-count progress and conservative timing estimates',details);
   number('progressIntervalMs','Progress update interval, milliseconds',250,60000,details);
   check('heapReduction' ,'Fast sparse heap reduction for short words',details);
   number('cachePercent','Reducer cache (% of each lane workspace)',0,40,details);
@@ -65,7 +72,7 @@ export function installFomkyrControls(){
   number('hilbertMiB','Additional Hilbert workspace, MiB',0,14304,details);
   choice('ioMode','Parallel file I/O',[['auto','Automatic: probe concurrent handles, otherwise broker'],['broker','Portable: one exclusive OPFS owner'],['direct','Prefer direct concurrent handles; broker if unsupported']],details);
   const note=document.createElement('p');note.textContent='Leave George’s maximal degree blank for completion without a user degree bound. Homogeneous relations, unit weights, Q or a prime field and degleftlex are supported. Reversing the generator order, timeout and memory controls remain in the main form. Low-terms quick/safe are equivalent for homogeneous input. Rabbit, resolutions and weighted orders are not implemented. Save unsaved input before enabling isolation, which may reload this page.';box.append(note);
-  const pruneNote=document.createElement('p');pruneNote.textContent='Fomkyr monomial pruning uses exact zero-word shortcuts. Disabling shortcuts is useful for cross-checks.';box.append(pruneNote);
+  const pruneNote=document.createElement('p');pruneNote.textContent='For fomkyr, “monomial pruning” means exact zero-word shortcuts, not Bergman’s Lisp monomial-storage garbage collection. Both settings produce the same algebra; disabling shortcuts is useful for cross-checks.';box.append(pruneNote);
   const status=document.createElement('pre');status.id='fomkyr-runtime-status';status.style.whiteSpace='pre-wrap';
   function button(text,fn){const b=document.createElement('button');b.type='button';b.textContent=text;b.onclick=async()=>{try{await fn();}catch(e){status.textContent=e.message;}};box.append(b);return b;}
   button('Inspect browser capabilities',()=>{status.textContent=JSON.stringify(browserCapabilities(),null,2);});
@@ -86,7 +93,7 @@ export function installFomkyrControls(){
   function update(){
     const active=select.value==='fomkyr';box.hidden=!active;const progressPanel=document.getElementById('fomkyr-progress');if(progressPanel)progressPanel.hidden=!active||!state.progress;
     const workers=document.getElementById('nativeWorkers');if(active&&workers){workers.disabled=false;workers.closest('[hidden]')?.removeAttribute('hidden');}
-    if(pruneOriginal){if(!originalTitles.has(pruneOriginal))originalTitles.set(pruneOriginal,pruneOriginal.title);if(active){pruneOriginal.disabled=false;pruneOriginal.title='fomkyr: exact monomial-zero reduction and pair shortcuts.';}else pruneOriginal.title=originalTitles.get(pruneOriginal);}
+    if(pruneOriginal){if(!originalTitles.has(pruneOriginal))originalTitles.set(pruneOriginal,pruneOriginal.title);if(active){pruneOriginal.disabled=false;pruneOriginal.title='fomkyr: exact monomial-zero reduction and pair shortcuts (not Lisp garbage collection).';}else pruneOriginal.title=originalTitles.get(pruneOriginal);}
     const max=document.getElementById('maxdeg');if(active&&max){max.removeAttribute('max');max.placeholder='none: complete until stopped or proved';}
     const memory=document.getElementById('memoryMiB');
     if(active&&memory){for(const o of memory.options)o.disabled=Number(o.value)>14304||Number(o.value)<16;if(Number(memory.value)>14304||Number(memory.value)<16){if([...memory.options].some(o=>o.value==='14304'))memory.value='14304';else memory.value='2048';}}

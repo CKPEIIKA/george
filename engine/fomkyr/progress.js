@@ -78,7 +78,7 @@ export class ProgressTracker {
 export function readProgressCounters(e){
   const p=k=>e.gn_progress_stat(k),workers=Number(e.gn_stat(10));let reductions=0n,maxTerms=0n,activeLanes=0;const lanes=[];
   for(let i=0;i<workers;i++){reductions+=e.gn_live_stat(i,0);const busy=e.gn_live_stat(i,7),terms=e.gn_live_stat(i,4);if(busy){activeLanes++;if(terms>maxTerms)maxTerms=terms;
-    lanes.push({lane:i,tier:['unknown','compact-integer','compact-rational','arbitrary-precision'][Number(e.gn_live_stat(i,9))]??'unknown',
+    lanes.push({lane:i,tier:['unknown','compact-integer','compact-rational','arbitrary-precision','sparse-big-rational','reserve-rational','reserve-big-rational'][Number(e.gn_live_stat(i,9))]??'unknown',
       terms:String(terms),exactFallbacks:String(e.gn_live_stat(i,10)),pair:{leftRule:Number(e.gn_live_stat(i,11)),rightRule:Number(e.gn_live_stat(i,12)),overlap:Number(e.gn_live_stat(i,13))}});}}
   return {total:p(0),seen:p(1),committed:p(2),scheduled:p(3),monomialSkipped:p(4),chainSkipped:p(5),replay:Number(p(6)),totalKnown:!!p(7),reductions,maxTerms,activeLanes,lanes};
 }
