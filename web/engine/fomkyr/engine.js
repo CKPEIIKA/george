@@ -1,3 +1,4 @@
+import {prepareHilbertClosure,replayHilbertCertificate,hilbertMetadata,beginHilbertClosure,tryHilbertClosure,hilbertGap,closureBatchLimit} from './hilbert-closure.js';
 import {planMemory,chooseMemoryPolicy} from './memory-policy.js';
 // SPDX-License-Identifier: MIT
 import {ProgressTracker,readProgressCounters} from './progress.js';
@@ -5,10 +6,11 @@ import {HARD_BYTES,createMemory,hostFor,stats,checked,wordCode,recordTerms} from
 import {STORE,VERSION,identityOf,acquireRunLock,checkpointCandidates,writeJSON} from './storage.js';
 import {loadKernel} from './module-cache.js';
 import {computeHilbert,hilbertCSV} from './hilbert.js';
+import {beginReference,referenceSnapshot} from './hilbert-reference.js';
 import {browserCapabilities,sharedMemoryAvailable,probeUnsafeAccess} from './capabilities.js';
 import {BrokerHandle,makeMailbox,IO_CHUNK,IO_HEADER} from './io-broker.js';
 import {computeWorkers} from './worker-count.js';
-const MiB=1048576,enc=new TextEncoder();
+const MiB=1048576,enc=new TextEncoder(),hexDecoder=new TextDecoder('ascii'),hexDigits=new TextEncoder().encode('0123456789abcdef');
 export function validateFixture(fixture){
   if(!fixture||!Array.isArray(fixture.variables)||!Array.isArray(fixture.relations))throw new Error('Invalid fixture');
   const vars=fixture.variables;
@@ -45,7 +47,7 @@ export class FomkyrEngine {
     if(this.options.progress===false||!this.tracker||!this.e||this.publishingProgress)return false;
     const now=performance.now();if(!force&&now-(this.lastProgressSent??-Infinity)<this.progressInterval)return false;
     this.publishingProgress=true;this.lastProgressSent=now;
-    try{this.lastProgress=this.tracker.sample(readProgressCounters(this.e));this.emit('progress',this.lastProgress);}
+    try{this.lastProgress=this.tracker.sample(readProgressCounters(this.e));this.lastProgress.hilbertReference=referenceSnapshot(this.e,this.hilbertReference);this.lastProgress.hilbertClosure=hilbertGap(this.e,this.hilbertClosure);this.lastProgress.conditionalOnExternalDimensions=this.hilbertClosure?.assumed??false;this.lastProgress.hilbertClosureEvent=this.hilbertClosure?.events.find(x=>x.degree===this.lastProgress.currentDegree)??null;this.lastProgress.checkpoint=this.lastCheckpoint?{partial:!!this.lastCheckpoint.partial,currentDegree:this.lastCheckpoint.currentDegree,completedThroughDegree:this.lastCheckpoint.completedThroughDegree,retainedCommittedPairs:this.lastCheckpoint.retainedCommittedPairs,updatedAt:this.lastCheckpoint.updatedAt}:null;this.emit('progress',this.lastProgress);}
     catch(error){this.progressError=String(error.message??error);}finally{this.publishingProgress=false;}
     return true;
   }
@@ -74,7 +76,7 @@ export class FomkyrEngine {
         this.module=await loadKernel(bits,o.wasmURL,!this.shared);
         this.host=hostFor(this.memory,bits,this.budget,null,Infinity,true);
         this.e=(await WebAssembly.instantiate(this.module,this.host.imports)).exports;
-        if(this.e.gn_abi()!==3||typeof this.e.gn_optimize!=='function'||typeof this.e.gn_word_cache!=='function'||typeof this.e.gn_progress_stat!=='function'||typeof this.e.gn_candidate_check!=='function'||typeof this.e.gn_local_rewrites!=='function'||typeof this.e.gn_pin_cache!=='function'||typeof this.e.gn_rational_rewrites!=='function'||typeof this.e.gn_modulus!=='function'||typeof this.e.gn_big_rational_heap!=='function'||typeof this.e.gn_legacy_big_division!=='function'||typeof this.e.gn_growing_rational!=='function'||typeof this.e.gn_row_reserve!=='function'||typeof this.e.gn_reserve_growth!=='function'||typeof this.e.gn_radix_queue!=='function'||typeof this.e.gn_memory_policy!=='function'||typeof this.e.gn_batch_retry!=='function')throw new Error('Kernel/host API mismatch. Deploy fomkyr 0.6.4 JS and WASM together.');
+        if(this.e.gn_abi()!==3||typeof this.e.gn_optimize!=='function'||typeof this.e.gn_word_cache!=='function'||typeof this.e.gn_progress_stat!=='function'||typeof this.e.gn_candidate_check!=='function'||typeof this.e.gn_local_rewrites!=='function'||typeof this.e.gn_pin_cache!=='function'||typeof this.e.gn_rational_rewrites!=='function'||typeof this.e.gn_modulus!=='function'||typeof this.e.gn_big_rational_heap!=='function'||typeof this.e.gn_legacy_big_division!=='function'||typeof this.e.gn_growing_rational!=='function'||typeof this.e.gn_row_reserve!=='function'||typeof this.e.gn_reserve_growth!=='function'||typeof this.e.gn_radix_queue!=='function'||typeof this.e.gn_memory_policy!=='function'||typeof this.e.gn_batch_retry!=='function'||typeof this.e.gn_frontier_export!=='function'||typeof this.e.gn_hilbert_gate_begin!=='function')throw new Error('Kernel/host API mismatch. Deploy fomkyr 0.6.6 JS and WASM together.');
         break;
       }catch(error){
         if(bits!==64||o.strictCapabilities||o.wasmURL)throw error;
@@ -120,7 +122,7 @@ export class FomkyrEngine {
         }else{this.ioMode='exclusive';this.handle=await this.file.createSyncAccessHandle();}
         if(o.resume===false){
           this.handle.truncate(0);
-          for(const name of ['checkpoint-0.json','checkpoint-1.json'])try{await this.directory.removeEntry(name);}catch(e){if(e.name!=='NotFoundError')throw e;}
+          for(const name of ['checkpoint-0.json','checkpoint-1.json','partial-0.json','partial-1.json'])try{await this.directory.removeEntry(name);}catch(e){if(e.name!=='NotFoundError')throw e;}
         }
         const estimate=await navigator.storage.estimate(),remaining=Math.max(0,(estimate.quota??Infinity)-(estimate.usage??0));
         this.diskLimit=Math.min(Number(o.diskLimitBytes??Infinity),this.handle.getSize()+Math.floor(remaining*.85));
@@ -149,16 +151,17 @@ export class FomkyrEngine {
     this.emit('capabilities',{...this.capabilities,shared:this.shared,bits:this.bits,workers:this.workers,ioMode:this.ioMode,requestedBudgetBytes:requested,effectiveBudgetBytes:this.budget});
     return this;
   }
+  requestCheckpoint(){this.checkpointRequested=true;}
   cancel(){this.cancelRequested=true;if(this.cancelView&&this.shared)Atomics.store(this.cancelView,0,1);else this.e?.gn_cancel(1);}
   async resetKernel(fixture,target,modulus){
-    checked(this.e.gn_init(fixture.variables.length,target??0,this.workers,BigInt(this.budget),BigInt(this.scratch),this.options.hashBits??18,modulus,this.spill?1:0));
+    checked(this.e.gn_init(fixture.variables.length,target??0,this.workers,BigInt(this.budget),BigInt(this.scratch),(this.restoreHashBits??this.options.hashBits??18),modulus,this.spill?1:0));
     checked(this.e.gn_memory_policy(this.autoMemory?1:0));
     checked(this.e.gn_rational_heap(this.options.rationalHeap!==false?1:0));
     checked(this.e.gn_big_rational_heap(this.options.bigRationalHeap!==false?1:0));
     checked(this.e.gn_legacy_big_division(this.options.fastBigDivision===false?1:0));
     checked(this.e.gn_growing_rational(this.options.growingRationalHeap!==false?1:0));
     checked(this.e.gn_rational_rewrites(this.options.rationalRewrites!==false?1:0));
-    const pin=this.options.sharedReducerCacheBytes??Math.min(this.budget/16,64*MiB);
+    const pin=this.options.sharedReducerCacheBytes??Math.floor(this.budget/16);
     const local=this.options.rewriteBudgetBytes??Math.min(this.budget/16,8*MiB);
     for(const [name,value] of [['sharedReducerCacheBytes',pin],['rewriteBudgetBytes',local]])if(!Number.isSafeInteger(value)||value<0)throw new Error(`${name} must be a nonnegative integer`);
     const localDegree=this.options.rewriteDegree??4,localSupport=this.options.rewriteSupport??8;
@@ -180,7 +183,7 @@ export class FomkyrEngine {
     this.emit('control',this.shared?{memory:this.memory,cancelOffset:Number(this.e.gn_cancel_ptr()),runKey:this.runKey,shared:true}:{runKey:this.runKey,shared:false,cancellation:'worker-message'});
     await Promise.all(this.pool.filter(Boolean).map(s=>this.rpc(s,{command:'stack'})));
   }
-  async restore(cp){
+  async restore(cp,{truncate=true}={}){
     const header=new Uint8Array(32),dv=new DataView(header.buffer);let off=0;
     for(let i=0;i<cp.basisSize;i++){
       if(off+32>cp.diskBytes||this.handle.read(header,{at:off})!==32)throw new Error('Truncated record header');
@@ -202,16 +205,50 @@ export class FomkyrEngine {
       checked(this.e.gn_restore_rule(size,BigInt(off)));off+=size;
     }
     if(off!==cp.diskBytes)throw new Error('Checkpoint byte count mismatch');
-    checked(this.e.gn_restored_through(cp.completedThroughDegree));this.lastCheckpoint=cp;
-    // Only the uncommitted suffix is discarded. A lower requested target never
-    // rewinds a newer valid checkpoint or destroys previously completed degrees.
-    this.handle.truncate(off);
+    if(cp.partial){
+      const bytes=Uint8Array.from(cp.frontier.match(/../g),x=>parseInt(x,16));
+      if(bytes.length>this.e.gn_import_capacity())throw new Error('Frontier exceeds import workspace');
+      new Uint8Array(this.memory.buffer,Number(this.e.gn_import_buffer()),bytes.length).set(bytes);
+      checked(this.e.gn_frontier_restore(bytes.length));
+      this.restoredPending=this.e.gn_frontier_pending();
+      if(this.restoredPending&&!this.batchPairs){this.batchPairs=1;this.warn('Restored outstanding descriptors use the bounded-batch scheduler.');}
+    }else checked(this.e.gn_restored_through(cp.completedThroughDegree));
+    if(this.hilbertClosure)this.hilbertClosure.events=[...(cp.hilbertClosureEvents??[])];
+    this.lastCheckpoint=cp;this.checkpointSequence=Math.max(this.checkpointSequence??0,cp.sequence??0);
+    // Cache-only lower-degree requests MUST NOT destroy a newer partial frontier.
+    if(truncate)this.handle.truncate(off);
   }
   async checkpoint(identity){
     if(!this.directory)return;
-    const cp={abi:3,version:VERSION,identity,...stats(this.e),runKey:this.runKey,updatedAt:new Date().toISOString()};
+    const cp={abi:this.hilbertClosure?4:3,...hilbertMetadata(this.hilbertClosure),version:VERSION,identity,...stats(this.e),partial:false,sequence:++this.checkpointSequence,runKey:this.runKey,updatedAt:new Date().toISOString(),cumulativeElapsedMs:(this.priorElapsedMs??0)+performance.now()-this.sessionStart};
     this.handle.flush();
     await writeJSON(this.directory,`checkpoint-${cp.completedThroughDegree%2}.json`,cp,{checkpoint:true});this.lastCheckpoint=cp;
+    this.safePoint=null;this.lastDurableAt=performance.now();
+    this.emit('checkpoint',{partial:false,completedThroughDegree:cp.completedThroughDegree,basisSize:cp.basisSize,diskBytes:cp.diskBytes});
+  }
+  captureSafePoint(){
+    if(this.verifyingCandidate||!this.directory||this.options.midDegreeCheckpoints===false||!this.e.gn_stat(3)||(this.hilbertClosure&&this.e.gn_hilbert_gate_stat(3)))return;
+    const ptr=this.e.gn_frontier_export();if(!ptr)throw new Error('Kernel refused a non-quiescent checkpoint frontier');
+    const bytes=new Uint8Array(this.memory.buffer,Number(ptr),this.e.gn_frontier_size());
+    const text=new Uint8Array(bytes.length*2);for(let i=0;i<bytes.length;i++){text[2*i]=hexDigits[bytes[i]>>>4];text[2*i+1]=hexDigits[bytes[i]&15];}const frontier=hexDecoder.decode(text);
+    this.safePoint={abi:this.hilbertClosure?4:3,...hilbertMetadata(this.hilbertClosure),version:VERSION,identity:this.identityHash,basisSize:Number(this.e.gn_stat(0)),terms:Number(this.e.gn_stat(1)),completedThroughDegree:Number(this.e.gn_stat(2)),currentDegree:Number(this.e.gn_stat(3)),diskBytes:Number(this.e.gn_stat(6)),partial:true,
+      frontier,hilbertReference:referenceSnapshot(this.e,this.hilbertReference),hashBits:this.e.gn_frontier_hash_bits(),retainedCommittedPairs:Number(this.e.gn_progress_stat(2)),
+      resolvedOverlaps:Number(this.e.gn_progress_stat(2)+this.e.gn_progress_stat(4)+this.e.gn_progress_stat(5)),
+      totalOverlaps:Number(this.e.gn_progress_stat(0)),pendingPairs:this.e.gn_frontier_pending(),
+      runKey:this.runKey,updatedAt:new Date().toISOString(),sessionElapsedMs:performance.now()-this.sessionStart,
+      cumulativeElapsedMs:(this.priorElapsedMs??0)+performance.now()-this.sessionStart};
+  }
+  async persistSafePoint(force=false){
+    if(!this.safePoint||!this.directory)return;
+    const now=performance.now();if(!force&&!this.checkpointRequested&&now-(this.lastDurableAt??0)<this.checkpointInterval)return;
+    const cp={...this.safePoint,sequence:++this.checkpointSequence,sessionElapsedMs:now-this.sessionStart,cumulativeElapsedMs:(this.priorElapsedMs??0)+now-this.sessionStart,updatedAt:new Date().toISOString()};
+    // The file is append-only. A safe prefix may precede a cancelled/failed write.
+    this.handle.flush();
+    await writeJSON(this.directory,`partial-${cp.sequence%2}.json`,cp,{checkpoint:true});
+    this.lastCheckpoint=cp;this.lastDurableAt=performance.now();this.checkpointRequested=false;
+    this.emit('checkpoint',{partial:true,currentDegree:cp.currentDegree,completedThroughDegree:cp.completedThroughDegree,
+      retainedCommittedPairs:cp.retainedCommittedPairs,resolvedOverlaps:cp.resolvedOverlaps,totalOverlaps:cp.totalOverlaps,
+      pendingPairs:cp.pendingPairs,basisSize:cp.basisSize,diskBytes:cp.diskBytes,sequence:cp.sequence,hilbertReference:cp.hilbertReference});
   }
   async shrinkAndReplay(){
     if(this.workers<=1)return false;
@@ -232,6 +269,11 @@ export class FomkyrEngine {
       scratchBytes:this.scratch,bytesPerLane:Math.floor(this.scratch/after),
       replayFromTask:first,replay:'pending-batch-suffix-only',budgetBytes:this.budget});
     return true;
+  }
+  checkHilbertClosure(){
+    const event=tryHilbertClosure(this.e,this.hilbertClosure);
+    if(event)this.emit('hilbert-degree-closure',{...event,...hilbertMetadata(this.hilbertClosure)});
+    return !!(this.hilbertClosure&&this.e.gn_hilbert_gate_stat(3));
   }
   async executeBatch(n){
     let first=0;
@@ -255,6 +297,8 @@ export class FomkyrEngine {
           if(rc===12)checked(2);this.fallbackEpoch();return;
         }
         checked(rc);
+        if(this.hilbertClosure&&this.checkHilbertClosure())return;
+        if(this.directory&&(this.checkpointRequested||performance.now()-(this.lastDurableAt??0)>=this.checkpointInterval)){this.captureSafePoint();await this.persistSafePoint();}
       }
       this.scheduler.commitMs+=performance.now()-start;
       if(!retry)return;
@@ -263,11 +307,15 @@ export class FomkyrEngine {
   async completeDegree(){
     let lastYield=performance.now();
     for(;;){
+      if(this.hilbertClosure&&this.e.gn_hilbert_gate_stat(3))break;
       if(this.cancelRequested)checked(5);
+      this.captureSafePoint();await this.persistSafePoint();
       if(performance.now()-lastYield>40){await new Promise(r=>setTimeout(r,0));lastYield=performance.now();}
       if(this.batchPairs){
-        const n=this.e.gn_batch_fill(this.batchPairs);if(n<0)checked(n);if(!n)break;
+        const limit=this.hilbertClosure&&this.options.hilbertClosureBatching!==false?closureBatchLimit(this.e,this.batchPairs,this.workers):this.batchPairs;
+        const n=this.e.gn_batch_fill(limit);if(n<0)checked(n);if(!n)break;
         this.scheduler.epochs++;this.scheduler.dispatchedPairs+=n;
+        this.captureSafePoint();await this.persistSafePoint();
         await this.executeBatch(n);
 
       }else{
@@ -283,7 +331,7 @@ export class FomkyrEngine {
         for(let i=0;i<rcs.length;i++)if(rcs[i]===11)rcs[i]=this.e.gn_reduce_pair(batch[i]);
         rcs.forEach(checked);
         this.setPhase('committing',false);let replay=false;start=performance.now();
-        for(const lane of batch){const rc=this.e.gn_commit(lane);if(rc===2&&await this.shrinkAndReplay()){replay=true;break;}checked(rc);}
+        for(const lane of batch){const rc=this.e.gn_commit(lane);if(rc===2&&await this.shrinkAndReplay()){replay=true;break;}checked(rc);if(this.hilbertClosure&&this.checkHilbertClosure())break;}
         this.scheduler.commitMs+=performance.now()-start;if(replay)continue;
       }
       this.publishProgress(false);
@@ -291,7 +339,10 @@ export class FomkyrEngine {
   }
   async compute(fixture,target=20,modulus=0){
     if(this.active||this.closed)throw new Error('Engine is busy or closed');
-    this.active=true;const start=performance.now();let timer,progressTimer;
+    this.active=true;const start=performance.now();this.sessionStart=start;let timer,progressTimer;
+    this.safePoint=null;this.hilbertReference=null;this.checkpointSequence=0;this.checkpointInterval=Number(this.options.checkpointIntervalMs??30000);
+    if(!Number.isFinite(this.checkpointInterval)||this.checkpointInterval<0){this.active=false;throw new Error('checkpointIntervalMs must be nonnegative');}
+    this.lastDurableAt=start;
     this.progressInterval=Number(this.options.progressIntervalMs??1000);
     if(!Number.isFinite(this.progressInterval)||this.progressInterval<250||this.progressInterval>60000){this.active=false;throw new Error('progressIntervalMs must be 250..60000');}
     this.tracker=new ProgressTracker({target});
@@ -300,21 +351,31 @@ export class FomkyrEngine {
       if(target!==null&&(!Number.isInteger(target)||target<1||target>0xfffffffe))throw new Error('Degree must be a positive 32-bit index, or null for completion without a user degree bound');
       if(!Number.isInteger(modulus)||modulus<0||modulus>2147483647)throw new Error('Invalid coefficient characteristic');
       const identity=await identityOf(fixture,modulus);this.identityHash=identity;
+      this.hilbertClosure=await prepareHilbertClosure(this.options.hilbertClosure,identity,modulus);
       if(!this.options.runKey)this.options.runKey=`alg-${identity}`;
       if(!this.e)await this.open();
-      const candidates=this.directory&&this.options.resume!==false?await checkpointCandidates(this.directory,identity,this.handle.getSize()):[];
+      const allCandidates=this.directory&&this.options.resume!==false?await checkpointCandidates(this.directory,identity,this.handle.getSize(),this.hilbertClosure?.key):[];
+      const preserveNewerPartial=allCandidates.some(cp=>cp.partial&&target!==null&&target<cp.currentDegree);
+      const candidates=allCandidates.filter(cp=>!cp.partial||target===null||target>=cp.currentDegree);
+      this.restoreHashBits=candidates[0]?.partial?candidates[0].hashBits:null;
       if(!candidates.length&&this.directory&&this.options.resume!==false&&(this.handle.getSize()>0||this.options.resume===true)){
         const error=new Error('No valid matching checkpoint; cache left unchanged. Use a different runKey or explicitly resume:false to reset it.');error.code='CACHE_INVALID';throw error;
       }
-      const kernelTarget=target===null?null:Math.max(target,candidates[0]?.completedThroughDegree??0);
+      const kernelTarget=target===null?null:Math.max(target,candidates[0]?.currentDegree??0,candidates[0]?.completedThroughDegree??0);
       await this.resetKernel(fixture,kernelTarget,modulus);
       let restored=0,restoreError=null;
       for(const cp of candidates){
-        try{await this.restore(cp);restored=cp.completedThroughDegree;restoreError=null;break;}
+        try{
+          if(cp.partial&&this.restoreHashBits!==cp.hashBits){this.restoreHashBits=cp.hashBits;await this.resetKernel(fixture,kernelTarget,modulus);}
+          await this.restore(cp,{truncate:!preserveNewerPartial});restored=cp.completedThroughDegree;
+          this.priorElapsedMs=cp.cumulativeElapsedMs??0;restoreError=null;break;
+        }
         catch(error){restoreError=error;await this.resetKernel(fixture,kernelTarget,modulus);this.emit('warning',{message:`Rejected checkpoint degree ${cp.completedThroughDegree}: ${error.message}`});}
       }
       if(restoreError)throw restoreError;
-      this.emit('cache',{runKey:this.runKey,resumedFromDegree:restored,cacheHit:target!==null&&restored>=target});
+      replayHilbertCertificate(this.e,fixture,this.hilbertClosure,this.budget);
+      if(this.directory&&this.hilbertClosure)await writeJSON(this.directory,'hilbert-evidence.json',this.hilbertClosure.data);
+      this.emit('cache',{runKey:this.runKey,resumedFromDegree:restored,resumedPartial:this.lastCheckpoint?.partial?{currentDegree:this.lastCheckpoint.currentDegree,retainedCommittedPairs:this.lastCheckpoint.retainedCommittedPairs,pendingPairs:this.lastCheckpoint.pendingPairs}:null,cacheHit:target!==null&&restored>=target});
       this.tracker.completed=restored;this.tracker.degree=restored;
       if(this.options.progress!==false){
         this.host.setPulse(()=>this.publishProgress(false),this.progressInterval);
@@ -329,6 +390,7 @@ export class FomkyrEngine {
         if(this.cancelRequested)checked(5);
         if(performance.now()-lastYield>40){await new Promise(r=>setTimeout(r,0));lastYield=performance.now();}
         this.tracker.begin(degree,Number(this.e.gn_stat(2)));this.setPhase('input');
+        if(!Number(this.e.gn_stat(3))){
         for(const r of fixture.relations)if(r.degree===degree){
           checked(this.e.gn_input_begin(degree,r.terms.length));
           for(const t of r.terms){
@@ -342,7 +404,18 @@ export class FomkyrEngine {
           checked(this.e.gn_input_end());
         }
         this.emit('degree-start',{degree,...stats(this.e)});
-        this.setPhase('indexing');checked(this.e.gn_start_degree(degree));this.setPhase('reducing');await this.completeDegree();
+        this.setPhase('indexing');checked(this.e.gn_start_degree(degree));
+        }
+        this.hilbertReference=beginReference(this.e,identity,this.options.referenceProgress!==false,Math.min(256*MiB,Math.max(0,this.budget-Number(this.e.gn_stat(4)))));
+        if(this.hilbertReference)this.emit('hilbert-reference',referenceSnapshot(this.e,this.hilbertReference));
+        const gate=beginHilbertClosure(this.e,this.hilbertClosure,this.budget);
+        if(gate?.declined)this.emit('warning',{message:'Hilbert closure capacity declined; ordinary exact completion continues.'});
+        if(this.hilbertClosure)this.checkHilbertClosure();
+        this.captureSafePoint();await this.persistSafePoint();
+        this.setPhase('reducing');
+        if(this.hilbertClosure&&this.e.gn_hilbert_gate_stat(3))this.restoredPending=0;
+        if(this.restoredPending&&!this.e.gn_hilbert_gate_stat(3)){const n=this.restoredPending;this.restoredPending=0;await this.executeBatch(n);}
+        await this.completeDegree();
         checked(this.e.gn_finish_degree());this.tracker.completed=degree;this.setPhase('checkpoint');await this.checkpoint(identity);
         this.tracker.finish(degree,readProgressCounters(this.e));this.publishProgress(true);
         this.emit('degree',{...stats(this.e),elapsedMs:performance.now()-start,scheduler:{...this.scheduler}});
@@ -366,17 +439,21 @@ export class FomkyrEngine {
           hilbert={available:false,error:error.message,certifiedThroughDegree:null};this.emit('warning',{message:`GB completed; Hilbert calculation unavailable: ${error.message}`});
         }
       }
-      const result={...stats(this.e),engine:'fomkyr',version:VERSION,memoryPlan:this.memoryPlan,storage:this.spill?'opfs':'memory',complete:true,unrestrictedBasisComplete:globallyComplete(),reduced:false,target,modulus,order:'degleftlex',runKey:this.runKey,identity,bits:this.bits,shared:this.shared,ioMode:this.ioMode,executionMode:`wasm${this.bits}-${this.shared?'shared':'single'}`,fallbacks:this.fallbacks??[],requestedBudgetBytes:this.requestedBudget,hostMailboxBytes:this.brokerClients.length*(IO_HEADER+IO_CHUNK),linearMemoryBytes:this.memory.buffer.byteLength,resumedFromDegree:restored,cacheHit:target!==null&&restored>=target,hilbert,scheduler:{...this.scheduler},lanePairs:Array.from({length:this.workers},(_,i)=>Number(this.e.gn_lane_stat(i,6))),elapsedMs:performance.now()-start};
+      if(hilbert&&this.hilbertClosure){Object.assign(hilbert,hilbertMetadata(this.hilbertClosure));if(this.hilbertClosure.assumed)hilbert.validity='Conditional on explicitly assumed external dimensions. No independent replay proof of those dimensions is claimed.';}
+      const result={...stats(this.e),...hilbertMetadata(this.hilbertClosure),engine:'fomkyr',version:VERSION,memoryPlan:this.memoryPlan,storage:this.spill?'opfs':'memory',complete:true,unrestrictedBasisComplete:globallyComplete(),reduced:false,target,modulus,order:'degleftlex',runKey:this.runKey,identity,bits:this.bits,shared:this.shared,ioMode:this.ioMode,executionMode:`wasm${this.bits}-${this.shared?'shared':'single'}`,fallbacks:this.fallbacks??[],requestedBudgetBytes:this.requestedBudget,hostMailboxBytes:this.brokerClients.length*(IO_HEADER+IO_CHUNK),linearMemoryBytes:this.memory.buffer.byteLength,resumedFromDegree:restored,cacheHit:target!==null&&restored>=target,hilbert:hilbert?{...hilbert,...hilbertMetadata(this.hilbertClosure)}:hilbert,scheduler:{...this.scheduler},lanePairs:Array.from({length:this.workers},(_,i)=>Number(this.e.gn_lane_stat(i,6))),elapsedMs:performance.now()-start};
       if(this.options.exportText!==false){this.setPhase('export');Object.assign(result,await this.exportText(fixture.variables));}
       result.degreeTimings=[...this.tracker.history];result.progressError=this.progressError??null;
       if(this.directory){
-        if(hilbert)await writeJSON(this.directory,'hilbert.json',hilbert);
+        if(hilbert)await writeJSON(this.directory,'hilbert.json',{...hilbert,...hilbertMetadata(this.hilbertClosure)});
         if(hilbert?.coefficients)await this.writeSmallText('hilbert.csv',hilbertCSV(hilbert));
         const {preview,elapsedMs,...metadata}=result;await writeJSON(this.directory,'fomkyr-result.json',{...metadata,elapsedSeconds:elapsedMs/1000});
       }
       this.setPhase('done');result.progress=this.lastProgress??null;result.degreeTimings=[...this.tracker.history];result.progressError=this.progressError??null;return result;
     }catch(error){
-      error.native=this.e?{...stats(this.e),complete:false,lastCheckpoint:this.lastCheckpoint,runKey:this.runKey}:null;
+      // Readers are joined by executeBatch before algebra errors propagate. Persist
+      // the last SUCCESSFUL quiescent prefix, never arbitrary mutable error state.
+      try{await this.persistSafePoint(true);}catch(checkpointError){error.checkpointError=checkpointError.message;}
+      error.native=this.e?{...stats(this.e),...hilbertMetadata(this.hilbertClosure),complete:false,lastCheckpoint:this.lastCheckpoint,runKey:this.runKey}:null;
       if(this.host?.lastIOError)error.message+=`: ${this.host.lastIOError.message}`;throw error;
     }finally{clearTimeout(timer);clearInterval(progressTimer);this.host?.setPulse(null);this.active=false;}
   }
@@ -396,6 +473,7 @@ export class FomkyrEngine {
     const emit=(text,allowPreview=true)=>{if(handle){buffer+=text;if(buffer.length>=32768)flush();}if(allowPreview&&!previewTruncated){if(used+text.length>cap){previewTruncated=true;}else{preview+=text;used+=text.length;}}};
     try {
       emit(`% fomkyr; completed through degree ${Number(e.gn_stat(2))}; not a claim of a finite complete GB\n`);
+      if(this.hilbertClosure)emit(`% Hilbert evidence ${this.hilbertClosure.key}; ${this.hilbertClosure.assumed?'CONDITIONAL ON EXTERNAL DIMENSIONS':'exact integer-dual witnesses replayed'}\n`);
       for(let id=1;id<=Number(e.gn_stat(0));id++) {
         const degree=Number(e.gn_rule_stat(id,2));
         degreeCounts.set(degree,(degreeCounts.get(degree)??0)+1);

@@ -8,6 +8,8 @@ import os from 'node:os';
 import {spawn, execFileSync} from 'node:child_process';
 import {staticServer} from './serve.mjs';
 import {buildJob, readInputFile, parseBasis} from '../web/src/bergman-syntax.js';
+import {BACKENDS} from '../web/src/backends.js';
+import {EnvironmentMonitor} from './benchmark-environment.mjs';
 
 const arg = (name, fallback) => {
   const at = process.argv.indexOf(name);
@@ -18,7 +20,13 @@ const degrees = arg('--degrees', '2,3,4,5,6,7,8').split(',').map(Number);
 const timeoutSeconds = Number(arg('--timeout-seconds', '120'));
 const memoryMiB = Number(arg('--memory-mib', '2048'));
 const trials = Number(arg('--trials', '1'));
-const sampleMs = 250;
+const sampleMs = Number(arg('--sample-ms', '250'));
+let interrupted=false,stopActive;
+const interrupt=()=>{interrupted=true;stopActive?.();};
+process.once('SIGINT',interrupt);process.once('SIGTERM',interrupt);
+if (!Number.isFinite(timeoutSeconds) || timeoutSeconds < 0) throw new Error('Choose a nonnegative time limit.');
+if (timeoutSeconds === 0 && !process.argv.includes('--allow-no-timeout')) throw new Error('Unlimited measurement requires --allow-no-timeout.');
+if (!Number.isInteger(sampleMs) || sampleMs < 0 || sampleMs > 10000) throw new Error('Choose sampling interval 0..10000 ms; zero takes boundary snapshots only.');
 if (process.platform !== 'linux') throw new Error('Resource sampling requires Linux /proc.');
 if (degrees.some(d => !Number.isInteger(d) || d < 1 || d > 32)) throw new Error('Choose degrees 1..32.');
 if (!Number.isInteger(trials) || trials < 1 || trials > 20) throw new Error('Choose 1..20 trials.');
@@ -40,11 +48,13 @@ if(fs.existsSync(finiteCertificateFile)){
 }
 const fomkyrVersion = JSON.parse(fs.readFileSync('web/engine/fomkyr/build.json')).version;
 const baselineRoot=arg('--baseline-root',null);
+const bergmanBaselineRoot=arg('--bergman-baseline-root',null);
 const baselineManifest=baselineRoot?JSON.parse(fs.readFileSync(path.join(baselineRoot,'build.json'))):null;
 const configurations = [
   {id: 'standard', backend: 'standard', browser: 'chromium', label: 'Lisp / ECL O2'},
   {id: 'optimized', backend: 'optimized', browser: 'chromium', label: 'Lisp / ECL O3 + LTO'},
   {id: 'compiled', backend: 'compiled', browser: 'chromium', label: 'C / ECL O3 + LTO'},
+  ...(bergmanBaselineRoot?[{id:'compiled-previous',backend:'compiled',browser:'chromium',label:'Previous C / ECL build',bergmanRoot:path.resolve(bergmanBaselineRoot)}]:[]),
   {id: 'memory64', backend: 'memory64', browser: 'chromium', label: 'C / ECL O3 + LTO (memory64)'},
   {id: 'native', backend: 'native', browser: 'chromium', label: 'Native NC (memory64, 4 workers)', workers: 4},
   {id: 'native-firefox', backend: 'native', browser: 'firefox', label: 'Native NC (memory64, Firefox)', workers: 4},
@@ -74,7 +84,7 @@ const reportFile = path.join(out, 'report.json');
 const previous = process.argv.includes('--resume') && fs.existsSync(reportFile)
   ? JSON.parse(fs.readFileSync(reportFile)) : null;
 const sha = file => crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
-const sourceFiles = ['tools/benchmark-backend-resources.mjs','web/src/bergman-syntax.js','web/src/fomkyr-options.js','web/src/engine.js', 'web/engine/worker.js', 'web/engine/native/engine.js',
+const sourceFiles = ['tools/benchmark-backend-resources.mjs','tools/benchmark-environment.mjs','web/src/bergman-syntax.js','web/src/fomkyr-options.js','web/src/engine.js', 'web/engine/worker.js', 'web/engine/native/engine.js',
   'web/engine/native/runtime.js', 'web/engine/native/george-entry.js', 'web/engine/native/storage.js',
   'web/engine/native/george32.wasm', 'web/engine/native/george64.wasm', 'web/engine/ecl.wasm',
   'web/engine/optimized/ecl.wasm', 'web/engine/compiled/ecl.wasm', 'web/engine/memory64/ecl.wasm', 'web/engine/ecl.data',
@@ -82,8 +92,11 @@ const sourceFiles = ['tools/benchmark-backend-resources.mjs','web/src/bergman-sy
 if(fs.existsSync(finiteCertificateFile))sourceFiles.push(finiteCertificateFile);
 const sourceHashes = Object.fromEntries(sourceFiles.map(file => [file, sha(file)]));
 if(baselineRoot)for(const name of fs.readdirSync(baselineRoot).filter(name=>/\.(?:js|wasm|json)$/.test(name)))sourceHashes['baseline/'+name]=sha(path.join(baselineRoot,name));
+if(bergmanBaselineRoot)for(const name of ['ecl.js','ecl.wasm','ecl.data'])sourceHashes['bergmanBaseline/'+name]=sha(path.join(bergmanBaselineRoot,name));
 if (previous && (JSON.stringify(previous.sourceHashes) !== JSON.stringify(sourceHashes)
   || previous.memoryMiB !== memoryMiB || previous.batchPairs !== batchPairs || previous.inputSha256 !== sha(inputFile)
+  || previous.timeLimitSeconds !== timeoutSeconds || previous.sampleIntervalSeconds !== sampleMs / 1000
+  || previous.v8NoLiftoff !== process.argv.includes('--v8-no-liftoff')
   || JSON.stringify(previous.configurations)!==JSON.stringify(configs))) throw new Error('Cannot resume across source, memory or scheduling changes.');
 const report = previous ?? {
   state: 'running', startedAt: new Date().toISOString(), version: JSON.parse(fs.readFileSync('package.json')).version,
@@ -93,7 +106,8 @@ const report = previous ?? {
   sourceHashes, memoryMiB, sampleIntervalSeconds: sampleMs / 1000,
   method: {
     cpu: 'Sum of process-tree user and system CPU time during engine startup, computation and result delivery; core-seconds, not wall seconds. Linux /proc/<pid>/stat, no debugger or CPU profiler.',
-    ram: 'Peak sum of browser-process proportional set sizes (PSS). Shared pages are proportionally counted. Includes browser baseline; allocated Wasm capacity is recorded separately. Sampled every 0.25 seconds, so very brief peaks may be missed.',
+    ram: `Peak sum of browser-process proportional set sizes (PSS). Shared pages are proportionally counted. Includes browser baseline; allocated Wasm capacity is separate. ${sampleMs ? 'Sampled every '+sampleMs/1000+' seconds; brief peaks can be missed.' : 'Boundary snapshots only; this does not measure the peak.'}`,
+    environment: 'CPU frequency limits, governor, power source, available RAM and swap counters sampled every second. Stored locally; reject changing power conditions for regression comparisons.',
     jobs: 'Fresh browser profile and fresh engine per point. No OPFS resume. Serial runs. Bergman and fomkyr use monomial pruning. Specialized engines select memory64 and Hilbert disabled. Each row records requested and actual compute workers; requested zero selects automatically. Fomkyr uses the portable OPFS broker in Firefox. The scratch pool is shared across lanes. The optional batchPairs setting fixes epoch size; automatic epochs otherwise scale with worker count.',
     wall: 'Cold engine wall time includes engine startup, calculation, export and result transfer; browser startup and HTML rendering are excluded.',
     degreeOne: 'All inputs are quadratic. Degree 1 is the empty linear prefix. Bergman always loads the initial degree, so its degree-1 job uses the zero relation. Fomkyr receives the full quadratic input and stops before loading it.',
@@ -107,6 +121,7 @@ report.requestedTrials = trials;
 report.timeLimitSeconds = timeoutSeconds;
 report.workerCounts = workerCounts??null;
 report.batchPairs = batchPairs;
+report.v8NoLiftoff = process.argv.includes('--v8-no-liftoff');
 report.finiteCertificate=finiteCertificate;
 const save = () => fs.writeFileSync(reportFile, JSON.stringify(report, null, 2) + '\n');
 save();
@@ -151,7 +166,7 @@ class Sampler {
     this.samples.push(point);
     return point;
   }
-  start() {this.startAt = performance.now(); this.baseline = this.sample(true); this.timer = setInterval(() => this.sample(), sampleMs);}
+  start() {this.startAt = performance.now(); this.baseline = this.sample(true); if(sampleMs>0)this.timer = setInterval(() => this.sample(), sampleMs);}
   stop() {
     clearInterval(this.timer);
     const end = this.sample();
@@ -180,8 +195,8 @@ async function browserJob() {
     isolated: crossOriginIsolated});
   const start = performance.now();
   // The cap includes cold engine startup, rather than starting after init().
-  const cap = setTimeout(() => engine.cancel(Object.assign(new Error('Benchmark time limit reached.'),
-    {code: 'timeout'})), job.timeoutMs);
+  const cap = job.timeoutMs > 0 ? setTimeout(() => engine.cancel(Object.assign(new Error('Benchmark time limit reached.'),
+    {code: 'timeout'})), job.timeoutMs) : null;
   try {
     await engine.init();
     const initialized = performance.now();
@@ -222,21 +237,41 @@ async function browserJob() {
 }
 
 async function run(config, degree, trial) {
+  const effectiveMemoryMiB = Math.min(memoryMiB, BACKENDS[config.backend].maximumHeapMiB);
   const job = buildJob({task: 'gb', ring: 'noncomm', order: 'degleftlex', field: '0', vars,
     rels:degree===1&&['standard','optimized','compiled','memory64'].includes(config.backend)?['0']:rels,
-    maxdeg: String(degree), memoryMiB, backend: config.backend, lowterms: 'quick', nonhomog: 'degreewise',
+    maxdeg: String(degree), memoryMiB:effectiveMemoryMiB, backend: config.backend, lowterms: 'quick', nonhomog: 'degreewise',
     monomialPruning: config.backend !== 'native', timeoutMinutes: timeoutSeconds / 60});
   if (config.backend === 'native') job.nativeOptions = {workers: config.workers, bits: 64, resume: false};
   if (config.backend === 'fomkyr') job.fomkyrOptions = {...job.fomkyrOptions, workers: config.workers, bits: '64', resume: false, hilbert: false};
   if(config.backend==='fomkyr'&&batchPairs!==null)job.fomkyrOptions.batchPairs=batchPairs;
   const key = `${config.id}-d${degree}-t${trial}`;
-  let finish, browser, sampler, row, watchdog;
+  let finish, browser, sampler, environment, row, watchdog;
   const done = new Promise(resolve => {finish = resolve;});
+  stopActive=()=>{
+    if(!row?.status){
+      const measured=sampler?.stop();sampler=null;
+      row={...row,id:config.id,backend:config.backend,browser:config.browser,degree,trial,
+        memoryMiB:effectiveMemoryMiB,timeLimitSeconds:timeoutSeconds,status:'interrupted',
+        coldWallSeconds:measured?.measuredWallSeconds??null,...measured,hostEnvironment:environment?.stop()};environment=null;
+      if(row.samples){row.samplesFile=key+'.samples.json';fs.writeFileSync(path.join(out,row.samplesFile),JSON.stringify(row.samples));delete row.samples;}
+      report.rows.push(row);save();
+    }
+    finish();
+  };
   const server = staticServer('web', '/', {isolate: true});
   const baselineServer=baselineRoot?staticServer(baselineRoot,'/__baseline-runtime/',{isolate:true}):null;
   const baselineServe=baselineServer?.listeners('request')[0];
   const serve = server.listeners('request')[0]; server.removeAllListeners('request');
   server.on('request', async (req, res) => {
+    if(config.bergmanRoot){
+      const asset={'/engine/compiled/ecl.js':'ecl.js','/engine/compiled/ecl.wasm':'ecl.wasm','/engine/ecl.data':'ecl.data'}[req.url];
+      if(asset){
+        res.setHeader('Cross-Origin-Opener-Policy','same-origin');res.setHeader('Cross-Origin-Embedder-Policy','require-corp');
+        res.setHeader('content-type',asset.endsWith('.js')?'text/javascript':asset.endsWith('.wasm')?'application/wasm':'application/octet-stream');
+        res.end(fs.readFileSync(path.join(config.bergmanRoot,asset)));return;
+      }
+    }
     if(req.url.startsWith('/__baseline-runtime/')&&baselineServe){baselineServe(req,res);return;}
     if (req.url.startsWith('/__resource/')) {
       try {
@@ -251,14 +286,17 @@ async function run(config, degree, trial) {
         const value = JSON.parse(text || '{}');
         if (req.url === '/__resource/start') {
           sampler = new Sampler(browser.pid); sampler.start();
+          environment = new EnvironmentMonitor(); environment.start();
           row = {id: config.id, backend: config.backend, browser: config.browser, degree, trial,
             emptyQuadraticPrefix:degree===1,
-            memoryMiB, timeLimitSeconds: timeoutSeconds, requestedWorkers: config.workers ?? 1, environment: value, hostLoadAtStart: os.loadavg()};
+            jobScriptSha256:crypto.createHash('sha256').update(job.script).digest('hex'),
+            inputFilesSha256:crypto.createHash('sha256').update(JSON.stringify(Object.entries(job.files).sort())).digest('hex'),
+            memoryMiB:effectiveMemoryMiB, requestedMemoryMiB:memoryMiB, timeLimitSeconds: timeoutSeconds, requestedWorkers: config.workers ?? 1, environment: value, hostLoadAtStart: os.loadavg()};
           console.log(key, 'started');
         } else if (req.url === '/__resource/end') {
           if (!sampler) {res.statusCode = 409; res.end('The measurement has not started.'); return;}
           const measured = sampler?.stop(); sampler = null;
-          row = {...row, ...value, ...measured};
+          row = {...row, ...value, ...measured, hostEnvironment:environment.stop()}; environment = null;
           if (row.basis) {
             const parsed = parseBasis(row.basis);
             row.basisSize = row.native?.basisSize ?? parsed.groups.reduce((n, g) => n + g.polys.length, 0);
@@ -290,6 +328,7 @@ async function run(config, degree, trial) {
   const args = config.browser === 'firefox' ? ['-headless', '--no-remote', '-profile', profile, url]
     : ['--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--disable-background-networking',
       '--no-first-run', '--no-default-browser-check', `--user-data-dir=${profile}`, url];
+  if (report.v8NoLiftoff && config.browser === 'chromium') args.unshift('--js-flags=--no-liftoff');
   browser = spawn(executable, args, {stdio: ['ignore', 'ignore', 'pipe'], detached: true});
   let stderr = '';
   browser.stderr.on('data', data => {stderr = (stderr + data).slice(-12000);});
@@ -298,36 +337,38 @@ async function run(config, degree, trial) {
     if (!row?.status) {report.errors.push({key, error: `Browser exited: ${code ?? signal}`, stderr}); save(); finish();}
     resolve();
   }));
-  watchdog = setTimeout(() => {
+  watchdog = timeoutSeconds > 0 ? setTimeout(() => {
     const measured = sampler?.stop(); sampler = null;
     row = {...row, id: config.id, backend: config.backend, browser: config.browser, degree, trial,
-      status: 'watchdog', error: 'Browser watchdog expired', ...measured};
+      status: 'watchdog', error: 'Browser watchdog expired', ...measured, hostEnvironment:environment?.stop()}; environment = null;
     delete row.samples; report.rows.push(row); save(); finish();
-  }, (timeoutSeconds + 120) * 1000);
+  }, (timeoutSeconds + 120) * 1000) : null;
   try {await done;}
   finally {
-    clearTimeout(watchdog); if (sampler) sampler.stop();
+    clearTimeout(watchdog); if (sampler) sampler.stop(); if (environment) environment.stop();
     try {process.kill(-browser.pid, 'SIGTERM');} catch {}
     const force = setTimeout(() => {try {process.kill(-browser.pid, 'SIGKILL');} catch {}}, 3000);
     await exited; clearTimeout(force);
     server.closeAllConnections(); await new Promise(resolve => server.close(resolve));
     fs.writeFileSync(path.join(out, key + '.browser.log'), stderr);
     fs.rmSync(profile, {recursive: true, force: true, maxRetries: 5, retryDelay: 200});
+    stopActive=null;
   }
 }
 
 try {
   // Firefox degree 7 first gives a quick comparison to the reported 25 s.
   const first = configs.find(c => c.id === 'native-firefox');
-  if (first && degrees.includes(7) && (!finiteCertificate||7<=finiteCertificate.firstZeroDegree)
+  if (!interrupted && first && degrees.includes(7) && (!finiteCertificate||7<=finiteCertificate.firstZeroDegree)
     && !report.rows.some(r => r.id === first.id && r.degree === 7 && r.trial === 0)) await run(first, 7, 0);
-  for (let trial = 0; trial < trials; trial++) for (const degree of degrees) {
+  measurements: for (let trial = 0; trial < trials; trial++) for (const degree of degrees) {
     if(finiteCertificate&&degree>finiteCertificate.firstZeroDegree){
       report.skipped??=[];report.skipped.push({degree,trial,reason:'A checked zero Hilbert coefficient proves finite dimension; higher bounds add no graded information.'});save();continue;
     }
     const rotation=(degree+trial)%configs.length;
     const rotated = [...configs.slice(rotation), ...configs.slice(0, rotation)];
     for (const config of rotated) {
+      if(interrupted)break measurements;
       if (report.rows.some(r => r.id === config.id && r.degree === degree && r.trial === trial)) continue;
       if (process.argv.includes('--skip-censored') && report.rows.some(r=>r.id===config.id&&r.degree<=degree&&['timeout','oom'].includes(r.status))) {
         report.skipped ??= [];report.skipped.push({id:config.id,degree,trial,reason:'A lower or equal degree reached the time or memory limit.'});save();continue;
@@ -335,7 +376,8 @@ try {
       await run(config, degree, trial);
     }
   }
-  report.state = report.errors.length ? 'errors' : 'complete';
+  report.state = interrupted ? 'stopped-by-user' : report.errors.length ? 'errors' : 'complete';
   report.finishedAt = new Date().toISOString(); save();
 } catch (error) {report.state = 'failed'; report.errors.push({error: error.stack}); save(); throw error;}
 console.log(out, report.state);
+if(interrupted)process.exitCode=130;

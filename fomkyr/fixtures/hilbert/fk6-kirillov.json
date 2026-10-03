@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "kind": "external-dimensions",
+  "identity": "17c5a3b13bbae1fd6e03ece75139f297d437bda2ae062b093d77a92f091b88bf",
+  "modulus": 0,
+  "source": "Kirillov RIMS1817 Appendix IV p122, independently published values; explicit external assumption, not a replayable certificate",
+  "entries": [
+    {
+      "degree": 2,
+      "dimension": "125"
+    },
+    {
+      "degree": 3,
+      "dimension": "765"
+    },
+    {
+      "degree": 4,
+      "dimension": "3831"
+    },
+    {
+      "degree": 5,
+      "dimension": "16605"
+    },
+    {
+      "degree": 6,
+      "dimension": "64432"
+    },
+    {
+      "degree": 7,
+      "dimension": "228855"
+    },
+    {
+      "degree": 8,
+      "dimension": "755777"
+    },
+    {
+      "degree": 9,
+      "dimension": "2347365"
+    },
+    {
+      "degree": 10,
+      "dimension": "6916867"
+    },
+    {
+      "degree": 11,
+      "dimension": "19468980"
+    },
+    {
+      "degree": 12,
+      "dimension": "52632322"
+    },
+    {
+      "degree": 13,
+      "dimension": "137268120"
+    },
+    {
+      "degree": 14,
+      "dimension": "346652740"
+    },
+    {
+      "degree": 15,
+      "dimension": "850296030"
+    }
+  ]
+}

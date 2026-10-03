@@ -37,13 +37,13 @@ export async function dispatchFomkyr(message,send=postMessage){
       files['hilbert.json']=JSON.stringify(result.hilbert,null,2);
       if(result.hilbert.coefficients){
         files['hilbert.csv']=hilbertCSV(result.hilbert);
-        files['result.hs']='% Exact coefficients through degree '+result.hilbert.certifiedThroughDegree+'; no rational extrapolation\n'+result.hilbert.coefficients.map((c,d)=>`${c}*t^${d}`).join(' + ')+` + O(t^${result.hilbert.certifiedThroughDegree+1})\n`;
+        files['result.hs']=(result.hilbert.conditionalOnExternalDimensions?'% CONDITIONAL ON EXPLICITLY ASSUMED EXTERNAL DIMENSIONS; evidence '+result.hilbert.hilbertEvidenceId+'\n':'')+'% Exact coefficients through degree '+result.hilbert.certifiedThroughDegree+'; no rational extrapolation\n'+result.hilbert.coefficients.map((c,d)=>`${c}*t^${d}`).join(' + ')+` + O(t^${result.hilbert.certifiedThroughDegree+1})\n`;
       }
     }
     send({id,result:{files,fomkyr:result,stdout,connected:true,elapsedMs:result.elapsedMs,memoryBytes:engine.memory.buffer.byteLength}});
   }catch(error){
     const result=error.native??null;
-    send({id,error:error.message||String(error),code:error.code,partialResult:{files:{'fomkyr-result.json':JSON.stringify(result??{error:String(error)},null,2)},fomkyr:result,stdout,interrupted:true}});
+    send({id,error:error.message||String(error),code:error.code,partialResult:{files:{'fomkyr-result.json':JSON.stringify(result??{error:String(error)},null,2)},fomkyr:result,checkpoint:engine?.lastCheckpoint??null,stdout,interrupted:true}});
   }finally{try{if(owned)await owned.close();}finally{engine=null;send({closed:true});}}
   return true;
 }

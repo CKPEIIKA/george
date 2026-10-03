@@ -56,7 +56,8 @@ test('deployment verification includes UI sources and every backend asset', () =
   const required = ['index.html', 'style.css', 'isolation-worker.js', 'engine/build.json', 'engine/worker.js', 'engine/runner.js', 'sources/george-source.tar.gz', 'fomkyr/index.html'];
   const paths = [...required, 'src/app.js', 'src/backends.js', ...['', 'optimized/', 'compiled/', 'memory64/']
     .flatMap(dir => ['build.json', 'ecl.js', 'ecl.wasm', 'ecl.data'].map(name => 'engine/' + dir + name)),
-    ...['worker.js','engine.js','runtime.js','george32.wasm','george64.wasm','build.json','LICENSE.txt'].map(n=>'engine/native/'+n),'README.md'];
+    ...['worker.js','engine.js','runtime.js','george32.wasm','george64.wasm','build.json','LICENSE.txt'].map(n=>'engine/native/'+n),
+    'sources/fomkyr-source.tar.gz','sources/ecl-source.tar.gz','README.md'];
   const assets = publicationAssets(paths);
   assert.equal(new Set(assets).size, assets.length);
   for (const file of paths.filter(p => p !== 'README.md')) assert.ok(assets.includes(file), file);

@@ -50,7 +50,11 @@ const run=(name,command,args)=>{
     report.tests.push({name,passed:true,reusedFromUpstream:true,summary:inherited.report});save();
     console.log(name,'PASS (already checked upstream)');return;
   }
-  const stdout=timings.run(name,command,args,{cwd:stage,timeout:['four-wasm-overflow-reserve','cancel-acquired-reserve'].includes(name)?1800000:120000});
+  // This script runs several separately bounded calculations. The group's
+  // deadline must allow their combined duration and independent certificates.
+  const timeout=name==='automatic-four-wasm-and-certificate'?600000
+    :['four-wasm-overflow-reserve','cancel-acquired-reserve'].includes(name)?1800000:120000;
+  const stdout=timings.run(name,command,args,{cwd:stage,timeout});
   let summary;try{summary=JSON.parse(stdout.trim().split('\n').at(-1));}catch{}
   report.tests.push({name,passed:true,...(summary?{summary}:{})});save();console.log(name,'PASS');
 };

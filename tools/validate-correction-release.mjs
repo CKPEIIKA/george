@@ -57,6 +57,7 @@ try {
    // still contain the complete OPFS text and usable algebraic notation.
    await page.evaluate(()=>{window.showSaveFilePicker=undefined;});
    const downloadPromise=page.waitForEvent('download');
+   await page.locator('[data-tab="files"]').click();
    await page.locator('#downloadResultsZip').click();
    const download=await downloadPromise,zip=path.join(output,name+'-degree4.zip');
    await download.saveAs(zip);
@@ -66,6 +67,7 @@ try {
    assert.ok(exported['result.txt'].includes('a^2'));assert.ok(exported['result.txt'].length>128);
    assert.equal(JSON.parse(exported['fomkyr-result.json']).basisSize,265);
    fs.writeFileSync(path.join(output,name+'-degree4-zip.gb'),exported['result.txt']);
+   await page.locator('[data-tab="basis"]').click();
    await page.locator('#basisMore').click();await page.waitForFunction(()=>!document.getElementById('basisMore'),null,{timeout:15000});
    assert.equal(await page.locator('#basisOut .polys li').count(),265);
    assert.equal((await page.locator('#basisOut [data-math-source="a^2"]').count()),1);
@@ -91,12 +93,19 @@ try {
    }
    let defaultWorkspace;
    if(process.argv.includes('--defaults-case')) {
+    await page.locator('#preset').selectOption('tutorial:fk6');
+    assert.equal(await page.locator('#backend').inputValue(),'fomkyr');
+    assert.equal(await page.locator('#memoryMiB').inputValue(),'3584');
+    assert.equal(await page.locator('#nativeWorkers').inputValue(),'0');
+    assert.equal(await page.locator('#fomkyr-bits').inputValue(),'64');
+    assert.equal(await page.locator('#monomialPruning').isChecked(),true);
     await page.locator('#engineSettings').evaluate(node=>node.open=true);
     await page.locator('#memoryMiB').selectOption('3584');
     assert.equal(await page.locator('#fomkyr-memoryPolicy').inputValue(),'auto');
     assert.equal(await page.locator('#fomkyr-scratchMiB').isDisabled(),true);
     assert.equal(await page.locator('#fomkyr-rowReserveMiB').isDisabled(),true);
     await page.locator('#fomkyr-batchPairs').fill('');
+    await page.locator('#nativeWorkers').fill('4');
     for(const key of ['radixHeap','reserveInPlace'])assert.equal(await page.locator('#fomkyr-'+key).isChecked(),true);
     await page.locator('#vars').fill(vars.join(','));await page.locator('#rels').fill(rels.join(','));await page.locator('#maxdeg').fill('9');
     const calculated=await compute();assert.equal(calculated.basisSize,1451);assert.equal(calculated.completedThroughDegree,9);

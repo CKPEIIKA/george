@@ -1,0 +1,81 @@
+.TH FOMKYR 1 "October 2026" "fomkyr 0.6.6"
+.SH NAME
+fomkyr \- fast pure C engine for exact homogeneous noncommutative Groebner bases
+.SH SYNOPSIS
+.B fomkyr
+.BI \-i " input.bg"
+.BI \-d " degree"
+.BI \-j " workers"
+.BI \-\-workdir " directory"
+.RI [ options ]
+.br
+.B fomkyr
+.BI \-\-resume " directory"
+.RI [ options ]
+.SH DESCRIPTION
+A standalone C engine with pthread workers and durable checkpoints. George's
+optional WebAssembly backend uses the same direct-exact kernel. Expanded homogeneous polynomial inputs and exact JSON
+fixtures are supported. The field is Q unless a prime characteristic is given.
+The last declared generator is greatest in degree-left-lex order.
+.SH OPTIONS
+.TP
+.BI \-\-memory " auto|SIZE"
+One allocation ceiling. K, M, G and T are binary units. Native execution has no
+WASM application ceiling; OS and representation limits still apply.
+.TP
+.B \-\-wasm
+Execute the packaged WebAssembly engine using Node, retaining WASM memory limits.
+.TP
+.B \-\-wasm-limit
+Keep native execution but impose the WASM application memory ceiling.
+.TP
+.BI \-\-checkpoint-seconds " N"
+Checkpoint interval at quiescent frontiers; default 30. Not a bound on lost
+uncommitted work. Zero requests a save at every available frontier.
+.TP
+.BI \-\-time-limit " N"
+Request cancellation after N seconds. Exit code 124 indicates deadline interruption.
+.TP
+.B \-\-status
+Print the newest valid matching checkpoint without computing or changing job files.
+.TP
+.B \-\-fresh
+Explicitly discard the matching algebra's existing cache. Not a corruption-repair mode.
+.TP
+.B \-\-hilbert
+Export completed-degree Hilbert coefficients.
+.TP
+.B \-\-export
+Stream result.gb after completion.
+.TP
+.BI \-\-hilbert-certificate " FILE"
+Replay exact independent integer-dual lower bounds and enable equality-based
+degree closure. Off by default. Requires a matching input/order/field.
+.TP
+.BI \-\-assume-hilbert " FILE"
+Explicitly trust external dimension statements. Output and checkpoints are
+labelled conditional on this document. This is not a replayable certificate.
+.TP
+.B \-\-hilbert-fixed-batch
+Disable bound-aware batch lookahead in the optional closure mode.
+.SH SIGNALS
+SIGUSR1 requests a safe checkpoint and continues. SIGINT and SIGTERM request
+cancellation and retain a safe frontier. SIGKILL cannot create a new checkpoint.
+Committed pairs are retained; uncommitted reductions are replayed on resume.
+.SH EXIT STATUS
+0: requested task complete; 2: invalid input/command; 65: rejected lower-bound witness;
+66: status found no checkpoint;
+70: runtime failure; 75: memory/workspace resource failure; 124: deadline;
+128+signal: handled interruption.
+.SH FILES
+The job directory contains fixture.json, job.json, cli.lock and a content-keyed
+fomkyr/alg-* directory. Basis records have ABI 3; mid-degree frontiers use version 1.
+Assisted metadata uses ABI 4 and requires the same evidence on resume. Do not
+open an assisted job with 0.6.5 or older: old readers may ignore this metadata
+and fall back to earlier checkpoints. Ordinary records retain ABI 3.
+.SH LIMITATIONS
+No guarantee of termination, available physical memory, or bounded cancellation
+latency. Active polynomial state is not serialized. Linux/x86-64 GCC/Clang execution
+was tested; native records require a little-endian host in this release.
+.SH SEE ALSO
+The distributed README.md and docs/HILBERT_CLOSURE.md.

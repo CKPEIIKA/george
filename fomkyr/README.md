@@ -4,47 +4,133 @@ FOMKYR(1)                     Fomkyr Manual                     FOMKYR(1)
 
 ## NAME
 
-**fomkyr** — exact Gröbner bases for homogeneous associative algebras.
+**fomkyr** — fast pure C engine for exact Gröbner bases of homogeneous associative algebras.
 
 ## VERSION
 
-Core **0.6.4**, MIT license. Fomkyr is a subproject of [George](../README.md).
-George records the application and core versions separately. The engine chooser
-currently marks Fomkyr experimental.
+**0.6.6**, [MIT license](LICENSE). Fomkyr is a standalone C engine and a
+subproject of [George](../README.md). George also runs this kernel through
+WebAssembly; its engine chooser marks that integration experimental.
 
 ## SYNOPSIS
 
-From the George repository root:
+Download the [standalone source bundle](https://ckpeiika.github.io/george/sources/fomkyr-source.tar.gz),
+extract it and enter the `fomkyr/` directory. Run these commands on the machine
+that will perform the calculation:
 
-```
-npm ci
-npm run serve:fomkyr           # http://127.0.0.1:8000/
-npm run wasm:build:fomkyr      # rebuild and install the browser kernels
+```sh
+make check
+make
+./dist/fomkyr -i fixtures/user-form.bg -d 10 -j 4 --memory 4G \
+  --workdir fk6-job --export
 ```
 
-Select **fomkyr / C O3 + LTO** under **Engine**. Enter generators and relations,
-choose the coefficient field and maximal degree, then press **Compute**.
+The included input is the 15-generator, 100-relation FK6 presentation. To
+continue the saved calculation or inspect its checkpoint:
+
+```sh
+./dist/fomkyr --resume fk6-job -d 11 -j 4 --memory 4G --export
+./dist/fomkyr --resume fk6-job --status
+```
+
+A C11 compiler, make and POSIX threads are sufficient for native execution.
+Node.js and Python are used by optional Wasm tools and test utilities.
+`make install PREFIX=/desired/prefix` installs the executable and manual page.
 
 ## DESCRIPTION
 
-Fomkyr completes homogeneous noncommutative presentations over the rationals
-or a prime field using ordinary degree followed by left lexicographic word
-order. It accepts 1–16 generators with unit generator degrees and integer input
-coefficients of absolute value at most 2^62−1. Rational arithmetic is exact,
-including arbitrary-precision coefficients during reduction.
+Fomkyr completes homogeneous noncommutative presentations over ℚ or a prime
+field using degree followed by left lexicographic word order. The last declared
+generator is greatest. It accepts 1–16 generators with unit degrees and integer
+input coefficients of absolute value at most 2^62−1. Internal rational arithmetic
+is exact, including arbitrary-precision coefficients during reduction.
 
-The C kernel uses sparse reduction, exact rewrite caches, critical-pair
-criteria and bounded workspaces. Four Wasm modules provide 32-bit and 64-bit
-addressing with shared multicore and unshared single-worker execution.
-Browser storage holds basis records and completed-degree checkpoints.
+The C engine uses sparse heaps, exact rewrite caches, critical-pair criteria,
+monomial pruning and bounded workspaces. Native pthread workers share the basis;
+batches reduce in parallel and commit in a deterministic order. The native
+executable has no Wasm memory ceiling. Four optional Wasm modules provide
+32-bit and 64-bit addressing, shared multicore and single-worker execution.
 
-The **Maximal degree** bounds completion by degree. Blank requests completion
-without a chosen bound; memory, the time limit and **Stop** still apply.
-A finite prefix certifies completion through its reported degree. It does not
-certify unrestricted completion. Earlier polynomial tails are not globally
-interreduced.
+An inclusive degree bound certifies the reported completed prefix. Unrestricted
+completion requires exhausting all critical pairs. Earlier polynomial tails are
+not globally interreduced. Some presentations have infinite Gröbner bases.
 
-## OPTIONS
+## NATIVE OPTIONS
+
+| Option | Purpose |
+| --- | --- |
+| `-i FILE` | Expanded George `vars …; …;` input or JSON fixture; `-` reads standard input. |
+| `-d N` | Inclusive degree bound; default 20, zero requests unrestricted completion. |
+| `-j N` | 1–32 native workers; defaults to available CPU threads, within this range. |
+| `--memory SIZE` | Kernel allowance; default auto uses OS/cgroup headroom. K/M/G/T use binary units. |
+| `--workdir DIR` | Durable job directory; matching checkpoints resume automatically. |
+| `--resume DIR` | Resume with saved input and field. |
+| `--checkpoint-seconds N` | Save at safe boundaries; default 30. Zero saves at every available boundary. |
+| `--time-limit N` | Request cancellation after N seconds following initialization; zero is unlimited. |
+| `--batch-pairs N` | 1–512 pairs per batch; default 128. |
+| `--field N` | Zero for ℚ, otherwise a supported prime characteristic. |
+| `--export` | Stream the complete text basis to `result.gb`. |
+| `--hilbert` | Export exact Hilbert coefficients through the completed degree. |
+| `--status` | Read the newest valid checkpoint without computing. |
+| `--dry-run` | Show the memory plan without allocating the kernel workspace. |
+| `--fresh` | Explicitly discard the matching algebra's cached work. |
+| `--quiet` | Suppress progress and checkpoint messages. |
+| `--help` | List all options, including optional Wasm execution and Hilbert closure. |
+
+Automatic workspace uses 4/7 of the kernel allowance for scratch and up to 1/7
+for exceptional rational rows. Allocated capacity and physical resident RAM are
+separate quantities. OS, cgroup, address-space and record limits still apply.
+
+SIGUSR1 requests a safe checkpoint and continues. SIGINT/SIGTERM request a
+checkpoint and stop. Mid-degree checkpoints retain committed pairs; uncommitted
+reductions replay on resume. The checkpoint interval is evaluated at safe
+boundaries, so a single long reduction can exceed it. SIGKILL cannot save work.
+
+### Optional Hilbert closure
+
+Ordinary exact completion is the default. `--hilbert-certificate FILE` replays
+independent integer-dual lower-bound witnesses against the original relations.
+Equality with the normal-word count can close a degree. `--assume-hilbert FILE`
+explicitly accepts external dimension statements and labels outputs conditional.
+Resuming an assisted job requires the same evidence document and explicit flag.
+See the [mathematics, evidence format and persistence contract](docs/HILBERT_CLOSURE.md).
+
+## BUILD OPTIMIZATION
+
+`make check` verifies a 64-bit little-endian POSIX host, threads, lock-free
+atomics, memory mapping, compiler and O3/LTO support. It saves the build
+configuration locally. `make` then builds `dist/fomkyr` using instruction-set
+tuning detected on that host and GCC profile-guided optimization when supported.
+Clang uses O3/LTO with the detected instruction-set tuning. Run `make check`
+again after moving the sources to another machine.
+
+An unconfigured build uses portable **O3 and LTO**. Select GCC or Clang with
+`make native CC=gcc NATIVE_PROFILE=lto` or
+`make native CC=clang NATIVE_PROFILE=lto LDFLAGS="-flto -pthread -fuse-ld=lld"`.
+For an executable tuned to the build machine:
+
+```sh
+make native NATIVE_ARCH=native
+```
+
+Tuned executables may require that machine's instruction set. Compiler and flag
+changes trigger a rebuild. Separate builds can use `BUILD_DIR=dist/native-tuned`.
+Compiler comparisons should use fresh jobs and identical arithmetic, workers,
+memory, batch size and output settings. Native build products stay ignored.
+
+`make native-pgo CC=gcc NATIVE_ARCH=native` explicitly builds with GCC, instruction-set tuning and profile-guided
+optimization. Training uses bounded FK6, q-Serre and Weyl jobs; the result is
+`dist/native-pgo/fomkyr`. Profiles are local to the compiler and build paths.
+Measure the result on the intended workload before choosing it over O3/LTO.
+
+The [FK6 native/browser comparison](../docs/benchmarks/fomkyr-0.6.6-native-browser.svg)
+uses the same presentation, four workers, 4 GiB allowance and 128-pair batches.
+It measures ordinary exact completion, checkpoints and complete text export.
+The [measurement summary](../docs/benchmarks/fomkyr-0.6.6-native-browser.json)
+records trial counts and the RAM measurement method.
+
+## GEORGE BROWSER SETTINGS
+
 
 Mathematical settings are in the presentation and **More settings**. Runtime
 settings are in **Engine**. Each control has a **?** explanation. Inactive
@@ -98,73 +184,64 @@ divisor lookups. These controls address different work.
 
 ## OUTPUT
 
-George displays a basis preview grouped by degree and expression size, the
-calculation log and runtime information. Full text is available for download;
-the Results ZIP button packages text outputs on demand. Saved checkpoints use
-the binary `basis.gnb` format. They include verified degree and presentation
-identity metadata and support resume across compatible execution modes.
+The native CLI prints JSON with completion status, degree, rule count, elapsed
+seconds, memory and worker information. Durable files include `basis.gnb`,
+completed-degree checkpoints and partial frontiers. `--export` writes `result.gb`;
+`--hilbert` writes exact decimal coefficients in `hilbert.json`.
 
-Optional exact Hilbert counting produces decimal integer coefficients and
-CSV/JSON output. Blank **Series degree** uses the computed basis bound. A longer
-prefix requires a proved complete basis. An optional counting failure preserves
-the computed basis.
+George shows a compact basis preview grouped by degree and term count. **Files**
+can download the full saved text basis and package text outputs in a ZIP on demand.
+Optional Hilbert coefficients appear in **Series** and CSV/JSON downloads.
+
+Ordinary basis records remain ABI 3; partial frontiers require 0.6.5 or later.
+Assisted metadata uses ABI 4 and requires 0.6.6 and the same evidence on resume.
+Avoid opening assisted or newer partial jobs with older engines. Native and Wasm
+can exchange compatible record/checkpoint files; the browser UI currently keeps
+its jobs in local browser storage.
 
 ## LIMITS
 
-The maximum kernel allowance is **14304 MiB**. Explicit 32-bit addressing uses
-at most **4095 MiB**. A memory64 initialization failure can fall back to 32-bit
-addressing with a lower effective allowance, reported in the log.
-Workspaces, indices and caches count against the kernel allowance.
-The memory icon reports allocated Wasm memory, including reserved workspaces.
-Browser objects, I/O buffers and disk checkpoints have separate sizes.
+Native execution is bounded by its selected allowance and host resources. This
+release requires a little-endian host; GCC and Clang builds are checked on Linux.
+Other native platforms have limited validation.
 
-Shared multicore requires browser isolation. Automatic execution has a
-single-worker fallback. If persistent storage is denied, automatic storage
-can fall back to bounded RAM. Worker counts and fallbacks are reported in the
-result. Faster reduction does not guarantee a manageable high-degree basis.
+George's Wasm integration allows **14304 MiB** of kernel workspace. Explicit
+32-bit addressing allows **4095 MiB**. A memory64 initialization failure can fall
+back to 32-bit with a lower allowance, reported in the log. Shared multicore
+requires browser isolation; automatic execution has a single-worker fallback.
+Denied persistent storage can fall back to bounded RAM.
 
-Weighted generators, nonhomogeneous input, other word orders, resolutions and
-module computations require a compatible George engine.
+The live memory icon shows Wasm linear-memory capacity, including reserved
+workspace. Browser objects, I/O buffers and disk files have separate sizes.
+Weighted generators, nonhomogeneous input, other orders, resolutions and module
+computations require a compatible George engine.
 
 ## FILES
 
 | Path | Contents |
 | --- | --- |
-| `src/` | C kernel and reduction components. |
-| `tools/` | Build scripts, native references and certificate utilities. |
-| `tests/` | Kernel, arithmetic, browser, checkpoint and mathematical checks. |
-| `fixtures/` | Reproducible presentations and published examples. |
-| `fixtures/compatibility/` | Compressed historical record streams with verified hashes and minimal checkpoint metadata. |
-| `reference/` | Retained exact canonical reference data. |
-| `web/` | Core browser API and standalone integration fixtures. |
-| `dist/` | Kernel snapshots; generated native libraries are ignored. |
-| `SOURCE.json` | Core version, original import digest, source hashes and documented adaptations. |
-| `../web/engine/fomkyr/` | George's production browser adapter and deployed kernel modules. |
-| `../web/src/fomkyr-options.js` | George's persisted controls and option conversion. |
-
-The stable source home is **`fomkyr/`**. Future core updates belong here.
-The build stages this directory under ignored `build/` and installs the new
-Wasm kernels while retaining George's browser adapter.
+| `src/` | Shared C kernel and reduction components. |
+| `native/` | Standalone POSIX CLI, pthread coordinator, input and storage code. |
+| `Makefile`, `man/fomkyr.1` | Native build/install rules and command manual. |
+| `tools/`, `tests/` | Build tools, independent checkers and regression tests. |
+| `fixtures/` | Reproducible presentations and optional evidence documents. |
+| `fixtures/compatibility/` | Compressed historical record fixtures and minimal metadata. |
+| `reference/` | Retained exact reference data. |
+| `web/` | Optional Wasm API and integration fixtures. |
+| `dist/` | Wasm snapshots; generated native executables and objects are ignored. |
+| `SOURCE.json` | Import digest, retained file hashes and documented adaptations. |
+| `../web/engine/fomkyr/` | George's production adapter and Wasm modules. |
 
 ## BUILD AND CHECKS
 
-The kernel build uses Clang with Wasm32/Wasm64 targets and LLD, with `-O3`
-and link-time optimization. Rebuild the production modules from the repository
-root with `npm run wasm:build:fomkyr`.
+From the George root, `npm run wasm:build:fomkyr` rebuilds the production Wasm
+modules with Clang **O3/LTO**. `npm run test:fomkyr:browser` checks Chromium and
+Firefox integration, storage, resume, Share and cancellation.
+`npm run test:fk6:prefixes` checks FK6 prefixes against saved independent references.
 
-Validation commands from the George root:
-
-```
-npm run test:fomkyr            # inherited tests and independent backend matrix
-npm run test:fomkyr:exact      # exact arithmetic and workspace paths
-npm run test:fk6:prefixes      # FK6 degree prefixes
-npm run test:fomkyr:published  # published coefficient examples
-npm run test:fomkyr:browser    # browser integration
-```
-
-These suites have different scopes and runtimes. The developer release guide
-documents bounded checks and reuse of unchanged oracle results. Generated
-reports, machine measurements and native build products stay ignored.
+Native CLI, partial-resume and Hilbert authority checks are in `tests/`.
+The developer release guide describes bounded validation and reuse of unchanged
+oracle evidence. Generated reports and machine measurements stay local.
 
 ## LICENSE
 
@@ -173,7 +250,6 @@ components retain their own licenses.
 
 ## SEE ALSO
 
-[George user guide](../docs/USER-GUIDE.md),
+[fomkyr(1)](man/fomkyr.1), [George](../README.md),
 [backend integration](../docs/development/BACKENDS.md),
-[validation scope](../docs/development/VALIDATION.md),
 [developer release procedure](../docs/development/RELEASING.md).

@@ -12,7 +12,7 @@ npm run release:check
 
 The command checks application/core versions and source hashes in `fomkyr/` first, then runs unit
 tests, exact arithmetic, reserve and automatic memory checks, the 95-case mathematical matrix,
-five coefficient-heavy comparisons, FK6 degrees 1–9, and Chromium/Firefox
+five coefficient-heavy comparisons, FK6 degrees 1–9, native CLI/frontier/Hilbert authority checks, and Chromium/Firefox
 interface (including full text ZIP export) and Pages-style hosting checks. It also checks checkpoint upgrades
 when a previous engine exists under `local/baselines/`, or when supplied with
 `--previous-root <engine-directory>`.

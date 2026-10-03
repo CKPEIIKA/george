@@ -1,6 +1,6 @@
 {
   "name": "george",
-  "version": "0.6.4",
+  "version": "0.6.5",
   "description": "Gr\u00f6bner bases, Hilbert series and Anick resolutions in the browser, an interface to bergman and more",
   "private": true,
   "type": "module",
@@ -52,7 +52,11 @@
     "benchmark:resources": "node tools/benchmark-backend-resources.mjs --degrees 1,2,3,4,5,6,7,8,9 --configs fomkyr,fomkyr-firefox --skip-censored",
     "benchmark:fk6": "node tools/benchmark-fk6-suite.mjs",
     "test:fomkyr:published": "node tools/validate-fomkyr-published.mjs",
-    "benchmark:fomkyr:update": "node tools/benchmark-fomkyr-update.mjs"
+    "benchmark:fomkyr:update": "node tools/benchmark-fomkyr-update.mjs",
+    "benchmark:bergman:regression": "node tools/benchmark-bergman-regression.mjs",
+    "fomkyr:build:native": "make -C fomkyr native",
+    "test:fomkyr:cli": "node tools/validate-fomkyr-native.mjs",
+    "benchmark:fomkyr:native": "node tools/benchmark-fomkyr-native.mjs"
   },
   "engines": {
     "node": ">=22.8.0"

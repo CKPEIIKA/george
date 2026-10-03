@@ -2,6 +2,7 @@
 import {createEngine} from './modular-engine.js';
 import {parseNativeJob} from './job-adapter.js';
 import {hilbertCSV} from './hilbert.js';
+import {VERSION} from './storage.js';
 let enabled=false,engine=null;
 export async function dispatchFomkyr(message,send=postMessage){
   const {id,command,job,backend}=message;
@@ -9,7 +10,7 @@ export async function dispatchFomkyr(message,send=postMessage){
   else if(command==='init')enabled=false;
   if(!enabled)return false;
   if(command==='cancel'){engine?.cancel();return true;}
-  if(command==='init'){send({id,result:{name:'fomkyr',version:'0.6.4',backend:'fomkyr',ready:true,startupMs:0}});return true;}
+  if(command==='init'){send({id,result:{name:'fomkyr',version:VERSION,backend:'fomkyr',ready:true,startupMs:0}});return true;}
   if(engine){send({id,error:'fomkyr is busy',code:'BUSY'});return true;}
   engine={cancel(){}};let stdout='',owned=null;
   try{
@@ -34,13 +35,13 @@ export async function dispatchFomkyr(message,send=postMessage){
       files['hilbert.json']=JSON.stringify(result.hilbert,null,2);
       if(result.hilbert.coefficients){
         files['hilbert.csv']=hilbertCSV(result.hilbert);
-        files['result.hs']='% Exact coefficients through degree '+result.hilbert.certifiedThroughDegree+'; no rational extrapolation\n'+result.hilbert.coefficients.map((c,d)=>`${c}*t^${d}`).join(' + ')+` + O(t^${result.hilbert.certifiedThroughDegree+1})\n`;
+        files['result.hs']=(result.hilbert.conditionalOnExternalDimensions?'% CONDITIONAL ON EXPLICITLY ASSUMED EXTERNAL DIMENSIONS; evidence '+result.hilbert.hilbertEvidenceId+'\n':'')+'% Exact coefficients through degree '+result.hilbert.certifiedThroughDegree+'; no rational extrapolation\n'+result.hilbert.coefficients.map((c,d)=>`${c}*t^${d}`).join(' + ')+` + O(t^${result.hilbert.certifiedThroughDegree+1})\n`;
       }
     }
     send({id,result:{files,fomkyr:result,stdout,connected:true,elapsedMs:result.elapsedMs,memoryBytes:engine.memory.buffer.byteLength}});
   }catch(error){
     const result=error.native??null;
-    send({id,error:error.message||String(error),code:error.code,partialResult:{files:{'fomkyr-result.json':JSON.stringify(result??{error:String(error)},null,2)},fomkyr:result,stdout,interrupted:true}});
+    send({id,error:error.message||String(error),code:error.code,partialResult:{files:{'fomkyr-result.json':JSON.stringify(result??{error:String(error)},null,2)},fomkyr:result,checkpoint:engine?.lastCheckpoint??null,stdout,interrupted:true}});
   }finally{try{if(owned)await owned.close();}finally{engine=null;send({closed:true});}}
   return true;
 }

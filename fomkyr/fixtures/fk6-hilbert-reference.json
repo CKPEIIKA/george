@@ -1,0 +1,12 @@
+{
+  "identity": "17c5a3b13bbae1fd6e03ece75139f297d437bda2ae062b093d77a92f091b88bf",
+  "field": "Q",
+  "coefficients": {
+    "14": "346652740",
+    "15": "850296030"
+  },
+  "source": "https://www.kurims.kyoto-u.ac.jp/preprint/file/RIMS1817.pdf",
+  "page": 122,
+  "provenance": "Kirillov, Appendix IV, Examples 6.2; footnote 35 credits Backelin, Lundqvist and Roos using aalg for degrees 12-15.",
+  "use": "Diagnostic only. Never skips pairs or asserts completion."
+}

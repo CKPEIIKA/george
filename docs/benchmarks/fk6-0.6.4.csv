@@ -1,0 +1,51 @@
+id,degree,status,coldWallSeconds,cpuSeconds,cpuSource,peakPssMiB,basisSize,memoryMiB,workers
+compiled,1,complete,2.3691150000095367,5.68,sampled process-tree CPU,512,0,2048,1
+compiled,2,complete,2.398824999988079,5.93,sampled process-tree CPU,510.0224609375,100,2048,1
+compiled,3,complete,2.5359150000214576,6.33,sampled process-tree CPU,510.05078125,176,2048,1
+compiled,4,complete,2.9087549999952316,6.62,sampled process-tree CPU,512.169921875,265,2048,1
+compiled,5,complete,3.888949999988079,7.91,sampled process-tree CPU,513.0810546875,360,2048,1
+compiled,6,complete,8.109555000007152,12.21,sampled process-tree CPU,518.0732421875,497,2048,1
+compiled,7,complete,28.46165999996662,32.57,sampled process-tree CPU,544.3310546875,695,2048,1
+compiled,8,complete,53.20996500003338,54.89,sampled process-tree CPU,775.36328125,990,2048,1
+compiled,9,timeout,120.00318500000239,123.89,sampled process-tree CPU,843.5439453125,,2048,1
+compiled,10,timeout,120.00512999999523,123.89,sampled process-tree CPU,853.685546875,,2048,1
+fomkyr,1,complete,0.5905250000357628,1.77,sampled process-tree CPU,488.833984375,0,2048,4
+fomkyr,2,complete,0.6137649999856949,1.67,sampled process-tree CPU,490.6171875,100,2048,4
+fomkyr,3,complete,0.6639000000357628,2.1,sampled process-tree CPU,489.591796875,176,2048,4
+fomkyr,4,complete,0.7548600000143051,2.28,sampled process-tree CPU,490.4970703125,265,2048,4
+fomkyr,5,complete,0.8594849999547005,2.51,sampled process-tree CPU,496.0166015625,360,2048,4
+fomkyr,6,complete,0.9326200000047684,2.72,sampled process-tree CPU,497.7099609375,497,2048,4
+fomkyr,7,complete,1.2665699999928475,3.76,sampled process-tree CPU,498.603515625,695,2048,4
+fomkyr,8,complete,2.4959650000333786,7.13,sampled process-tree CPU,502.853515625,990,2048,4
+fomkyr,9,complete,2.7945550000071524,6.81,sampled process-tree CPU,516.732421875,1451,2048,4
+fomkyr,10,complete,8.845885000050068,32.67,sampled process-tree CPU,539.640625,2155,2048,4
+memory64,1,complete,3.660985000014305,8.08,sampled process-tree CPU,519.1640625,0,2048,1
+memory64,2,complete,3.5545299999713897,7.91,sampled process-tree CPU,520.3857421875,100,2048,1
+memory64,3,complete,3.809990000009537,8.64,sampled process-tree CPU,519.5947265625,176,2048,1
+memory64,4,complete,4.078814999997616,8.66,sampled process-tree CPU,521.7060546875,265,2048,1
+memory64,5,complete,5.3850400000214576,10.22,sampled process-tree CPU,522.365234375,360,2048,1
+memory64,6,complete,10.258715000033378,15.16,sampled process-tree CPU,534.4560546875,497,2048,1
+memory64,7,complete,32.98390499997139,38.92,sampled process-tree CPU,609.7734375,695,2048,1
+memory64,8,complete,63.72225999999046,66.31,sampled process-tree CPU,1060.12890625,990,2048,1
+memory64,9,timeout,120.00543000000715,124.26,sampled process-tree CPU,1089.4912109375,,2048,1
+memory64,10,timeout,120.00301999998092,124.05,sampled process-tree CPU,1080.009765625,,2048,1
+sbcl,1,complete,0.04630702799999997,0.02,GNU time aggregate child CPU,39.37890625,0,2048,1
+sbcl,2,complete,0.04719538600000004,0.03,GNU time aggregate child CPU,40.783203125,100,2048,1
+sbcl,3,complete,0.06267076199999996,0.05,GNU time aggregate child CPU,44.6201171875,176,2048,1
+sbcl,4,complete,0.09992279499999995,0.08,GNU time aggregate child CPU,44.5771484375,265,2048,1
+sbcl,5,complete,0.22092212200000005,0.2,GNU time aggregate child CPU,50.787109375,360,2048,1
+sbcl,6,complete,0.6867251780000001,0.67,GNU time aggregate child CPU,79.9658203125,497,2048,1
+sbcl,7,complete,2.9257220269999995,2.9,GNU time aggregate child CPU,197.380859375,695,2048,1
+sbcl,8,complete,17.20829717,17.18,GNU time aggregate child CPU,854.51953125,990,2048,1
+sbcl,9,oom,71.64543941299999,71.45,GNU time aggregate child CPU,2073.08203125,,2048,1
+sbcl,10,timeout,120.15871070299998,119.71,sampled process-tree CPU,959.1201171875,,2048,1
+singular,1,complete,0.05965225700000002,0.03,GNU time aggregate child CPU,6.4052734375,0,2048,1
+singular,2,complete,0.04468891200000002,0.03,GNU time aggregate child CPU,7.4521484375,100,2048,1
+singular,3,complete,0.08011153100000007,0.06,GNU time aggregate child CPU,8.49609375,176,2048,1
+singular,4,complete,0.20384007600000006,0.18,GNU time aggregate child CPU,8.880859375,265,2048,1
+singular,5,complete,0.526850551,0.51,GNU time aggregate child CPU,9.3271484375,360,2048,1
+singular,6,complete,1.6045751450000003,1.58,GNU time aggregate child CPU,9.9404296875,497,2048,1
+singular,7,complete,6.121560692000001,6.109999999999999,GNU time aggregate child CPU,11.3681640625,695,2048,1
+singular,8,complete,28.165668166,28.15,GNU time aggregate child CPU,13.3466796875,990,2048,1
+singular,9,timeout,120.03619845599998,119.92,sampled process-tree CPU,18.2216796875,,2048,1
+singular,10,timeout,120.03371411199996,119.67,sampled process-tree CPU,20.4130859375,,2048,1

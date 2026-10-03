@@ -22,4 +22,8 @@ export function computeHilbert(e,degree,extraBudget,outputBudget=32*1048576){
     validity:'Exact coefficient prefix from the certified leading-word basis; not a guessed rational series or a gauge/trace projection.'
   };
 }
-export function hilbertCSV(result){return 'degree,dimension,certified\n'+result.coefficients.map((c,d)=>`${d},${c},true`).join('\n')+'\n';}
+export function hilbertCSV(result){
+  if(!result.hilbertEvidenceId)return 'degree,dimension,certified\n'+result.coefficients.map((c,d)=>`${d},${c},true`).join('\n')+'\n';
+  const conditional=!!result.conditionalOnExternalDimensions;
+  return 'degree,dimension,certified,conditionalOnExternalDimensions,hilbertEvidenceMode,hilbertEvidenceId\n'+result.coefficients.map((c,d)=>`${d},${c},${!conditional},${conditional},${result.hilbertEvidenceMode},${result.hilbertEvidenceId}`).join('\n')+'\n';
+}

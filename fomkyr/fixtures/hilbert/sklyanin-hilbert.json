@@ -1,0 +1,85 @@
+{
+  "schema": 1,
+  "kind": "external-dimensions",
+  "identity": "8c8a8ed5254abda22c4f8e12456a89cd4910a7e48a7b5bfa33697193fc07609d",
+  "modulus": 0,
+  "source": "Iyudu-Shkarin 2108.06290 Theorem 1.1 parameter (1,2,3); explicit external theorem assumption",
+  "entries": [
+    {
+      "degree": 2,
+      "dimension": "6"
+    },
+    {
+      "degree": 3,
+      "dimension": "10"
+    },
+    {
+      "degree": 4,
+      "dimension": "15"
+    },
+    {
+      "degree": 5,
+      "dimension": "21"
+    },
+    {
+      "degree": 6,
+      "dimension": "28"
+    },
+    {
+      "degree": 7,
+      "dimension": "36"
+    },
+    {
+      "degree": 8,
+      "dimension": "45"
+    },
+    {
+      "degree": 9,
+      "dimension": "55"
+    },
+    {
+      "degree": 10,
+      "dimension": "66"
+    },
+    {
+      "degree": 11,
+      "dimension": "78"
+    },
+    {
+      "degree": 12,
+      "dimension": "91"
+    },
+    {
+      "degree": 13,
+      "dimension": "105"
+    },
+    {
+      "degree": 14,
+      "dimension": "120"
+    },
+    {
+      "degree": 15,
+      "dimension": "136"
+    },
+    {
+      "degree": 16,
+      "dimension": "153"
+    },
+    {
+      "degree": 17,
+      "dimension": "171"
+    },
+    {
+      "degree": 18,
+      "dimension": "190"
+    },
+    {
+      "degree": 19,
+      "dimension": "210"
+    },
+    {
+      "degree": 20,
+      "dimension": "231"
+    }
+  ]
+}

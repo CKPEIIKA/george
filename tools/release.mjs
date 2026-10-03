@@ -211,6 +211,12 @@ if(preparation){
     const prefixes=path.join(out,'fk6-prefixes'),retained=refresh?null:retainedPrefixes();
     await phase('fk6-prefixes',process.execPath,['tools/validate-fk6-degrees.mjs',prefixes,'--resume',...(retained?['--singular-report',retained]:[])],{
       evidence:path.join(prefixes,'report.json'),validate:r=>assert.equal(r.cases.length,9)});
+    if(fs.existsSync('fomkyr/native/cli.c')){
+      const native=path.join(out,'native-cli');
+      await phase('native-cli',process.execPath,['tools/validate-fomkyr-native.mjs','--out',native,'--resume'],{
+        evidence:path.join(native,'report.json'),timeoutSeconds:900,
+        validate:r=>assert.equal(r.tests.filter(test=>test.passed).length,10)});
+    }
     const browser=path.join(out,'browser');
     await phase('browser',process.execPath,['tools/validate-correction-release.mjs',browser,'--defaults-case','--coefficient-case'],{
       evidence:path.join(browser,'report.json'),timeoutSeconds:600,validate:r=>assert.equal(r.checks.length,2)});

@@ -12,13 +12,14 @@
 #define GN_TRY_LOCK(p) ((*(p))?0:((*(p))=1,1))
 #define GN_UNLOCK(p) ((*(p))=0)
 #else
+#include <stdatomic.h>
 #define GN_ATOMIC(T) _Atomic(T)
-#define GN_LOAD(p) __c11_atomic_load(p,__ATOMIC_RELAXED)
-#define GN_STORE(p,v) __c11_atomic_store(p,v,__ATOMIC_RELAXED)
-#define GN_FETCH_ADD(p,v) __c11_atomic_fetch_add(p,v,__ATOMIC_RELAXED)
-static int try_lock(_Atomic(u32)*p){u32 expected=0;return __c11_atomic_compare_exchange_strong(p,&expected,1,__ATOMIC_ACQUIRE,__ATOMIC_RELAXED);}
+#define GN_LOAD(p) atomic_load_explicit(p,memory_order_relaxed)
+#define GN_STORE(p,v) atomic_store_explicit(p,v,memory_order_relaxed)
+#define GN_FETCH_ADD(p,v) atomic_fetch_add_explicit(p,v,memory_order_relaxed)
+static int try_lock(_Atomic(u32)*p){u32 expected=0;return atomic_compare_exchange_strong_explicit(p,&expected,1,memory_order_acquire,memory_order_relaxed);}
 #define GN_TRY_LOCK(p) try_lock(p)
-#define GN_UNLOCK(p) __c11_atomic_store(p,0,__ATOMIC_RELEASE)
+#define GN_UNLOCK(p) atomic_store_explicit(p,0,memory_order_release)
 #endif
 #define WORD_LONG (UINT64_C(1)<<63)
 #define BATCH_MAX 512u
@@ -87,6 +88,8 @@ typedef struct {
   u64 matcher_base,matcher_limit,matcher_allocated,chain_skipped;
   u64 degree_total,degree_seen,degree_scheduled,degree_committed,degree_monomial,degree_chain;
   u32 degree_total_known,degree_replays;
+  u32 gate_active,gate_closed,gate_degree;
+  u64 gate_lower,gate_upper,gate_rules,gate_budget,gate_closed_count,gate_skipped,gate_checks,gate_unvisited,gate_pending;
   LiveLane live[GN_MAX_WORKERS];
   Lane lanes[GN_MAX_WORKERS];
 } State;
@@ -456,7 +459,7 @@ static int nf(Lane*l,u32 snapshot){u32 active=l->active;Poly p=l->result;u64 ste
   Poly q=combine(p,sp,g,sg,left,right,nr,a);if(a->error)return a->error;p=q;active^=1;
  }
 }
-static int reserve_slots(u32 nmore){u32 rpage=S.nrules/PAGE_N,pfirst=S.nprefix/PAGE_N,plast=(S.nprefix+nmore-1)/PAGE_N;
+static int reserve_slots(u32 nmore){if(S.nrules==UINT32_MAX||nmore>UINT32_MAX-S.nprefix)return GN_LIMIT;u32 rpage=S.nrules/PAGE_N,pfirst=S.nprefix/PAGE_N,plast=(S.nprefix+nmore-1)/PAGE_N;
  if(rpage>=S.table_capacity||(nmore&&plast>=S.table_capacity))return GN_MEMORY;
  u64*rp=PTR(u64,S.rule_pages),*pp=PTR(u64,S.prefix_pages);if(!rp[rpage]){u64 o=alloc_p(PAGE_N*sizeof(Rule));if(!o)return S.error;rp[rpage]=o;}
  if(nmore)for(u32 i=pfirst;i<=plast;i++)if(!pp[i]){u64 o=alloc_p(PAGE_N*sizeof(Prefix));if(!o)return S.error;pp[i]=o;}return 0;
@@ -528,10 +531,10 @@ API int gn_batch_mode(u32 enabled){S.batch_enabled=!!enabled;return gn_workers(S
 API int gn_init(u32 generators,u32 degree,u32 workers,u64 budget,u64 scratch_pool,u32 hash_bits,u32 modulus,u32 spill){
  if(!generators||generators>16||degree>GN_INDEX_MAX||budget>GN_HARD_BYTES||scratch_pool>budget||scratch_pool<1024*1024||hash_bits<8||hash_bits>26||modulus==1||modulus>2147483647u)return GN_INPUT;
  if(modulus){for(u32 d=2;(u64)d*d<=modulus;d++)if(modulus%d==0)return GN_INPUT;}
- memset(&S,0,sizeof(S));S.abi=GN_ABI;S.generators=generators;S.target=degree?degree:GN_INDEX_MAX;S.pruning=1;S.heap_enabled=1;S.rational_enabled=1;S.rational_rewrites=1;S.big_rational_enabled=1;S.growing_rational=1;S.reserve_growth=1;S.radix_enabled=1;S.matcher_enabled=1;S.chain_enabled=1;S.telemetry_enabled=1;S.eager_pruning=1;S.quadratic_rewrite=1;S.cost_scheduling=1;S.matcher_limit=MIN(budget/16,UINT64_C(67108864));S.cache_percent=12;S.heap_threshold=16;S.budget=budget;S.modulus=modulus;S.spill=!!spill;S.base=gn_heap_base();S.bump=S.base;S.stack_base=alloc_p((u64)GN_MAX_WORKERS*STACK_BYTES);if(!S.stack_base)return S.error;
+ gn_lb_release();memset(&S,0,sizeof(S));S.abi=GN_ABI;S.generators=generators;S.target=degree?degree:GN_INDEX_MAX;S.pruning=1;S.heap_enabled=1;S.rational_enabled=1;S.rational_rewrites=1;S.big_rational_enabled=1;S.growing_rational=1;S.reserve_growth=1;S.radix_enabled=1;S.matcher_enabled=1;S.chain_enabled=1;S.telemetry_enabled=1;S.eager_pruning=1;S.quadratic_rewrite=1;S.cost_scheduling=1;S.matcher_limit=MIN(budget/16,UINT64_C(67108864));S.cache_percent=12;S.heap_threshold=16;S.budget=budget;S.modulus=modulus;S.spill=!!spill;S.base=gn_heap_base();S.bump=S.base;S.stack_base=alloc_p((u64)GN_MAX_WORKERS*STACK_BYTES);if(!S.stack_base)return S.error;
  S.scratch_base=alloc_p(scratch_pool);if(!S.scratch_base)return S.error;S.scratch_size=scratch_pool;int rc=gn_workers(workers);if(rc)return rc;
  S.hash_mask=((u32)1<<hash_bits)-1;u64 hb=((u64)S.hash_mask+1)*4;S.lm_heads=alloc_p(hb);S.prefix_heads=alloc_p(hb);if(S.error)return S.error;memset(PTR(u8,S.lm_heads),0,(size_t)hb);memset(PTR(u8,S.prefix_heads),0,(size_t)hb);
- S.table_capacity=(u32)MIN((budget/(PAGE_N*sizeof(Prefix))+2),(u64)UINT32_MAX);u64 tb=(u64)S.table_capacity*8;S.rule_pages=alloc_p(tb);S.prefix_pages=alloc_p(tb);if(S.error)return S.error;memset(PTR(u8,S.rule_pages),0,(size_t)tb);memset(PTR(u8,S.prefix_pages),0,(size_t)tb);return 0;
+ S.table_capacity=(u32)MIN((budget/(PAGE_N*sizeof(Prefix))+2),(u64)UINT32_MAX/PAGE_N+1);u64 tb=(u64)S.table_capacity*8;S.rule_pages=alloc_p(tb);S.prefix_pages=alloc_p(tb);if(S.error)return S.error;memset(PTR(u8,S.rule_pages),0,(size_t)tb);memset(PTR(u8,S.prefix_pages),0,(size_t)tb);return 0;
 }
 API int gn_tune(u32 flags,u32 cache_percent,u32 heap_threshold){
  if(S.current||S.input_expected||cache_percent>40||heap_threshold<1||heap_threshold>1048576u||flags>3)return GN_INPUT;
@@ -610,7 +613,7 @@ API int gn_input_end(void){if(S.input_used!=S.input_expected||!S.input_expected)
 static void reset_degree_progress(void){S.degree_seen=0;S.degree_scheduled=0;S.degree_committed=0;S.degree_monomial=0;S.degree_chain=0;}
 API int gn_start_degree(u32 degree){
  if(cancelled())return GN_CANCELLED;if(S.current||degree!=S.completed+1||degree>S.target)return GN_STATE;
- S.current=degree;S.degree_snapshot=S.nrules;S.iter_f=1;S.iter_k=1;S.iter_node=0;S.iter_ready=0;S.iter_done=0;
+ S.gate_active=S.gate_closed=0;S.gate_skipped=0;S.current=degree;S.degree_snapshot=S.nrules;S.iter_f=1;S.iter_k=1;S.iter_node=0;S.iter_ready=0;S.iter_done=0;
  reset_degree_progress();S.degree_total=0;S.degree_total_known=0;S.degree_replays=0;
  int rc=matcher_build();if(rc)return rc;
  rc=local_build();if(rc)return rc;
@@ -741,7 +744,7 @@ API int gn_memory_policy(u32 enabled){if(enabled>1||S.current||S.input_expected|
 API u64 gn_memory_stat(u32 key){switch(key){case 0:return S.auto_memory;case 1:return S.lane_slots;case 2:return S.scratch_size;case 3:return S.memory_retries;case 4:return S.memory_replayed_pairs;case 5:return GN_LOAD(&S.batch_running);default:return 0;}}
 API int gn_batch_fallback(void){S.batch_spills++;return gn_batch_mode(0);}
 API int gn_finish_degree(void){if(!S.current||!S.iter_done)return GN_STATE;
- if(S.degree_committed!=S.degree_scheduled||(S.degree_total_known&&S.degree_seen!=S.degree_total))return GN_STATE;S.completed=S.current;S.current=0;return 0;}
+ if(!S.gate_closed&&(S.degree_committed!=S.degree_scheduled||(S.degree_total_known&&S.degree_seen!=S.degree_total)))return GN_STATE;S.completed=S.current;S.current=0;S.gate_active=0;return 0;}
 API u64 gn_rule_stat(u32 id,u32 key){if(!id||id>S.nrules)return 0;Rule*r=rule(id);switch(key){case 0:return r->lm.lo;case 1:return r->lm.hi;case 2:return r->degree;case 3:return r->n;case 4:return r->bytes;case 5:return r->location;default:return 0;}}
 API u64 gn_export_rule(u32 id){if(!id||id>S.nrules)return 0;Lane*l=&S.lanes[0];l->error=0;Rule*r=rule(id);if(S.spill){if(r->bytes>l->io_size||!gn_host_read(r->location,l->io_base,r->bytes)){l->error=r->bytes>l->io_size?GN_SCRATCH:GN_IO;return 0;}if(validate_record(l->io_base,r->bytes)){l->error=GN_CORRUPT;return 0;}return l->io_base;}
  Poly p={r->location+sizeof(Record),r->n,r->degree,r->location};if(write_record(p,l->io_base,l->io_size)){l->error=GN_SCRATCH;return 0;}return l->io_base;}
@@ -780,6 +783,8 @@ API u64 gn_canonical_rule(u32 id){
  l->error=rc;return rc?0:l->io_base;
 }
 #include "hilbert.inc"
+#include "hilbert_gate.inc"
+#include "lower_bound.inc"
 
 #ifndef __wasm__
 /* Native-only independent arithmetic property-test hook. */
@@ -872,3 +877,5 @@ API u64 gn_reserve_stat(u32 lane,u32 key){
 API int gn_reserve_growth(u32 enabled){if(enabled>1)return GN_INPUT;if(S.current||S.input_expected||S.nrules)return GN_STATE;S.reserve_growth=enabled;return 0;}
 
 API int gn_radix_queue(u32 enabled){if(enabled>1)return GN_INPUT;if(S.current||S.input_expected||S.nrules)return GN_STATE;S.radix_enabled=enabled;return 0;}
+
+#include "frontier.inc"

@@ -11,6 +11,15 @@
 /fomkyr/dist/*.so
 /fomkyr/dist/*.o
 /fomkyr/dist/*.a
+/fomkyr/dist/fomkyr
+/fomkyr/dist/native-flags*
+/fomkyr/dist/native-config.mk*
+/fomkyr/dist/native-*/
+/fomkyr/dist/*.gcda
+/fomkyr/dist/*.gcno
+/fomkyr/dist/*.profraw
+/fomkyr/dist/*.profdata
+/fomkyr/fomkyr-job/
 /fomkyr/.cache/
 node_modules/
 *.fas

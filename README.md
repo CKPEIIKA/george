@@ -32,8 +32,45 @@ Gröbner bases in free associative and commutative algebras over ℚ, 𝔽₂ an
 𝔽ₚ, Hilbert and Poincaré–Betti series, Anick resolutions, Betti numbers of
 algebras and modules, and Hochschild homology. Arithmetic is exact.
 
-**George 0.6.4** adds the independent [fomkyr subproject](fomkyr/README.md)
-for homogeneous noncommutative Gröbner bases and optional exact Hilbert coefficients.
+**Fomkyr 0.6.6** is the independent [fast pure C engine](fomkyr/README.md) for
+homogeneous noncommutative Gröbner bases and exact Hilbert coefficients. Its
+standalone executable uses pthread workers and durable checkpoints. George runs
+the same C kernel through WebAssembly. Native builds use O3 and LTO, with optional
+local instruction-set tuning.
+
+## FOMKYR NATIVE AND BROWSER
+
+![Fomkyr 0.6.6: FK6 time and physical RAM](docs/benchmarks/fomkyr-0.6.6-native-browser.svg)
+
+With four workers, a 4 GiB allowance and 128-pair batches, FK6 degree 10 took a
+median **10.95 s** in native C with O3/LTO/PGO, **28.61 s** in Chromium and
+**34.54 s** in Firefox. These are fresh ordinary exact calculations with full
+text export. Degrees 8–10 have three trials; bands show the time ranges.
+Native RAM uses OS peak RSS; browser RAM uses sampled process-tree PSS and
+includes the browser. [Protocol and measurements](docs/benchmarks/fomkyr-0.6.6-native-browser.json).
+
+Build the standalone engine with `make check` followed by `make` in `fomkyr/`.
+The [manual](fomkyr/README.md) covers input, memory and checkpoint resume.
+The FK6 browser preset selects Fomkyr with its fast default reduction settings.
+
+## FK6 BENCHMARK
+
+![FK6 degrees 1–10: elapsed time and peak physical RAM](docs/benchmarks/fk6-0.6.4.svg)
+
+The [FK6 presentation](test/fixtures/fomin-kirillov-user.json) has 15 generators
+and 100 quadratic relations over ℚ. These are historical **Fomkyr 0.6.4** measurements. Each point is one fresh run on the same
+Linux host, with a 120-second cap and a 2 GiB memory allowance. Fomkyr uses
+memory64 and four workers. Browser Bergman uses the faster measured C/ECL
+O3 + LTO addressing mode; wasm32 won every completed comparison.
+
+RAM includes the browser and runtime. Crosses mark unfinished runs, whose
+RAM peak was observed before stopping. At degree 8, Fomkyr took **2.50 s**,
+native Bergman **17.21 s**, Singular **28.17 s**, and browser Bergman **53.21 s**.
+Fomkyr also completed degree 10 in **8.85 s**. These results describe this
+presentation and measurement setup.
+
+[Methods and downloads](docs/benchmarks/README.md) ·
+[Measurements (CSV)](docs/benchmarks/fk6-0.6.4.csv)
 
 ## ARCHITECTURE
 
@@ -54,6 +91,14 @@ Web Worker ⇄ JavaScript UI       web/engine/worker.js, web/src/
         │
         ▼
 static site (GitHub Pages)       web/ → gh-pages
+```
+
+Fomkyr has a separate C pipeline:
+
+```
+fomkyr/src/ + native/ → C11 + pthreads → standalone fomkyr CLI
+          │
+          └→ Clang O3/LTO → Wasm32/Wasm64 → George browser UI
 ```
 
 ## DISCLAIMER
@@ -134,14 +179,17 @@ and results are compared with a native SBCL build, Bergman 2 and Singular
   The degree tooltip shows the last completed degree, pair/reduction counts,
   and whether the engine is saving a checkpoint, counting Hilbert coefficients
   or exporting results. A dash means the engine has not reported its degree.
-  Memory includes reserved workspace. With a 3.5 GiB fomkyr allowance,
-  automatic scratch space is 2 GiB and the shared overflow reserve is up to
-  512 MiB; smaller allowances scale down. Browser RAM, live objects and disk
-  checkpoints have separate sizes.
+  The memory icon reports Wasm linear memory capacity, including reserved
+  workspace. Physical RAM is committed as pages are touched. Automatic fomkyr
+  memory uses 4/7 of the effective allowance for reduction workspace and,
+  over ℚ, up to 1/7 for exceptional rows. **Engine** shows these amounts;
+  the live tooltip reports the current run's workspace. Browser objects and
+  disk checkpoints have separate sizes.
 
 **Output**
 : The basis by degree, series, Betti tables, Anick differentials, the raw
-  files and the bergman session.
+  files and the bergman session. **Files** can download the text results as
+  a ZIP, including the full saved basis when the displayed output is a preview.
 
 **Share**
 : The small *Share* button copies a compact link containing the presentation
@@ -181,6 +229,8 @@ and results are compared with a native SBCL build, Bergman 2 and Singular
 | `npm run test:native:browser` | alias for `test:fomkyr:browser` |
 | `npm run test:fomkyr` | imported suites, 64 FK LHS samples, four anchors and 27 physics cases, all four fomkyr variants, C/ECL and bounded Singular |
 | `npm run test:fomkyr:browser` | Firefox/Chromium, root/project paths, isolated/unshared execution, OPFS, resume, Share, long words and cancellation |
+| `npm run fomkyr:build:native` | standalone C executable, portable O3/LTO |
+| `npm run test:fomkyr:cli` | pthread CLI, partial checkpoints, native/Wasm resume and independent Hilbert authority checks |
 | `npm run test:fomkyr:upgrade` | existing fomkyr 0.3 browser checkpoints resumed by the current engine; independent exact certificates |
 | `npm run test:fk` | small Fomin–Kirillov LHS cases, all four engines, native SBCL and Singular; degrees 2–4 |
 | `npm run test:fk6` | FK6 and a fixed-seed invertible generator scaling, degrees 1–8; all four fomkyr variants and bounded C/ECL/Singular comparisons |
@@ -195,7 +245,7 @@ and results are compared with a native SBCL build, Bergman 2 and Singular
 
 ## VERSION
 
-George **0.6.4** includes fomkyr 0.6.4, configurable multicore execution,
+George **0.6.5** includes fomkyr **0.6.6**, configurable multicore execution,
 disk checkpoints and full result downloads. Unsupported tasks and settings
 are disabled for this backend. Live allocated Wasm memory appears beside
 the computation status, alongside degree progress and elapsed seconds.
@@ -208,9 +258,10 @@ rows grouped by term count. Mathematical copying preserves plain-text powers. Ba
 come from engine metadata; previews can be expanded from the saved full result.
 The elapsed counter stays in seconds. Engine settings include the radix word queue
 and shared overflow workspace, with automatic defaults and help for each control.
-New fomkyr jobs use batches of 128 pairs. At allowances of at least 3.5 GiB,
-automatic workspace settings provide 2 GiB scratch and a 512 MiB shared reserve;
-smaller allowances use a smaller scratch pool and a bounded reserve.
+New fomkyr jobs use batches of 128 pairs. Automatic memory reserves 4/7 of
+the effective allowance for scratch and up to 1/7 for exceptional rational rows;
+manual mode accepts explicit workspace sizes. Workspace capacities appear
+under **Engine**, and live memory help uses the actual run's values.
 
 George 0.5 added the **C / ECL O3 + LTO (memory64)** engine, allowances up to
 16 GiB and a **No heap cap** setting. It also adds optional monomial pruning

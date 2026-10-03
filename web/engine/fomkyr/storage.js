@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // OPFS data are origin-local. Persistence is a request, never a backup guarantee.
 export const STORE='fomkyr';
-export const VERSION='0.6.4';
+export const VERSION='0.6.6';
 const encoder=new TextEncoder();
 export async function sha256(bytes){
   const hash=await crypto.subtle.digest('SHA-256',typeof bytes==='string'?encoder.encode(bytes):bytes);
@@ -27,7 +27,7 @@ export async function acquireRunLock(key){
 }
 export async function readCheckpoint(file){
   const blob=await file.getFile();
-  if(blob.size>65536)throw new Error('Oversized checkpoint metadata');
+  if(blob.size>1048576)throw new Error('Oversized checkpoint metadata');
   const envelope=JSON.parse(await blob.text());
   if(envelope.schema!==2||!envelope.payload||await sha256(JSON.stringify(envelope.payload))!==envelope.sha256)throw new Error('Checkpoint metadata checksum mismatch');
   return envelope.payload;
@@ -38,18 +38,24 @@ export async function writeJSON(directory,name,payload,{checkpoint=false}={}){
   const h=await (await directory.getFileHandle(name,{create:true})).createSyncAccessHandle();
   try{h.truncate(0);let at=0;while(at<bytes.length){const n=h.write(bytes.subarray(at),{at});if(!n)throw new Error('Short metadata write');at+=n;}h.flush();}finally{h.close();}
 }
-export async function checkpointCandidates(directory,identity,diskBytes){
-  const result=[];
-  for(const name of ['checkpoint-0.json','checkpoint-1.json']){
+export async function checkpointCandidates(directory,identity,diskBytes,evidenceId=null){
+  const result=[];let evidenceMismatch=false;
+  for(const name of ['checkpoint-0.json','checkpoint-1.json','partial-0.json','partial-1.json']){
     try{
       const cp=await readCheckpoint(await directory.getFileHandle(name));
-      if(![2,3].includes(cp.abi)||cp.identity!==identity)continue;
+      if(![2,3,4].includes(cp.abi)||cp.identity!==identity)continue;
+      if(cp.abi===4&&(!evidenceId||cp.hilbertEvidenceId!==evidenceId)){evidenceMismatch=true;continue;}
       if(!Number.isInteger(cp.completedThroughDegree)||cp.completedThroughDegree<0||cp.completedThroughDegree>0xfffffffe)continue;
       if(!Number.isSafeInteger(cp.basisSize)||cp.basisSize<0||!Number.isSafeInteger(cp.diskBytes)||cp.diskBytes<cp.basisSize*56||cp.diskBytes>diskBytes)continue;
+      if(cp.partial){
+        if(cp.currentDegree!==cp.completedThroughDegree+1||typeof cp.frontier!=='string'||!/^[0-9a-f]+$/.test(cp.frontier)||cp.frontier.length>18000||cp.frontier.length%2)continue;
+        if(!Number.isInteger(cp.hashBits)||cp.hashBits<8||cp.hashBits>26)continue;
+      }
       result.push(cp);
     }catch{}
   }
-  return result.sort((a,b)=>b.completedThroughDegree-a.completedThroughDegree);
+  if(evidenceMismatch){const e=new Error('Checkpoint depends on Hilbert evidence: explicitly supply the SAME policy/mode; cache left unchanged.');e.code='HILBERT_EVIDENCE_REQUIRED';throw e;}
+  return result.sort((a,b)=>b.completedThroughDegree-a.completedThroughDegree||Number(!!b.partial)-Number(!!a.partial)||(b.sequence??0)-(a.sequence??0));
 }
 export async function requestPersistentStorage(){
   if(typeof navigator.storage?.persist!=='function')return {persistent:false,reason:'Call from the page, not a worker; API unavailable here.'};
@@ -63,11 +69,11 @@ export async function listCachedRuns(){
   for await(const [key,dir] of directory.entries()){
     if(dir.kind!=='directory')continue;
     const checkpoints=[];
-    for(const name of ['checkpoint-0.json','checkpoint-1.json'])try{checkpoints.push(await readCheckpoint(await dir.getFileHandle(name)));}catch{}
-    checkpoints.sort((a,b)=>b.completedThroughDegree-a.completedThroughDegree);
+    for(const name of ['checkpoint-0.json','checkpoint-1.json','partial-0.json','partial-1.json'])try{checkpoints.push(await readCheckpoint(await dir.getFileHandle(name)));}catch{}
+    checkpoints.sort((a,b)=>b.completedThroughDegree-a.completedThroughDegree||Number(!!b.partial)-Number(!!a.partial)||(b.sequence??0)-(a.sequence??0));
     const cp=checkpoints[0];let diskBytes=0;
     try{diskBytes=(await (await dir.getFileHandle('basis.gnb')).getFile()).size;}catch{}
-    runs.push({key,completedThroughDegree:cp?.completedThroughDegree??null,basisSize:cp?.basisSize??null,diskBytes,identity:cp?.identity??null,updatedAt:cp?.updatedAt??null});
+    runs.push({key,partial:!!cp?.partial,currentDegree:cp?.currentDegree??null,retainedCommittedPairs:cp?.retainedCommittedPairs??null,resolvedOverlaps:cp?.resolvedOverlaps??null,totalOverlaps:cp?.totalOverlaps??null,completedThroughDegree:cp?.completedThroughDegree??null,basisSize:cp?.basisSize??null,diskBytes,identity:cp?.identity??null,updatedAt:cp?.updatedAt??null});
   }
   return runs;
 }

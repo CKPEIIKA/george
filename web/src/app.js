@@ -41,6 +41,7 @@ let storage;
 try { storage = window.localStorage; } catch { /* storage unavailable */ }
 const preferences = readPreferences(storage, navigator.language);
 setLanguage(preferences.language);
+document.documentElement.lang = getLanguage();
 applyTheme(preferences.theme);
 let engineInfo = null;
 let engineError = null;
@@ -51,6 +52,7 @@ let statusState = { key: 'status.idle', params: {}, busy: false };
 let guideGeneration = 0;
 let shareGeneration = 0;
 let allocatedMemoryBytes;
+let runMemoryPlan;
 let runStartedAt = null;
 let runTimer;
 let runDegree = null;
@@ -342,7 +344,7 @@ function refresh() {
   els.monomialPruning.disabled ||= !monomialPruningAvailable(readForm());
   if (els.monomialPruning.disabled) els.monomialPruning.checked = false;
   else if (els.backend.value === 'fomkyr') els.monomialPruning.checked = fomkyrPruningChoice ?? true;
-  updateFomkyrControlAvailability(readForm(), document);
+  updateFomkyrControlAvailability(readForm(), document, t);
   els.go.textContent = t('task.' + readForm().task + '.b');
   const tutorial = TUTORIALS.find(item => els.preset.value === 'tutorial:' + item.id);
   $('presetDescription').textContent = tutorial ? tutorial.description[getLanguage()] : t('start.hint');
@@ -373,6 +375,15 @@ function setStatus(key, params = {}, busy = false) {
 
 function updateMemoryUsage(bytes) {
   allocatedMemoryBytes = bytes;
+  const memoryLabel = value => {
+    const size = formatMemorySize(value, getLanguage());
+    return size ? `${size.amount} ${t(size.unit === 'GiB' ? 'memory.gib' : 'memory.mib')}` : '—';
+  };
+  $('memoryUsageHint').textContent = t('memory.usageHint') + (runMemoryPlan ? ' ' + t('memory.planHint', {
+    budget: memoryLabel(runMemoryPlan.budgetBytes),
+    scratch: memoryLabel(runMemoryPlan.ordinaryScratchBytes),
+    reserve: memoryLabel(runMemoryPlan.rowReserveBytes),
+  }) : '');
   const size = formatMemorySize(bytes, getLanguage());
   els.memoryUsage.hidden = !statusState.busy || !size;
   if (size) {
@@ -456,6 +467,7 @@ async function compute(ev) {
   running = true;
   updateZipButton();
   allocatedMemoryBytes = undefined;
+  runMemoryPlan = null;
   runStartedAt = t0;
   runDegree = null;
   runDegreeBound = Number(job.degreeBound) > 0 ? Number(job.degreeBound) : null;
@@ -473,7 +485,12 @@ async function compute(ev) {
     const res = await engine.run(job, (e) => {
       if (generation !== runGeneration) return;
       if (e.type === 'stdout') { stdout += e.text; renderLog(job, stdout); }
-      else updateDegreeProgress(e);
+      else {
+        if (e.type === 'memory-plan') runMemoryPlan = {...e};
+        if (runMemoryPlan && Number.isFinite(e.rowReserveBytes)) runMemoryPlan.rowReserveBytes = e.rowReserveBytes;
+        updateMemoryUsage(allocatedMemoryBytes);
+        updateDegreeProgress(e);
+      }
     });
     if (generation !== runGeneration) return;
     const ms = Math.round(performance.now() - t0);
@@ -901,6 +918,7 @@ function syncPreferenceControls() {
 }
 
 function updateLanguage() {
+  document.documentElement.lang = getLanguage();
   applyTranslations();
   syncPreferenceControls();
   fillPresets();
@@ -909,7 +927,6 @@ function updateLanguage() {
   els.backend.querySelector('option[value="memory64"]').disabled = !memory64Supported();
 
   refresh();
-  document.documentElement.lang = getLanguage();
   setStatus(statusState.key, statusState.params, statusState.busy);
   updateEngineNote();
   updateGuide();

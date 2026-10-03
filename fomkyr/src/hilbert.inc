@@ -14,8 +14,9 @@ API u32 gn_hilbert_limb(u32 degree,u32 limb){
 API u64 gn_hilbert_coefficient(u32 degree,u32 high){
  u32 i=high?2:0;return (u64)gn_hilbert_limb(degree,i)|((u64)gn_hilbert_limb(degree,i+1)<<32);
 }
-API int gn_hilbert(u32 degree,u64 extra_budget){
- if(S.current||S.input_expected||(degree>S.completed && (u64)S.completed<gn_completion_bound()))return GN_STATE;
+static int hilbert_impl(u32 degree,u64 extra_budget,u32 upper){
+ if(S.input_expected||GN_LOAD(&S.batch_running)||GN_LOAD(&S.reserve_lock))return GN_STATE;
+ if(!upper && (S.current||(degree>S.completed && (u64)S.completed<gn_completion_bound())))return GN_STATE;
  if(degree>GN_INDEX_MAX)return GN_LIMIT;
  if(S.hilbert_end && S.bump==S.hilbert_end)S.bump=S.hilbert_base;
  S.hilbert_offset=0;S.hilbert_limbs=0;S.hilbert_end=0;S.hilbert_degree=0;
@@ -76,4 +77,11 @@ API int gn_hilbert(u32 degree,u64 extra_budget){
  S.hilbert_base=start;S.hilbert_offset=start;S.hilbert_limbs=limbs;S.hilbert_end=outputs_end;
 done:
  S.bump=rc?saved_bump:outputs_end;S.error=saved_error;return rc;
+}
+
+API int gn_hilbert(u32 degree,u64 extra_budget){return hilbert_impl(degree,extra_budget,0);}
+API int gn_hilbert_upper(u32 degree,u64 extra_budget){return hilbert_impl(degree,extra_budget,1);}
+API void gn_hilbert_release(void){
+ if(S.hilbert_end&&S.bump==S.hilbert_end)S.bump=S.hilbert_base;
+ S.hilbert_offset=S.hilbert_end=S.hilbert_base=0;S.hilbert_limbs=S.hilbert_degree=0;
 }

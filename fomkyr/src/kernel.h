@@ -12,7 +12,13 @@ typedef uint64_t u64; typedef int64_t i64; typedef uint32_t u32; typedef uint8_t
 /* Degree is an unsigned 32-bit index, not a fixed word-storage capacity. */
 #define GN_INDEX_MAX (UINT32_MAX-1u)
 #define GN_MAX_WORKERS 32
-#define GN_HARD_BYTES UINT64_C(15000000000)
+#define GN_WASM_HARD_BYTES UINT64_C(15000000000)
+#ifdef __wasm__
+#define GN_HARD_BYTES GN_WASM_HARD_BYTES
+#else
+/* Native offsets follow the host address range, not a browser cap. */
+#define GN_HARD_BYTES ((u64)PTRDIFF_MAX & ~UINT64_C(65535))
+#endif
 enum { GN_OK=0, GN_MEMORY=1, GN_SCRATCH=2, GN_INPUT=3, GN_IO=4, GN_CANCELLED=5, GN_CORRUPT=6, GN_STATE=7, GN_BATCH_FULL=8, GN_LIMIT=9, GN_REJECTED=10, GN_DEFERRED=11, GN_REPACK=12 };
 #ifdef __wasm__
 #define API __attribute__((visibility("default")))
@@ -84,9 +90,36 @@ API u32 gn_batch_status(u32 task);
 API int gn_batch_commit(u32 task);
 API int gn_batch_fallback(void);
 API int gn_hilbert(u32 degree,u64 extra_budget);
+/* Partial-leading-ideal UPPER BOUND only; never certifies a degree. */
+API int gn_hilbert_upper(u32 degree,u64 extra_budget);
+API void gn_hilbert_release(void);
+/* Portable quiescent frontier. Records remain ABI 3; cursor format is separate.
+ * Captures all committed rules + iterator + uncommitted descriptors, no pointers. */
+API u64 gn_frontier_export(void);
+API u32 gn_frontier_size(void);
+API int gn_frontier_restore(u32 bytes);
+API u32 gn_frontier_pending(void);
+API u32 gn_frontier_hash_bits(void);
 API u64 gn_hilbert_coefficient(u32 degree,u32 high);
 API u32 gn_hilbert_limbs(void);
 API u32 gn_hilbert_limb(u32 degree,u32 limb);
+/* Hilbert closure is conditional on a HOST-authorized independent lower bound.
+ * Bounds wider than uint64 decline this OPTIONAL path, not ordinary completion. */
+API int gn_hilbert_gate_begin(u64 lower,u64 extra_budget);
+API int gn_hilbert_gate_try(void); /* 1=closed, 0=continue, negative=error */
+API u64 gn_hilbert_gate_stat(u32 key);
+/* Exact integer dual certificate replay. Original fixture relations are supplied
+ * by the host, never taken from the certificate. A diagonal nonzero evaluation
+ * minor establishes independence; all original contexts are annihilated in Q. */
+API int gn_lb_begin(u32 degree,u32 dimension,u32 relations,u32 terms,u64 extra_budget);
+API int gn_lb_pivot(u32 index,u32 column);
+API int gn_lb_relation(u32 degree,u32 terms);
+API int gn_lb_term(u32 word_index,i64 coefficient);
+API int gn_lb_vector(u32 index);
+API int gn_lb_entry(u32 column,i64 value);
+API int gn_lb_check(void);
+API int gn_lb_finish(void);
+API void gn_lb_release(void);
 API int gn_finish_degree(void);
 API int gn_rewind_degree(void); /* replay current degree, preserving committed rules */
 API u32 gn_result_count(u32 lane);

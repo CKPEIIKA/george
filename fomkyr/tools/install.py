@@ -117,7 +117,7 @@ for path,(old,new) in changes.items():
  if a.dry_run:print(''.join(difflib.unified_diff(old.splitlines(True),new.splitlines(True),fromfile=str(path),tofile=str(path))))
 if not a.dry_run:
  for path,(old,new) in changes.items():
-  backup=path.with_suffix(path.suffix+'.before-fomkyr-0.6.4')
+  backup=path.with_suffix(path.suffix+'.before-fomkyr-0.6.6')
   if not backup.exists():backup.write_text(old)
   path.write_text(new)
  dest=web/'engine/fomkyr';dest.mkdir(parents=True,exist_ok=True)

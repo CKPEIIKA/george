@@ -1,0 +1,140 @@
+{
+  "schema": 1,
+  "coreVersion": "0.6.4",
+  "degrees": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "input": "test/fixtures/fomin-kirillov-user.json",
+  "inputSha256": "557b7a5e2e0b3353b374ee417bc6d435d9b5c4bb80ffd3174135d3a662f7d857",
+  "variables": 15,
+  "relations": 100,
+  "field": "Q",
+  "order": "degree followed by left lexicographic",
+  "runsPerModeAndDegree": 1,
+  "timeLimitSeconds": 120,
+  "memoryAllowanceMiB": 2048,
+  "browser": "Chromium 153.0.0.0",
+  "browserBergmanModes": [
+    "C/ECL O3 + LTO wasm32",
+    "C/ECL O3 + LTO memory64"
+  ],
+  "selectedBrowserBergmanModes": {
+    "1": "compiled",
+    "2": "compiled",
+    "3": "compiled",
+    "4": "compiled",
+    "5": "compiled",
+    "6": "compiled",
+    "7": "compiled",
+    "8": "compiled",
+    "9": "compiled",
+    "10": "compiled"
+  },
+  "fomkyr": {
+    "bits": 64,
+    "workers": 4,
+    "memoryPolicy": "auto",
+    "batchPairs": 128
+  },
+  "timing": "Fresh engine/process, computation, text export and result delivery. Browser launch, page rendering and the full-output reread used for audit are excluded. No checkpoint reuse or Hilbert counting. Bergman and Singular export reduced monic bases; Fomkyr exports primitive rows without global tail interreduction.",
+  "ram": "Peak sum of process-tree PSS, including browser/runtime. Browser sampled every 250 ms; native programs every 20 ms. Brief peaks can be missed.",
+  "limits": "Browser kernel/Lisp heap and SBCL dynamic space: 2 GiB; Singular virtual address space: 2 GiB. These constrain different allocations.",
+  "censored": "Crosses mark runs stopped by the time limit or heap exhaustion. Their RAM is the peak observed before stopping; it is not a completed-run memory requirement. No extrapolation beyond the time cap.",
+  "singularOptions": [
+    "redSB",
+    "intStrategy"
+  ],
+  "degreeOne": "Singular requires ring degree >=2; its degree-1 point uses the zero ideal in a bound-2 ring. SBCL uses the zero relation for the empty linear prefix.",
+  "selection": "Fastest completed browser Bergman addressing mode at each degree; RAM comes from the same run. If both modes are unfinished, show the wasm32 observation.",
+  "audit": {
+    "completedRuns": 42,
+    "method": "Every completed output passes exact leading words, input membership and mutual ideal membership against available C/ECL, Singular or SBCL references. If these are censored, recorded FK6 bases supply the reference; for the scaled fixture, every archived coefficient is transformed by the checked invertible generator map. Degree 10 can use historical Fomkyr 0.3 records with verified presentation identity, SHA-256 and independent Python record decoding. This is previous-version consistency evidence, not an independent Groebner certificate. Other fallbacks are explicitly named. Rational Singular coefficients are parsed exactly. Independent normal-word BigInt DP; critical-pair certificates for distinct monic bases through degree 4. Higher degrees are consistency evidence. Censored computations are omitted."
+  },
+  "scope": "One cold run per point on one Linux host; platform and run-to-run variation affect comparisons.",
+  "engineHashes": {
+    "compiled/ecl.wasm": "8bd7c0b8be173025c741e9cb90718de0210be7eb6a0537725b06bd702f8d687d",
+    "memory64/ecl.wasm": "56a55b5829bb678eb65c35eee34eb6ecb91b714d0b057eba045367774e85960d",
+    "ecl.data": "dce742ded7cc24a6ace543505cad50b4699d7acdb9c51fef8dbae01905871ece",
+    "fomkyr/fomkyr64.wasm": "9e18043c910cfb676834ed86224338e1a33c33a7a683695b7f822fe12d81b07f"
+  },
+  "nativeHashes": {
+    "sbclImageSha256": "b55005ad137dc2189be05194b42d9d7ae316dd4d2055edeff03df16418ef8ffa",
+    "benchmarkSourceSha256": "5fce24a47b04cb5cb7a2ba607ae973f87b4426b079f08ee1bddb5ba78485513d",
+    "samplerSourceSha256": "f7b544bc8a82f22e970a8de09eb4b6dab893b4a7b2879020343aaeb94661d24f",
+    "singularSha256": "9a038df213763358a86e602d1659ab16a10add6e38ac12732bbf04d288839f68"
+  },
+  "singularArithmeticModuleHashes": {
+    "p_Procs_FieldQ.so": "db3757831d33196f7b354a64ce87cc92169c5bced1da0eb14de85cb76564d7df",
+    "p_Procs_FieldZp.so": "b0559a73fd3375b973c563790f3f9d8f86157dee629b9185778e8402d97dd623"
+  },
+  "savedSingularComparison": {
+    "passed": true,
+    "results": [
+      {
+        "degree": 2,
+        "basisSize": 100,
+        "savedSingularLeadingWordsMatch": true,
+        "savedFk6ExactPolynomialsMatch": true,
+        "oldMissingQModule": true,
+        "newMissingQModule": false
+      },
+      {
+        "degree": 3,
+        "basisSize": 176,
+        "savedSingularLeadingWordsMatch": true,
+        "savedFk6ExactPolynomialsMatch": true,
+        "oldMissingQModule": true,
+        "newMissingQModule": false
+      },
+      {
+        "degree": 4,
+        "basisSize": 265,
+        "savedSingularLeadingWordsMatch": true,
+        "savedFk6ExactPolynomialsMatch": true,
+        "oldMissingQModule": true,
+        "newMissingQModule": false
+      },
+      {
+        "degree": 5,
+        "basisSize": 360,
+        "savedSingularLeadingWordsMatch": true,
+        "savedFk6ExactPolynomialsMatch": true,
+        "oldMissingQModule": true,
+        "newMissingQModule": false
+      },
+      {
+        "degree": 6,
+        "basisSize": 497,
+        "savedSingularLeadingWordsMatch": true,
+        "savedFk6ExactPolynomialsMatch": true,
+        "oldMissingQModule": true,
+        "newMissingQModule": false
+      },
+      {
+        "degree": 7,
+        "basisSize": 695,
+        "savedSingularLeadingWordsMatch": true,
+        "savedFk6ExactPolynomialsMatch": true,
+        "oldMissingQModule": true,
+        "newMissingQModule": false
+      },
+      {
+        "degree": 8,
+        "basisSize": 990,
+        "savedSingularLeadingWordsMatch": true,
+        "savedFk6ExactPolynomialsMatch": true,
+        "oldMissingQModule": true,
+        "newMissingQModule": false
+      }
+    ]
+  }
+}

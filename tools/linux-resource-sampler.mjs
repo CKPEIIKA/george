@@ -2,7 +2,6 @@
 import fs from 'node:fs';
 import {execFileSync} from 'node:child_process';
 const clockTicks=Number(execFileSync('getconf',['CLK_TCK'],{encoding:'utf8'}));
-const sampleMs=20;
 function processTree(root) {
   const all = new Map();
   for (const name of fs.readdirSync('/proc')) {
@@ -24,7 +23,7 @@ function processTree(root) {
 }
 
 export class Sampler {
-  constructor(root) {this.root = root; this.previous = new Map(); this.samples = []; this.cpuTicks = 0;}
+  constructor(root,{intervalMs=20}={}) {this.root = root; this.intervalMs=intervalMs; this.previous = new Map(); this.samples = []; this.cpuTicks = 0;}
   sample(initial = false) {
     let pssKiB = 0, rssKiB = 0;
     const tree = processTree(this.root);
@@ -43,7 +42,7 @@ export class Sampler {
     this.samples.push(point);
     return point;
   }
-  start() {this.startAt = performance.now(); this.baseline = this.sample(true); this.timer = setInterval(() => this.sample(), sampleMs);}
+  start() {this.startAt = performance.now(); this.baseline = this.sample(true); if(this.intervalMs>0)this.timer = setInterval(() => this.sample(), this.intervalMs);}
   stop() {
     clearInterval(this.timer);
     const end = this.sample();

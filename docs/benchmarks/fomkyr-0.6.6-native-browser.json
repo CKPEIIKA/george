@@ -1,0 +1,378 @@
+{
+  "version": "0.6.6",
+  "case": "FK6, Q, original generator order",
+  "protocol": {
+    "workers": 4,
+    "memoryMiB": 4096,
+    "batchPairs": 128,
+    "resume": false,
+    "hilbertClosure": false,
+    "timeLimitSeconds": 120,
+    "wall": "Cold engine/process time, including initialization, checkpoints and full text export; browser startup excluded.",
+    "ram": "Native: OS peak RSS. Browsers: peak process-tree PSS sampled every 0.25 s, including browser/runtime and proportional shared pages. Capacity is separate; browser peaks can be missed.",
+    "trials": "Browsers: one per degree 1\u20137, three per degree 8\u201310. Native: three per degree. Curves use medians; time bands show trial ranges.",
+    "scope": "Same host and allowances; results describe this presentation. Degrees <=9 match archived independent prefixes; degree 10 uses historical consistency evidence."
+  },
+  "measurements": [
+    {
+      "engine": "fomkyr-native-pgo",
+      "degree": 1,
+      "trials": 3,
+      "seconds": 0.12940755099999995,
+      "rangeSeconds": [
+        0.127144141,
+        0.132973595
+      ],
+      "peakPhysicalMiB": 16.46875,
+      "ramMetric": "RSS"
+    },
+    {
+      "engine": "fomkyr-native-pgo",
+      "degree": 2,
+      "trials": 3,
+      "seconds": 0.15690279699999995,
+      "rangeSeconds": [
+        0.15551880299999993,
+        0.1569306140000001
+      ],
+      "peakPhysicalMiB": 16.63671875,
+      "ramMetric": "RSS"
+    },
+    {
+      "engine": "fomkyr-native-pgo",
+      "degree": 3,
+      "trials": 3,
+      "seconds": 0.18531774400000017,
+      "rangeSeconds": [
+        0.18274606600000015,
+        0.1854064699999999
+      ],
+      "peakPhysicalMiB": 16.69921875,
+      "ramMetric": "RSS"
+    },
+    {
+      "engine": "fomkyr-native-pgo",
+      "degree": 4,
+      "trials": 3,
+      "seconds": 0.21553648199999975,
+      "rangeSeconds": [
+        0.2147609480000001,
+        0.21986646400000018
+      ],
+      "peakPhysicalMiB": 16.69921875,
+      "ramMetric": "RSS"
+    },
+    {
+      "engine": "fomkyr-native-pgo",
+      "degree": 5,
+      "trials": 3,
+      "seconds": 0.262851134,
+      "rangeSeconds": [
+        0.26116796999999997,
+        0.26624777600000016
+      ],
+      "peakPhysicalMiB": 18.59765625,
+      "ramMetric": "RSS"
+    },
+    {
+      "engine": "fomkyr-native-pgo",
+      "degree": 6,
+      "trials": 3,
+      "seconds": 0.32159285,
+      "rangeSeconds": [
+        0.31562643599999957,
+        0.3240289130000001
+      ],
+      "peakPhysicalMiB": 18.57421875,
+      "ramMetric": "RSS"
+    },
+    {
+      "engine": "fomkyr-native-pgo",
+      "degree": 7,
+      "trials": 3,
+      "seconds": 0.41867157800000043,
+      "rangeSeconds": [
+        0.415614329,
+        0.4307511779999995
+      ],
+      "peakPhysicalMiB": 18.94921875,
+      "ramMetric": "RSS"
+    },
+    {
+      "engine": "fomkyr-native-pgo",
+      "degree": 8,
+      "trials": 3,
+      "seconds": 0.7593047770000003,
+      "rangeSeconds": [
+        0.7530910380000004,
+        0.8603482560000002
+      ],
+      "peakPhysicalMiB": 19.21484375,
+      "ramMetric": "RSS"
+    },
+    {
+      "engine": "fomkyr-native-pgo",
+      "degree": 9,
+      "trials": 3,
+      "seconds": 2.2847766539999994,
+      "rangeSeconds": [
+        2.284219261,
+        2.4658363549999995
+      ],
+      "peakPhysicalMiB": 20.46484375,
+      "ramMetric": "RSS"
+    },
+    {
+      "engine": "fomkyr-native-pgo",
+      "degree": 10,
+      "trials": 3,
+      "seconds": 10.948760760999999,
+      "rangeSeconds": [
+        10.691616287999997,
+        10.982070659000005
+      ],
+      "peakPhysicalMiB": 23.71875,
+      "ramMetric": "RSS"
+    },
+    {
+      "engine": "fomkyr",
+      "degree": 1,
+      "trials": 1,
+      "seconds": 0.6098050000071525,
+      "rangeSeconds": [
+        0.6098050000071525,
+        0.6098050000071525
+      ],
+      "peakPhysicalMiB": 480.8623046875,
+      "ramMetric": "PSS"
+    },
+    {
+      "engine": "fomkyr",
+      "degree": 2,
+      "trials": 1,
+      "seconds": 0.6387400000095368,
+      "rangeSeconds": [
+        0.6387400000095368,
+        0.6387400000095368
+      ],
+      "peakPhysicalMiB": 481.591796875,
+      "ramMetric": "PSS"
+    },
+    {
+      "engine": "fomkyr",
+      "degree": 3,
+      "trials": 1,
+      "seconds": 0.7135400000214577,
+      "rangeSeconds": [
+        0.7135400000214577,
+        0.7135400000214577
+      ],
+      "peakPhysicalMiB": 480.8056640625,
+      "ramMetric": "PSS"
+    },
+    {
+      "engine": "fomkyr",
+      "degree": 4,
+      "trials": 1,
+      "seconds": 0.7759899999499321,
+      "rangeSeconds": [
+        0.7759899999499321,
+        0.7759899999499321
+      ],
+      "peakPhysicalMiB": 483.787109375,
+      "ramMetric": "PSS"
+    },
+    {
+      "engine": "fomkyr",
+      "degree": 5,
+      "trials": 1,
+      "seconds": 0.8937400000095368,
+      "rangeSeconds": [
+        0.8937400000095368,
+        0.8937400000095368
+      ],
+      "peakPhysicalMiB": 487.5146484375,
+      "ramMetric": "PSS"
+    },
+    {
+      "engine": "fomkyr",
+      "degree": 6,
+      "trials": 1,
+      "seconds": 0.9416949999928474,
+      "rangeSeconds": [
+        0.9416949999928474,
+        0.9416949999928474
+      ],
+      "peakPhysicalMiB": 489.9091796875,
+      "ramMetric": "PSS"
+    },
+    {
+      "engine": "fomkyr",
+      "degree": 7,
+      "trials": 1,
+      "seconds": 1.2124049999713897,
+      "rangeSeconds": [
+        1.2124049999713897,
+        1.2124049999713897
+      ],
+      "peakPhysicalMiB": 492.0712890625,
+      "ramMetric": "PSS"
+    },
+    {
+      "engine": "fomkyr",
+      "degree": 8,
+      "trials": 3,
+      "seconds": 2.449320000052452,
+      "rangeSeconds": [
+        2.1268849999904633,
+        2.9584250000119208
+      ],
+      "peakPhysicalMiB": 497.900390625,
+      "ramMetric": "PSS"
+    },
+    {
+      "engine": "fomkyr",
+      "degree": 9,
+      "trials": 3,
+      "seconds": 7.8142150000333785,
+      "rangeSeconds": [
+        6.662784999966622,
+        7.856150000035763
+      ],
+      "peakPhysicalMiB": 508.416015625,
+      "ramMetric": "PSS"
+    },
+    {
+      "engine": "fomkyr",
+      "degree": 10,
+      "trials": 3,
+      "seconds": 28.609625,
+      "rangeSeconds": [
+        25.95119999998808,
+        36.06642500001192
+      ],
+      "peakPhysicalMiB": 530.962890625,
+      "ramMetric": "PSS"
+    },
+    {
+      "engine": "fomkyr-firefox",
+      "degree": 1,
+      "trials": 1,
+      "seconds": 3.06692,
+      "rangeSeconds": [
+        3.06692,
+        3.06692
+      ],
+      "peakPhysicalMiB": 467.0966796875,
+      "ramMetric": "PSS"
+    },
+    {
+      "engine": "fomkyr-firefox",
+      "degree": 2,
+      "trials": 1,
+      "seconds": 3.0657,
+      "rangeSeconds": [
+        3.0657,
+        3.0657
+      ],
+      "peakPhysicalMiB": 467.2021484375,
+      "ramMetric": "PSS"
+    },
+    {
+      "engine": "fomkyr-firefox",
+      "degree": 3,
+      "trials": 1,
+      "seconds": 3.24786,
+      "rangeSeconds": [
+        3.24786,
+        3.24786
+      ],
+      "peakPhysicalMiB": 465.615234375,
+      "ramMetric": "PSS"
+    },
+    {
+      "engine": "fomkyr-firefox",
+      "degree": 4,
+      "trials": 1,
+      "seconds": 3.7257399999999996,
+      "rangeSeconds": [
+        3.7257399999999996,
+        3.7257399999999996
+      ],
+      "peakPhysicalMiB": 479.357421875,
+      "ramMetric": "PSS"
+    },
+    {
+      "engine": "fomkyr-firefox",
+      "degree": 5,
+      "trials": 1,
+      "seconds": 3.7720999999999996,
+      "rangeSeconds": [
+        3.7720999999999996,
+        3.7720999999999996
+      ],
+      "peakPhysicalMiB": 473.796875,
+      "ramMetric": "PSS"
+    },
+    {
+      "engine": "fomkyr-firefox",
+      "degree": 6,
+      "trials": 1,
+      "seconds": 4.49208,
+      "rangeSeconds": [
+        4.49208,
+        4.49208
+      ],
+      "peakPhysicalMiB": 476.4423828125,
+      "ramMetric": "PSS"
+    },
+    {
+      "engine": "fomkyr-firefox",
+      "degree": 7,
+      "trials": 1,
+      "seconds": 4.48574,
+      "rangeSeconds": [
+        4.48574,
+        4.48574
+      ],
+      "peakPhysicalMiB": 479.2646484375,
+      "ramMetric": "PSS"
+    },
+    {
+      "engine": "fomkyr-firefox",
+      "degree": 8,
+      "trials": 3,
+      "seconds": 7.66212,
+      "rangeSeconds": [
+        6.9928,
+        8.996139999999999
+      ],
+      "peakPhysicalMiB": 464.2802734375,
+      "ramMetric": "PSS"
+    },
+    {
+      "engine": "fomkyr-firefox",
+      "degree": 9,
+      "trials": 3,
+      "seconds": 12.83506,
+      "rangeSeconds": [
+        10.86924,
+        13.68096
+      ],
+      "peakPhysicalMiB": 473.6826171875,
+      "ramMetric": "PSS"
+    },
+    {
+      "engine": "fomkyr-firefox",
+      "degree": 10,
+      "trials": 3,
+      "seconds": 34.536919999999995,
+      "rangeSeconds": [
+        29.002760000000002,
+        34.984759999999994
+      ],
+      "peakPhysicalMiB": 480.7041015625,
+      "ramMetric": "PSS"
+    }
+  ]
+}

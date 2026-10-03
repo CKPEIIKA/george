@@ -6,6 +6,7 @@ toolchain=${GEORGE_TOOLCHAIN:-$root/build/toolchain}
 mkdir -p "$root/web/sources" "$root/web/licenses"
 node "$root/tools/package-ui.mjs"
 node "$root/tools/package-fomkyr-docs.mjs"
+node "$root/tools/package-fomkyr.mjs" "$root/web/sources/fomkyr-source.tar.gz"
 cp "$root/licenses/BGPL.txt" "$root/licenses/GPL-2.0.txt" "$root/web/licenses/"
 cp "$toolchain/ecl-src/LICENSE" "$root/web/licenses/ECL-NOTICE.txt"
 cp "$toolchain/ecl-src/COPYING" "$root/web/licenses/LGPL-2.1.txt"

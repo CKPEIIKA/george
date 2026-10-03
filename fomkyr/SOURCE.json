@@ -1,6 +1,6 @@
 {
-  "version": "0.6.4",
-  "archiveSha256": "63209429895636d6237671405aadbe454aeb8a44e165343a8476f4b87332aeb7",
+  "version": "0.6.6",
+  "archiveSha256": "547e5d8b1fb44b6ee8b1aa8675a16ce82305b39c18169ce9a56e8eea82f09120",
   "kernelChanged": false,
   "curatedImport": true,
   "retainedBuildAndTestFiles": {
@@ -8,21 +8,39 @@
       "bytes": 1083,
       "sha256": "7ff623d315cf3fb1d87e5c03e3aa7bc3ef3f25dc24b8b1bffe9afb2d9c62a034"
     },
+    "Makefile": {
+      "bytes": 2356,
+      "sha256": "e035442e0829cc474426ccbdd147be028a7711a2ff08d9d49f4d8aeb0d60594f",
+      "originalSha256": "deacccac6af57709d067091b488f323cd11d58b64b3c4c9ce9ae58e477cd6bac"
+    },
+    "README.md": {
+      "bytes": 13865,
+      "sha256": "12eefe49c4194bdd34a2773ca7b537962556b3975207d987919f3bc9d0c29acb",
+      "originalSha256": "34772103f034236ae67f3b6d51fa07822489ca56661d20a9580f77359bb97d87"
+    },
     "dist/fomkyr32-single.wasm": {
-      "bytes": 108464,
-      "sha256": "75c8af467c16edf69cd20430e8c30d19ee0dac88e03e5deec455d19d48015816"
+      "bytes": 125138,
+      "sha256": "3b6416d40a2b9f83042f15cadc14fc60160190d45ecd49d79ccfd0e200c3bfb3",
+      "originalSha256": "dfc9e8e5dd64e954a553d2ae02381ddd20cfe7988535261cd5dcf6e1af4cdb92"
     },
     "dist/fomkyr32.wasm": {
-      "bytes": 108789,
-      "sha256": "151c90c70ceebe4c42f979071d5286e9a6f6a63da7794f3e9c152e3746591d95"
+      "bytes": 125131,
+      "sha256": "acdfdf7be0e6248849d0f329c91260e87fa217cbbc6f6a27e546040569e6618f",
+      "originalSha256": "d40887f6f6a46c148765af5d67d9c788bfb880f96cd90f7c9bc91f32f824ef3b"
     },
     "dist/fomkyr64-single.wasm": {
-      "bytes": 117621,
-      "sha256": "3d11e5f442c686f8bdc47ae3350f0d52675bbf907b254f880b4b5e240f2d3652"
+      "bytes": 133536,
+      "sha256": "4e8dfc5850406106a2f0f551d895c267da506e7ecdc41b6cb70d8a9480e4a073",
+      "originalSha256": "9c2e8890f2a1069152fc25dad6289b8d1540ff3d3e8587b702953bba10cba536"
     },
     "dist/fomkyr64.wasm": {
-      "bytes": 117883,
-      "sha256": "9e18043c910cfb676834ed86224338e1a33c33a7a683695b7f822fe12d81b07f"
+      "bytes": 133372,
+      "sha256": "5cadac3c6a744253de15b4dd2bd3d5b9c04e8bbf8e9f4a3fa381db57b2877a42",
+      "originalSha256": "ce8a35340c405ab98cc497d3cc440eebce8a708918b9035a031785c06b42e7aa"
+    },
+    "docs/HILBERT_CLOSURE.md": {
+      "bytes": 11367,
+      "sha256": "dda966749129add891be166e4cbf2a579dbd6a6d40991126b000d9acfc0d4ccc"
     },
     "fixtures/big-coefficients.json": {
       "bytes": 918,
@@ -40,6 +58,10 @@
       "bytes": 1530,
       "sha256": "6e069e01008a853a022419f4fee54cb7077dbb1d78edfac63d201a2476afcb7d"
     },
+    "fixtures/fk6-hilbert-reference.json": {
+      "bytes": 466,
+      "sha256": "9d652c93493f5dc189f44ed56268470e7fa54dd31b95c3946d973a8dba8fa52d"
+    },
     "fixtures/fk6.json": {
       "bytes": 32358,
       "sha256": "fc262ce4250ffbdaf366243b4aac1765caa97c2832313be013f82373ef6f0419"
@@ -47,6 +69,30 @@
     "fixtures/george-supported.json": {
       "bytes": 2785,
       "sha256": "96689403325738e1432595045f5c5db182ba37dfceb73d37f5e7762578efc392"
+    },
+    "fixtures/hilbert/fk3-duals.json": {
+      "bytes": 699,
+      "sha256": "0586f75162553f51aecd2c32448c3259f175700bdc8db6ca6eedac553098afb6"
+    },
+    "fixtures/hilbert/fk6-kirillov.json": {
+      "bytes": 1161,
+      "sha256": "cb56101aeadf48403c867e0aba52fe4c2eaeecbef0c1dda08153bec785ba0f44"
+    },
+    "fixtures/hilbert/q-serre-2-pbw.json": {
+      "bytes": 1309,
+      "sha256": "6375abd4b42b1e32cb1aed97efbc6a0e4f9dc48188d0816b91450aa9c9afcbdc"
+    },
+    "fixtures/hilbert/q-serre-3-pbw.json": {
+      "bytes": 1309,
+      "sha256": "b0f365fc32d899a34990dd2071802c4062b76a165ecbbe49f8f6ea6e98b9bc14"
+    },
+    "fixtures/hilbert/sklyanin-hilbert.json": {
+      "bytes": 1358,
+      "sha256": "1202d12c8516b05056f10c8c19c687a00cc297822c6f6681231ac33a63df1c9e"
+    },
+    "fixtures/hilbert/sklyanin-pbw.json": {
+      "bytes": 1358,
+      "sha256": "1202d12c8516b05056f10c8c19c687a00cc297822c6f6681231ac33a63df1c9e"
     },
     "fixtures/homogenized-weyl.json": {
       "bytes": 1159,
@@ -188,6 +234,65 @@
       "bytes": 938,
       "sha256": "60ff567b5b467315563805af402ec95fa65d67b3c83f1742e785ef522cefa955"
     },
+    "man/fomkyr.1": {
+      "bytes": 3360,
+      "sha256": "150056561cb85a179eb8588c894aab12be74bdf83939e1aa15fc015db23bc993",
+      "originalSha256": "7ab777df3611482db12be8dbc5bc2738a6423858f159871213d52c8c3bbc0647"
+    },
+    "native/cli.c": {
+      "bytes": 32476,
+      "sha256": "2a112e33f5b7723630e5c86469e0e7e3283635afbe743185c632e20e906ed89c",
+      "originalSha256": "365110e1871b3e8f0944519db8c83547844bdd0ac211c7ff4ea9a1f506f1af4f"
+    },
+    "native/fixture.c": {
+      "bytes": 6732,
+      "sha256": "f24dd665604b6c3954853a206f9981976c187eb8dab49d8617f8be81d7622e89"
+    },
+    "native/fixture.h": {
+      "bytes": 535,
+      "sha256": "cab157c2135dcfdcca0a0fb0813cec726055466381816ed65a4c5646d28ef7bd"
+    },
+    "native/hilbert_closure.h": {
+      "bytes": 6416,
+      "sha256": "dd367fe283bfe1c2e30acece4d025f708bcb5d65c2cfc7c9271cc745fb4aa8ef"
+    },
+    "native/hilbert_reference.h": {
+      "bytes": 1500,
+      "sha256": "fd9f6e685b7017edfd7c8af796f68dc72de9f645bdc384230fc3ad76539e0d91"
+    },
+    "native/host.c": {
+      "bytes": 4288,
+      "sha256": "41636308c2fb81245903e9daa482fc6799d4bace717d7af699536d997602192c"
+    },
+    "native/host.h": {
+      "bytes": 443,
+      "sha256": "8d0b40a88e6af200ba1d8a42a470508cee247f3796db08ebfb34f031889fac81"
+    },
+    "native/node-host.mjs": {
+      "bytes": 3671,
+      "sha256": "caf1d9cd9e44cb2969e02e6942e504abf89338dd14c3e80e771919d8c155f14f"
+    },
+    "native/node-lane.mjs": {
+      "bytes": 418,
+      "sha256": "ab92bc1d19b565692b5e3f692f02658a8e40a614d0293a8d514dbf8e273e22ea"
+    },
+    "native/support.c": {
+      "bytes": 7693,
+      "sha256": "5104f4431782bff1050780f73de94110114c08ed7da356b3cb3c368b1703639f"
+    },
+    "native/support.h": {
+      "bytes": 888,
+      "sha256": "367133c491bb2e81fb00d2ab18fffa5b00c01b061547b3425944d40ce57f2be8"
+    },
+    "native/wasm-cli.mjs": {
+      "bytes": 6976,
+      "sha256": "78bb73e2fa1ca77780d8df733e1a55b3aa7b6a41b6aa5e0dd540513503776b38"
+    },
+    "package.json": {
+      "bytes": 381,
+      "sha256": "46b1685a451eac7c8cdc4b53708d1ae397c94e62a0236b8ca426340c2e5a3f59",
+      "originalSha256": "1cc8c9d7fec1e20057808aa82f8204bf31ab6e4c4913dabecb90e9c931ff7bf4"
+    },
     "reference/q-serre-q2-degree20/canonical.jsonl": {
       "bytes": 1431977,
       "sha256": "df8c3e5e9db066ca8cc9abcec56564da99193c763cef1893ab6c8dbc7d73c373"
@@ -196,21 +301,29 @@
       "bytes": 9267,
       "sha256": "b1930fff641110d826f2bbb6eee27169a22ae54329ad2648199ec89c064e1045"
     },
+    "src/frontier.inc": {
+      "bytes": 5312,
+      "sha256": "18bdd0d520b4bf76646bef1cdd642d5ad49fba49def494acead49300ec311e79"
+    },
     "src/heap_nf.inc": {
       "bytes": 7089,
       "sha256": "f67eaae69c696b9851d3cd6ab7aee8c1d3493d5d72a7b88304e2c9b2de9599fb"
     },
     "src/hilbert.inc": {
-      "bytes": 3743,
-      "sha256": "5d39ecf087c38fd1f8b6e9cb1d1c488fcd17579cfa0bd42c040b2f99dfc9c790"
+      "bytes": 4222,
+      "sha256": "7ed1f6214e4f89965010dc0c47fdc2f3a1bd6cc6d3455115855e45a1ea75c7c9"
+    },
+    "src/hilbert_gate.inc": {
+      "bytes": 3524,
+      "sha256": "35ba7b9b4aca700a192a91eabe80f5f9d59bcc0552e1a9303bb0fad94e3d678a"
     },
     "src/kernel.c": {
-      "bytes": 64093,
-      "sha256": "001dee5988d769ed9c33d3da3f622c805a7a0f617606eba72474b6d03ad3dbaf"
+      "bytes": 64575,
+      "sha256": "8519584998e21741024ae505db9fef5bbe9cadc0bc69d1bfce2d4cfffed59d29"
     },
     "src/kernel.h": {
-      "bytes": 4911,
-      "sha256": "9d2dc8c3dc4bc751a6f574067cd66eafe480570abfe01f978e7907a725655fd3"
+      "bytes": 6598,
+      "sha256": "d42b2f1e10941c8766ff3e09892708822494fa1fda47b477819e045093b48a15"
     },
     "src/limb_division.inc": {
       "bytes": 2193,
@@ -219,6 +332,10 @@
     "src/local_rewrites.inc": {
       "bytes": 3165,
       "sha256": "23c0956afbff9860f7c35ccb6606576ba5247c885aef2151ac532d8d5ed64a6c"
+    },
+    "src/lower_bound.inc": {
+      "bytes": 4604,
+      "sha256": "8a3834002775ad7e04054a7e9092fe102eb479bb93878daf7760d3c79001a5fc"
     },
     "src/matcher.inc": {
       "bytes": 4421,
@@ -252,6 +369,10 @@
       "bytes": 2226,
       "sha256": "4f51f05b71a9c4591dcb38be50f495940a974047dbb0788ed6ef98358f3a92ba"
     },
+    "tests/audit_hilbert_closure_benchmarks.py": {
+      "bytes": 5180,
+      "sha256": "37aac71985b00c4f83006a290ed0ea6818546560954b7379cfe41988f31cb51f"
+    },
     "tests/benchmark_062.py": {
       "bytes": 4044,
       "sha256": "a8f25fca1d30a786e9b3b7e4554f369b13b865d340f181508f4d2897fc9a4599"
@@ -263,6 +384,10 @@
     "tests/benchmark_064.py": {
       "bytes": 2930,
       "sha256": "b18b23837af6cd553c5d315709348024cf7b8b79615a7c579c868a04c864d1a1"
+    },
+    "tests/benchmark_065.py": {
+      "bytes": 2829,
+      "sha256": "3ecd5416fdcd33e35f6eae752fb71242733d9af90c35a862ab6bcde343d5a779"
     },
     "tests/benchmark_deep.py": {
       "bytes": 2565,
@@ -279,6 +404,10 @@
     "tests/benchmark_fomkyr.mjs": {
       "bytes": 2060,
       "sha256": "1b2370398ce7416541ddd307bccb79f7562ed727c6c1e8d627bd7a712e65545c"
+    },
+    "tests/benchmark_hilbert_closure.py": {
+      "bytes": 3272,
+      "sha256": "7a337a4450d37cce0ae0a5bc3b413ceeda0852f4020fc9bbf07423fac71cf58d"
     },
     "tests/benchmark_modular.py": {
       "bytes": 2490,
@@ -308,9 +437,17 @@
       "bytes": 1228,
       "sha256": "43a0570c76fe8f6432c275974d133852e052a81870ebbc5a9617f1b2b18624db"
     },
+    "tests/lower_bound_arithmetic.c": {
+      "bytes": 424,
+      "sha256": "966d7058ecefd7acf9897982a04c38837501ddfe65a20f051dc54d9c0cdd7ac6"
+    },
     "tests/modular_trial.mjs": {
       "bytes": 2043,
       "sha256": "6e605ee61fde984e898f4023b82a50f71136a387aec2ebfaf144d4913dd53edb"
+    },
+    "tests/native_util_065.c": {
+      "bytes": 318,
+      "sha256": "6f28d447eeb68096137eb720f3dc9d8c1b9a880ffed63d84e079804eeb3fdb14"
     },
     "tests/node-host.mjs": {
       "bytes": 3346,
@@ -428,6 +565,14 @@
       "bytes": 7780,
       "sha256": "f7b575f1aae0e3701cf8a000edd7026389b5b689ee0b608770207db6b7e18890"
     },
+    "tests/test_cli_065.py": {
+      "bytes": 5739,
+      "sha256": "50ade233c11c4ba34af41c94cf9fbb9463abd0487b0ff4cf778ed80f5cf8ef80"
+    },
+    "tests/test_cli_edges_065.py": {
+      "bytes": 2890,
+      "sha256": "310c8774d50440aa776e8b629a84496ca3a5d909574c5ca65746bc4b63f43dac"
+    },
     "tests/test_compatibility.mjs": {
       "bytes": 8797,
       "sha256": "d2c6e242fc36adaf33290c7d01743ce87c0b4279f5df1a3ce7ec0f2638ef80c3"
@@ -455,6 +600,30 @@
     "tests/test_fomkyr.mjs": {
       "bytes": 7029,
       "sha256": "5928db2a93c19851aad61fa1eea710ca8a79e09222bc9e414361f365718f2b93"
+    },
+    "tests/test_frontier_native_065.py": {
+      "bytes": 2835,
+      "sha256": "00a9ad9e4d8e938860ffed3db8e050788428a31aca01b4d968160be104c1c9dc"
+    },
+    "tests/test_frontier_wasm.mjs": {
+      "bytes": 2165,
+      "sha256": "58f7971f57e5d1dbc8beb676c15a850db2b7b5b35291eaa8c071ef049c81ed08"
+    },
+    "tests/test_hilbert_authority_edges.py": {
+      "bytes": 2259,
+      "sha256": "71329fa2106c61e5d8772fa048bd6baf96cec5b41276d8dcff2cee56b0dd015d"
+    },
+    "tests/test_hilbert_closure.py": {
+      "bytes": 6556,
+      "sha256": "e25a73a3c887c29c5205b82710552b02fc1977011d630e51a25345d570c71801"
+    },
+    "tests/test_hilbert_closure_resume.py": {
+      "bytes": 3231,
+      "sha256": "d95df32e846329fa566b1a818208773e748833c6d191855dfe6b45d013595114"
+    },
+    "tests/test_hilbert_closure_wasm.mjs": {
+      "bytes": 4948,
+      "sha256": "58732ef07911aeb286b45fc5db422080afe289c859d3858270749fc7c6129fe4"
     },
     "tests/test_installer.py": {
       "bytes": 2399,
@@ -487,6 +656,10 @@
     "tests/test_native.py": {
       "bytes": 4511,
       "sha256": "951221aeb1f929d62127646d560a2acc8e3cd039e60d01b5707ec06486e94193"
+    },
+    "tests/test_native_platform_065.py": {
+      "bytes": 2736,
+      "sha256": "054a2c5a21cfa48178010457cc0ed2c5b67af85ab68dd4a3c35b81ee0ab74490"
     },
     "tests/test_optimizer_edges.py": {
       "bytes": 3059,
@@ -557,6 +730,10 @@
       "bytes": 2893,
       "sha256": "cf9b9335ca0f14037b67c4151c1fc1f20f3c4a755d4bcab2e21c916a072d3303"
     },
+    "tools/audit_partial_065.py": {
+      "bytes": 3086,
+      "sha256": "62510cc3754b40e2d6658da29410a3a6cb2ad2478975f74a4ed35bff7849a33a"
+    },
     "tools/build.sh": {
       "bytes": 1323,
       "sha256": "6807b6c97fea790f3f60dfdaa92a0894e28a154b1d9dedbc01e9da302d887f66"
@@ -569,13 +746,17 @@
       "bytes": 9014,
       "sha256": "d3a19a4297cbbe18a17b3d5b2a349a8806d135983c290fbf679f706c500c6ae0"
     },
+    "tools/hilbert_certificate.py": {
+      "bytes": 5017,
+      "sha256": "0d6ca3aea25a4674dd5ebad118d53144d959a199640ce019bda7efcbf7f6cef4"
+    },
     "tools/identify_fk.py": {
       "bytes": 2625,
       "sha256": "772cb47379e9bc87c453fdfc1a33ab3da682d0ee3201804d91c3ac1d03733c82"
     },
     "tools/install.py": {
       "bytes": 12533,
-      "sha256": "3bee1c34d8c1c6566d703f00e09c5530109f568884c82657e4c62f73294a1eb3"
+      "sha256": "0fcaa8445d32fc3c7a3e0558108d815f2e49758fe342e47d4aff878c6096f89c"
     },
     "tools/native.py": {
       "bytes": 13361,
@@ -617,6 +798,14 @@
       "bytes": 959,
       "sha256": "f8cd6b87d2b00cb3b04c0734beba16fae52977a5139b0457f3a858717bc06c17"
     },
+    "tools/verify_065.sh": {
+      "bytes": 589,
+      "sha256": "48822aa47a7b0967d65efcdf7f12f078c867cd8948373940a91b2017abbe3987"
+    },
+    "tools/verify_066.sh": {
+      "bytes": 537,
+      "sha256": "c238d16328477531fd029f9a0c1d3359ee66b4b9b335529fcead158a21cfe638"
+    },
     "tools/verify_direct.sh": {
       "bytes": 983,
       "sha256": "6a221b333fc5bbd6c154adef7a63985f9fa7ba807fbcc7351520bef0466605a1"
@@ -635,19 +824,20 @@
     },
     "web/build-info.js": {
       "bytes": 387,
-      "sha256": "c8a6cb6062d8809da72c064eb0eb214a8c561db9c4426d9120801a79f8805c0e"
+      "sha256": "2c3ae9d506ba24ab6b0368dfd533172ad3fa4a40c529c3e94d53db406e806e11",
+      "originalSha256": "9a2b8c5947ca5da5dc4898fc58347710574193ef6600fb7cf144de21c4d451a7"
     },
     "web/candidate-verifier.js": {
-      "bytes": 3879,
-      "sha256": "3273dffb94cb80e488faa395a6952682282a8aa4927cd76d48a43228330f595e"
+      "bytes": 3942,
+      "sha256": "8c3e5e78d1b773d78257bf92940ceb80a7d69685dd4e764dabbda3cf62003176"
     },
     "web/capabilities.js": {
       "bytes": 1334,
       "sha256": "526e19b4f53f89c32135917d036d3f7ed7740197300bae9345cd5669fe0c9ccc"
     },
     "web/controls.js": {
-      "bytes": 13306,
-      "sha256": "4a0db159878fecf98c1f27cd0b24559d9597a2c0f98540030d0b35f78843bfc1"
+      "bytes": 16297,
+      "sha256": "76b7c7eb540025281726b87981b227f5477af90379f8695c7aaacea683eb0fc4"
     },
     "web/demo-worker.js": {
       "bytes": 613,
@@ -658,44 +848,56 @@
       "sha256": "4805cdd611774acdff74583661be3723774eaeca60b926bccdbfcb8c012ba3aa"
     },
     "web/engine.js": {
-      "bytes": 32295,
-      "sha256": "d54f58037d74e0c052ebd2ad633ffabcfa5082b54cc51f3b881ddcc6825131fc"
+      "bytes": 41495,
+      "sha256": "2fef29328c34c73d4467a5750b4c528cfaf783ba7369b8913f9996643e4781da"
     },
     "web/fomkyr-isolation-worker.js": {
       "bytes": 1158,
       "sha256": "41bf71ff70c5e98858ace8dc2a9168911bf38f591307e2254f7314eb30ac49dc"
     },
     "web/fomkyr32-single.wasm": {
-      "bytes": 108464,
-      "sha256": "75c8af467c16edf69cd20430e8c30d19ee0dac88e03e5deec455d19d48015816"
+      "bytes": 125138,
+      "sha256": "3b6416d40a2b9f83042f15cadc14fc60160190d45ecd49d79ccfd0e200c3bfb3",
+      "originalSha256": "dfc9e8e5dd64e954a553d2ae02381ddd20cfe7988535261cd5dcf6e1af4cdb92"
     },
     "web/fomkyr32.wasm": {
-      "bytes": 108789,
-      "sha256": "151c90c70ceebe4c42f979071d5286e9a6f6a63da7794f3e9c152e3746591d95"
+      "bytes": 125131,
+      "sha256": "acdfdf7be0e6248849d0f329c91260e87fa217cbbc6f6a27e546040569e6618f",
+      "originalSha256": "d40887f6f6a46c148765af5d67d9c788bfb880f96cd90f7c9bc91f32f824ef3b"
     },
     "web/fomkyr64-single.wasm": {
-      "bytes": 117621,
-      "sha256": "3d11e5f442c686f8bdc47ae3350f0d52675bbf907b254f880b4b5e240f2d3652"
+      "bytes": 133536,
+      "sha256": "4e8dfc5850406106a2f0f551d895c267da506e7ecdc41b6cb70d8a9480e4a073",
+      "originalSha256": "9c2e8890f2a1069152fc25dad6289b8d1540ff3d3e8587b702953bba10cba536"
     },
     "web/fomkyr64.wasm": {
-      "bytes": 117883,
-      "sha256": "9e18043c910cfb676834ed86224338e1a33c33a7a683695b7f822fe12d81b07f"
+      "bytes": 133372,
+      "sha256": "5cadac3c6a744253de15b4dd2bd3d5b9c04e8bbf8e9f4a3fa381db57b2877a42",
+      "originalSha256": "ce8a35340c405ab98cc497d3cc440eebce8a708918b9035a031785c06b42e7aa"
     },
     "web/form-options.js": {
       "bytes": 1409,
       "sha256": "c0aaa8109ceb5a767474ae0e82412875342d8d6a2c18c1d5405042be06ebf55c"
     },
     "web/george-entry.js": {
-      "bytes": 3558,
-      "sha256": "1cdc9567cbbba0f3dd1d9c13b0d4323fc163161e38ddb15751196727a9c5de49"
+      "bytes": 3795,
+      "sha256": "e40851588cc2b77ef7d0b225944c313a64c96db867464ec832c17e8612562598"
     },
     "web/george-worker.js": {
       "bytes": 344,
       "sha256": "cc022686354ef6d5b82a54e3a2a442deb8372be70c0a544e5a64b75cc7248309"
     },
+    "web/hilbert-closure.js": {
+      "bytes": 5458,
+      "sha256": "925f5cd1f1419b2c30019265180784da46e2342c2b9e6e651d5dc11c23b4e936"
+    },
+    "web/hilbert-reference.js": {
+      "bytes": 1995,
+      "sha256": "415fd30e3d279957fb373d3f630d29e60907af20c8b28a0b388c886a8bc897d3"
+    },
     "web/hilbert.js": {
-      "bytes": 1891,
-      "sha256": "2d61495ae34d3d121e437b34890e6f83a6df8be1e5a5bc59bc98d915da80c5b3"
+      "bytes": 2246,
+      "sha256": "0d3dbd41148b51e6517a7be345f42f95b377c9166cf031f90c02fa0a2b8d2df9"
     },
     "web/index.html": {
       "bytes": 1207,
@@ -734,8 +936,8 @@
       "sha256": "c620c5bf208ed576cd2731bc6e51f01ff81727d4f9b8ea2ccdc957ef0b98cfcd"
     },
     "web/progress-view.js": {
-      "bytes": 2735,
-      "sha256": "c114b7b8c1c1e649c535b6080868accb6916874fe3bb58672a7d23205e850e55"
+      "bytes": 3726,
+      "sha256": "52555f6ac57bb86103e36a3a31dd827c378410bdc03fd594bf90cf4a373a2fdc"
     },
     "web/progress.js": {
       "bytes": 7778,
@@ -746,16 +948,24 @@
       "sha256": "b5429ecd15df012042682ac770e2058d5b959dcfcfac9e22acffb793a6eb4254"
     },
     "web/result-links.js": {
-      "bytes": 2961,
-      "sha256": "7fb93719b0b3e1739270a30d03047d56e564be93a7e3f13bf1a16b8d916066ba"
+      "bytes": 3592,
+      "sha256": "96c5e26d3ed3120e0e8d618c3f6e3e70396bb0c6e7fb3b5490c43a109647e7d5"
     },
     "web/runtime.js": {
       "bytes": 9169,
       "sha256": "4f2eb0f95291072150a62f54f885246021b23dd91dd2eba958624f6befd0873f"
     },
     "web/storage.js": {
-      "bytes": 4794,
-      "sha256": "812dff09108225e598f704325bc365626947bbe446e1077a1bf604a84f71a9f5"
+      "bytes": 5844,
+      "sha256": "8d275a324c66cec680b7b6958ccc14d0e80e9310610e5f5ed0cd09811938e5c0"
+    },
+    "tools/build-native-pgo.sh": {
+      "bytes": 1399,
+      "sha256": "0e4b46d737683c60e12ab2546681d4e72a4e509b1fccdea9bc7c660c803a1b48"
+    },
+    "tools/check-host.sh": {
+      "bytes": 3611,
+      "sha256": "9e1ab0beb3e8616328e4d36484b84cfa223a42d30bb3754411aa582f066871a0"
     }
   },
   "compatibilityFixtures": {
@@ -783,5 +993,17 @@
   "omittedGeneratedReports": true,
   "testAdaptations": {
     "tests/test_progress_integration.mjs": "Load SHA-256-verified compressed historical record fixtures and retain only checkpoint identity/count metadata. Mathematical and compatibility assertions are unchanged."
+  },
+  "adaptations": {
+    "README.md": "Native C CLI is the primary entry point; George browser settings remain documented separately.",
+    "Makefile": "make check writes a local host configuration; make builds a native C executable with verified O3/LTO, native tuning and optional GCC PGO. Compiler/profile changes trigger rebuilds.",
+    "man/fomkyr.1": "Standalone engine description and retained evidence manual link.",
+    "package.json": "Minimal subproject scripts, including native build.",
+    "docs/HILBERT_CLOSURE.md": "Public mathematical/evidence contract; omit unpublished proposal references and unavailable GUI claims.",
+    "web/*.wasm": "Rebuilt from unchanged C sources with the local Clang O3/LTO toolchain.",
+    "tools/build-native-pgo.sh": "Optional reproducible GCC profile-guided native build; training profiles and products are ignored.",
+    "web/george-entry.js": "Report the runtime VERSION for standalone worker initialization.",
+    "native/cli.c": "Optional Node/Wasm launcher supplies the experimental memory64 flag only when the installed Node advertises it.",
+    "tools/check-host.sh": "Local POSIX/compiler compatibility probe and optimized profile selection; no host configuration is distributed."
   }
 }

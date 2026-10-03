@@ -1,12 +1,13 @@
 {
   "name": "fomkyr",
-  "version": "0.6.4",
-  "description": "Exact homogeneous noncommutative Groebner bases",
+  "version": "0.6.6",
+  "description": "Fast pure C engine for exact homogeneous noncommutative Groebner bases",
   "private": true,
   "type": "module",
   "license": "MIT",
   "scripts": {
     "build": "bash tools/build.sh",
-    "test:controls": "node tests/test_direct_controls.mjs && node tests/test_063_controls.mjs"
+    "test:controls": "node tests/test_direct_controls.mjs && node tests/test_063_controls.mjs",
+    "build:native": "make native"
   }
 }

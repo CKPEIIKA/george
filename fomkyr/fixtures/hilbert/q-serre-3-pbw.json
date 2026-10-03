@@ -1,0 +1,77 @@
+{
+  "schema": 1,
+  "kind": "external-dimensions",
+  "identity": "c42f9eb0b484b16c238b725b0a67b09e4496fbcc1d46da82d6e85b6567885d02",
+  "modulus": 0,
+  "source": "Terwilliger 2106.14884v1 PBW basis, H=product odd(1-t^d)^-2 even(1-t^d)^-1, q rational not root of unity; explicit external theorem assumption",
+  "entries": [
+    {
+      "degree": 4,
+      "dimension": "14"
+    },
+    {
+      "degree": 5,
+      "dimension": "24"
+    },
+    {
+      "degree": 6,
+      "dimension": "40"
+    },
+    {
+      "degree": 7,
+      "dimension": "64"
+    },
+    {
+      "degree": 8,
+      "dimension": "100"
+    },
+    {
+      "degree": 9,
+      "dimension": "154"
+    },
+    {
+      "degree": 10,
+      "dimension": "232"
+    },
+    {
+      "degree": 11,
+      "dimension": "344"
+    },
+    {
+      "degree": 12,
+      "dimension": "504"
+    },
+    {
+      "degree": 13,
+      "dimension": "728"
+    },
+    {
+      "degree": 14,
+      "dimension": "1040"
+    },
+    {
+      "degree": 15,
+      "dimension": "1472"
+    },
+    {
+      "degree": 16,
+      "dimension": "2062"
+    },
+    {
+      "degree": 17,
+      "dimension": "2864"
+    },
+    {
+      "degree": 18,
+      "dimension": "3948"
+    },
+    {
+      "degree": 19,
+      "dimension": "5400"
+    },
+    {
+      "degree": 20,
+      "dimension": "7336"
+    }
+  ]
+}

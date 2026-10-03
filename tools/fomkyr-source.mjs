@@ -6,8 +6,10 @@ import {fileURLToPath} from 'node:url';
 export const FOMKYR_SOURCE = 'fomkyr';
 export function fomkyrSourceInput(relative) {
   return !/^(?:results|\.cache)(?:\/|$)/.test(relative)
+    && !(relative.startsWith('dist/') && !relative.endsWith('.wasm'))
+    && !/^fomkyr-job(?:\/|$)/.test(relative)
     && !/(?:^|\/)__pycache__(?:\/|$)/.test(relative)
-    && !/\.(?:so|o|a|pyc|log)$/.test(relative);
+    && !/\.(?:so|o|a|pyc|log|gcda|gcno|profraw|profdata)$/.test(relative);
 }
 export function copyFomkyrSource(destination) {
   const source = fileURLToPath(new URL('../fomkyr/',import.meta.url));

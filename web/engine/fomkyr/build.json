@@ -2,8 +2,8 @@
   "backend": "fomkyr",
   "name": "fomkyr",
   "upstreamName": "fomkyr",
-  "version": "0.6.4",
-  "appVersion": "0.6.4",
+  "version": "0.6.6",
+  "appVersion": "0.6.5",
   "license": "MIT",
   "compiler": {
     "language": "C",
@@ -33,7 +33,7 @@
     "smallerBudgets": "Automatic scratch uses 4/7 of the effective budget; rational overflow reserve uses 1/7. Saved workspace choices apply in manual mode."
   },
   "provenance": {
-    "archiveSha256": "63209429895636d6237671405aadbe454aeb8a44e165343a8476f4b87332aeb7",
+    "archiveSha256": "547e5d8b1fb44b6ee8b1aa8675a16ce82305b39c18169ce9a56e8eea82f09120",
     "kernelChanged": false,
     "hostAdapted": true,
     "curatedSources": true,
@@ -50,15 +50,19 @@
     },
     "build-info.js": {
       "bytes": 387,
-      "sha256": "c8a6cb6062d8809da72c064eb0eb214a8c561db9c4426d9120801a79f8805c0e"
+      "sha256": "2c3ae9d506ba24ab6b0368dfd533172ad3fa4a40c529c3e94d53db406e806e11"
+    },
+    "candidate-verifier.js": {
+      "bytes": 3942,
+      "sha256": "8c3e5e78d1b773d78257bf92940ceb80a7d69685dd4e764dabbda3cf62003176"
     },
     "capabilities.js": {
       "bytes": 1334,
       "sha256": "526e19b4f53f89c32135917d036d3f7ed7740197300bae9345cd5669fe0c9ccc"
     },
     "controls.js": {
-      "bytes": 13306,
-      "sha256": "4a0db159878fecf98c1f27cd0b24559d9597a2c0f98540030d0b35f78843bfc1"
+      "bytes": 16297,
+      "sha256": "76b7c7eb540025281726b87981b227f5477af90379f8695c7aaacea683eb0fc4"
     },
     "demo-worker.js": {
       "bytes": 613,
@@ -69,44 +73,52 @@
       "sha256": "4805cdd611774acdff74583661be3723774eaeca60b926bccdbfcb8c012ba3aa"
     },
     "engine.js": {
-      "bytes": 32740,
-      "sha256": "226cdea75c1b692a83ffb689e6caf6ecaf4d184f902d7703f97af47fb69aaad7"
+      "bytes": 41940,
+      "sha256": "f68fa0115bc9f2de24d1c44d8c1f290d6e76b56ed7b28f6898d9cdc77645b3cb"
     },
     "fomkyr-isolation-worker.js": {
       "bytes": 1158,
       "sha256": "41bf71ff70c5e98858ace8dc2a9168911bf38f591307e2254f7314eb30ac49dc"
     },
     "fomkyr32-single.wasm": {
-      "bytes": 108464,
-      "sha256": "75c8af467c16edf69cd20430e8c30d19ee0dac88e03e5deec455d19d48015816"
+      "bytes": 125138,
+      "sha256": "3b6416d40a2b9f83042f15cadc14fc60160190d45ecd49d79ccfd0e200c3bfb3"
     },
     "fomkyr32.wasm": {
-      "bytes": 108789,
-      "sha256": "151c90c70ceebe4c42f979071d5286e9a6f6a63da7794f3e9c152e3746591d95"
+      "bytes": 125131,
+      "sha256": "acdfdf7be0e6248849d0f329c91260e87fa217cbbc6f6a27e546040569e6618f"
     },
     "fomkyr64-single.wasm": {
-      "bytes": 117621,
-      "sha256": "3d11e5f442c686f8bdc47ae3350f0d52675bbf907b254f880b4b5e240f2d3652"
+      "bytes": 133536,
+      "sha256": "4e8dfc5850406106a2f0f551d895c267da506e7ecdc41b6cb70d8a9480e4a073"
     },
     "fomkyr64.wasm": {
-      "bytes": 117883,
-      "sha256": "9e18043c910cfb676834ed86224338e1a33c33a7a683695b7f822fe12d81b07f"
+      "bytes": 133372,
+      "sha256": "5cadac3c6a744253de15b4dd2bd3d5b9c04e8bbf8e9f4a3fa381db57b2877a42"
     },
     "form-options.js": {
       "bytes": 1409,
       "sha256": "c0aaa8109ceb5a767474ae0e82412875342d8d6a2c18c1d5405042be06ebf55c"
     },
     "george-entry.js": {
-      "bytes": 3884,
-      "sha256": "1942fc9b6f6c9e7ffe5d97d53a3d047e22af9f7be46f15524c883d98cfc03c5d"
+      "bytes": 4083,
+      "sha256": "8c64e12d59037e0ecbcc37b19e5ae8d88e00d49578400836ce2e74858de688b2"
     },
     "george-worker.js": {
       "bytes": 344,
       "sha256": "cc022686354ef6d5b82a54e3a2a442deb8372be70c0a544e5a64b75cc7248309"
     },
+    "hilbert-closure.js": {
+      "bytes": 5458,
+      "sha256": "925f5cd1f1419b2c30019265180784da46e2342c2b9e6e651d5dc11c23b4e936"
+    },
+    "hilbert-reference.js": {
+      "bytes": 1995,
+      "sha256": "415fd30e3d279957fb373d3f630d29e60907af20c8b28a0b388c886a8bc897d3"
+    },
     "hilbert.js": {
-      "bytes": 1891,
-      "sha256": "2d61495ae34d3d121e437b34890e6f83a6df8be1e5a5bc59bc98d915da80c5b3"
+      "bytes": 2246,
+      "sha256": "0d3dbd41148b51e6517a7be345f42f95b377c9166cf031f90c02fa0a2b8d2df9"
     },
     "io-broker.js": {
       "bytes": 2036,
@@ -132,17 +144,25 @@
       "bytes": 1958,
       "sha256": "2c11f568aede632273aafe33dfe7dc2ac5adbe2bfd70b341e5af47de5b85734b"
     },
+    "modular-engine.js": {
+      "bytes": 13484,
+      "sha256": "ae421b4cc02ea131332a1e3e167e4e2246073d0c1da04e9edef2aa7c1d7d81bf"
+    },
     "module-cache.js": {
       "bytes": 1354,
       "sha256": "c620c5bf208ed576cd2731bc6e51f01ff81727d4f9b8ea2ccdc957ef0b98cfcd"
     },
     "progress-view.js": {
-      "bytes": 2188,
-      "sha256": "f847737c6b9647911517db8248ca791e6f8deebee5b8765b86133807fdf7481e"
+      "bytes": 3348,
+      "sha256": "2123b171113d71c0ae609f0fbb698188153fcb5478257dc69607ef79c24b56ea"
     },
     "progress.js": {
       "bytes": 7778,
       "sha256": "01f17d4cf0d79377a65c810efe2b23d46f74bdfc55f1406cfa9101b2a0622cca"
+    },
+    "rational-lift.js": {
+      "bytes": 7641,
+      "sha256": "b5429ecd15df012042682ac770e2058d5b959dcfcfac9e22acffb793a6eb4254"
     },
     "result-links.js": {
       "bytes": 3096,
@@ -153,8 +173,8 @@
       "sha256": "4f2eb0f95291072150a62f54f885246021b23dd91dd2eba958624f6befd0873f"
     },
     "storage.js": {
-      "bytes": 4794,
-      "sha256": "812dff09108225e598f704325bc365626947bbe446e1077a1bf604a84f71a9f5"
+      "bytes": 5844,
+      "sha256": "8d275a324c66cec680b7b6958ccc14d0e80e9310610e5f5ed0cd09811938e5c0"
     },
     "worker-count.js": {
       "bytes": 578,
