@@ -1,6 +1,8 @@
 // Public, persisted options for Fomkyr (upstream fomkyr 0.6).
 import {automaticWorkers} from '../engine/fomkyr/worker-count.js';
 import {defaultMemoryMiB} from './backends.js';
+import {planMemory} from '../engine/fomkyr/memory-policy.js';
+import {formatMemorySize} from './memory-monitor.js';
 export const FOMKYR_DEFAULTS = Object.freeze({
   execution: 'auto', bits: 'auto', memoryPolicy: 'auto', spill: true, resume: 'auto', hilbert: false,
   heapReduction: true, cachePercent: 12, heapThreshold: 16, batchPairs: 128,
@@ -75,13 +77,31 @@ export function fomkyrControlAvailability(form) {
     costScheduling: o.batchPairs !== 0 && o.execution !== 'single' && Number(form.nativeWorkers) !== 1,
   }[key] ?? true)]));
 }
-export function updateFomkyrControlAvailability(form, root = document) {
+export function updateFomkyrControlAvailability(form, root = document, translate) {
   const availability = fomkyrControlAvailability(form);
   availability.nativeWorkers = form.backend === 'fomkyr' && (form.fomkyrOptions?.execution ?? FOMKYR_DEFAULTS.execution) !== 'single';
   for (const [key, enabled] of Object.entries(availability)) {
     const input = root.getElementById(key === 'nativeWorkers' ? key : 'fomkyr-' + key);
     input.disabled = !enabled;
     input.closest('label')?.classList.toggle('backend-disabled', !enabled);
+  }
+  const summary = root.getElementById('fomkyr-autoMemorySummary');
+  if (summary && translate) {
+    summary.hidden = form.backend !== 'fomkyr' || (form.fomkyrOptions?.memoryPolicy ?? 'auto') !== 'auto';
+    if (!summary.hidden) {
+      const options = {...FOMKYR_DEFAULTS, ...form.fomkyrOptions};
+      const budget = Math.min(Number(form.memoryMiB ?? defaultMemoryMiB('fomkyr')), options.bits === '32' ? 4095 : 14304) * 1048576;
+      try {
+        const plan = planMemory(budget, 1, {memoryPolicy:'auto'});
+        const label = value => {
+          const size = formatMemorySize(value, root.documentElement?.lang ?? 'en');
+          return `${size.amount} ${translate(size.unit === 'GiB' ? 'memory.gib' : 'memory.mib')}`;
+        };
+        summary.textContent = translate('fomkyr.autoMemorySummary', {
+          scratch:label(plan.ordinaryScratchBytes),reserve:label((form.field ?? '0') === '0' ? plan.rowReserveBytes : 0),
+        });
+      } catch {summary.textContent = '';}
+    }
   }
 }
 export function fomkyrEngineOptions(form) {
@@ -159,6 +179,11 @@ export function installFomkyrControls(root, t) {
     if (type === 'checkbox') {label.className = 'check'; label.append(input, title);}
     else label.append(title, input);
     container.append(label);
+    if (key === 'memoryPolicy') {
+      const summary = root.createElement('p'); summary.className = 'hint';
+      summary.id = 'fomkyr-autoMemorySummary'; summary.hidden = true;
+      container.append(summary);
+    }
   }
   writeFomkyrOptions({}, root);
 }

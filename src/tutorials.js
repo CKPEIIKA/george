@@ -2,6 +2,7 @@
 import { EXAMPLES } from './examples.js';
 import { exampleForm } from './bergman-syntax.js';
 import { TUTORIAL_PRESENTATIONS } from './tutorial-presentations.js';
+import { FOMKYR_DEFAULTS } from './fomkyr-options.js';
 
 export const TUTORIALS = [
   { id: 'hilbert', example: 'hilb',
@@ -33,7 +34,9 @@ export const TUTORIALS = [
   { id: 'fk6',
     title: { en: 'Fomin–Kirillov algebra FK6', ru: 'Алгебра Фомина–Кириллова FK6' },
     description: { en: 'The tested 15-generator presentation with 100 quadratic relations, in its original generator order. Start through degree 4 and increase the bound to explore basis growth.', ru: 'Проверенное представление с 15 образующими и 100 квадратичными соотношениями, с исходным порядком образующих. Начните со степени 4 и увеличивайте предел, чтобы исследовать рост базиса.' },
-    form: TUTORIAL_PRESENTATIONS.fk6 },
+    form: { ...TUTORIAL_PRESENTATIONS.fk6, backend: 'fomkyr', memoryMiB: 3584,
+      nativeWorkers: 0, monomialPruning: true,
+      fomkyrOptions: { ...FOMKYR_DEFAULTS, bits: '64' } } },
   { id: 'oscillator',
     title: { en: 'Bosonic creation and annihilation operators', ru: 'Бозонные операторы рождения и уничтожения' },
     description: { en: 'Two independent oscillator modes with central t and [a_i, b_j] = δ_ij t². Setting t = 1 gives the canonical commutators. Explore normal ordering through degree 6.', ru: 'Две независимые моды осциллятора: t центрально, [a_i, b_j] = δ_ij t². При t = 1 получаются канонические коммутаторы. Исследуйте нормальное упорядочение до степени 6.' },

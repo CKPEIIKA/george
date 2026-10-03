@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>George 0.6.4</title>
+<title>George 0.6.5</title>
 <meta name="description" content="George computes Gröbner bases, Hilbert series, Anick resolutions and Betti numbers for noncommutative and commutative algebras, using bergman and fomkyr in your browser.">
 <meta name="theme-color" content="#eef2f3" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#111a27" media="(prefers-color-scheme: dark)">
@@ -18,7 +18,7 @@
   <div class="brand">
     <a class="brand-home" href="#compute" aria-label="George">
     <svg class="logo" viewBox="0 0 28 28" aria-hidden="true"><path class="logo-face" d="M14 3 25 14 14 25 3 14Z"/><path class="logo-edge" d="M14 3 25 14 14 25 3 14Z"/><circle cx="14" cy="3.6" r="2"/><circle cx="24.4" cy="14" r="2"/><circle cx="14" cy="24.4" r="2"/><circle cx="3.6" cy="14" r="2"/></svg>
-    <span class="brand-name">George <small class="brand-version">0.6.4</small></span>
+    <span class="brand-name">George <small class="brand-version">0.6.5</small></span>
     </a>
     <span class="brand-sub"><span data-i18n="brand.subPrefix">an interface to bergman and </span><a href="#guide-fomkyr" data-i18n="brand.more">more…</a></span>
   </div>
@@ -272,10 +272,6 @@
     <div class="results-head">
       <div class="results-title">
         <h2 id="resultsTitle" data-i18n="results">Results</h2>
-        <button type="button" class="quiet small zip-download" id="downloadResultsZip" hidden disabled
-          title="Download text results as ZIP" aria-label="Download text results as ZIP" data-i18n-attr="title:results.zip;aria-label:results.zip">
-          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v7M14 3v5h4M12 12v8m-3-3 3 3 3-3M5 15v6h14v-6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
       </div>
       <div class="run-info">
         <p class="run-status" id="runStatus" aria-live="polite" data-i18n="status.idle">Nothing computed yet.</p>
@@ -285,7 +281,7 @@
               <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="6" width="14" height="12" rx="2"/><path d="M9 10v4m6-4v4M8 3v3m4-3v3m4-3v3M8 18v3m4-3v3m4-3v3M2 9h3m-3 6h3m14-6h3m-3 6h3"/></svg>
               <span id="memoryValue"></span>
             </button>
-            <span class="help-pop" id="memoryUsageHint" data-i18n="memory.usageHint">Allocated Wasm memory, including reserved workspace. It updates when memory grows. This is not total browser RAM; disk checkpoints are separate.</span>
+            <span class="help-pop" id="memoryUsageHint">Wasm linear memory capacity, including reserved workspace. Physical RAM is committed as pages are touched. Browser objects and disk checkpoints are measured separately.</span>
           </span>
           <span class="help run-metric" id="degreeUsage">
             <button type="button" class="help-btn metric-button" id="degreeMetric" aria-expanded="false" aria-controls="degreeUsageHint" aria-describedby="degreeUsageHint" aria-label="Degree" data-i18n-attr="aria-label:monitor.degree">
@@ -304,7 +300,6 @@
         </div>
       </div>
     </div>
-    <p class="hint zip-status" id="resultsZipStatus" role="status" aria-live="polite" hidden></p>
     <div class="tabs" role="tablist" aria-label="Result views" data-i18n-attr="aria-label:tabs.aria" id="tabs">
       <button role="tab" data-tab="basis" data-i18n="tab.basis" aria-selected="true">Gröbner basis</button>
       <button role="tab" data-tab="series" data-i18n="tab.series" hidden>Series</button>
@@ -323,7 +318,17 @@
     <div class="tabpanel" data-panel="series" role="tabpanel" hidden><div id="seriesOut"></div></div>
     <div class="tabpanel" data-panel="betti" role="tabpanel" hidden><div id="bettiOut"></div></div>
     <div class="tabpanel" data-panel="resolution" role="tabpanel" hidden><div id="resolutionOut"></div></div>
-    <div class="tabpanel" data-panel="files" role="tabpanel" hidden><div id="filesOut"></div></div>
+    <div class="tabpanel" data-panel="files" role="tabpanel" hidden>
+      <div class="files-actions">
+        <button type="button" class="quiet small zip-download" id="downloadResultsZip" hidden disabled
+          title="Download text results as ZIP" aria-label="Download text results as ZIP" data-i18n-attr="title:results.zip;aria-label:results.zip">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v7M14 3v5h4M12 12v8m-3-3 3 3 3-3M5 15v6h14v-6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span data-i18n="results.zip">Download text results as ZIP</span>
+        </button>
+        <p class="hint zip-status" id="resultsZipStatus" role="status" aria-live="polite" hidden></p>
+      </div>
+      <div id="filesOut"></div>
+    </div>
     <div class="tabpanel" data-panel="log" role="tabpanel" hidden>
       <p class="hint" id="logHint" data-i18n="log.hint">The bergman session for this computation: the input file, the commands, and the terminal output.</p>
       <div id="logOut"></div>

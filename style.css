@@ -510,8 +510,9 @@ button { font: inherit; cursor: pointer; }
 .results-head { position: relative; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .results-head h2 { font: 600 1.2rem/1.2 var(--serif); margin: 0; }
 .results-title { display: flex; align-items: center; gap: 8px; }
-.zip-download { display: inline-flex; align-items: center; justify-content: center; padding: 4px 6px; }
+.zip-download { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 4px 6px; }
 .zip-status { margin: 6px 0; }
+.files-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
 .run-info { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
 .run-metrics { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .run-metric { margin: 0; }
@@ -773,3 +774,4 @@ p.small { color: var(--ink-3); font-size: 0.85rem; margin-top: 20px; }
 .fomkyr-options[hidden] { display: none; }
 .fomkyr-options label { min-width: 0; }
 .fomkyr-options .check .label-row { display: inline-flex; }
+#fomkyr-autoMemorySummary { grid-column: 1 / -1; margin: 0; }
