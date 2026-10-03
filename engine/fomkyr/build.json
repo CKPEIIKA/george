@@ -3,7 +3,7 @@
   "name": "fomkyr",
   "upstreamName": "fomkyr",
   "version": "0.6.1",
-  "appVersion": "0.6.0",
+  "appVersion": "0.6.1",
   "license": "MIT",
   "compiler": {
     "language": "C",
@@ -25,8 +25,8 @@
     "archiveSha256": "ee286ecc55dea5275f7568abfd721bb380cc57b9df9772ab4348aad7ca411492",
     "kernelChanged": false,
     "hostAdapted": true,
-    "upstreamManifestStale": true,
-    "importAudit": "docs/development/validation/fomkyr-061-import.json"
+    "curatedSources": true,
+    "sourceInventory": "vendor/fomkyr-0.6.1/SOURCE.json"
   },
   "files": {
     "LICENSE.txt": {
@@ -58,8 +58,8 @@
       "sha256": "4805cdd611774acdff74583661be3723774eaeca60b926bccdbfcb8c012ba3aa"
     },
     "engine.js": {
-      "bytes": 29112,
-      "sha256": "5601d5c217d2ab9c014a4830409f2f86c85ed68b042ea9a2f38ebc616ded1f77"
+      "bytes": 29394,
+      "sha256": "1d4bf098c32bb55ed82955cf072ddb48e905ccabb67d0f56c1b39c8de878ac4e"
     },
     "fomkyr-isolation-worker.js": {
       "bytes": 1158,

@@ -21,6 +21,9 @@ import {installFomkyrControls, readFomkyrOptions, writeFomkyrOptions} from './fo
 import {degreeProgress,degreeLabel} from './degree-progress.js';
 import {groupRelations, polynomialTermCount} from './relation-preview.js';
 import {copyMathSelection} from './math-copy.js';
+import {basisSummary} from './basis-summary.js';
+import {elapsedSeconds} from './elapsed-time.js';
+import {nextBasisPreview} from './basis-preview.js';
 
 const $ = (id) => document.getElementById(id);
 installFomkyrControls(document, t);
@@ -336,7 +339,7 @@ function refresh() {
 
 function setStatus(key, params = {}, busy = false) {
   statusState = { key, params, busy };
-  const seconds = key === 'status.done' ? new Intl.NumberFormat(getLanguage(), { maximumFractionDigits: 2, useGrouping: false }).format(params.ms / 1000) : undefined;
+  const seconds = key === 'status.done' ? elapsedSeconds(params.ms, getLanguage(), 2) : undefined;
   els.runStatus.textContent = t(key, { ...params, seconds, msg: translateMessage(params.msg || '') });
   els.runStatus.classList.toggle('busy', busy);
   els.runMetrics.hidden = !busy;
@@ -366,8 +369,7 @@ function updateMemoryUsage(bytes) {
 
 function updateElapsedTime() {
   if (!statusState.busy || runStartedAt === null) return;
-  const seconds = new Intl.NumberFormat(getLanguage(), { maximumFractionDigits: 1, useGrouping: false })
-    .format(Math.max(0, performance.now() - runStartedAt) / 1000);
+  const seconds = elapsedSeconds(performance.now() - runStartedAt, getLanguage());
   const value = t('monitor.seconds', { seconds });
   els.timeValue.textContent = value;
   els.timeMetric.setAttribute('aria-label', `${t('monitor.time')}: ${value}`);
@@ -500,18 +502,24 @@ function renderResults(job, res) {
   const gbText = files[job.outputs.gb];
   if (gbText === undefined) $('basisOut').innerHTML = notComputed(t('tab.basis'));
   else {
-    const { groups, done } = parseBasis(gbText);
-    const n = groups.reduce((a, g) => a + g.polys.length, 0);
-    const degs = groups.map((g) => g.deg);
+    const parsed = parseBasis(gbText);
+    const summary = basisSummary(parsed.groups, parsed.done, res);
+    const n = summary.total;
+    const degs = summary.degrees;
     let html = `<p class="summary">${(degs.length === 1 ? tn('basis.summary1', n, { a: degs[0] }) : t(degs.length > 1 ? 'basis.summary' : 'basis.summaryFlat', { n, a: degs[0], b: degs.at(-1) }))}${badge(res)}</p>`;
     if (res.interrupted) html += `<p class="notice">${t('basis.interrupted')}</p>`;
-    else if (!done) html += `<p class="notice">${t('basis.partial')}</p>`;
+    else if (!summary.complete) html += `<p class="notice">${t('basis.partial')}</p>`;
     else if (res.fomkyr?.unrestrictedBasisComplete) html += `<p class="notice">${t('fomkyr.completeBasis')}</p>`;
-    else if (job.degreeBound) html += `<p class="notice">${t('basis.bounded', { d: job.degreeBound })}</p>`;
+    else if (summary.completedThroughDegree !== undefined || job.degreeBound) html += `<p class="notice">${t(res.fomkyr ? 'fomkyr.bounded' : 'basis.bounded', { d: summary.completedThroughDegree ?? job.degreeBound })}</p>`;
     if (res.fomkyr?.reduced === false) html += `<p class="notice">${t('native.unreduced')}</p>`;
-    if (res.fomkyr?.previewTruncated) html += `<p class="notice">${t('native.preview')}</p>`;
-    for (const g of groups) {
-      html += `<section class="degree"><h3><span class="d">${t('basis.degree', { d: g.deg })}</span>${tn('basis.count', g.polys.length)}</h3><div class="polynomial-groups">`;
+    if (summary.truncated) {
+      html += `<p class="notice">${t('basis.previewCount', { shown: summary.shown, total: n })} ${t('native.preview')} <button type="button" class="quiet small" data-goto="files">${t('tab.files')}</button></p>`;
+      if (res.fomkyr?.fullBasisPath) html += `<p><button type="button" class="quiet small" id="basisMore">${t('basis.showMore')}</button><span id="basisMoreStatus" role="status"></span></p>`;
+    }
+    for (const g of summary.groups) {
+      html += `<section class="degree"><h3><span class="d">${t('basis.degree', { d: g.deg })}</span>${tn('basis.count', g.count)}</h3>`;
+      if (g.polys.length < g.count) html += `<p class="caption">${t('basis.degreePreview', { shown: g.polys.length, total: g.count })}</p>`;
+      html += '<div class="polynomial-groups">';
       const rows = g.polys.map((source, index) => ({source, index, termCount: polynomialTermCount(source)}));
       for (const group of groupRelations(rows)) {
         html += `<ol class="polys" data-term-count="${group.termCount}">`;
@@ -521,6 +529,24 @@ function renderResults(job, res) {
       html += '</div></section>';
     }
     $('basisOut').innerHTML = html;
+    const more = $('basisMore');
+    if (more) more.onclick = async () => {
+      more.disabled = true;
+      try {
+        const root = await navigator.storage.getDirectory();
+        const directory = await (await root.getDirectoryHandle('fomkyr')).getDirectoryHandle(res.fomkyr.runKey);
+        const file = await (await directory.getFileHandle('result.gb')).getFile();
+        const next = await nextBasisPreview(file, res.fomkyr.previewByteLength);
+        if (lastRendered?.res !== res || running) return;
+        const previous = files[job.outputs.gb].replace(/\n% PREVIEW TRUNCATED[^\n]*\n?$/, '');
+        files[job.outputs.gb] = previous + next.text;
+        res.fomkyr = {...res.fomkyr, previewByteLength:next.offset, previewTruncated:next.truncated};
+        renderResults(job, res);
+      } catch (error) {
+        more.disabled = false;
+        $('basisMoreStatus').textContent = t('native.unavailable', {msg:error.message});
+      }
+    };
   }
 
   if (res.fomkyr?.hilbert) renderFomkyrSeries($('seriesOut'), res.fomkyr.hilbert, t);
