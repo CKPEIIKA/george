@@ -25,6 +25,9 @@ import {basisSummary} from './basis-summary.js';
 import {elapsedSeconds} from './elapsed-time.js';
 import {nextBasisPreview} from './basis-preview.js';
 import {downloadZip} from './zip-download.js';
+import {verificationAvailable,verificationEntries} from '../engine/fomkyr/verification-bundle.js';
+import {parseNativeJob} from '../engine/fomkyr/job-adapter.js';
+import {acquireRunLock} from '../engine/fomkyr/storage.js';
 
 const $ = (id) => document.getElementById(id);
 installFomkyrControls(document, t);
@@ -547,6 +550,7 @@ function renderResults(job, res) {
     else if (res.fomkyr?.unrestrictedBasisComplete) html += `<p class="notice">${t('fomkyr.completeBasis')}</p>`;
     else if (summary.completedThroughDegree !== undefined || job.degreeBound) html += `<p class="notice">${t(res.fomkyr ? 'fomkyr.bounded' : 'basis.bounded', { d: summary.completedThroughDegree ?? job.degreeBound })}</p>`;
     if (res.fomkyr?.conditionalOnImportedFkDimensions) html += `<p class="notice">${t('fomkyr.importedDimensionsNotice')}</p>`;
+    if (verificationAvailable(res.fomkyr)) html += `<p><button type="button" class="quiet small" id="downloadVerificationBundle">${t('verification.download')}</button><span id="verificationBundleStatus" role="status"></span></p>`;
     if (res.fomkyr?.reduced === false) html += `<p class="notice">${t('native.unreduced')}</p>`;
     if (summary.truncated) {
       html += `<p class="notice">${t('basis.previewCount', { shown: summary.shown, total: n })} ${t('native.preview')} <button type="button" class="quiet small" data-goto="files">${t('tab.files')}</button></p>`;
@@ -565,6 +569,8 @@ function renderResults(job, res) {
       html += '</div></section>';
     }
     $('basisOut').innerHTML = html;
+    const verification=$('downloadVerificationBundle');
+    if(verification)verification.onclick=()=>downloadVerificationBundle(job,res.fomkyr);
     const more = $('basisMore');
     if (more) more.onclick = async () => {
       more.disabled = true;
@@ -758,6 +764,23 @@ async function downloadResultsZip() {
     if(error.name==='AbortError')els.resultsZipStatus.hidden=true;
     else els.resultsZipStatus.textContent=t('results.zipError',{msg:error.message});
   }finally{zipBusy=false;els.go.disabled=wasDisabled||running;updateZipButton();}
+}
+
+async function downloadVerificationBundle(job,result) {
+  if(running||zipBusy)return;
+  const button=$('downloadVerificationBundle'),status=$('verificationBundleStatus'),wasDisabled=els.go.disabled;
+  let release;
+  zipBusy=true;button.disabled=true;els.go.disabled=true;updateZipButton();status.textContent=t('verification.preparing');
+  try {
+    await downloadZip(`fomkyr-degree-${result.completedThroughDegree}-verification.zip`,async()=>{
+      release=await acquireRunLock(result.runKey);
+      const root=await navigator.storage.getDirectory(),directory=await(await root.getDirectoryHandle('fomkyr')).getDirectoryHandle(result.runKey);
+      const {fixture}=parseNativeJob(job);
+      return verificationEntries({fixture,result,openFile:async name=>(await directory.getFileHandle(name)).getFile(),onProgress:name=>{status.textContent=t('verification.hashing',{name});}});
+    });
+    status.textContent=t('verification.ready');
+  }catch(error){status.textContent=error.name==='AbortError'?'':t('verification.error',{msg:error.message});}
+  finally{await release?.();zipBusy=false;button.disabled=false;els.go.disabled=wasDisabled||running;updateZipButton();}
 }
 
 document.addEventListener('copy', copyMathSelection);

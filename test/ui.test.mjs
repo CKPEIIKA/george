@@ -69,7 +69,7 @@ test('guided examples build valid deterministic production jobs', () => {
   assert.equal(tutorialForm('nonhomogeneous').augmentation, 'graded');
   const fk6 = tutorialForm('fk6'), job = buildJob(fk6);
   assert.equal(fk6.backend, 'fomkyr');
-  assert.equal(fk6.memoryMiB, 3584);
+  assert.equal(fk6.memoryMiB, 14304);
   assert.equal(fk6.nativeWorkers, 0);
   assert.equal(fk6.maxdeg, '11');
   assert.equal(job.fomkyrOptions.workers, undefined);
@@ -82,4 +82,8 @@ test('guided examples build valid deterministic production jobs', () => {
     'eagerPruning', 'quadraticRewrite', 'costScheduling', 'rationalHeap', 'compiledRewrites'])
     assert.equal(job.fomkyrOptions[option], true, option);
   assert.equal(job.fomkyrOptions.hilbert, false);
+  assert.equal(job.fomkyrOptions.hilbertGate,true);
+  assert.equal(job.fomkyrOptions.autoWorkerMiB,1024);
+  assert.equal(job.fomkyrOptions.sharedReducerCacheBytes,2048*1048576);
+  assert.equal(job.fomkyrOptions.cachePercent,2);
 });

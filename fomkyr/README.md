@@ -8,7 +8,7 @@ FOMKYR(1)                     Fomkyr Manual                     FOMKYR(1)
 
 ## VERSION
 
-**0.6.8**, [MIT license](LICENSE). Fomkyr is a standalone C engine and a
+**0.7.0**, [MIT license](LICENSE). Fomkyr is a standalone C engine and a
 subproject of [George](../README.md). George also runs this kernel through
 WebAssembly; its engine chooser marks that integration experimental.
 
@@ -39,8 +39,8 @@ Node.js and Python are used by optional Wasm tools and test utilities.
 
 ## OPTIONAL FK6 DIMENSION PROFILE
 
-Version 0.6.8 adds an opt-in product-permutation shortcut for the original FK6
-presentation over Q through degree 16. Use `--fk-gate`, or accept the profile
+Version 0.7.0 adds an opt-in product-permutation shortcut for the original FK6
+presentation over Q through degree 17. Use `--fk-gate`, or accept the profile
 in George’s mathematical settings. Results depend on imported dimensions; the
 external proof package is not replayed here. See [FK6 profile](docs/FK_GATE.md)
 for applicability, counting workspace and checkpoint requirements.
@@ -107,7 +107,7 @@ exported basis path; combine it with `--quiet` for only the final summary.
 Saved job metadata remains JSON for checkpoint compatibility. `--dump-fixture`
 always writes a JSON fixture, including when `--human` is selected.
 
-Version 0.6.8 caches radix-bucket maxima during sparse reduction. Native progress
+Version 0.7.0 caches radix-bucket maxima during sparse reduction. Native progress
 continues while the coordinator waits for other workers and reports active pairs,
 reduction tiers and sampled rewrites. The overlap count advances when results are
 committed or pairs are discarded by valid criteria; a long pending reduction can
@@ -201,6 +201,42 @@ checkpoints remain available. The log reports each adjustment. A large
 checkpoint row can also trigger fewer workers during restore. The single-pair
 scheduler can still replay the current degree after exhausting its workspace.
 
+The sparse big-rational reducer grows its hash table without repeating an
+unfinished reduction. Its default term ceiling is derived from the row
+workspace; there is no fixed one-million-slot ceiling. Native CLI
+`--big-row-max-terms 4194304` or the browser's **Big-row term ceiling** can set
+an explicit power-of-two ceiling. `auto`/`0` restores the budget-derived default.
+The total memory allowance still applies. This is a limit on reducer table
+slots, including the normal prefix, rather than on the output basis size.
+More than 55% of the workspace remains available for coefficient storage and
+arithmetic scratch. A shared-reserve promotion preserves live coefficients,
+the pivot, heap, normal prefix and rewrite cursor. Progress and result metadata
+include capacity, growths, coefficient-pool usage and separate miss counters;
+pool usage includes allocations awaiting collection.
+
+The radix queue also applies to big-rational rows and retains the same descending
+word order. Long rule tails can yield partway through an exact rewrite; the pivot
+and tail cursor are retained. This keeps other workers moving between slices.
+For large rows, worker count and cache allocation interact: each worker needs its
+own row workspace. `--cache-percent` and `--shared-cache` expose the same cache
+controls as the browser. A smaller lane cache can help when the shared cache
+already holds the frequently used rules, leaving more room for independent rows.
+Explicit shared-cache requests can exceed the former one-sixteenth limit.
+George's automatic memory plan reduces requests that would crowd out indexes
+and basis metadata, including when a browser falls back to Wasm32.
+
+George groups detailed engine controls under scheduling, workspace, exact
+reduction, caches and storage submenus. Execution mode, addressing and automatic
+memory management remain at the top. Mathematical choices stay in additional
+settings. The FK6 preset starts at degree 11, permits 14304 MiB, requests a
+2048 MiB shared cache and 2% per-lane cache, and leaves the time limit unlimited.
+Automatic concurrency reserves at least 1024 MiB of ordinary workspace per
+reduction lane, including the separate commit lane. An explicit worker count
+overrides this choice. It enables the optional FK6 total/component profile
+through degree 17; assisted results remain conditional on that imported authority.
+The preset supports deeper runs such as degrees 15–16 within available resources;
+it does not establish a completion time or guarantee browser completion.
+
 Rational heap and overflow controls are inactive over prime fields. Heap-specific
 controls follow **Sparse heap reduction**. Local cache controls follow
 **Compiled local rewrites**; rational local rewrites also need a rational
@@ -222,6 +258,25 @@ completed-degree checkpoints and partial frontiers. `--export` writes `result.gb
 
 George shows a compact basis preview grouped by degree and term count. **Files**
 can download the full saved text basis and package text outputs in a ZIP on demand.
+
+Completed persistent results also offer **Download verification bundle** in
+the results tab. The ZIP includes the complete binary basis, presentation,
+checkpoint, hashed manifest, profile provenance and an independent Python
+checker. Native jobs can produce the same format:
+
+```sh
+python3 tools/export-verification.py fk6-job --out computation.zip
+python3 tools/verify-computation.py computation.zip --out verification.json
+```
+
+The full check verifies both directions of ideal membership, all critical
+compositions through the claimed degree, and an independent Hilbert count.
+Its default allowance is 120 seconds and two million terms; use
+`--time-limit 0 --max-terms 0` for an unrestricted audit allowance. Exhaustion
+reports an incomplete audit. The downloaded manifest starts with independent
+verification marked as not run. Imported proof digests identify external evidence;
+the external proof package is not included or replayed here. See
+[the verification contract](fk_gate/docs/PROOF_OF_COMPUTATION.md).
 Optional Hilbert coefficients appear in **Series** and CSV/JSON downloads.
 
 Ordinary basis records remain ABI 3; partial frontiers require 0.6.5 or later.
@@ -290,20 +345,34 @@ components retain their own licenses.
 [backend integration](../docs/development/BACKENDS.md),
 [developer release procedure](../docs/development/RELEASING.md).
 
-## Cooperative scheduling in 0.6.8
+## Cooperative scheduling in 0.7.0
 
 The default scheduler preserves a live exact reduction across soft 250 ms slices.
 Finished rows can commit while an earlier row remains pending. Each committed row
 is re-reduced against the current basis, and every unfinished pair remains in the
 portable frontier. Checkpoints can therefore advance between reduction slices.
 
-Use `--scheduler barrier` for the previous scheduling policy, `--quantum-ms N`
-for the soft slice target, and `--lookahead N` for the bounded pending window
-(1–512 descriptors). `--no-radix-cache` disables the cached bucket maxima.
+Commit reductions also retain their exact state across slices. The coordinator
+can prepare an unfinished commit while other workers read the same immutable
+basis; new rules are appended after those readers finish. Completed rows wait
+for output space without repeating their reduction.
+
+The initial pending window is 128 descriptors. When a long row occupies the
+window and another lane exhausts its queue, the window can grow to 512.
+`--lookahead N` sets the initial window and `--max-lookahead N` its ceiling
+(both 1–512). `--no-elastic-window` keeps the initial window fixed.
+
+With FK Gate component dimensions enabled, substantial input rows can be ordered
+by remaining component deficit, then estimated input size. Closing a component
+can retire pending rows in that component under the same dimension assumption.
+`--no-sector-priority` disables this ordering for comparisons.
+
+Use `--scheduler barrier` for whole-batch scheduling, `--quantum-ms N` for the
+soft slice target, and `--no-radix-cache` to disable cached bucket maxima.
 The browser engine menu exposes the same controls.
 
 Live heaps survive ordinary yields within a process. A restart replays pending
 pairs from the last safe checkpoint. Ordinary records remain ABI 3. One expensive
-row, serial commits, indivisible arithmetic and workspace pressure can still limit
-parallel execution; full FK6 degree 14 has not been certified by this integration.
-
+row, ordered rule insertion, indivisible arithmetic and workspace pressure can
+still limit parallel execution. Imported dimension profiles remain explicit
+assumptions; these scheduling changes do not certify them.

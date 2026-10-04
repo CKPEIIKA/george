@@ -27,17 +27,24 @@ for s in range(2):
   assert classes[s][i]==classid[tuple(cycle(g))]
   for c,(a,b) in enumerate(edges):
    h=list(g);h[a-1],h[b-1]=h[b-1],h[a-1];assert steps[s][i][c]==ix[s^1][tuple(h)];n+=1
-assert len(per)==len(whole)==len(p['totals'])==17
+assert len(per)==len(whole)==len(p['totals'])==18
 for d,row in enumerate(per):
  assert whole[d]==[x*y for x,y in zip(row,p['classSizes'])]
  assert sum(whole[d])==p['totals'][d]
  assert row==interval['degrees'][d]['lowerPerClass']==interval['degrees'][d]['upperPerClass']
  assert interval['degrees'][d]['exactGrades']==360
-assert p['completeDimensionThrough']==16
+assert p['completeDimensionThrough']==17
 assert p['proofBundleDigestSHA256']==interval['proofBundleDigestSHA256']==prov['proofBundleDigestSHA256']
 assert prov['proofBundleDigestSHA256'] in Q
 for name in ['adapters/fomkyr065.inc','adapters/sector_counter.inc']:
  text=(R/name).read_text();assert 'degree>13' not in text and 'FKG_PROFILE_DEGREE' in text
 js=(R/'js/fk_gate.js').read_text();assert 'certifiedProfileThroughDegree:13' not in js and 'profileBoundKind:"exact-dimension"' in js
-report={'passed':True,'allSignedInputGradeTransitions':n,'allParityClassAssignments':720,'headerAndProfileValuesAgree':True,'noLiteralDegree13GateCap':True,'completeDimensionMetadataExactThrough16':True}
+report={'passed':True,'allSignedInputGradeTransitions':n,'allParityClassAssignments':720,'headerAndProfileValuesAgree':True,'noLiteralDegree13GateCap':True,'completeDimensionMetadataExactThrough17':True}
+(R/'evidence').mkdir(exist_ok=True)
 (R/'evidence/current-profile-tests.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report))
+
+previous=json.loads((R/'profiles/fk6-exact-through16.json').read_text())
+assert p['totals'][:17]==previous['dimensions']
+assert per[:17]==previous['dimensionsPerClass']
+assert p['totals'][17]>2**32 and p['totals'][17]==4735557180
+print('PASS all degrees0..16 unchanged; h17 retained beyond uint32')

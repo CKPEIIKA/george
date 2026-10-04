@@ -4,7 +4,7 @@
 #include <string.h>
 static const char*id="17c5a3b13bbae1fd6e03ece75139f297d437bda2ae062b093d77a92f091b88bf";
 int main(void){FkgGate g;FkgCount d;
- assert(fkg_bind(&g,id,15,0)==1);assert(fkg_covers(&g,13));assert(fkg_covers(&g,16));assert(!fkg_covers(&g,17));assert(fkg_profile_degree()==16&&fkg_exact_total_degree()==16);
+ assert(fkg_bind(&g,id,15,0)==1);assert(fkg_covers(&g,13));assert(fkg_covers(&g,16));assert(fkg_covers(&g,17));assert(!fkg_covers(&g,18));assert(fkg_profile_degree()==17&&fkg_exact_total_degree()==17);
  assert(fkg_begin(&g,5,4,123,fkg_from_u64(16615),1)==1);
  assert(fkg_observe(&g,5,4,127,1,1)==1);assert(fkg_deficit(&g,&d)==0&&d.limb[0]==6);
  assert(fkg_observe(&g,5,4,133,1,0)==FKG_NONQUIESCENT);

@@ -22,7 +22,7 @@ const report=prior??{state:'running',version:VERSION,sourceHashes,engineHashes:h
 const reusableInputs=new Set(['tools/release.mjs','tools/validate-fomkyr-native.mjs','fomkyr/SOURCE.json',
  'fomkyr/tests/test_cooperative_pressure_067.mjs','fomkyr/tests/test_cooperative_reserve_067.mjs',
  'fomkyr/tests/test_fk_gate_wasm_068.mjs','fomkyr/tests/audit_fk_gate_wasm_068.py',
- 'fomkyr/tests/test_cli_065.py','docs/development/RELEASING.md']);
+ 'fomkyr/tests/test_cli_065.py','fomkyr/tests/test_fk_gate_068.py','fomkyr/tools/test_gate_ubsan_068.sh','docs/development/RELEASING.md']);
 function previousNativeEvidence(){
  if(!fs.existsSync('local/releases'))return null;
  const candidates=[];
@@ -49,6 +49,8 @@ if(!prior&&reuseFile){
   ...(changed.includes('fomkyr/tests/test_cooperative_pressure_067.mjs')?['cooperative-pressure']:[]),
   ...(changed.includes('fomkyr/tests/test_cooperative_reserve_067.mjs')?['cooperative-reserve']:[]),
   ...(changed.includes('fomkyr/tests/test_cli_065.py')?['cli-resume']:[]),
+  ...(changed.includes('fomkyr/tests/test_fk_gate_068.py')?['fk-gate-native']:[]),
+  ...(previous.error?.includes('fk-gate-ubsan')?['kernel-reference-build']:[]),
   ...(changed.some(file=>file==='fomkyr/tests/test_fk_gate_wasm_068.mjs'||file==='fomkyr/tests/audit_fk_gate_wasm_068.py')?['fk-gate-wasm']:[])]);
  report.tests=previous.tests.filter(test=>test.passed&&!excluded.has(test.name)).map(test=>({...test,
   reusedFrom:{report:path.resolve(reuseFile),changedInputs:changed}}));
@@ -73,6 +75,8 @@ const checks=[
  ['fk-gate-wasm',process.execPath,['--experimental-wasm-memory64','tests/test_fk_gate_wasm_068.mjs']],
  ['fk-gate-cli','python3',['tests/test_fk_gate_cli_068.py']],
  ['fk-gate-ubsan','bash',['tools/test_gate_ubsan_068.sh']],
+ ['certified-profile-subsystem','bash',['fk_gate/tools/build_and_test.sh']],
+ ['certified-profile-totals','python3',['fk_gate/tools/verify_profile.py']],
  ['cooperative-native','python3',['tests/test_cooperative_067.py']],
  ['cooperative-wasm',process.execPath,['--experimental-wasm-memory64','tests/test_cooperative_wasm_067.mjs']],
  ['cooperative-pressure',process.execPath,['--experimental-wasm-memory64','tests/test_cooperative_pressure_067.mjs']],
@@ -82,6 +86,7 @@ const checks=[
  ['cli-resume','python3',['tests/test_cli_065.py']],
  ['cli-edges','python3',['tests/test_cli_edges_065.py']],
  ['human-cli','python3',['tests/test_human_cli.py']],
+ ['verification-bundle','python3',['tests/test_verification_bundle.py']],
  ['hilbert-native','python3',['tests/test_hilbert_closure.py']],
  ['hilbert-wasm',process.execPath,['--experimental-wasm-memory64','tests/test_hilbert_closure_wasm.mjs']],
  ['hilbert-resume','python3',['tests/test_hilbert_closure_resume.py']],
@@ -96,7 +101,7 @@ try{
  if(!selected.includes(name)||report.tests.some(row=>row.name===name&&row.passed))continue;
   // These scripts contain several separately bounded solver jobs (up to 120 s
   // each). Their aggregate runtime is not the runtime of one calculation.
-  const deadlineSeconds=['cli-resume','cli-edges','cooperative-wasm','cooperative-pressure','cooperative-reserve','fk-gate-wasm','fk-gate-cli'].includes(name)?600:120;
+  const deadlineSeconds=['cli-resume','cli-edges','cooperative-wasm','cooperative-pressure','cooperative-reserve','fk-gate-native','fk-gate-wasm','fk-gate-cli','fk-gate-ubsan'].includes(name)?600:120;
   const start=performance.now(),log=path.join(out,name+'.log'),fd=fs.openSync(log,'w');
   console.log(name,'started');
   try{

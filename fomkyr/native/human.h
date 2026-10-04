@@ -53,6 +53,8 @@ static void emit_json(FILE *out, const char *payload) {
    human_number(&j,0,"sampledRewrites",&rewrites);human_number(&j,0,"maxActiveTerms",&terms);
    char *phase=json_string(&j,json_key(&j,0,"phase"));
    fprintf(out,"  %s; %" PRIu64 " active reductions; %" PRIu64 " sampled rewrites; largest active row: %" PRIu64 " terms.\n",human_phase(phase),active,rewrites,terms);free(phase);
+   u64 parked=0,waits=0;human_number(&j,0,"parkedReductions",&parked);human_number(&j,0,"reserveWaits",&waits);
+   if(parked||waits)fprintf(out,"  Parked reductions: %" PRIu64 "; reserve wait attempts: %" PRIu64 ".\n",parked,waits);
    int array=json_key(&j,0,"lanes");
    if(array>=0)for(int i=array+1;i<j.n&&j.t[i].start<j.t[array].end;){
     int entry=i;u64 lane=0,left=0,right=0,overlap=0,task=0;
@@ -62,6 +64,8 @@ static void emit_json(FILE *out, const char *payload) {
      if(human_number(&j,entry,"leftRule",&left)&&human_number(&j,entry,"rightRule",&right)&&human_number(&j,entry,"overlap",&overlap))
       fprintf(out,"; pair %" PRIu64 "/%" PRIu64 ", overlap %" PRIu64,left,right,overlap);
      else if(human_number(&j,entry,"batchTask",&task))fprintf(out,"; commit task %" PRIu64,task);
+     int row=json_key(&j,entry,"bigRow");u64 cap=0,growths=0,misses=0;
+     if(row>=0&&human_number(&j,row,"capacity",&cap)&&cap){human_number(&j,row,"growths",&growths);human_number(&j,row,"capacityMisses",&misses);fprintf(out,"; table capacity %" PRIu64 ", growths %" PRIu64 ", capacity misses %" PRIu64,cap,growths,misses);}
      fputs(".\n",out);
     }
     free(tier);int end=j.t[entry].end;i++;while(i<j.n&&j.t[i].start<end)i++;

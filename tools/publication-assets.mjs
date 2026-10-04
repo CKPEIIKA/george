@@ -8,5 +8,6 @@ export function publicationAssets(paths) {
     || /^sources\/[^/]+\.tar\.gz$/.test(file)
     || /^engine\/native\/(?:[^/]+\.js|george(?:32|64)\.wasm|build\.json|LICENSE\.txt)$/.test(file)
     || /^engine\/fomkyr\/(?:[^/]+\.js|fomkyr(?:32|64)(?:-single)?\.wasm|build\.json|LICENSE\.txt)$/.test(file)
+    || /^engine\/fomkyr\/verification\/[^/]+\.(?:py|h|json|txt)$/.test(file)
     || /^engine\/(?:optimized\/|compiled\/|memory64\/)?(?:build\.json|ecl\.(?:js|wasm|data))$/.test(file))])];
 }

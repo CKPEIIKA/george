@@ -87,6 +87,8 @@ export function stats(e) {
     const names=['bigRationalAttempts','bigRationalSuccesses','bigRationalFallbacks','bigRationalSteps','bigCoefficientCollections','bigPoolMisses','bigTableMisses','bigArithmeticWorkspaceMisses'];
     for(const [k,name] of names.entries()){s[name]=0;for(let i=0;i<laneSlots;i++)s[name]+=Number(e.gn_exact_stat(i,k));}
     s.rationalInPlaceGrowths=0;for(let i=0;i<laneSlots;i++)s.rationalInPlaceGrowths+=Number(e.gn_exact_stat(i,10));
+    s.bigRowMaxTerms=Number(e.gn_exact_stat(0,18));
+    s.bigRows=Array.from({length:laneSlots},(_,i)=>({growths:Number(e.gn_exact_stat(i,12)),peakTerms:Number(e.gn_exact_stat(i,13)),lastCapacity:Number(e.gn_exact_stat(i,14)),reservedCapacity:Number(e.gn_exact_stat(i,15)),coefficientPoolUsedBytes:Number(e.gn_exact_stat(i,16)),coefficientPoolBytes:Number(e.gn_exact_stat(i,17)),capacityMisses:Number(e.gn_exact_stat(i,6)),coefficientPoolMisses:Number(e.gn_exact_stat(i,5)),arithmeticWorkspaceMisses:Number(e.gn_exact_stat(i,7)),generalFallbacks:Number(e.gn_exact_stat(i,20)),reserveWaits:Number(e.gn_exact_stat(i,19))}));
     s.bigRationalEnabled=!!e.gn_exact_stat(0,8);s.fastBigDivision=!e.gn_exact_stat(0,9);s.growingRationalHeap=!!e.gn_exact_stat(0,11);
   }
   if(e.gn_reserve_stat){s.rowReserveBytes=Number(e.gn_reserve_stat(0,0));

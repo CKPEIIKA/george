@@ -67,6 +67,9 @@ API int gn_tune(u32 flags,u32 cache_percent,u32 heap_threshold);
  * 32=cost-ordered dispatch (commit order is unchanged). */
 API int gn_rational_heap(u32 enabled);
 API int gn_big_rational_heap(u32 enabled);
+/* 0 = budget-derived capacity; otherwise a power of two, 128..2^30.
+ * This ceiling never overrides the actual lane/reserve memory allowance. */
+API int gn_big_row_limit(u32 max_terms);
 API int gn_growing_rational(u32 enabled);
 API int gn_legacy_big_division(u32 enabled);
 API u64 gn_exact_stat(u32 lane,u32 key);
@@ -87,8 +90,14 @@ API int gn_commit(u32 lane);
  * Quanta are soft millisecond budgets at exact rewrite boundaries, not timeouts.
  * A yielded row retains all arithmetic/heap state in its original lane arenas. */
 API int gn_cooperative(u32 quantum_ms,u32 lookahead);
+/* flags: 1=elastic bounded window, 2=FK component-aware ready-work ordering.
+ * max_window is a descriptor ceiling (<=512); no row workspace is added. */
+API int gn_coop_policy(u32 flags,u32 max_window);
 API int gn_coop_fill(u32 limit);
 API int gn_coop_reduce(u32 lane);
+/* After lane zero's worker call returns, prepare its parked commit NF while
+ * other workers may still read the immutable basis. Never appends a rule. */
+API int gn_coop_prepare_commit(void);
 API int gn_coop_commit(void);
 API int gn_coop_retry(u32 workers);
 API void gn_coop_discard(void);

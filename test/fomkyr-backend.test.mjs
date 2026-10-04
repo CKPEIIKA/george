@@ -131,7 +131,7 @@ test('local rewrite and shared cache controls are bounded, persisted and convert
   assert.equal(options.rewriteMiB,undefined);assert.equal(options.sharedCacheMiB,undefined);
   const decoded=await readShareLink(new URL(await createShareLink({...form,memoryMiB:128,fomkyrOptions},'https://example.org/')).hash);
   assert.deepEqual(decoded.fomkyrOptions,fomkyrOptions);
-  for(const change of [{rewriteDegree:5},{rewriteSupport:0},{rewriteMiB:-1},{sharedCacheMiB:257},{rationalHeap:1}])assert.throws(()=>validateFomkyrOptions(change));
+  for(const change of [{rewriteDegree:5},{rewriteSupport:0},{rewriteMiB:-1},{sharedCacheMiB:14305},{rationalHeap:1}])assert.throws(()=>validateFomkyrOptions(change));
   assert.throws(()=>buildJob({...form,memoryMiB:128,fomkyrOptions:{rewriteMiB:128}}));
   assert.throws(()=>buildJob({...form,memoryMiB:128,fomkyrOptions:{sharedCacheMiB:128}}));
 });
@@ -189,15 +189,29 @@ test('fomkyr LHS is reproducible and covers every declared stratum', () => {
 });
 test('publication checks include the complete fomkyr runtime', () => {
   const base=['index.html','style.css','isolation-worker.js','engine/build.json','engine/worker.js','engine/runner.js','sources/george-source.tar.gz','fomkyr/index.html'];
-  const files=fs.readdirSync('web/engine/fomkyr').map(name=>'engine/fomkyr/'+name);
+  const files=fs.readdirSync('web/engine/fomkyr',{recursive:true}).filter(name=>fs.statSync('web/engine/fomkyr/'+name).isFile()).map(name=>'engine/fomkyr/'+name);
   const selected=publicationAssets([...base,...files]);
   for(const file of files)assert.ok(selected.includes(file),file);
 });
 
-test('public FK6 profile identity accepts its identical upstream authority only', async () => {
-  const {FK_GATE_PROFILE_ID,FK_GATE_UPSTREAM_PROFILE_ID,sameFkGateProfile}=await import('../web/engine/fomkyr/fk-gate.js');
+test('FK6 profile accepts current authority and prior unchanged dimension prefixes', async () => {
+  const {FK_GATE_PROFILE_ID,FK_GATE_UPSTREAM_PROFILE_ID,FK_GATE_LEGACY_PROFILE_IDS,sameFkGateProfile}=await import('../web/engine/fomkyr/fk-gate.js');
   assert.equal(sameFkGateProfile(FK_GATE_PROFILE_ID,FK_GATE_UPSTREAM_PROFILE_ID),true);
   assert.equal(sameFkGateProfile(FK_GATE_UPSTREAM_PROFILE_ID,FK_GATE_PROFILE_ID),true);
   assert.equal(sameFkGateProfile(FK_GATE_PROFILE_ID,'0'.repeat(64)),false);
   assert.equal(sameFkGateProfile(FK_GATE_PROFILE_ID,null),false);
+  for(const id of FK_GATE_LEGACY_PROFILE_IDS)assert.equal(sameFkGateProfile(FK_GATE_PROFILE_ID,id),true);
+});
+
+test('FK6 profile retains wide decimal counters and reports degree-17 coverage', async () => {
+  const {FkGate,FK_GATE_INPUT_ID}=await import('../web/engine/fomkyr/fk-gate.js');
+  const counts=[4735557181n,4735557180n,1n];
+  const gate=new FkGate({hilbertGate:true},FK_GATE_INPUT_ID,0);
+  gate.e={gn_fg_status:()=>1,gn_fg_stat:k=>BigInt([0,14,15].includes(k)?17:0),gn_fg_limb:(kind,i)=>Number(counts[kind]>>BigInt(32*i)&0xffffffffn)};
+  const snapshot=gate.snapshot();
+  assert.equal(snapshot.lower,'4735557180');assert.equal(snapshot.deficit,'1');
+  assert.equal(snapshot.certifiedProfileThroughDegree,17);assert.equal(snapshot.completeDimensionThroughDegree,17);
+  counts[0]=(1n<<100n)+123n;counts[1]=(1n<<99n)+7n;counts[2]=counts[0]-counts[1];
+  const wide=gate.snapshot();
+  for(const [name,index] of [['upper',0],['lower',1],['deficit',2]])assert.equal(wide[name],counts[index].toString());
 });

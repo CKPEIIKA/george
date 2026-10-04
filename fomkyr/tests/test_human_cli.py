@@ -21,13 +21,30 @@ with tempfile.TemporaryDirectory() as temporary:
         prefix = ["--wasm"] if wasm else []
         job = Path(temporary) / ("wasm" if wasm else "native")
         result = run(prefix + ["-i", "fixtures/exterior.json", "-d", "4", "-j", "2",
-            "--memory", "128M", "--workdir", str(job), "--human", "--export"])
+            "--memory", "128M", "--cache-percent", "2", "--shared-cache", "16M",
+            "--big-row-max-terms", "1048576", "--workdir", str(job), "--human", "--export"])
         assert "Completed through degree" in result.stdout
         assert "Elapsed:" in result.stdout and " s\n" in result.stdout
         assert "Basis file:" in result.stdout
         assert "{\"event\"" not in result.stderr
         metadata = json.loads((job / "job.json").read_text())
         assert metadata["modulus"] == 0
+        if not wasm:
+            report = json.loads(next(job.glob("fomkyr/*/native-result.json")).read_text())
+            assert report["cachePercent"] == 2
+            assert report["sharedCacheBytes"] == 16 << 20
+            assert report["bigRowMaxTerms"] == 1048576
+        before = hashes(job)
+        for option, value in (("--cache-percent", "41"), ("--shared-cache", "256M"),
+                              ("--big-row-max-terms", "1048577")):
+            invalid = subprocess.run([str(exe), *prefix, "--resume", str(job),
+                "--memory", "128M", option, value], cwd=root,
+                capture_output=True, text=True, timeout=30)
+            assert invalid.returncode != 0, (option, invalid.stdout, invalid.stderr)
+            # The Wasm launcher refreshes its process-lock metadata before
+            # Node validates options. Persisted solver data must stay intact.
+            persisted = lambda data: {k: v for k, v in data.items() if k != "cli.lock"}
+            assert persisted(hashes(job)) == persisted(before), option
         before = hashes(job)
         status = run(prefix + ["--resume", str(job), "--status", "--human"])
         assert "Checkpoint:" in status.stdout

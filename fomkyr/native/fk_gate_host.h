@@ -29,9 +29,11 @@ static int closure_try(void){
 }
 static void fg_metadata(Buffer*b){
  if(!fg_enabled)return;
- buf_printf(b,",\"fkGateProfileId\":\"%s\",\"fkGateProfileVersion\":\"0.3.0\",\"conditionalOnImportedFkDimensions\":true,\"fkGateProofReplayedHere\":false,\"fkGate\":{\"status\":%d,\"degree\":%"PRIu64",\"sectors\":%s,\"sectorSkips\":%"PRIu64",\"suspendedSkips\":%"PRIu64",\"commitSkips\":%"PRIu64",\"closedDegrees\":%"PRIu64",\"unvisitedSkipped\":%"PRIu64",\"countMicroseconds\":%"PRIu64",\"sectorCountMicroseconds\":%"PRIu64",\"counterWorkspaceBytes\":%"PRIu64",\"closedSectors\":%"PRIu64",\"upper\":%"PRIu64",\"lower\":%"PRIu64",\"counterError\":%"PRIu64"}",FKG_AUTHORITY_ID,gn_fg_status(),gn_fg_stat(0),fg_sectors?"true":"false",gn_fg_stat(8),gn_fg_stat(17),gn_fg_stat(18),gn_fg_stat(1),gn_fg_stat(4),gn_fg_stat(5),gn_fg_stat(9),gn_fg_stat(10),gn_fg_stat(20),(u64)gn_fg_limb(0,0)|((u64)gn_fg_limb(0,1)<<32),(u64)gn_fg_limb(1,0)|((u64)gn_fg_limb(1,1)<<32),gn_fg_stat(11));
+ buf_printf(b,",\"fkGateProfileId\":\"%s\",\"fkGateProfileVersion\":\"0.3.1\",\"conditionalOnImportedFkDimensions\":true,\"fkGateProofReplayedHere\":false,\"fkGate\":{\"status\":%d,\"degree\":%"PRIu64",\"sectors\":%s,\"sectorSkips\":%"PRIu64",\"suspendedSkips\":%"PRIu64",\"commitSkips\":%"PRIu64",\"closedDegrees\":%"PRIu64",\"unvisitedSkipped\":%"PRIu64",\"countMicroseconds\":%"PRIu64",\"sectorCountMicroseconds\":%"PRIu64",\"counterWorkspaceBytes\":%"PRIu64",\"closedSectors\":%"PRIu64",\"upper\":%"PRIu64",\"lower\":%"PRIu64",\"counterError\":%"PRIu64"}",FKG_AUTHORITY_ID,gn_fg_status(),gn_fg_stat(0),fg_sectors?"true":"false",gn_fg_stat(8),gn_fg_stat(17),gn_fg_stat(18),gn_fg_stat(1),gn_fg_stat(4),gn_fg_stat(5),gn_fg_stat(9),gn_fg_stat(10),gn_fg_stat(20),(u64)gn_fg_limb(0,0)|((u64)gn_fg_limb(0,1)<<32),(u64)gn_fg_limb(1,0)|((u64)gn_fg_limb(1,1)<<32),gn_fg_stat(11));
+ buf_printf(b,",\"certifiedProfileThroughDegree\":%"PRIu64",\"completeDimensionThroughDegree\":%"PRIu64,gn_fg_stat(14),gn_fg_stat(15));
 }
 static void fg_pulse(void){
  if(!fg_enabled)return;
- log_json(stderr,"{\"event\":\"fk-gate-progress\",\"status\":%d,\"degree\":%"PRIu64",\"deficit\":%u,\"closedSectors\":%"PRIu64",\"sectorSkips\":%"PRIu64",\"suspendedSkips\":%"PRIu64"}\n",gn_fg_status(),gn_fg_stat(0),gn_fg_limb(2,0),gn_fg_stat(20),gn_fg_stat(8),gn_fg_stat(17));
+ u64 deficit=(u64)gn_fg_limb(2,0)|((u64)gn_fg_limb(2,1)<<32);
+ log_json(stderr,"{\"event\":\"fk-gate-progress\",\"status\":%d,\"degree\":%"PRIu64",\"deficit\":%"PRIu64",\"closedSectors\":%"PRIu64",\"sectorSkips\":%"PRIu64",\"suspendedSkips\":%"PRIu64"}\n",gn_fg_status(),gn_fg_stat(0),deficit,gn_fg_stat(20),gn_fg_stat(8),gn_fg_stat(17));
 }

@@ -6,11 +6,24 @@
 #include <stdatomic.h>
 #include <assert.h>
 static int occupied_batch(u32 lane);
+static u32 test_fk_limb(u32 item,u32 limb);
+static u64 test_fk_stat(u32 item);
+static int test_fk_status(void);
 #define gn_batch_reduce occupied_batch
+#define gn_fg_limb test_fk_limb
+#define gn_fg_stat test_fk_stat
+#define gn_fg_status test_fk_status
 #define main test_cli_main
 #include "../native/cli.c"
 #undef main
 #undef gn_batch_reduce
+#undef gn_fg_limb
+#undef gn_fg_stat
+#undef gn_fg_status
+/* Only display conversion is mocked. No algebraic completion is claimed. */
+static u32 test_fk_limb(u32 item,u32 limb){u64 n=item==2?UINT64_C(4735557180):0;return limb<2?(u32)(n>>(32*limb)):0;}
+static u64 test_fk_stat(u32 item){return item==0||item==14||item==15?17:0;}
+static int test_fk_status(void){return 1;}
 static _Atomic unsigned test_pulses,test_iterations;
 static void test_pulse(double now){(void)now;atomic_fetch_add(&test_pulses,1);}
 static int occupied_batch(u32 lane){
@@ -42,5 +55,9 @@ int main(void){
  char *elapsed=json_string(&j,json_key(&j,0,"elapsedSeconds"));assert(elapsed&&!strcmp(elapsed,"12.500"));free(elapsed);
  assert(j.t[json_key(&j,0,"lanes")].type=='[');json_free(&j);free(text);
  text=capture_progress(1);assert(strstr(text,"Waiting for workers"));assert(strstr(text,"Elapsed: 12.500 s"));free(text);
+ fg_enabled=1;text=capture_progress(0);
+ char *gate=strstr(text,"{\"event\":\"fk-gate-progress\"");assert(gate);assert(!json_parse(&j,gate));
+ int ok=1;assert(json_u64(&j,json_key(&j,0,"deficit"),&ok)==UINT64_C(4735557180)&&ok);
+ json_free(&j);free(text);fg_enabled=0;
  puts("Structured and readable worker-wait reports passed.");return 0;
 }

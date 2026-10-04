@@ -4,7 +4,12 @@
 API int probe_begin(u32 degree,u32 completed,u32 snapshot){
  if(!degree||degree>S.target||completed>=degree||!snapshot||snapshot>S.nrules)return GN_INPUT;
  S.completed=completed;S.current=degree;S.degree_snapshot=snapshot;
- int rc=matcher_build();if(!rc)rc=local_build();return rc;
+ /* Live completion builds the immutable matcher at the degree barrier.
+  * A later partial prefix contains new current-degree rules. Indexing those
+  * rules here would disable the matcher for earlier task snapshots, distorting
+  * profiling; index exactly the completed lower-degree prefix instead. */
+ u32 actual=S.nrules;while(S.nrules&&rule(S.nrules)->degree>=degree)S.nrules--;
+ int rc=matcher_build();S.nrules=actual;if(!rc)rc=local_build();return rc;
 }
 API int probe_reduce(u32 f,u32 g,u32 overlap,u32 snapshot){
  if(!snapshot||snapshot>S.nrules||f>snapshot||g>snapshot)return GN_INPUT;

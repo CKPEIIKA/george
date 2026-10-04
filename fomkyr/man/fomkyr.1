@@ -69,7 +69,7 @@ Disable bound-aware batch lookahead in the optional closure mode.
 .TP
 .B \-\-fk-gate
 Explicitly accept the compiled FK Gate 0.3 product-permutation dimension profile.
-Only the authenticated original-order FK6 presentation over Q, through degree 16,
+Only the authenticated original-order FK6 presentation over Q, through degree 17,
 is eligible. Output is conditional on the imported dimensions; the referenced
 proof bundle is not replayed by the runtime. Disabled by default.
 .TP
@@ -114,8 +114,38 @@ Choose cooperative scheduling (default) or whole-batch barrier scheduling.
 .B --quantum-ms N
 Soft worker slice target, 1 to 10000 milliseconds; default 250.
 .TP
+.B --big-row-max-terms N
+Ceiling for the sparse arbitrary-precision rational table. Default auto (also
+0) derives capacity from the row workspace. An explicit ceiling must be a
+power of two from 128 to 1073741824; 1048576 restores a one-million-slot cap.
+Growth and reserve promotion retain the unfinished exact reduction. The memory
+allowance remains binding. This affects table slots, not the final basis size.
+.TP
+.B --cache-percent N
+Worker record cache as a percentage of each lane workspace, 0 to 40; default 12.
+A smaller cache leaves more room for exact row reduction. This can help when
+the shared immutable cache already holds the frequently used reducers.
+.TP
+.B --shared-cache SIZE
+Pinned immutable reducer records, in binary K/M/G/T units. Default auto uses
+one sixteenth of the memory allowance; 0 disables pinning. This allocation
+remains inside the total budget.
+.TP
 .B --lookahead N
-Bound pending pair descriptors, 1 to 512; default 128.
+Initial pending pair window, 1 to 512; default 128.
+.TP
+.B --max-lookahead N
+Ceiling for elastic window growth, 1 to 512; default 512. While elasticity is
+enabled, this must be at least the initial lookahead. Growth supplies idle lanes
+with additional work when long reductions occupy the current window.
+.TP
+.B --no-elastic-window
+Keep the pending window fixed at the initial lookahead.
+.TP
+.B --no-sector-priority
+Disable FK Gate component-deficit ordering of substantial input rows. The
+default prioritizes nearly closed components, then smaller estimated input rows,
+when component dimensions and cost scheduling are active.
 .TP
 .B --no-radix-cache
 Disable cached exact bucket maxima.

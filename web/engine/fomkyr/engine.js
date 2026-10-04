@@ -1,6 +1,6 @@
 import {FkGate,FK_GATE_PROFILE_ID} from './fk-gate.js';
 import {prepareHilbertClosure,replayHilbertCertificate,hilbertMetadata,beginHilbertClosure,tryHilbertClosure,hilbertGap,closureBatchLimit} from './hilbert-closure.js';
-import {planMemory,chooseMemoryPolicy} from './memory-policy.js';
+import {planMemory,chooseMemoryPolicy,sharedCacheAllowance} from './memory-policy.js';
 // SPDX-License-Identifier: MIT
 import {ProgressTracker,readProgressCounters} from './progress.js';
 import {HARD_BYTES,createMemory,hostFor,stats,checked,wordCode,recordTerms} from './runtime.js';
@@ -52,11 +52,7 @@ export class FomkyrEngine {
     catch(error){this.progressError=String(error.message??error);}finally{this.publishingProgress=false;}
     return true;
   }
-  setPhase(phase,force=true){
-    if(this.tracker)this.tracker.setPhase(phase);
-    if(['checkpoint','hilbert','export'].includes(phase))this.emit('phase',{phase,...stats(this.e)});
-    this.publishProgress(force);
-  }
+  setPhase(phase,force=true){if(this.tracker)this.tracker.setPhase(phase);this.publishProgress(force);}
   warn(message){this.emit('warning',{message});(this.fallbacks??=[]).push(message);}
   async open(){
     const o=this.options;this.capabilities=browserCapabilities();
@@ -77,7 +73,7 @@ export class FomkyrEngine {
         this.module=await loadKernel(bits,o.wasmURL,!this.shared);
         this.host=hostFor(this.memory,bits,this.budget,null,Infinity,true);
         this.e=(await WebAssembly.instantiate(this.module,this.host.imports)).exports;
-        if(this.e.gn_abi()!==3||typeof this.e.gn_optimize!=='function'||typeof this.e.gn_word_cache!=='function'||typeof this.e.gn_progress_stat!=='function'||typeof this.e.gn_candidate_check!=='function'||typeof this.e.gn_local_rewrites!=='function'||typeof this.e.gn_pin_cache!=='function'||typeof this.e.gn_rational_rewrites!=='function'||typeof this.e.gn_modulus!=='function'||typeof this.e.gn_big_rational_heap!=='function'||typeof this.e.gn_legacy_big_division!=='function'||typeof this.e.gn_growing_rational!=='function'||typeof this.e.gn_row_reserve!=='function'||typeof this.e.gn_reserve_growth!=='function'||typeof this.e.gn_radix_queue!=='function'||typeof this.e.gn_memory_policy!=='function'||typeof this.e.gn_batch_retry!=='function'||typeof this.e.gn_frontier_export!=='function'||typeof this.e.gn_hilbert_gate_begin!=='function')throw new Error('Kernel/host API mismatch. Deploy fomkyr 0.6.8 JS and WASM together.');
+        if(this.e.gn_abi()!==3||typeof this.e.gn_optimize!=='function'||typeof this.e.gn_word_cache!=='function'||typeof this.e.gn_progress_stat!=='function'||typeof this.e.gn_candidate_check!=='function'||typeof this.e.gn_local_rewrites!=='function'||typeof this.e.gn_pin_cache!=='function'||typeof this.e.gn_rational_rewrites!=='function'||typeof this.e.gn_modulus!=='function'||typeof this.e.gn_big_rational_heap!=='function'||typeof this.e.gn_legacy_big_division!=='function'||typeof this.e.gn_growing_rational!=='function'||typeof this.e.gn_row_reserve!=='function'||typeof this.e.gn_reserve_growth!=='function'||typeof this.e.gn_radix_queue!=='function'||typeof this.e.gn_memory_policy!=='function'||typeof this.e.gn_batch_retry!=='function'||typeof this.e.gn_frontier_export!=='function'||typeof this.e.gn_hilbert_gate_begin!=='function')throw new Error('Kernel/host API mismatch. Deploy matching fomkyr JS and WASM together.');
         break;
       }catch(error){
         if(bits!==64||o.strictCapabilities||o.wasmURL)throw error;
@@ -85,7 +81,12 @@ export class FomkyrEngine {
       }
     }
     this.requestedBudget=requested;
-    this.workers=computeWorkers(o.workers,{shared:this.shared,execution});
+    const autoWorkerMiB=o.autoWorkerMiB??0;
+    if(!Number.isInteger(autoWorkerMiB)||autoWorkerMiB<0||autoWorkerMiB>14304)throw new Error('autoWorkerMiB must be an integer from 0 to 14304');
+    this.workers=computeWorkers(o.workers,{shared:this.shared,execution,
+      ordinaryScratchBytes:planMemory(this.budget,1,o).ordinaryScratchBytes,
+      minWorkerMiB:chooseMemoryPolicy(o)==='auto'?autoWorkerMiB:0,
+      coordinator:(o.scheduler??'cooperative')==='cooperative'&&o.batchPairs!==0});
     if(!Number.isFinite(this.workers))throw new Error('Invalid worker count');
     this.memoryPlan=planMemory(this.budget,this.workers,o);
     this.scratch=this.memoryPlan.ordinaryScratchBytes;
@@ -159,10 +160,15 @@ export class FomkyrEngine {
     checked(this.e.gn_memory_policy(this.autoMemory?1:0));
     checked(this.e.gn_rational_heap(this.options.rationalHeap!==false?1:0));
     checked(this.e.gn_big_rational_heap(this.options.bigRationalHeap!==false?1:0));
+    const bigRowMaxTerms=this.options.bigRowMaxTerms??0;
+    if(!Number.isInteger(bigRowMaxTerms)||bigRowMaxTerms<0||bigRowMaxTerms>1073741824||(bigRowMaxTerms&&(bigRowMaxTerms<128||(bigRowMaxTerms&(bigRowMaxTerms-1)))))throw new Error('bigRowMaxTerms must be 0 (automatic) or a power of two from 128 to 1073741824');
+    if(typeof this.e.gn_big_row_limit!=='function')throw new Error('Kernel/host API mismatch: big-row capacity option missing');
+    checked(this.e.gn_big_row_limit(bigRowMaxTerms));
     checked(this.e.gn_legacy_big_division(this.options.fastBigDivision===false?1:0));
     checked(this.e.gn_growing_rational(this.options.growingRationalHeap!==false?1:0));
-    checked(this.e.gn_rational_rewrites(this.options.rationalRewrites!==false?1:0));
-    const pin=this.options.sharedReducerCacheBytes??Math.floor(this.budget/16);
+    if(this.e.gn_rational_rewrites)checked(this.e.gn_rational_rewrites(this.options.rationalRewrites!==false?1:0));
+    const pin=sharedCacheAllowance(this.options.sharedReducerCacheBytes,this.memoryPlan);
+    if(this.options.sharedReducerCacheBytes!=null&&pin<this.options.sharedReducerCacheBytes)this.warn(`Shared reducer cache reduced to ${Math.floor(pin/MiB)} MiB to fit the effective automatic memory plan.`);
     const local=this.options.rewriteBudgetBytes??Math.min(this.budget/16,8*MiB);
     for(const [name,value] of [['sharedReducerCacheBytes',pin],['rewriteBudgetBytes',local]])if(!Number.isSafeInteger(value)||value<0)throw new Error(`${name} must be a nonnegative integer`);
     const localDegree=this.options.rewriteDegree??4,localSupport=this.options.rewriteSupport??8;
@@ -185,8 +191,11 @@ export class FomkyrEngine {
     const quantum=this.options.quantumMs??250,lookahead=this.options.lookahead??Math.max(this.batchPairs,128);
     if(!Number.isInteger(quantum)||quantum<1||quantum>10000||!Number.isInteger(lookahead)||lookahead<1||lookahead>512)throw new Error('Invalid cooperative quantum/lookahead');
     this.lookahead=lookahead;
+    const maxLookahead=this.options.maxLookahead??512;
+    if(!Number.isInteger(maxLookahead)||maxLookahead<1||(this.options.elasticWindow!==false&&maxLookahead<lookahead)||maxLookahead>512)throw new Error('maxLookahead must be between lookahead and 512 when elastic scheduling is enabled');
     if(this.e.gn_radix_cache)checked(this.e.gn_radix_cache(this.options.radixMaxCache===false?0:1));
     if(this.e.gn_cooperative){checked(this.e.gn_cooperative(this.cooperative?quantum:0,lookahead));if(this.cooperative&&!Number(this.e.gn_coop_stat(0))){this.cooperative=false;this.emit('scheduler-fallback',{reason:'Workspace too small for a separate commit arena; retaining the legacy exact scheduler',scheduler:'barrier'});}}
+    if(this.e.gn_coop_policy)checked(this.e.gn_coop_policy((this.options.elasticWindow===false?0:1)|(this.options.sectorPriority===false?0:2),maxLookahead));
     if(this.cooperative){const each=Number(this.e.gn_coop_stat(11));this.memoryPlan={...this.memoryPlan,initialBytesPerLane:each,commitWorkspaceBytes:each,scheduler:'cooperative'};}else this.memoryPlan={...this.memoryPlan,commitWorkspaceBytes:0,scheduler:'barrier'};
     this.fkGate?.bind(this.e,this.memory);
     this.cancelView=new Int32Array(this.memory.buffer,Number(this.e.gn_cancel_ptr()),1);
@@ -329,7 +338,7 @@ export class FomkyrEngine {
   }
   cooperativeStats(){
     if(!this.e?.gn_coop_stat)return null;const get=k=>Number(this.e.gn_coop_stat(k));
-    return {quantumMs:get(0),epochs:get(1),started:get(2),finished:get(3),committed:get(4),nonprefixCommits:get(5),capacityReplayPairs:get(6),pending:get(7),commitRewrites:get(8),reserveDeferredAttempts:get(12),
+    return {quantumMs:get(0),epochs:get(1),started:get(2),finished:get(3),committed:get(4),nonprefixCommits:get(5),capacityReplayPairs:get(6),pending:get(7),commitRewrites:get(8),reserveDeferredAttempts:get(12),window:get(13),windowExpansions:get(14),sectorOrderings:get(15),policyFlags:get(16),maxWindow:get(17),parkedCommit:get(18),commitYields:get(19),commitResumes:get(20),preparedCommitSlices:get(21),
       lanes:Array.from({length:Number(this.e.gn_memory_stat(1))},(_,i)=>({activeMicroseconds:get(100+i),maxSliceMicroseconds:get(200+i),yields:get(300+i),resumes:get(400+i),parkedTask:get(500+i)}))};
   }
   async completeCooperativeDegree(){
@@ -340,8 +349,8 @@ export class FomkyrEngine {
       this.scheduler.epochs++;this.captureSafePoint();await this.persistSafePoint();
       const start=performance.now(),pending=[];
       for(let lane=1;lane<this.workers;lane++)pending.push(this.rpc(this.pool[lane],{command:'cooperative'}));
-      this.setPhase('reducing',false);const local=this.e.gn_coop_reduce(0),remote=await Promise.all(pending);
-      checked(local);remote.forEach(checked);this.scheduler.reduceMs+=performance.now()-start;
+      this.setPhase('reducing',false);const local=this.e.gn_coop_reduce(0),prepared=!local&&this.e.gn_coop_prepare_commit?this.e.gn_coop_prepare_commit():0,remote=await Promise.all(pending);
+      checked(local);checked(prepared);remote.forEach(checked);this.scheduler.reduceMs+=performance.now()-start;
       this.setPhase('committing',false);const commitStart=performance.now(),rc=this.e.gn_coop_commit();
       this.scheduler.commitMs+=performance.now()-commitStart;
       if([2,8,12].includes(rc)&&this.autoMemory&&this.workers>1){
@@ -455,7 +464,6 @@ export class FomkyrEngine {
           }
           checked(this.e.gn_input_end());
         }
-        this.emit('degree-start',{degree,...stats(this.e)});
         this.setPhase('indexing');checked(this.e.gn_start_degree(degree));
         }
         this.hilbertReference=beginReference(this.e,identity,this.options.referenceProgress!==false,Math.min(256*MiB,Math.max(0,this.budget-Number(this.e.gn_stat(4)))));
@@ -502,7 +510,7 @@ export class FomkyrEngine {
       if(this.directory){
         if(hilbert)await writeJSON(this.directory,'hilbert.json',{...hilbert,...hilbertMetadata(this.hilbertClosure),...this.fkGate?.metadata()});
         if(hilbert?.coefficients)await this.writeSmallText('hilbert.csv',hilbertCSV(hilbert));
-        const {preview,elapsedMs,...metadata}=result;await writeJSON(this.directory,'fomkyr-result.json',{...metadata,elapsedSeconds:elapsedMs/1000});
+        const {preview,...metadata}=result;await writeJSON(this.directory,'fomkyr-result.json',metadata);
       }
       this.setPhase('done');result.progress=this.lastProgress??null;result.degreeTimings=[...this.tracker.history];result.progressError=this.progressError??null;return result;
     }catch(error){

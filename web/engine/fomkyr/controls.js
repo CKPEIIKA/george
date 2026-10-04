@@ -4,7 +4,7 @@ import {requestPersistentStorage,listCachedRuns,deleteCachedRun} from './storage
 import {browserCapabilities} from './capabilities.js';
 import {requestIsolation} from './isolation.js';
 const KEY='fomkyr-options-v3'; // keep existing user tuning on upgrade
-const defaults={hilbertGate:false,hilbertSectors:true,gateMiB:128,scheduler:'cooperative',quantumMs:250,lookahead:128,radixMaxCache:true,hilbertClosureMode:'off',hilbertEvidenceText:'',hilbertClosureBatching:true,arithmeticMode:'exact',memoryPolicy:'auto',modularMinPrimes:2,modularMaxPrimes:8,workers:0,execution:'auto',bits:'auto',spill:true,hilbert:true,resume:'auto',ioMode:'auto',monomialPruning:true,heapReduction:true,rationalHeap:true,bigRationalHeap:true,fastBigDivision:true,growingRationalHeap:true,radixHeap:true,reserveInPlace:true,rowReserveMiB:null,compiledRewrites:true,rewriteDegree:4,rewriteSupport:8,rewriteMiB:8,sharedCacheMiB:null,cachePercent:12,heapThreshold:16,batchPairs:null,hashBits:18,scratchMiB:null,hilbertMiB:256,wordMatcher:true,chainCriterion:true,eagerPruning:true,quadraticRewrite:true,costScheduling:true,wordCacheEntries:256,progress:true,progressIntervalMs:1000,midDegreeCheckpoints:true,checkpointIntervalMs:30000,referenceProgress:true};
+const defaults={hilbertGate:false,hilbertSectors:true,gateMiB:128,scheduler:'cooperative',quantumMs:250,lookahead:128,maxLookahead:512,elasticWindow:true,sectorPriority:true,radixMaxCache:true,hilbertClosureMode:'off',hilbertEvidenceText:'',hilbertClosureBatching:true,arithmeticMode:'exact',memoryPolicy:'auto',modularMinPrimes:2,modularMaxPrimes:8,workers:0,execution:'auto',bits:'auto',spill:true,hilbert:true,resume:'auto',ioMode:'auto',monomialPruning:true,heapReduction:true,rationalHeap:true,bigRationalHeap:true,bigRowMaxTerms:0,fastBigDivision:true,growingRationalHeap:true,radixHeap:true,reserveInPlace:true,rowReserveMiB:null,compiledRewrites:true,rewriteDegree:4,rewriteSupport:8,rewriteMiB:8,sharedCacheMiB:null,cachePercent:12,heapThreshold:16,batchPairs:null,hashBits:18,scratchMiB:null,hilbertMiB:256,wordMatcher:true,chainCriterion:true,eagerPruning:true,quadraticRewrite:true,costScheduling:true,wordCacheEntries:256,progress:true,progressIntervalMs:1000,midDegreeCheckpoints:true,checkpointIntervalMs:30000,referenceProgress:true};
 let state={...defaults};
 try{const saved=JSON.parse(globalThis.localStorage?.getItem(KEY)||'{}');for(const key of Object.keys(defaults))if(Object.hasOwn(saved,key))state[key]=saved[key];}catch{}
 // Public George controls retain only the measured direct mode. The explicit
@@ -50,10 +50,10 @@ export function installFomkyrControls(){
   const upload=document.createElement('input');upload.type='file';upload.accept='.json,application/json';upload.onchange=async()=>{const file=upload.files?.[0];if(!file)return;if(file.size>64*1048576){alert('Hilbert evidence file exceeds 64 MiB');return;}area.value=await file.text();state.hilbertEvidenceText=area.value;persist();};closureBox.append(upload);
   const closureNote=document.createElement('p');closureNote.textContent='Equality of the normal-word upper bound with an independently justified lower bound closes only that degree. Trusted external dimensions are assumptions, not replayed proofs. Assisted checkpoints require the same evidence file on resume. A deficit is not an ETA.';closureBox.append(closureNote);
   const fkBox=document.createElement('details');const fkTitle=document.createElement('summary');fkTitle.textContent='Optional FK Gate 0.3 (imported dimension profile)';fkBox.append(fkTitle);box.append(fkBox);
-  check('hilbertGate','Accept the imported FK6/Q dimension profile through degree 16',fkBox);
+  check('hilbertGate','Accept the imported FK6/Q dimension profile through degree 17',fkBox);
   check('hilbertSectors','Skip reductions in already-complete product-permutation grades',fkBox);
   number('gateMiB','Temporary exact grade-counter budget, MiB',0,14304,fkBox);
-  const fkNote=document.createElement('p');fkNote.textContent='This option is restricted to the authenticated original FK6 input over Q. Profile proof artifacts are referenced, not replayed by this runtime. Results and checkpoints remain explicitly conditional on that imported profile. Degrees above 16, other fields, and unmatched presentations retain ordinary completion. A completed conjugacy class is not assumed from a single representative normal-word count. Re-enable the same profile when resuming an assisted job.';fkBox.append(fkNote);
+  const fkNote=document.createElement('p');fkNote.textContent='This option is restricted to the authenticated original FK6 input over Q. Profile proof artifacts are referenced, not replayed by this runtime. Results and checkpoints remain explicitly conditional on that imported profile. Degrees above 17, other fields, and unmatched presentations retain ordinary completion. A completed conjugacy class is not assumed from a single representative normal-word count. Re-enable the same profile when resuming an assisted job.';fkBox.append(fkNote);
   choice('execution','Execution',[['auto','Automatic: shared multicore when available'],['single','Single worker: no shared-memory requirement'],['multicore','Require shared multicore; fail if isolation is unavailable']]);
   if(!document.getElementById('nativeWorkers'))number('workers','CPU lanes (0 = automatic)',0,32);
   choice('bits','WASM addressing',[['auto','Automatic: 32-bit unless the budget needs memory64'],['32','32-bit'],['64','64-bit, with capability fallback']]);
@@ -68,6 +68,9 @@ export function installFomkyrControls(){
   choice('scheduler','Long-reduction scheduling',[['cooperative','Cooperative: preserve and resume active rows'],['barrier','Legacy: wait for the complete batch']],details);
   number('quantumMs','Worker quantum, milliseconds (soft safe-point target)',1,10000,details);
   number('lookahead','Bounded pending work window (pairs)',1,512,details);
+  check('elasticWindow','Expand the work window when pending rows leave lanes idle',details);
+  number('maxLookahead','Maximum expanded pending window',1,512,details);
+  check('sectorPriority','Prioritize inexpensive work in nearly closed FK components',details);
   check('radixMaxCache','Cache exact maxima of radix buckets',details);
   check('compiledRewrites','Compile exact short-context rewrites (bounded expansion; exact fallback)',details);
   number('rewriteDegree','Compiled local word length (not the calculation degree)',2,4,details);
@@ -76,6 +79,7 @@ export function installFomkyrControls(){
   number('sharedCacheMiB','Shared immutable reducer cache, MiB (blank = bounded automatic; 0 = disabled)',0,14304,details);
   check('rationalHeap','Compact exact rational heap for non-monic rows',details);
   check('bigRationalHeap','Sparse arbitrary-precision rational heap (exact, budgeted fallback)',details);
+  number('bigRowMaxTerms','Big-row term ceiling (0 = budget-derived; otherwise power of two)',0,1073741824,details);
   check('fastBigDivision','Normalized large-integer division (exact)',details);
   check('growingRationalHeap','Grow compact rational tables without replaying reductions',details);
   check('radixHeap','Monotone radix word queue (same exact leading-word order)',details);

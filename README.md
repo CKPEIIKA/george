@@ -32,11 +32,15 @@ Gröbner bases in free associative and commutative algebras over ℚ, 𝔽₂ an
 𝔽ₚ, Hilbert and Poincaré–Betti series, Anick resolutions, Betti numbers of
 algebras and modules, and Hochschild homology. Arithmetic is exact.
 
-**Fomkyr 0.6.8** is the independent [fast pure C engine](fomkyr/README.md) for
+**Fomkyr 0.7.0** is the independent [fast pure C engine](fomkyr/README.md) for
 homogeneous noncommutative Gröbner bases and exact Hilbert coefficients. Its
 standalone executable uses pthread workers and durable checkpoints. George runs
 the same C kernel through WebAssembly. Native builds use O3 and LTO, with optional
 local instruction-set tuning.
+George 0.7.0 adds optional FK6 dimension assistance through degree 17, grouped
+engine controls and complete computation bundles with an independent verifier.
+The FK6 preset balances large-row workspace and automatic workers for deeper
+runs. Imported dimensions are labelled as assumptions until independently checked.
 
 ## FOMKYR NATIVE AND BROWSER
 
@@ -245,7 +249,7 @@ and results are compared with a native SBCL build, Bergman 2 and Singular
 
 ## VERSION
 
-George **0.6.8** includes fomkyr **0.6.8**, configurable multicore execution,
+George **0.7.0** includes fomkyr **0.7.0**, configurable multicore execution,
 disk checkpoints and full result downloads. Unsupported tasks and settings
 are disabled for this backend. Live allocated Wasm memory appears beside
 the computation status, alongside degree progress and elapsed seconds.
@@ -263,11 +267,11 @@ the effective allowance for scratch and up to 1/7 for exceptional rational rows;
 manual mode accepts explicit workspace sizes. Workspace capacities appear
 under **Engine**, and live memory help uses the actual run's values.
 
-Fomkyr 0.6.8 preserves unfinished exact reductions across cooperative slices
+Fomkyr 0.7.0 preserves unfinished exact reductions across cooperative slices
 and commits ready rows after reduction against the updated basis. Checkpoints
 can advance while a long row remains pending. The engine menu includes the
 legacy barrier scheduler, slice duration, pending work window and radix cache.
-Native progress reporting remains active while waiting for workers. Version 0.6.8
+Native progress reporting remains active while waiting for workers. Version 0.7.0
 adds an optional FK6 dimension profile under mathematical settings. Assisted
 results are explicitly conditional on the imported dimensions; its external
 proof package is not replayed here. The option is off by default.

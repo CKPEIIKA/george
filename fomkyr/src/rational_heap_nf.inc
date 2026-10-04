@@ -84,23 +84,23 @@ static int rrow_add(RRow*r,Word w,RCoef delta){
  // before the ordinary divisor lookup has a chance to skip that one rule.
  u32 skip=r->lane->skip_rule;int protected_leader=skip&&r->degree==rule(skip)->degree&&weq(w,rule(skip)->lm);
  if(!protected_leader){if(eager_zero(w,r->degree,r->lane))return 0;}
- u32 h=rrow_hash(w,r->mask),id=r->heads[h];
- while(id&&!weq(r->nodes[id-1].w,w))id=r->nodes[id-1].next;
+ u32 h=rrow_hash(w,r->mask),*link=&r->heads[h],id=*link;
+ while(id&&!weq(r->nodes[id-1].w,w)){link=&r->nodes[id-1].next;id=*link;}
  if(id){RNode*n=&r->nodes[id-1];if(!n->pos)return HEAP_MISS; // a triangularity invariant
   RCoef c;if(!radd(n->c,delta,&c)){r->lane->rational_arithmetic_misses++;return HEAP_MISS;}
-  if(c.n)n->c=c;else{rheap_remove(r,id);rrow_remove(r,id);}return 0;
+  if(c.n)n->c=c;else{rheap_remove(r,id);*link=n->next;n->pos=UINT32_MAX;n->next=r->free_head;r->free_head=id;}return 0;
  }
  if(r->free_head){id=r->free_head;r->free_head=r->nodes[id-1].next;}
- else{if(r->used==r->capacity){int rc=rrow_grow(r);if(rc)return rc;h=rrow_hash(w,r->mask);}id=++r->used;}
+ else{if(r->used==r->capacity){int rc=rrow_grow(r);if(rc){r->lane->rational_full_capacity=r->capacity;return rc;}h=rrow_hash(w,r->mask);}id=++r->used;}
  r->nodes[id-1]=(RNode){w,delta,r->heads[h],r->heap_n+1};r->heads[h]=id;
  if(r->radix_enabled){r->nodes[id-1].pos=1;r->heap_n++;return radix_insert(&r->radix,r->nodes,sizeof(RNode),id);}
  r->heap[r->heap_n++]=id;rheap_up(r,r->heap_n-1);return 0;
 }
 typedef struct {RRow row;u64 steps;} RRowResume;
-static RRowResume saved_RRow[GN_MAX_WORKERS];
+static RRowResume saved_RRow[GN_MAX_WORKERS+1];
 static int rational_nf_try(Lane*l,Poly original,u32 active,u32 snapshot,u32 capacity){
  RRow row;u64 steps=0;
- if(l->resume_tier==2){row=saved_RRow[l-S.lanes].row;steps=saved_RRow[l-S.lanes].steps;goto resumed_heap;}
+ if(l->resume_tier==2){row=saved_RRow[l->resume_slot].row;steps=saved_RRow[l->resume_slot].steps;goto resumed_heap;}
 
  Arena*a=&l->a[active^1];reset_a(a);
  u32 reserved=capacity;
@@ -118,7 +118,7 @@ static int rational_nf_try(Lane*l,Poly original,u32 active,u32 snapshot,u32 capa
  resumed_heap:
  a=&l->a[active^1];
  while(row.heap_n){
-  if((steps++&255)==0){publish_lane(l,(u64)row.heap_n+row.normal_n,0);if(cancelled())return GN_CANCELLED;if(slice_expired(l)){saved_RRow[l-S.lanes]=(RRowResume){row,steps};l->resume_tier=2;l->resume_capacity=capacity;l->slice_yields++;return GN_YIELD;}}
+  if((steps++&255)==0){publish_lane(l,(u64)row.heap_n+row.normal_n,0);if(cancelled())return GN_CANCELLED;if(slice_expired(l)){saved_RRow[l->resume_slot]=(RRowResume){row,steps};l->resume_tier=2;l->resume_capacity=capacity;l->slice_yields++;return GN_YIELD;}}
   u32 id=row.radix_enabled?radix_top(&row.radix,row.nodes,sizeof(RNode)):row.heap[0];RNode*node=&row.nodes[id-1];Word word=node->w;RCoef coefficient=node->c;rheap_remove(&row,id);
   u32 pos=0;LocalEntry*local=(!S.rational_rewrites||l->skip_rule)?NULL:local_find(word,original.degree,snapshot,&pos);
   if(local){

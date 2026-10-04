@@ -14,7 +14,7 @@ def call(name,extra,expect=0):
  rows.append({'name':name,'command':cmd,'returncode':p.returncode,'seconds':time.perf_counter()-t,'passed':True,'result':result});return result
 fixture=R/'fixtures/fk6.json'
 a=call('native-d5',['-i',str(fixture),'-d','5','-j','2','--memory','128M','--workdir',str(job),'--fk-gate','--quiet']);assert a['complete'] and a['completedThroughDegree']==5
-record=next(job.glob('fomkyr/*/basis.gnb'));prefix=record.read_bytes();assert a['conditionalOnImportedFkDimensions']
+record=next(job.glob('fomkyr/*/basis.gnb'));prefix=record.read_bytes();assert a['conditionalOnImportedFkDimensions'];assert a['fkGateProfileVersion']=='0.3.1';assert a['certifiedProfileThroughDegree']==a['completeDimensionThroughDegree']==17
 # Retain resume interoperability with identical upstream tables/publicly redacted provenance.
 for cp in record.parent.glob('*-?.json'):
  env=json.loads(cp.read_text());env['payload']['fkGateProfileId']='a8d7ec405a7aa566c995b075d45de463dc83940db86891545ee6ea26da665314'

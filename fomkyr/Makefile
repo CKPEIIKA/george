@@ -40,6 +40,10 @@ install: native
 	install -m 755 $(BUILD_DIR)/fomkyr $(DESTDIR)$(PREFIX)/bin/fomkyr
 	cp -R web native $(DESTDIR)$(PREFIX)/share/fomkyr/
 	cp package.json $(DESTDIR)$(PREFIX)/share/fomkyr/
+	install -d $(DESTDIR)$(PREFIX)/share/fomkyr/tools $(DESTDIR)$(PREFIX)/share/fomkyr/fk_gate/profiles
+	install -m 644 tools/verify-computation.py tools/export-verification.py $(DESTDIR)$(PREFIX)/share/fomkyr/tools/
+	install -m 644 fk_gate/profiles/fk6-exact-through17.json fk_gate/profiles/fk6_q.h fk_gate/profiles/fk6_sectors.h fk_gate/profiles/proof-provenance.json $(DESTDIR)$(PREFIX)/share/fomkyr/fk_gate/profiles/
+	install -m 644 LICENSE $(DESTDIR)$(PREFIX)/share/fomkyr/
 	install -m 644 man/fomkyr.1 $(DESTDIR)$(PREFIX)/share/man/man1/fomkyr.1
 clean:
 	rm -f $(BUILD_DIR)/fomkyr $(BUILD_DIR)/kernel-native.o $(BUILD_DIR)/native-flags

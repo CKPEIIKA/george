@@ -40,13 +40,13 @@ static int row_add(HRow*r,Word w,i64 delta){
  // before the ordinary divisor lookup has a chance to skip that one rule.
  u32 skip=r->lane->skip_rule;int protected_leader=skip&&r->degree==rule(skip)->degree&&weq(w,rule(skip)->lm);
  if(!protected_leader){if(eager_zero(w,r->degree,r->lane))return 0;quadratic_precondition(&w,r->degree,&delta,r->lane);}
- u32 h=row_hash(w,r->mask),id=r->heads[h];
- while(id&&!weq(r->nodes[id-1].w,w))id=r->nodes[id-1].next;
+ u32 h=row_hash(w,r->mask),*link=&r->heads[h],id=*link;
+ while(id&&!weq(r->nodes[id-1].w,w)){link=&r->nodes[id-1].next;id=*link;}
  if(id){HNode*n=&r->nodes[id-1];if(!n->pos)return HEAP_MISS; // a triangularity invariant
   i64 c;
   if(S.modulus){c=(n->c+delta)%(i64)S.modulus;if(c<0)c+=S.modulus;}
   else{if((delta>0&&n->c>SMALL_MAX-delta)||(delta<0&&n->c< -SMALL_MAX-delta))return HEAP_MISS;c=n->c+delta;}
-  if(c)n->c=c;else{heap_remove(r,id);row_remove(r,id);}return 0;
+  if(c)n->c=c;else{heap_remove(r,id);*link=n->next;n->pos=UINT32_MAX;n->next=r->free_head;r->free_head=id;}return 0;
  }
  if(S.modulus){delta%=(i64)S.modulus;if(delta<0)delta+=S.modulus;if(!delta)return 0;}
  if(r->free_head){id=r->free_head;r->free_head=r->nodes[id-1].next;}
@@ -56,10 +56,10 @@ static int row_add(HRow*r,Word w,i64 delta){
  r->heap[r->heap_n++]=id;heap_up(r,r->heap_n-1);return 0;
 }
 typedef struct {HRow row;u64 steps;} HRowResume;
-static HRowResume saved_HRow[GN_MAX_WORKERS];
+static HRowResume saved_HRow[GN_MAX_WORKERS+1];
 static int heap_nf_try(Lane*l,Poly original,u32 active,u32 snapshot,u32 capacity){
  HRow row;u64 steps=0;
- if(l->resume_tier==1){row=saved_HRow[l-S.lanes].row;steps=saved_HRow[l-S.lanes].steps;goto resumed_heap;}
+ if(l->resume_tier==1){row=saved_HRow[l->resume_slot].row;steps=saved_HRow[l->resume_slot].steps;goto resumed_heap;}
 
  Arena*a=&l->a[active^1];reset_a(a);
  u64 no=alloc_a(a,(u64)capacity*sizeof(HNode)),ho=alloc_a(a,(u64)capacity*2*sizeof(u32)),po=alloc_a(a,(u64)capacity*sizeof(u32)),oo=alloc_a(a,(u64)capacity*sizeof(u32));
@@ -75,7 +75,7 @@ static int heap_nf_try(Lane*l,Poly original,u32 active,u32 snapshot,u32 capacity
  resumed_heap:
  a=&l->a[active^1];
  while(row.heap_n){
-  if((steps++&255)==0){publish_lane(l,(u64)row.heap_n+row.normal_n,0);if(cancelled())return GN_CANCELLED;if(slice_expired(l)){saved_HRow[l-S.lanes]=(HRowResume){row,steps};l->resume_tier=1;l->resume_capacity=capacity;l->slice_yields++;return GN_YIELD;}}
+  if((steps++&255)==0){publish_lane(l,(u64)row.heap_n+row.normal_n,0);if(cancelled())return GN_CANCELLED;if(slice_expired(l)){saved_HRow[l->resume_slot]=(HRowResume){row,steps};l->resume_tier=1;l->resume_capacity=capacity;l->slice_yields++;return GN_YIELD;}}
   u32 id=row.radix_enabled?radix_top(&row.radix,row.nodes,sizeof(HNode)):row.heap[0];HNode*node=&row.nodes[id-1];Word word=node->w;i64 coefficient=node->c;heap_remove(&row,id);
   u32 pos=0;LocalEntry*local=l->skip_rule?NULL:local_find(word,original.degree,snapshot,&pos);
   if(local){

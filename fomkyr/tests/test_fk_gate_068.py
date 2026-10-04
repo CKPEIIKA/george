@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Independent bounded audits of the imported-grade shortcut; not high-degree proof replay."""
-import ctypes as C,hashlib,json,sys,time,io
+import ctypes as C,hashlib,json,sys,time,io,signal
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
 R=Path(__file__).resolve().parents[1];sys.path[:0]=[str(R/'tests'),str(R/'tools'),str(R/'tests/published')]
@@ -47,6 +47,8 @@ class GateEngine(CooperativeEngine):
         return {k:int(self.lib.gn_fg_stat(i)) for k,i in [('sectorSkips',8),('suspendedSkips',17),('commitSkips',18),('closedDegrees',1),('counterMicros',9),('counterError',11),('closedSectors',20)]}
 
 def run():
+    def timeout(signum,frame):raise TimeoutError('Independent gate case exceeded 120 seconds')
+    signal.signal(signal.SIGALRM,timeout)
     report=[];fk=json.loads((R/'fixtures/fk6.json').read_text())
     configs=[('fk6-sector',fk,5,0,True,64<<20),('fk6-total',fk,5,0,False,64<<20),('fk6-no-space',fk,5,0,True,0),('fk6-F2',fk,4,2,True,64<<20),('fk6-F101',fk,4,101,True,64<<20)]
     # Renaming the generators is an isomorphic presentation, but NOT the bound identity.
@@ -55,6 +57,7 @@ def run():
     f=next(f for f in cases() if f['name']=='homogenized-Weyl-2-mode');configs.append(('other-physics-disabled',f,6,0,True,64<<20))
     canonical={}
     for name,f,D,p,sectors,budget in configs:
+        signal.alarm(120)
         start=time.perf_counter();e=GateEngine(f,D,workers=4,budget=128<<20,scratch=32<<20,modulus=p,quantum=1,lookahead=32,sectors=sectors,gate_budget=budget)
         e.run();b=e.basis();h=e.hilbert();stats=e.gate_stats();bound=e.bound
         o=ModularOracle(p) if p else None;nf=o.normal if o else normal;co=o.complete if o else complete;ce=o.certify if o else certify
@@ -66,7 +69,7 @@ def run():
         if name=='fk6-sector':assert stats['sectorSkips']>0
         if name=='fk6-total':assert stats['sectorSkips']==0
         if not bound or budget==0:assert stats['sectorSkips']==0
-        row={'case':name,'degree':D,'modulus':p,'bound':bool(bound),'rules':len(b),'compositions':n,'seconds':time.perf_counter()-start,'passed':True,**stats};report.append(row);print(json.dumps(row),flush=True)
+        row={'case':name,'degree':D,'modulus':p,'bound':bool(bound),'rules':len(b),'compositions':n,'seconds':time.perf_counter()-start,'passed':True,**stats};report.append(row);signal.alarm(0);print(json.dumps(row),flush=True)
     assert len(set(canonical.values()))==1
     path=R/'results/0.6.8/gate-independent-native.json';path.parent.mkdir(parents=True,exist_ok=True);path.write_text(json.dumps({'passed':True,'cases':report,'highDegreeProfileProofReplayed':False},indent=2))
 if __name__=='__main__':run()

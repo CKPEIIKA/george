@@ -22,6 +22,7 @@ try {
   try {
    const context=await browser.newContext();
    await context.addInitScript(()=>{
+    Object.defineProperty(navigator,'hardwareConcurrency',{get:()=>12});
     window.__previewCap=128;window.__timerSamples=[];
     const Base=Worker;
     window.Worker=class extends Base {
@@ -48,6 +49,14 @@ try {
     return metadata;
    }
    const small=await compute();assert.equal(small.previewTruncated,true);assert.equal(small.basisSize,265);assert.equal(small.completedThroughDegree,4);
+   async function verificationDownload(label) {
+    const next=page.waitForEvent('download');await page.locator('#downloadVerificationBundle').click();
+    const downloaded=await next,file=path.join(output,name+'-'+label+'-verification.zip');await downloaded.saveAs(file);
+    const verified=JSON.parse(execFileSync('python3',['fomkyr/tools/verify-computation.py',file],{encoding:'utf8',timeout:120000,maxBuffer:1048576}));
+    assert.equal(verified.independentGroebnerCertificate,true);assert.equal(verified.completedThroughDegree,4);
+    await page.waitForFunction(()=>!document.getElementById('downloadVerificationBundle').disabled);
+    return verified;
+   }
    assert.match(await page.locator('#basisOut .summary').textContent(),/265 elements, in degrees 2 to 4/);
    assert.match(await page.locator('#basisOut').textContent(),/Computed up to degree 4|Computed through degree 4/);
    assert.doesNotMatch(await page.locator('#basisOut').textContent(),/computation did not finish|incomplete/i);
@@ -68,6 +77,7 @@ try {
    assert.equal(JSON.parse(exported['fomkyr-result.json']).basisSize,265);
    fs.writeFileSync(path.join(output,name+'-degree4-zip.gb'),exported['result.txt']);
    await page.locator('[data-tab="basis"]').click();
+   const ordinaryVerified=await verificationDownload('ordinary');
    await page.locator('#basisMore').click();await page.waitForFunction(()=>!document.getElementById('basisMore'),null,{timeout:15000});
    assert.equal(await page.locator('#basisOut .polys li').count(),265);
    assert.equal((await page.locator('#basisOut [data-math-source="a^2"]').count()),1);
@@ -95,14 +105,19 @@ try {
    if(process.argv.includes('--defaults-case')) {
     await page.locator('#preset').selectOption('tutorial:fk6');
     assert.equal(await page.locator('#backend').inputValue(),'fomkyr');
-    assert.equal(await page.locator('#memoryMiB').inputValue(),'3584');
+    assert.equal(await page.locator('#memoryMiB').inputValue(),'14304');
     assert.equal(await page.locator('#nativeWorkers').inputValue(),'');
     assert.equal(await page.locator('#nativeWorkers').getAttribute('placeholder'),'Automatic');
     assert.equal(await page.locator('#maxdeg').inputValue(),'11');
     assert.equal(await page.locator('#fomkyr-bits').inputValue(),'auto');
     assert.equal(await page.locator('#monomialPruning').isChecked(),true);
     await page.locator('#engineSettings').evaluate(node=>node.open=true);
+    assert.equal(await page.locator('#fomkyrOptions > details').count(),5);
+    assert.equal(await page.locator('#fomkyrOptions > details[open]').count(),0);
+    await page.locator('#fomkyrOptions > details').evaluateAll(nodes=>nodes.forEach(node=>node.open=true));
     await page.locator('#memoryMiB').selectOption('3584');
+    await page.locator('details.advanced').evaluate(node=>node.open=true);
+    await page.locator('#fomkyr-hilbertGate').uncheck();
     assert.equal(await page.locator('#fomkyr-memoryPolicy').inputValue(),'auto');
     assert.equal(await page.locator('#fomkyr-scratchMiB').isDisabled(),true);
     assert.equal(await page.locator('#fomkyr-rowReserveMiB').isDisabled(),true);
@@ -120,11 +135,12 @@ try {
     defaultWorkspace={budgetMiB:3584,scratchMiB:2048,reserveMiB:512,batchPairs:128,verified:true};
    }
    await page.locator('#preset').selectOption('tutorial:fk6');
-   assert.equal(await page.locator('#fomkyr-hilbertGate').isChecked(),false);
-   assert.equal(await page.locator('#fomkyr-hilbertSectors').isDisabled(),true);
+   assert.equal(await page.locator('#fomkyr-hilbertGate').isChecked(),true);
+   assert.equal(await page.locator('#fomkyr-hilbertSectors').isDisabled(),false);
    await page.locator('details.advanced').evaluate(node=>node.open=true);
    // Exercise assisted computation rather than reuse the ordinary D9 job above.
    await page.locator('#engineSettings').evaluate(node=>node.open=true);
+   await page.locator('#fomkyrOptions > details').evaluateAll(nodes=>nodes.forEach(node=>node.open=true));
    await page.locator('#fomkyr-resume').uncheck();
    await page.locator('#fomkyr-hilbertGate').check();
    assert.equal(await page.locator('#fomkyr-hilbertSectors').isDisabled(),false);
@@ -132,9 +148,11 @@ try {
    const gated=await compute();assert.equal(gated.completedThroughDegree,4);
    assert.equal(gated.conditionalOnImportedFkDimensions,true);assert.equal(gated.fkGateProofReplayedHere,false);
    assert.match(await page.locator('#basisOut').textContent(),/conditional on imported FK6 dimensions/i);
+   const verifiedGated=await verificationDownload('gated');
+   assert.equal(verifiedGated.verificationDependsOnImportedDimensions,false);
    await page.locator('[name=field][value=p]').check();await page.locator('#modulus').fill('101');
    assert.equal(await page.locator('#fomkyr-hilbertGate').isDisabled(),true);
-   assert.deepEqual(errors,[]);report.checks.push({browser:name,fkGateOptIn:true,conditionalResultNotice:true,primeFieldDisablesGate:true,fullTextZip:true,truncatedTotals:true,allDegreeCounts:true,expandedPolynomials:265,fk6Degree9Rules:1451,timerOnlySeconds:true,coefficientRules,defaultWorkspace});
+   assert.deepEqual(errors,[]);report.checks.push({browser:name,independentVerifications:2,verifiedRules:[ordinaryVerified.rules,verifiedGated.rules],engineSubmenus:true,fk6PresetMemoryMiB:14304,fkGateOptIn:true,conditionalResultNotice:true,primeFieldDisablesGate:true,fullTextZip:true,truncatedTotals:true,allDegreeCounts:true,expandedPolynomials:265,fk6Degree9Rules:1451,timerOnlySeconds:true,coefficientRules,defaultWorkspace});
    console.log(name,'PASS');await context.close();
   } finally {await browser.close();}
  }

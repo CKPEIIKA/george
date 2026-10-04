@@ -3,6 +3,13 @@
 // Pure planner: no allocation, device fingerprinting, or degree-dependent knobs.
 const MiB=1048576,PAGE=65536;
 const align=n=>Math.floor(n/PAGE)*PAGE;
+export function sharedCacheAllowance(requested,plan) {
+  const value=requested??Math.floor(plan.budgetBytes/16);
+  if(!Number.isSafeInteger(value)||value<0)throw new Error('sharedReducerCacheBytes must be a nonnegative integer');
+  // Retain room for indexes and basis metadata when a preset or saved setting
+  // meets a smaller allowance, including a memory64 capability fallback.
+  return plan.policy==='auto'?Math.min(value,align(plan.unreservedBytes*2/3)):value;
+}
 export function chooseMemoryPolicy(options={}) {
   const mode=options.memoryPolicy??(options.scratchBytes!=null||options.rowReserveBytes!=null?'manual':'auto');
   if(mode!=='auto'&&mode!=='manual')throw new Error('memoryPolicy must be auto or manual');

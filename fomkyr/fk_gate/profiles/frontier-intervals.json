@@ -1,6 +1,6 @@
 {
   "runtimeUse": "diagnostics/tests; runtime constants are exact dimensions through degree 16",
-  "completeDimensionThrough": 16,
+  "completeDimensionThrough": 17,
   "degrees": [
     {
       "possibleTotalDimensions": [
@@ -732,7 +732,50 @@
         "upper": 207280,
         "gap": []
       }
+    },
+    {
+      "possibleTotalDimensions": [
+        4735557180
+      ],
+      "degree": 17,
+      "fullLower": 4735557180,
+      "fullUpper": 4735557180,
+      "compatibleGrades": 360,
+      "exactGrades": 360,
+      "lowerPerClass": [
+        0,
+        13126292,
+        0,
+        13169156,
+        0,
+        13149942,
+        0,
+        13153766,
+        0,
+        0,
+        13160779
+      ],
+      "upperPerClass": [
+        0,
+        13126292,
+        0,
+        13169156,
+        0,
+        13149942,
+        0,
+        13153766,
+        0,
+        0,
+        13160779
+      ],
+      "unresolvedClasses": [],
+      "relative": {
+        "degree": 17,
+        "lower": 388530,
+        "upper": 388530,
+        "gap": []
+      }
     }
   ],
-  "proofBundleDigestSHA256": "51466d4cc0650b31d0df50d228195ac3893c7c45d6199e065cfce07a8d46c964"
+  "proofBundleDigestSHA256": "65772a579ecb04c4c08a97446cb7980fee5041c40429c49ed0825d8a1f5f26f5"
 }

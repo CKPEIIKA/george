@@ -67,11 +67,11 @@ const git=args=>execFileSync('git',args,{encoding:'utf8',maxBuffer:16*1024*1024}
 // other sources remain in this deliberately conservative dependency contract.
 // Retain the original report and its hashes when borrowing a completed phase.
 const initialRunnerHash='5b8c1faf9d665b003e2323c8137e2ea41b4c2086f9411d8a74944783360e6d2b';
-const independentOfNativeRunner=new Set(['exact','matrix','published','fk6-prefixes','browser','static-chromium','static-firefox','upgrade']);
+const independentOfNativeRunner=new Set(['row-growth','exact','matrix','published','fk6-prefixes','browser','static-chromium','static-firefox','upgrade']);
 const nativeOnlyInputs=new Set(['fomkyr/SOURCE.json',
   'fomkyr/tests/test_cooperative_pressure_067.mjs','fomkyr/tests/test_cooperative_reserve_067.mjs',
   'fomkyr/tests/test_fk_gate_wasm_068.mjs','fomkyr/tests/audit_fk_gate_wasm_068.py',
-  'fomkyr/tests/test_cli_065.py','docs/development/RELEASING.md']);
+  'fomkyr/tests/test_cli_065.py','fomkyr/tests/test_fk_gate_068.py','fomkyr/tools/test_gate_ubsan_068.sh','docs/development/RELEASING.md']);
 const originalNativeOnlyInputs=new Set(['fomkyr/SOURCE.json',
   'fomkyr/tests/test_cooperative_pressure_067.mjs','fomkyr/tests/test_cooperative_reserve_067.mjs']);
 const preCliNativeOnlyInputs=new Set([...nativeOnlyInputs].filter(file=>!['fomkyr/tests/test_cli_065.py','docs/development/RELEASING.md'].includes(file)));
@@ -218,6 +218,8 @@ if(preparation){
   report.state='running';save();
   try{
     await phase('units',process.execPath,['--test','--experimental-test-isolation=none',...fs.readdirSync('test').filter(n=>n.endsWith('.test.mjs')).sort().map(n=>'test/'+n)],{timeoutSeconds:120});
+    const growth=path.join(out,'row-growth');
+    await phase('row-growth',process.execPath,['tools/validate-fomkyr-row-growth.mjs',growth],{evidence:path.join(growth,'report.json'),timeoutSeconds:180,validate:r=>{assert.equal(r.passed,true);assert.equal(r.rows.length,5);}});
     const matrix=path.join(out,'matrix'),exact=path.join(out,'exact');
     const refreshArgs=refresh?['--refresh-oracles']:[];
     const matrixArgs=['tools/validate-fomkyr.mjs',matrix,'--resume',...refreshArgs,...(full?[]:['--matrix-only'])];
@@ -241,7 +243,7 @@ if(preparation){
     }
     const browser=path.join(out,'browser');
     await phase('browser',process.execPath,['tools/validate-correction-release.mjs',browser,'--defaults-case','--coefficient-case'],{
-      evidence:path.join(browser,'report.json'),timeoutSeconds:600,validate:r=>assert.equal(r.checks.length,2)});
+      evidence:path.join(browser,'report.json'),timeoutSeconds:600,validate:r=>{assert.equal(r.checks.length,2);assert.ok(r.checks.every(c=>c.independentVerifications===2&&c.engineSubmenus));}});
     for(const name of ['chromium','firefox']){
       const directory=path.join(out,'static-'+name);
       await phase('static-'+name,process.execPath,['tools/validate-static-isolation.mjs',directory,...(name==='firefox'?['--firefox']:[])],{

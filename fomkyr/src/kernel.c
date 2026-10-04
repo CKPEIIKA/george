@@ -48,13 +48,14 @@ typedef struct {
   u64 cache_data,cache_capacity,cache_used,cache_hits;
   u32 cache_epoch,cache_mask; RedCache red[RED_CACHE_N];
   Poly result;u32 f,g,k,snapshot,error,active;
-  u32 slice_enabled,resume_tier,resume_capacity,reserve_retry; double slice_end;
+  u32 slice_enabled,resume_tier,resume_capacity,reserve_retry,resume_slot; double slice_end;
   Arena reserve_saved; GN_ATOMIC(u64) slice_yields,slice_resumes;
   u64 reductions,pruned,reads,read_bytes,pairs,peak;
   u64 hash_probes,matcher_queries,matcher_characters,redcache_hits,heap_attempts,heap_successes,heap_fallbacks;
   u64 insertion_prunes,commuting_prunes,quadratic_swaps;
   u64 reserve_attempts,reserve_successes,reserve_busy,reserve_misses,reserve_peak,reserve_promotions;u32 reserve_owned;
-  u32 allow_repack;u32 rational_maxed;u64 rational_table_growths;u64 big_attempts,big_successes,big_fallbacks,big_steps,big_compactions,big_pool_misses,big_capacity_misses,big_arena_misses;
+  u32 allow_repack;u32 rational_maxed,rational_full_capacity;u64 rational_table_growths;u64 big_attempts,big_successes,big_fallbacks,big_steps,big_compactions,big_pool_misses,big_capacity_misses,big_arena_misses;
+  u64 big_growths,big_peak_terms,big_capacity,big_reserved,big_coefficient_live,big_coefficient_bytes,big_reserve_waits,general_fallbacks;
   u64 rational_attempts,rational_successes,rational_fallbacks,integer_steps,rational_steps,local_hits,pinned_hits;u64 rational_local_hits,rational_space_misses,rational_coefficient_misses,rational_arithmetic_misses,rational_table_retries;u32 publications,busy,skip_rule,reduction_tier;
 } Lane;
 typedef struct {u32 f,g,k,snapshot,rc,bytes;u64 output;} BatchTask;
@@ -63,6 +64,7 @@ typedef struct __attribute__((aligned(64))) {
  GN_ATOMIC(u64) reductions,pruned,reads,pairs,terms,hash_probes,matcher_queries;
  GN_ATOMIC(u32) busy,sequence;
  GN_ATOMIC(u64) tier,exact_fallbacks,left_rule,right_rule,overlap;
+ GN_ATOMIC(u64) big_growths,big_peak_terms,big_capacity,big_reserved,big_coefficient_live,big_coefficient_bytes,big_capacity_misses,big_pool_misses,big_arena_misses,big_fallbacks,big_reserve_waits;
 } LiveLane;
 
 typedef struct {
@@ -79,7 +81,7 @@ typedef struct {
   u64 batch_epochs,batch_spills,hilbert_bytes;
   u64 hilbert_offset,hilbert_end,hilbert_base;
   u32 hilbert_limbs,pruning,heap_enabled,cache_percent,heap_threshold,rational_enabled,rational_rewrites;
-  u32 legacy_big_division,big_rational_enabled,growing_rational;
+  u32 legacy_big_division,big_rational_enabled,growing_rational,big_row_max_terms;
   double deadline;
   BatchTask tasks[BATCH_MAX];
   u32 batch_order[BATCH_MAX],batch_sort[BATCH_MAX],cost_scheduling;
@@ -124,6 +126,11 @@ static void publish_lane(Lane*l,u64 terms,u32 force){
  GN_STORE(&v->matcher_queries,l->matcher_queries);GN_STORE(&v->busy,l->busy);
  GN_STORE(&v->tier,l->reduction_tier);GN_STORE(&v->exact_fallbacks,l->rational_fallbacks);
  GN_STORE(&v->left_rule,l->f);GN_STORE(&v->right_rule,l->g);GN_STORE(&v->overlap,l->k);
+ GN_STORE(&v->big_growths,l->big_growths);GN_STORE(&v->big_peak_terms,l->big_peak_terms);
+ GN_STORE(&v->big_capacity,l->big_capacity);GN_STORE(&v->big_reserved,l->big_reserved);
+ GN_STORE(&v->big_coefficient_live,l->big_coefficient_live);GN_STORE(&v->big_coefficient_bytes,l->big_coefficient_bytes);
+ GN_STORE(&v->big_capacity_misses,l->big_capacity_misses);GN_STORE(&v->big_pool_misses,l->big_pool_misses);
+ GN_STORE(&v->big_arena_misses,l->big_arena_misses);GN_STORE(&v->big_fallbacks,l->general_fallbacks);GN_STORE(&v->big_reserve_waits,l->big_reserve_waits);
  GN_FETCH_ADD(&v->sequence,1);
  /* The existing clock import can notify the UI while this Wasm call is still
   * running. Only the coordinator invokes its reporting callback. No new ABI
@@ -217,6 +224,7 @@ static Coef addc(Arena*z,Coef a,Coef b){
 static Coef mulc(Arena*z,Coef a,Coef b){
  if(z->error)return 0;
  if(!a||!b)return 0;if(a==csmall(1))return clonec(z,b);if(b==csmall(1))return clonec(z,a);
+ if(a==csmall(-1))return cneg(clonec(z,b));if(b==csmall(-1))return cneg(clonec(z,a));
  if(!(a&1)&&!(b&1)){u64 x=cabs64(a),y=cabs64(b);if(x<=(u64)SMALL_MAX/y)return csmall((csign(a)*csign(b))*(i64)(x*y));}
  u32 na=cn(a),nb=cn(b);u64 off=alloc_a(z,4*(u64)(na+nb));if(!off)return 0;u32*v=PTR(u32,off);memset(v,0,4*(size_t)(na+nb));
  for(u32 i=0;i<na;i++){if((u64)na*nb>16384&&!(i&15)&&cancelled()){z->error=GN_CANCELLED;return 0;}u64 carry=0;for(u32 j=0;j<nb;j++){u64 q=(u64)cl(a,i)*cl(b,j)+v[i+j]+carry;v[i+j]=(u32)q;carry=q>>32;}v[i+nb]=(u32)carry;}
@@ -495,7 +503,7 @@ static int reserve_nf(Lane*l,Poly p,u32 active,u32 snapshot){
  GN_UNLOCK(&S.reserve_lock);return rc;
 }
 typedef struct {Poly p;u32 active,scan,tried;u64 steps;} NResume;
-static NResume nresume[GN_MAX_WORKERS];
+static NResume nresume[GN_MAX_WORKERS+1];
 static int nf(Lane*l,u32 snapshot){
  u32 active=l->active;Poly p=l->result;u64 steps=0;u32 scan=0,heap_tried=0;
  u64 capacity_mark=l->big_capacity_misses+l->big_pool_misses+l->big_arena_misses;
@@ -504,7 +512,7 @@ static int nf(Lane*l,u32 snapshot){
   if(l->resume_tier==1)goto resume_integer;
   if(l->resume_tier==2)goto resume_rational;
   if(l->resume_tier==4)goto resume_big;
-  if(l->resume_tier==3){NResume*sv=&nresume[l-S.lanes];p=sv->p;active=sv->active;scan=sv->scan;steps=sv->steps;heap_tried=sv->tried;l->resume_tier=0;goto general;}
+  if(l->resume_tier==3){NResume*sv=&nresume[l->resume_slot];p=sv->p;active=sv->active;scan=sv->scan;steps=sv->steps;heap_tried=sv->tried;l->resume_tier=0;goto general;}
  }
  l->rational_maxed=0;l->reduction_tier=3;
  if(S.heap_enabled&&p.degree<=GN_INLINE_DEGREE&&p.n>=S.heap_threshold){
@@ -530,12 +538,13 @@ resume_reserve:;
   }
   if(S.auto_memory&&l->allow_repack&&S.workers>1&&(l->rational_maxed||l->big_capacity_misses+l->big_pool_misses+l->big_arena_misses>capacity_mark))return GN_REPACK;
  }
+ if(heap_tried)l->general_fallbacks++;
  l->reduction_tier=3;
 general:
  for(;;){
  if(!heap_tried&&S.heap_enabled&&p.degree<=GN_INLINE_DEGREE&&p.n>=S.heap_threshold){l->result=p;l->active=active;goto start_optimized;}
 if(l->a[active].error)return l->a[active].error;if((steps&255)==0){publish_lane(l,p.n,0);if(cancelled())return GN_CANCELLED;
-  if(slice_expired(l)){NResume*sv=&nresume[l-S.lanes];*sv=(NResume){p,active,scan,heap_tried,steps};l->resume_tier=3;l->slice_yields++;return GN_YIELD;}}
+  if(slice_expired(l)){NResume*sv=&nresume[l->resume_slot];*sv=(NResume){p,active,scan,heap_tried,steps};l->resume_tier=3;l->slice_yields++;return GN_YIELD;}}
 Term*t=PTR(Term,p.off);u32 idx=scan,pos=0,id=0;
   for(;idx<p.n;idx++){id=divisor(t[idx].w,p.degree,snapshot,&pos,l);if(id)break;}
   if(!id){int rc=normalise(&p,&l->a[active]);l->result=p;l->active=active;return rc;}
@@ -619,10 +628,10 @@ static int layout_workers(u32 workers,int preserve){
  for(u32 i=0;i<workers;i++){
   Lane*l=&S.lanes[i];if(!preserve){memset(l,0,sizeof(*l));memset(&S.live[i],0,sizeof(LiveLane));}
   else{l->result=(Poly){0};l->error=0;l->active=0;l->out_used=0;l->skip_rule=0;l->busy=0;l->allow_repack=0;l->reserve_owned=0;memset(l->red,0,sizeof(l->red));}
-  l->resume_tier=0;l->slice_enabled=0;l->reserve_retry=0;
+  l->resume_tier=0;l->slice_enabled=0;l->reserve_retry=0;l->resume_slot=i;
   layout_one(l,S.scratch_base+bytes*i,bytes);
  }
- if(S.coop_ms){memset(&coop_coordinator,0,sizeof(coop_coordinator));layout_one(&coop_coordinator,S.scratch_base+bytes*workers,bytes);}
+ if(S.coop_ms){memset(&coop_coordinator,0,sizeof(coop_coordinator));coop_coordinator.resume_slot=GN_MAX_WORKERS;layout_one(&coop_coordinator,S.scratch_base+bytes*workers,bytes);}
  return 0;
 }
 API int gn_workers(u32 workers){return layout_workers(workers,0);}
@@ -669,7 +678,11 @@ API u64 gn_live_stat(u32 lane,u32 key){
  case 2:return GN_LOAD(&v->reads);case 3:return GN_LOAD(&v->pairs);case 4:return GN_LOAD(&v->terms);
  case 5:return GN_LOAD(&v->hash_probes);case 6:return GN_LOAD(&v->matcher_queries);
  case 7:return GN_LOAD(&v->busy);case 8:return GN_LOAD(&v->sequence);case 9:return GN_LOAD(&v->tier);case 10:return GN_LOAD(&v->exact_fallbacks);
- case 11:return GN_LOAD(&v->left_rule);case 12:return GN_LOAD(&v->right_rule);case 13:return GN_LOAD(&v->overlap);default:return 0;}
+ case 11:return GN_LOAD(&v->left_rule);case 12:return GN_LOAD(&v->right_rule);case 13:return GN_LOAD(&v->overlap);
+ case 14:return GN_LOAD(&v->big_capacity);case 15:return GN_LOAD(&v->big_reserved);case 16:return GN_LOAD(&v->big_peak_terms);
+ case 17:return GN_LOAD(&v->big_coefficient_live);case 18:return GN_LOAD(&v->big_coefficient_bytes);case 19:return GN_LOAD(&v->big_growths);
+ case 20:return GN_LOAD(&v->big_capacity_misses);case 21:return GN_LOAD(&v->big_pool_misses);case 22:return GN_LOAD(&v->big_arena_misses);
+ case 23:return GN_LOAD(&v->big_fallbacks);case 24:return GN_LOAD(&v->big_reserve_waits);default:return 0;}
 }
 API u64 gn_progress_stat(u32 key){
  switch(key){case 0:return S.degree_total;case 1:return S.degree_seen;
@@ -900,7 +913,7 @@ API int gn_test_rational(u32 op,i64 an,u64 ad,i64 bn,u64 bd,i64*on,u64*od){
 API int gn_pin_cache(u64 bytes){
  if(S.current||S.input_expected||S.nrules||S.pin_base)return GN_STATE;
  if(!bytes||!S.spill)return 0;
- bytes=MIN(bytes,S.budget/16);bytes&=~UINT64_C(7);
+ bytes&=~UINT64_C(7);
  if(!bytes||bytes>S.budget-S.bump||!gn_host_ensure(S.bump+bytes))return 0;
  S.pin_base=S.bump;S.pin_capacity=bytes;S.bump+=bytes;S.allocated_peak=MAX(S.allocated_peak,S.bump);return 0;
 }
@@ -947,7 +960,8 @@ API int gn_test_big(u32 op,u32 na,u32 nb,int sa,int sb){
 }
 
 API int gn_big_rational_heap(u32 enabled){if(enabled>1)return GN_INPUT;if(S.nrules||S.current||S.input_expected)return GN_STATE;S.big_rational_enabled=enabled;return 0;}
-API u64 gn_exact_stat(u32 lane,u32 key){if(lane>=S.lane_slots)return 0;Lane*l=&S.lanes[lane];switch(key){case 0:return l->big_attempts;case 1:return l->big_successes;case 2:return l->big_fallbacks;case 3:return l->big_steps;case 4:return l->big_compactions;case 5:return l->big_pool_misses;case 6:return l->big_capacity_misses;case 7:return l->big_arena_misses;case 8:return S.big_rational_enabled;case 9:return S.legacy_big_division;case 10:return l->rational_table_growths;case 11:return S.growing_rational;default:return 0;}}
+API int gn_big_row_limit(u32 terms){if(terms&&(terms<128||terms>(1u<<30)||(terms&(terms-1))))return GN_INPUT;if(S.nrules||S.current||S.input_expected)return GN_STATE;S.big_row_max_terms=terms;return 0;}
+API u64 gn_exact_stat(u32 lane,u32 key){if(lane>=S.lane_slots)return 0;Lane*l=&S.lanes[lane];switch(key){case 0:return l->big_attempts;case 1:return l->big_successes;case 2:return l->big_fallbacks;case 3:return l->big_steps;case 4:return l->big_compactions;case 5:return l->big_pool_misses;case 6:return l->big_capacity_misses;case 7:return l->big_arena_misses;case 8:return S.big_rational_enabled;case 9:return S.legacy_big_division;case 10:return l->rational_table_growths;case 11:return S.growing_rational;case 12:return l->big_growths;case 13:return l->big_peak_terms;case 14:return l->big_capacity;case 15:return l->big_reserved;case 16:return l->big_coefficient_live;case 17:return l->big_coefficient_bytes;case 18:return S.big_row_max_terms;case 19:return l->big_reserve_waits;case 20:return l->general_fallbacks;default:return 0;}}
 
 API int gn_growing_rational(u32 enabled){if(enabled>1)return GN_INPUT;if(S.nrules||S.current||S.input_expected)return GN_STATE;S.growing_rational=enabled;return 0;}
 

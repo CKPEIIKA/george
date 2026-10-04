@@ -1,6 +1,6 @@
 import {FkGate,FK_GATE_PROFILE_ID} from './fk-gate.js';
 import {prepareHilbertClosure,replayHilbertCertificate,hilbertMetadata,beginHilbertClosure,tryHilbertClosure,hilbertGap,closureBatchLimit} from './hilbert-closure.js';
-import {planMemory,chooseMemoryPolicy} from './memory-policy.js';
+import {planMemory,chooseMemoryPolicy,sharedCacheAllowance} from './memory-policy.js';
 // SPDX-License-Identifier: MIT
 import {ProgressTracker,readProgressCounters} from './progress.js';
 import {HARD_BYTES,createMemory,hostFor,stats,checked,wordCode,recordTerms} from './runtime.js';
@@ -10,6 +10,7 @@ import {computeHilbert,hilbertCSV} from './hilbert.js';
 import {beginReference,referenceSnapshot} from './hilbert-reference.js';
 import {browserCapabilities,sharedMemoryAvailable,probeUnsafeAccess} from './capabilities.js';
 import {BrokerHandle,makeMailbox,IO_CHUNK,IO_HEADER} from './io-broker.js';
+import {computeWorkers} from './worker-count.js';
 const MiB=1048576,enc=new TextEncoder(),hexDecoder=new TextDecoder('ascii'),hexDigits=new TextEncoder().encode('0123456789abcdef');
 export function validateFixture(fixture){
   if(!fixture||!Array.isArray(fixture.variables)||!Array.isArray(fixture.relations))throw new Error('Invalid fixture');
@@ -80,8 +81,12 @@ export class FomkyrEngine {
       }
     }
     this.requestedBudget=requested;
-    const defaultWorkers=Math.min(Math.max(1,(navigator.hardwareConcurrency||2)-1),4);
-    this.workers=this.shared?Math.min(32,Math.max(1,Math.floor(o.workers||defaultWorkers))):1;
+    const autoWorkerMiB=o.autoWorkerMiB??0;
+    if(!Number.isInteger(autoWorkerMiB)||autoWorkerMiB<0||autoWorkerMiB>14304)throw new Error('autoWorkerMiB must be an integer from 0 to 14304');
+    this.workers=computeWorkers(o.workers,{shared:this.shared,execution,
+      ordinaryScratchBytes:planMemory(this.budget,1,o).ordinaryScratchBytes,
+      minWorkerMiB:chooseMemoryPolicy(o)==='auto'?autoWorkerMiB:0,
+      coordinator:(o.scheduler??'cooperative')==='cooperative'&&o.batchPairs!==0});
     if(!Number.isFinite(this.workers))throw new Error('Invalid worker count');
     this.memoryPlan=planMemory(this.budget,this.workers,o);
     this.scratch=this.memoryPlan.ordinaryScratchBytes;
@@ -155,10 +160,15 @@ export class FomkyrEngine {
     checked(this.e.gn_memory_policy(this.autoMemory?1:0));
     checked(this.e.gn_rational_heap(this.options.rationalHeap!==false?1:0));
     checked(this.e.gn_big_rational_heap(this.options.bigRationalHeap!==false?1:0));
+    const bigRowMaxTerms=this.options.bigRowMaxTerms??0;
+    if(!Number.isInteger(bigRowMaxTerms)||bigRowMaxTerms<0||bigRowMaxTerms>1073741824||(bigRowMaxTerms&&(bigRowMaxTerms<128||(bigRowMaxTerms&(bigRowMaxTerms-1)))))throw new Error('bigRowMaxTerms must be 0 (automatic) or a power of two from 128 to 1073741824');
+    if(typeof this.e.gn_big_row_limit!=='function')throw new Error('Kernel/host API mismatch: big-row capacity option missing');
+    checked(this.e.gn_big_row_limit(bigRowMaxTerms));
     checked(this.e.gn_legacy_big_division(this.options.fastBigDivision===false?1:0));
     checked(this.e.gn_growing_rational(this.options.growingRationalHeap!==false?1:0));
     if(this.e.gn_rational_rewrites)checked(this.e.gn_rational_rewrites(this.options.rationalRewrites!==false?1:0));
-    const pin=this.options.sharedReducerCacheBytes??Math.floor(this.budget/16);
+    const pin=sharedCacheAllowance(this.options.sharedReducerCacheBytes,this.memoryPlan);
+    if(this.options.sharedReducerCacheBytes!=null&&pin<this.options.sharedReducerCacheBytes)this.warn(`Shared reducer cache reduced to ${Math.floor(pin/MiB)} MiB to fit the effective automatic memory plan.`);
     const local=this.options.rewriteBudgetBytes??Math.min(this.budget/16,8*MiB);
     for(const [name,value] of [['sharedReducerCacheBytes',pin],['rewriteBudgetBytes',local]])if(!Number.isSafeInteger(value)||value<0)throw new Error(`${name} must be a nonnegative integer`);
     const localDegree=this.options.rewriteDegree??4,localSupport=this.options.rewriteSupport??8;
@@ -181,8 +191,11 @@ export class FomkyrEngine {
     const quantum=this.options.quantumMs??250,lookahead=this.options.lookahead??Math.max(this.batchPairs,128);
     if(!Number.isInteger(quantum)||quantum<1||quantum>10000||!Number.isInteger(lookahead)||lookahead<1||lookahead>512)throw new Error('Invalid cooperative quantum/lookahead');
     this.lookahead=lookahead;
+    const maxLookahead=this.options.maxLookahead??512;
+    if(!Number.isInteger(maxLookahead)||maxLookahead<1||(this.options.elasticWindow!==false&&maxLookahead<lookahead)||maxLookahead>512)throw new Error('maxLookahead must be between lookahead and 512 when elastic scheduling is enabled');
     if(this.e.gn_radix_cache)checked(this.e.gn_radix_cache(this.options.radixMaxCache===false?0:1));
     if(this.e.gn_cooperative){checked(this.e.gn_cooperative(this.cooperative?quantum:0,lookahead));if(this.cooperative&&!Number(this.e.gn_coop_stat(0))){this.cooperative=false;this.emit('scheduler-fallback',{reason:'Workspace too small for a separate commit arena; retaining the legacy exact scheduler',scheduler:'barrier'});}}
+    if(this.e.gn_coop_policy)checked(this.e.gn_coop_policy((this.options.elasticWindow===false?0:1)|(this.options.sectorPriority===false?0:2),maxLookahead));
     if(this.cooperative){const each=Number(this.e.gn_coop_stat(11));this.memoryPlan={...this.memoryPlan,initialBytesPerLane:each,commitWorkspaceBytes:each,scheduler:'cooperative'};}else this.memoryPlan={...this.memoryPlan,commitWorkspaceBytes:0,scheduler:'barrier'};
     this.fkGate?.bind(this.e,this.memory);
     this.cancelView=new Int32Array(this.memory.buffer,Number(this.e.gn_cancel_ptr()),1);
@@ -325,7 +338,7 @@ export class FomkyrEngine {
   }
   cooperativeStats(){
     if(!this.e?.gn_coop_stat)return null;const get=k=>Number(this.e.gn_coop_stat(k));
-    return {quantumMs:get(0),epochs:get(1),started:get(2),finished:get(3),committed:get(4),nonprefixCommits:get(5),capacityReplayPairs:get(6),pending:get(7),commitRewrites:get(8),reserveDeferredAttempts:get(12),
+    return {quantumMs:get(0),epochs:get(1),started:get(2),finished:get(3),committed:get(4),nonprefixCommits:get(5),capacityReplayPairs:get(6),pending:get(7),commitRewrites:get(8),reserveDeferredAttempts:get(12),window:get(13),windowExpansions:get(14),sectorOrderings:get(15),policyFlags:get(16),maxWindow:get(17),parkedCommit:get(18),commitYields:get(19),commitResumes:get(20),preparedCommitSlices:get(21),
       lanes:Array.from({length:Number(this.e.gn_memory_stat(1))},(_,i)=>({activeMicroseconds:get(100+i),maxSliceMicroseconds:get(200+i),yields:get(300+i),resumes:get(400+i),parkedTask:get(500+i)}))};
   }
   async completeCooperativeDegree(){
@@ -336,8 +349,8 @@ export class FomkyrEngine {
       this.scheduler.epochs++;this.captureSafePoint();await this.persistSafePoint();
       const start=performance.now(),pending=[];
       for(let lane=1;lane<this.workers;lane++)pending.push(this.rpc(this.pool[lane],{command:'cooperative'}));
-      this.setPhase('reducing',false);const local=this.e.gn_coop_reduce(0),remote=await Promise.all(pending);
-      checked(local);remote.forEach(checked);this.scheduler.reduceMs+=performance.now()-start;
+      this.setPhase('reducing',false);const local=this.e.gn_coop_reduce(0),prepared=!local&&this.e.gn_coop_prepare_commit?this.e.gn_coop_prepare_commit():0,remote=await Promise.all(pending);
+      checked(local);checked(prepared);remote.forEach(checked);this.scheduler.reduceMs+=performance.now()-start;
       this.setPhase('committing',false);const commitStart=performance.now(),rc=this.e.gn_coop_commit();
       this.scheduler.commitMs+=performance.now()-commitStart;
       if([2,8,12].includes(rc)&&this.autoMemory&&this.workers>1){
@@ -514,7 +527,8 @@ export class FomkyrEngine {
   }
   async exportText(variables) {
     const e=this.e;let preview='',previewTruncated=false,used=0,currentDegree=0,textOffset=0;
-    const cap=Math.min(Number(this.options.previewBytes??256*1024),1024*1024);
+    const cap=Math.min(Number(this.options.previewBytes??1024*1024),1024*1024);
+    const degreeCounts=new Map();
     let handle=null;
     if(this.directory){handle=await (await this.directory.getFileHandle('result.gb',{create:true})).createSyncAccessHandle();handle.truncate(0);}
     // Stream each term. A giant polynomial never becomes one giant JS string.
@@ -527,6 +541,7 @@ export class FomkyrEngine {
       if(this.fkGate?.enabled)emit(`% FK Gate ${FK_GATE_PROFILE_ID}; CONDITIONAL ON IMPORTED FK DIMENSIONS; proof not replayed here\n`);
       for(let id=1;id<=Number(e.gn_stat(0));id++) {
         const degree=Number(e.gn_rule_stat(id,2));
+        degreeCounts.set(degree,(degreeCounts.get(degree)??0)+1);
         if(degree!==currentDegree){emit(`\n% ${degree}\n`);currentDegree=degree;}
         const off=e.gn_export_rule(id);if(!off)throw new Error('Export row exceeds I/O workspace or is corrupted');
         const before=preview.length;let started=!previewTruncated;
@@ -534,9 +549,10 @@ export class FomkyrEngine {
         emit(',\n');
         if(started&&previewTruncated)preview=preview.slice(0,before); // Never expose half a polynomial.
       }
+      const previewByteLength=enc.encode(preview).length;
       if(previewTruncated)preview+='\n% PREVIEW TRUNCATED. Full result.gb is in OPFS; no Done marker here.\n';
       emit('Done\n',!previewTruncated);flush();handle?.flush();
-      return {preview,previewTruncated,textBytes:textOffset,fullBasisPath:this.directory?`fomkyr/${this.runKey}/result.gb`:null};
+      return {preview,previewTruncated,previewByteLength,basisByDegree:Array.from(degreeCounts,([degree,count])=>({degree,count})).sort((a,b)=>a.degree-b.degree),textBytes:textOffset,fullBasisPath:this.directory?`fomkyr/${this.runKey}/result.gb`:null};
     } finally {handle?.close();}
   }
   async closeStorage(){

@@ -1,31 +1,31 @@
 {
   "kind": "frontend",
   "compilerMajor": 23,
-  "profileSha256": "602e59f1a8aed7ae36d67c0fe7a0ce3a30478d59f5afac4f54ef5df86073f823",
+  "profileSha256": "aaaa0a427780672495268217632a444777c9f48f5f928cd157795dbb560b487f",
   "sourceHashes": {
-    "src/big_rational_nf.inc": "aaf132d17f46bea9873555867b2568752ee9c8604ba34ed21a52f751799271db",
-    "src/cooperative.inc": "ca7673626dab929e9672abd1224abb095cdd13cbbf2517d283fa964e5f078d1f",
-    "src/fk_gate.inc": "39eb2550983d504e0b73c2af4dc7d611a2f42555d49b7b0d8f7898bc1d3c90a2",
+    "src/big_rational_nf.inc": "b98b209543181e57ea7493e920f3bee511cd967815f24713fc709ad949b163b3",
+    "src/cooperative.inc": "76be496b2cda4f0dd5057594ffc8e509558018486a610f0e12a675a381f09101",
+    "src/fk_gate.inc": "d12fd98dcb893f945a98992d295cb0e8c92efdf95705b68305868e4e4ab36845",
     "src/frontier.inc": "cb51356d611339029e424612d9ad4c84314eacc8a343b84478cf1e8c400e28d0",
-    "src/heap_nf.inc": "e31c44a95e6770e994032f5cdeb2d5ba0251d52a56f7065fc6d771f33c27f9ea",
+    "src/heap_nf.inc": "62015e04602414ce77514ab54db3dec79eaddf6135bfa23c191e32e1dc02f755",
     "src/hilbert.inc": "7ed1f6214e4f89965010dc0c47fdc2f3a1bd6cc6d3455115855e45a1ea75c7c9",
     "src/hilbert_gate.inc": "065333f32698f7c2f2921ba119cd323e23e1772210a634c35ff24dc259d9d25a",
-    "src/kernel.c": "bd579d5cfbeacce5116fa39dcbec4294f3ad216ef32f0375727b55ae53a7027e",
-    "src/kernel.h": "6105f72aa0f1747bdcd563689567ffbcd5fee8c92dcfbf5c5de3aa91505c8b4e",
+    "src/kernel.c": "18c03d2b0b55d56a65ba56b164fe7f7903589ea3d035a012c5840f026d52ceaf",
+    "src/kernel.h": "2a7f3095dae7932489ce1af1c92490caa42801707077132acf650574f09a2513",
     "src/limb_division.inc": "21e0ce64037a12722ed2452aa47095f605755b5ab9fb19d7fb11bb09c52f673d",
     "src/local_rewrites.inc": "23c0956afbff9860f7c35ccb6606576ba5247c885aef2151ac532d8d5ed64a6c",
     "src/lower_bound.inc": "8a3834002775ad7e04054a7e9092fe102eb479bb93878daf7760d3c79001a5fc",
     "src/matcher.inc": "55bba38d1299c5ba77078eb482602d9eab0f9259048f5cef903bc5f982cb2ccc",
     "src/radix_queue.inc": "c4f8827260c7e3aef28cbb7e3ae90315c731261bb2fc3e572710371798f836db",
-    "src/rational_heap_nf.inc": "f6b3e749f171280d6bc87c6e4da8ab0df8d6c73ccea49b47d08300f2b252ef54",
+    "src/rational_heap_nf.inc": "f7c7fd780501785ed953030aa0d37954b36dab260f6be0fefcbf6c09e46222ca",
     "fk_gate/src/fk_gate.c": "d30393da5c103b82ef8ace19b3a673fcedd77b2fafc0a20ae8d14133ccd4d18b",
     "fk_gate/src/fk_gate.h": "1d104a129b0d6a035031a30f3b805fb54a384a34dc44ece1ba1692e215223033",
     "fk_gate/adapters/fomkyr065.inc": "dcd9bcdfc24bf3cc5412d729068c8ccedf76bf5fb503d6ef712b0a4595e4a872",
     "fk_gate/adapters/native_host.h": "5dce47626b3c55713922dd0bcb2310be871dee6b9152ccacb4f89e85fdbf6de6",
     "fk_gate/adapters/sector_counter.inc": "114188c554128ccd21292e03878332c63f0aee97c794ad03ccd80fae57edd020",
-    "fk_gate/profiles/fk6_q.h": "123910df331b0e31da30ed0b6e6cbfbd0f65e915e172ee699931982bf2998750",
-    "fk_gate/profiles/fk6_sectors.h": "bd45a9173d79ffa85f292267ea4938ebe157f722c7a550326cbe8c3b604d19e6",
-    "fk_gate/profiles/runtime-identity.h": "4b69ffad84bef867aec5c04fe85b39981fcdc90b8f0f2242f420d387f43e4957"
+    "fk_gate/profiles/fk6_q.h": "d26ea19b27ae3a91f2ac35e0ce4e2cfcb1274e100248a327a0a06fcc465863ef",
+    "fk_gate/profiles/fk6_sectors.h": "f60e9f313521b9058db712f3e3d741b9ce49a36142f3d877d1953fc91c8df3fe",
+    "fk_gate/profiles/runtime-identity.h": "0e1df5c3e682a5029f04b60775310c77c29d4fe1089ebde4434a97b24fd4a4e2"
   },
   "compatibleTargets": [
     "wasm32-shared",
@@ -108,5 +108,19 @@
       "hilbertGate": true
     }
   ],
-  "method": "Real Chromium Wasm branch counters. One algebra per job, no resume. Shared FK6 training uses atomic updates across four lanes; all other training runs use one lane. Single mode supplies its distinct function hashes. No native profile or host-specific measurements are included."
+  "method": "Real Chromium Wasm branch counters. One algebra per job, no resume. Shared FK6 training uses atomic updates across four lanes; all other training runs use one lane. Single mode supplies its distinct function hashes. No native profile or host-specific measurements are included.",
+  "supplementalTraining": [
+    {
+      "kind": "verified synthetic exact normal forms",
+      "degree": 17,
+      "checks": [
+        "resumable commit against an immutable basis",
+        "concurrent read-only commit preparation",
+        "worker/coordinator state isolation",
+        "completed-row output backpressure"
+      ],
+      "oracle": "commutation normal form with independently counted word populations",
+      "browser": "Chromium"
+    }
+  ]
 }

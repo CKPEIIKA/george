@@ -100,11 +100,15 @@ API u64 gn_fg_stat(u32 item){switch(item){
  default:return 0;}}
 API u64 gn_fg_class(u32 cls,u32 lower){if(cls>=11||S.fgate.degree>FKG_PROFILE_DEGREE)return 0;if(lower)return fkg_class_dimension[S.fgate.degree][cls];u64 sum=0;for(u32 g=0;g<360;g++)if(fkg_group_class[S.fgate.degree&1][g]==cls)sum+=S.fg_sector_upper[g];return sum;}
 API u64 gn_fg_group(u32 g,u32 lower){if(g>=360||S.fgate.degree>FKG_PROFILE_DEGREE)return 0;return lower?fkg_class_per_grade[S.fgate.degree][fkg_group_class[S.fgate.degree&1][g]]:S.fg_sector_upper[g];}
-static int fg_sector_ids(u32 f,u32 r,u32 k){
- if(!S.fg_sector_ready||S.fgate.degree!=S.current||S.certifying||S.fgate.status<FKG_ACTIVE||S.fgate.status>FKG_READY)return 0;
+static u32 fg_pair_group(u32 f,u32 r,u32 k){
  Rule*a=rule(f),*b=rule(r);u32 g=0,pos=0;
- if(a->degree+b->degree-k!=S.current)return 0;
  for(u32 j=0;j<a->degree;j++,pos++)g=fkg_group_step[pos&1][g][letter(a->lm,a->degree,j)];
  for(u32 j=k;j<b->degree;j++,pos++)g=fkg_group_step[pos&1][g][letter(b->lm,b->degree,j)];
- return S.fg_sector_upper[g]==fkg_class_per_grade[pos][fkg_group_class[pos&1][g]];
+ return g;
+}
+static int fg_sector_ids(u32 f,u32 r,u32 k){
+ if(!S.fg_sector_ready||S.fgate.degree!=S.current||S.certifying||S.fgate.status<FKG_ACTIVE||S.fgate.status>FKG_READY)return 0;
+ if(rule(f)->degree+rule(r)->degree-k!=S.current)return 0;
+ u32 g=fg_pair_group(f,r,k);
+ return S.fg_sector_upper[g]==fkg_class_per_grade[S.current][fkg_group_class[S.current&1][g]];
 }

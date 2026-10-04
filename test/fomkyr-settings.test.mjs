@@ -1,12 +1,56 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {FOMKYR_DEFAULTS, FOMKYR_FIELDS, fomkyrControlAvailability, fomkyrEngineOptions,
-  updateFomkyrControlAvailability} from '../web/src/fomkyr-options.js';
+  updateFomkyrControlAvailability, validateFomkyrOptions} from '../web/src/fomkyr-options.js';
 import {validateSettings} from '../web/src/bergman-syntax.js';
 import {createShareLink, readShareLink} from '../web/src/share.js';
+import {FOMKYR_GROUPS} from '../web/src/fomkyr-options.js';
+import {computeWorkers} from '../fomkyr/web/worker-count.js';
+import {planMemory,sharedCacheAllowance} from '../fomkyr/web/memory-policy.js';
+
+test('engine submenus cover every control once and keep mathematical choices separate',()=>{
+ const grouped=Object.values(FOMKYR_GROUPS).flat();assert.equal(new Set(grouped).size,grouped.length);
+ assert.deepEqual([...grouped].sort(),FOMKYR_FIELDS.map(([k])=>k).sort());
+ assert.deepEqual(FOMKYR_GROUPS.execution,['execution','bits','memoryPolicy']);
+ assert.ok(FOMKYR_GROUPS.mathematics.includes('gateMiB'));
+});
+test('automatic workers use available threads and the FK6 row-workspace allowance',()=>{
+ const ordinaryScratchBytes=planMemory(14304*1048576,1).ordinaryScratchBytes;
+ assert.equal(computeWorkers(0,{hardwareConcurrency:12}),11);
+ assert.equal(computeWorkers(0,{hardwareConcurrency:12,ordinaryScratchBytes,minWorkerMiB:1024,coordinator:true}),6);
+ assert.equal(computeWorkers(12,{hardwareConcurrency:12,ordinaryScratchBytes,minWorkerMiB:1024,coordinator:true}),12);
+ assert.equal(computeWorkers(12,{shared:false}),1);
+});
+test('explicit shared cache exceeds old budget/16 ceiling and adapts after Wasm32 fallback',()=>{
+ const large=planMemory(14304*1048576,6),small=planMemory(4095*1048576,1);
+ assert.equal(sharedCacheAllowance(2048*1048576,large),2048*1048576);
+ assert.ok(sharedCacheAllowance(2048*1048576,small)<small.unreservedBytes);
+ assert.equal(sharedCacheAllowance(null,large),Math.floor(large.budgetBytes/16));
+ assert.equal(sharedCacheAllowance(0,large),0);
+});
 
 const form = {backend:'fomkyr',field:'0',nativeWorkers:4,monomialPruning:true};
 const available = change => fomkyrControlAvailability({...form,...change});
+
+test('cooperative window and FK dispatch choices are wired and shareable', async () => {
+  assert.equal(FOMKYR_DEFAULTS.elasticWindow,true);
+  assert.equal(FOMKYR_DEFAULTS.sectorPriority,true);
+  assert.equal(FOMKYR_DEFAULTS.maxLookahead,512);
+  assert.throws(()=>validateFomkyrOptions({lookahead:128,maxLookahead:64}),/ceiling/);
+  assert.doesNotThrow(()=>validateFomkyrOptions({lookahead:128,maxLookahead:64,elasticWindow:false}));
+  const opts={lookahead:32,maxLookahead:256,elasticWindow:false,sectorPriority:false};
+  const engine=fomkyrEngineOptions({...form,fomkyrOptions:opts});
+  for(const [key,value] of Object.entries(opts))assert.equal(engine[key],value);
+  const saved=await readShareLink(new URL(await createShareLink({...form,varsText:'a,b',relsText:'a^2',fomkyrOptions:opts},'https://example.org/')).hash);
+  for(const [key,value] of Object.entries(opts))assert.equal(saved.fomkyrOptions[key],value);
+  for(const key of ['elasticWindow','maxLookahead','sectorPriority'])assert.equal(available({fomkyrOptions:{scheduler:'barrier'}})[key],false,key);
+  assert.equal(available({fomkyrOptions:{elasticWindow:false}}).maxLookahead,false);
+  assert.equal(available({}).sectorPriority,false);
+  assert.equal(available({fomkyrOptions:{hilbertGate:true,hilbertSectors:true}}).sectorPriority,true);
+  assert.equal(available({nativeWorkers:'1',fomkyrOptions:{hilbertGate:true}}).sectorPriority,false);
+  assert.equal(available({fomkyrOptions:{hilbertGate:true,execution:'single'}}).sectorPriority,false);
+  assert.equal(available({field:'101',fomkyrOptions:{hilbertGate:true}}).sectorPriority,false);
+});
 
 test('Fomkyr controls have unique names and hide inactive engine settings', () => {
   assert.equal(new Set(FOMKYR_FIELDS.map(([key])=>key)).size,FOMKYR_FIELDS.length);
@@ -103,4 +147,22 @@ test('FK6 dimension assistance requires opt-in and keeps mathematical choices sh
   const engine=fomkyrEngineOptions({...form,fomkyrOptions:decoded.fomkyrOptions});
   assert.equal(engine.hilbertGate,true);assert.equal(engine.hilbertSectors,false);
   assert.equal(engine.gateBudgetBytes,64*1048576);assert.equal(engine.gateMiB,undefined);
+});
+
+
+test('big-row capacity is automatic by default, configurable and saved in shares', async () => {
+  assert.equal(FOMKYR_DEFAULTS.bigRowMaxTerms,0);
+  for(const bigRowMaxTerms of [0,128,1048576,4194304,1073741824]) {
+    const value={...form,fomkyrOptions:{bigRowMaxTerms}};
+    const decoded=await readShareLink(new URL(await createShareLink(value,'https://example.org/')).hash);
+    assert.equal(decoded.fomkyrOptions.bigRowMaxTerms,bigRowMaxTerms);
+    assert.equal(fomkyrEngineOptions(value).bigRowMaxTerms,bigRowMaxTerms);
+  }
+  for(const bigRowMaxTerms of [-1,127,129,1048577,2147483648,'auto'])
+    assert.throws(()=>validateFomkyrOptions({bigRowMaxTerms}));
+  assert.equal(available({field:'101'}).bigRowMaxTerms,false);
+  assert.equal(available({fomkyrOptions:{heapReduction:false}}).bigRowMaxTerms,false);
+  assert.equal(available({fomkyrOptions:{bigRationalHeap:false}}).bigRowMaxTerms,false);
+  assert.equal(available({fomkyrOptions:{rationalHeap:false}}).bigRowMaxTerms,true);
+  assert.equal(available({fomkyrOptions:{rationalHeap:false}}).reserveInPlace,true);
 });
