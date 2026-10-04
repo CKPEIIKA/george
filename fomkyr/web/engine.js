@@ -73,7 +73,7 @@ export class FomkyrEngine {
         this.module=await loadKernel(bits,o.wasmURL,!this.shared);
         this.host=hostFor(this.memory,bits,this.budget,null,Infinity,true);
         this.e=(await WebAssembly.instantiate(this.module,this.host.imports)).exports;
-        if(this.e.gn_abi()!==3||typeof this.e.gn_optimize!=='function'||typeof this.e.gn_word_cache!=='function'||typeof this.e.gn_progress_stat!=='function'||typeof this.e.gn_candidate_check!=='function'||typeof this.e.gn_local_rewrites!=='function'||typeof this.e.gn_pin_cache!=='function'||typeof this.e.gn_rational_rewrites!=='function'||typeof this.e.gn_modulus!=='function'||typeof this.e.gn_big_rational_heap!=='function'||typeof this.e.gn_legacy_big_division!=='function'||typeof this.e.gn_growing_rational!=='function'||typeof this.e.gn_row_reserve!=='function'||typeof this.e.gn_reserve_growth!=='function'||typeof this.e.gn_radix_queue!=='function'||typeof this.e.gn_memory_policy!=='function'||typeof this.e.gn_batch_retry!=='function'||typeof this.e.gn_frontier_export!=='function'||typeof this.e.gn_hilbert_gate_begin!=='function')throw new Error('Kernel/host API mismatch. Deploy matching fomkyr JS and WASM together.');
+        if(this.e.gn_abi()!==3||typeof this.e.gn_optimize!=='function'||typeof this.e.gn_word_cache!=='function'||typeof this.e.gn_progress_stat!=='function'||typeof this.e.gn_candidate_check!=='function'||typeof this.e.gn_local_rewrites!=='function'||typeof this.e.gn_pin_cache!=='function'||typeof this.e.gn_rational_rewrites!=='function'||typeof this.e.gn_modulus!=='function'||typeof this.e.gn_big_rational_heap!=='function'||typeof this.e.gn_legacy_big_division!=='function'||typeof this.e.gn_growing_rational!=='function'||typeof this.e.gn_row_reserve!=='function'||typeof this.e.gn_reserve_growth!=='function'||typeof this.e.gn_radix_queue!=='function'||typeof this.e.gn_memory_policy!=='function'||typeof this.e.gn_batch_retry!=='function'||typeof this.e.gn_frontier_export!=='function'||typeof this.e.gn_hilbert_gate_begin!=='function'||typeof this.e.gn_pair_plan_config!=='function'||typeof this.e.gn_pair_plan_adopt!=='function')throw new Error('Kernel/host API mismatch. Deploy matching fomkyr JS and WASM together.');
         break;
       }catch(error){
         if(bits!==64||o.strictCapabilities||o.wasmURL)throw error;
@@ -158,6 +158,11 @@ export class FomkyrEngine {
   async resetKernel(fixture,target,modulus){
     checked(this.e.gn_init(fixture.variables.length,target??0,this.workers,BigInt(this.budget),BigInt(this.scratch),(this.restoreHashBits??this.options.hashBits??18),modulus,this.spill?1:0));
     checked(this.e.gn_memory_policy(this.autoMemory?1:0));
+    const pairMode={legacy:0,overlap:1,sparse:2}[this.options.pairOrder??'legacy'];
+    const pairMin=this.options.planMinDegree??12,pairBytes=this.options.pairPlanBytes??Math.min(64*MiB,this.budget/8);
+    if(pairMode===undefined||!Number.isInteger(pairMin)||pairMin<1||pairMin>0xfffffffe||!Number.isSafeInteger(pairBytes)||pairBytes<0)throw new Error('Invalid global pair order/minimum degree/budget');
+    checked(this.e.gn_pair_plan_config(pairMode,pairMin,BigInt(pairBytes)));
+
     checked(this.e.gn_rational_heap(this.options.rationalHeap!==false?1:0));
     checked(this.e.gn_big_rational_heap(this.options.bigRationalHeap!==false?1:0));
     const bigRowMaxTerms=this.options.bigRowMaxTerms??0;
@@ -233,6 +238,8 @@ export class FomkyrEngine {
       if(bytes.length>this.e.gn_import_capacity())throw new Error('Frontier exceeds import workspace');
       new Uint8Array(this.memory.buffer,Number(this.e.gn_import_buffer()),bytes.length).set(bytes);
       checked(this.e.gn_frontier_restore(bytes.length));
+      const adopted=this.e.gn_pair_plan_adopt();if(adopted<0)checked(-adopted);
+      if(adopted)this.emit('pair-plan-adopted',{retainedCommittedPairs:Number(this.e.gn_progress_stat(2)),candidates:Number(this.e.gn_pair_plan_stat(2)),order:Number(this.e.gn_pair_plan_stat(1))});
       this.restoredPending=this.e.gn_frontier_pending();
       if(this.restoredPending&&!this.batchPairs){this.batchPairs=1;this.warn('Restored outstanding descriptors use the bounded-batch scheduler.');}
     }else checked(this.e.gn_restored_through(cp.completedThroughDegree));
@@ -255,6 +262,7 @@ export class FomkyrEngine {
     const bytes=new Uint8Array(this.memory.buffer,Number(ptr),this.e.gn_frontier_size());
     const text=new Uint8Array(bytes.length*2);for(let i=0;i<bytes.length;i++){text[2*i]=hexDigits[bytes[i]>>>4];text[2*i+1]=hexDigits[bytes[i]&15];}const frontier=hexDecoder.decode(text);
     this.safePoint={abi:this.fkGate?.enabled?5:this.hilbertClosure?4:3,...hilbertMetadata(this.hilbertClosure),...this.fkGate?.metadata(),version:VERSION,identity:this.identityHash,basisSize:Number(this.e.gn_stat(0)),terms:Number(this.e.gn_stat(1)),completedThroughDegree:Number(this.e.gn_stat(2)),currentDegree:Number(this.e.gn_stat(3)),diskBytes:Number(this.e.gn_stat(6)),partial:true,
+      ...(this.e.gn_pair_plan_stat(0)?{frontierABI:2,minimumReader:'0.7.1',pairPlanOrder:Number(this.e.gn_pair_plan_stat(1))}:{}),
       frontier,hilbertReference:referenceSnapshot(this.e,this.hilbertReference),hashBits:this.e.gn_frontier_hash_bits(),retainedCommittedPairs:Number(this.e.gn_progress_stat(2)),
       resolvedOverlaps:Number(this.e.gn_progress_stat(2)+this.e.gn_progress_stat(4)+this.e.gn_progress_stat(5)),
       totalOverlaps:Number(this.e.gn_progress_stat(0)),pendingPairs:this.e.gn_frontier_pending(),
@@ -436,7 +444,12 @@ export class FomkyrEngine {
           await this.restore(cp,{truncate:!preserveNewerPartial});restored=cp.completedThroughDegree;
           this.priorElapsedMs=cp.cumulativeElapsedMs??0;restoreError=null;break;
         }
-        catch(error){restoreError=error;await this.resetKernel(fixture,kernelTarget,modulus);this.emit('warning',{message:`Rejected checkpoint degree ${cp.completedThroughDegree}: ${error.message}`});}
+        catch(error){
+          if(cp.partial&&cp.frontier?.slice(16,32)==='0200000000000000'&&['MEMORY_BUDGET','SCRATCH_BUDGET','REPRESENTATION_LIMIT'].includes(error.code)){
+            error.message='Planned checkpoint needs a larger memory/plan allowance; saved work is retained. '+error.message;throw error;
+          }
+          restoreError=error;await this.resetKernel(fixture,kernelTarget,modulus);this.emit('warning',{message:`Rejected checkpoint degree ${cp.completedThroughDegree}: ${error.message}`});
+        }
       }
       if(restoreError)throw restoreError;
       replayHilbertCertificate(this.e,fixture,this.hilbertClosure,this.budget);

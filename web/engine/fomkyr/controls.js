@@ -4,7 +4,7 @@ import {requestPersistentStorage,listCachedRuns,deleteCachedRun} from './storage
 import {browserCapabilities} from './capabilities.js';
 import {requestIsolation} from './isolation.js';
 const KEY='fomkyr-options-v3'; // keep existing user tuning on upgrade
-const defaults={hilbertGate:false,hilbertSectors:true,gateMiB:128,scheduler:'cooperative',quantumMs:250,lookahead:128,maxLookahead:512,elasticWindow:true,sectorPriority:true,radixMaxCache:true,hilbertClosureMode:'off',hilbertEvidenceText:'',hilbertClosureBatching:true,arithmeticMode:'exact',memoryPolicy:'auto',modularMinPrimes:2,modularMaxPrimes:8,workers:0,execution:'auto',bits:'auto',spill:true,hilbert:true,resume:'auto',ioMode:'auto',monomialPruning:true,heapReduction:true,rationalHeap:true,bigRationalHeap:true,bigRowMaxTerms:0,fastBigDivision:true,growingRationalHeap:true,radixHeap:true,reserveInPlace:true,rowReserveMiB:null,compiledRewrites:true,rewriteDegree:4,rewriteSupport:8,rewriteMiB:8,sharedCacheMiB:null,cachePercent:12,heapThreshold:16,batchPairs:null,hashBits:18,scratchMiB:null,hilbertMiB:256,wordMatcher:true,chainCriterion:true,eagerPruning:true,quadraticRewrite:true,costScheduling:true,wordCacheEntries:256,progress:true,progressIntervalMs:1000,midDegreeCheckpoints:true,checkpointIntervalMs:30000,referenceProgress:true};
+const defaults={pairOrder:'legacy',planMinDegree:12,pairPlanMiB:64,hilbertGate:false,hilbertSectors:true,gateMiB:128,scheduler:'cooperative',quantumMs:250,lookahead:128,maxLookahead:512,elasticWindow:true,sectorPriority:true,radixMaxCache:true,hilbertClosureMode:'off',hilbertEvidenceText:'',hilbertClosureBatching:true,arithmeticMode:'exact',memoryPolicy:'auto',modularMinPrimes:2,modularMaxPrimes:8,workers:0,execution:'auto',bits:'auto',spill:true,hilbert:true,resume:'auto',ioMode:'auto',monomialPruning:true,heapReduction:true,rationalHeap:true,bigRationalHeap:true,bigRowMaxTerms:0,fastBigDivision:true,growingRationalHeap:true,radixHeap:true,reserveInPlace:true,rowReserveMiB:null,compiledRewrites:true,rewriteDegree:4,rewriteSupport:8,rewriteMiB:8,sharedCacheMiB:null,cachePercent:12,heapThreshold:16,batchPairs:null,hashBits:18,scratchMiB:null,hilbertMiB:256,wordMatcher:true,chainCriterion:true,eagerPruning:true,quadraticRewrite:true,costScheduling:true,wordCacheEntries:256,progress:true,progressIntervalMs:1000,midDegreeCheckpoints:true,checkpointIntervalMs:30000,referenceProgress:true};
 let state={...defaults};
 try{const saved=JSON.parse(globalThis.localStorage?.getItem(KEY)||'{}');for(const key of Object.keys(defaults))if(Object.hasOwn(saved,key))state[key]=saved[key];}catch{}
 // Public George controls retain only the measured direct mode. The explicit
@@ -12,7 +12,7 @@ try{const saved=JSON.parse(globalThis.localStorage?.getItem(KEY)||'{}');for(cons
 state.arithmeticMode='exact';
 function persist(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch{}}
 export function readFomkyrOptions(){
-  const out={...state};delete out.hilbertClosureMode;delete out.hilbertEvidenceText;
+  const out={...state};delete out.pairPlanMiB;out.pairPlanBytes=Number(state.pairPlanMiB)*1048576;delete out.hilbertClosureMode;delete out.hilbertEvidenceText;
   if(state.hilbertClosureMode!=='off'){
     let data;try{data=JSON.parse(state.hilbertEvidenceText);}catch{throw new Error('Hilbert closure requires a valid JSON certificate or explicitly assumed dimension file.');}
     if(state.hilbertClosureMode==='certificate')out.hilbertClosure={certificate:data};
@@ -54,6 +54,9 @@ export function installFomkyrControls(){
   check('hilbertSectors','Skip reductions in already-complete product-permutation grades',fkBox);
   number('gateMiB','Temporary exact grade-counter budget, MiB',0,14304,fkBox);
   const fkNote=document.createElement('p');fkNote.textContent='This option is restricted to the authenticated original FK6 input over Q. Profile proof artifacts are referenced, not replayed by this runtime. Results and checkpoints remain explicitly conditional on that imported profile. Degrees above 17, other fields, and unmatched presentations retain ordinary completion. A completed conjugacy class is not assumed from a single representative normal-word count. Re-enable the same profile when resuming an assisted job.';fkBox.append(fkNote);
+  choice('pairOrder','Whole-degree ambiguity order',[['legacy','Legacy enumeration (default)'],['overlap','Longest overlap, then smaller input (FK6 experiment)'],['sparse','Smaller input, then longest overlap']]);
+  number('planMinDegree','First degree using the global plan',1,4294967294);
+  number('pairPlanMiB','Global pair-plan budget, MiB (0 declines planning)',0,14304);
   choice('execution','Execution',[['auto','Automatic: shared multicore when available'],['single','Single worker: no shared-memory requirement'],['multicore','Require shared multicore; fail if isolation is unavailable']]);
   if(!document.getElementById('nativeWorkers'))number('workers','CPU lanes (0 = automatic)',0,32);
   choice('bits','WASM addressing',[['auto','Automatic: 32-bit unless the budget needs memory64'],['32','32-bit'],['64','64-bit, with capability fallback']]);

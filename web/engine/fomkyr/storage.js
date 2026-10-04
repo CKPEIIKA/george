@@ -2,7 +2,7 @@ import {sameFkGateProfile} from './fk-gate.js';
 // SPDX-License-Identifier: MIT
 // OPFS data are origin-local. Persistence is a request, never a backup guarantee.
 export const STORE='fomkyr';
-export const VERSION='0.7.0';
+export const VERSION='0.7.1';
 const encoder=new TextEncoder();
 export async function sha256(bytes){
   const hash=await crypto.subtle.digest('SHA-256',typeof bytes==='string'?encoder.encode(bytes):bytes);
@@ -50,7 +50,7 @@ export async function checkpointCandidates(directory,identity,diskBytes,evidence
       if(!Number.isInteger(cp.completedThroughDegree)||cp.completedThroughDegree<0||cp.completedThroughDegree>0xfffffffe)continue;
       if(!Number.isSafeInteger(cp.basisSize)||cp.basisSize<0||!Number.isSafeInteger(cp.diskBytes)||cp.diskBytes<cp.basisSize*56||cp.diskBytes>diskBytes)continue;
       if(cp.partial){
-        if(cp.currentDegree!==cp.completedThroughDegree+1||typeof cp.frontier!=='string'||!/^[0-9a-f]+$/.test(cp.frontier)||cp.frontier.length>18000||cp.frontier.length%2)continue;
+        if(cp.currentDegree!==cp.completedThroughDegree+1||typeof cp.frontier!=='string'||!/^[0-9a-f]+$/.test(cp.frontier)||cp.frontier.length>40000||cp.frontier.length%2)continue;
         if(!Number.isInteger(cp.hashBits)||cp.hashBits<8||cp.hashBits>26)continue;
       }
       result.push(cp);

@@ -41,6 +41,7 @@ with tempfile.TemporaryDirectory() as temporary:
         status = json.loads(telemetry.read_text())
         assert status['state'] == 'complete' and status['completedThroughDegree'] == 16
         assert status['allocatedBytes'] <= status['budgetBytes']
+        assert status['targetDegree'] == 16
         if manual:
             assert status['ordinaryScratchBytes'] == 6 << 20
             assert status['rowReserveBytes'] == 64 << 20
@@ -93,4 +94,18 @@ cpu, threads = module.cpu_usage({'ticks': 300, 'threads': {1: 300}},
                                {'ticks': 100, 'threads': {1: 100}}, 1, 100)
 assert cpu == 200 and threads == [(1, 200)]
 assert 'last saved sample' in module.render({'state': 'running', 'pid': 42}, None, {}).lower()
+assert module.eta(3 * 3600 + 20 * 60) == '3h20m' and module.eta(45) == '45s' and module.eta(None) == '?'
+colored = module.Style(True)('abcdef', 'red')
+assert module.visible(module.clip(colored, 3)) == 3 and module.visible(module.clip(colored, 99)) == 6
+tracker = module.Tracker()
+fake = dict(state='running', pid=1, targetDegree=14, cumulativeElapsedSeconds=0, progress=dict(degree=5, resolvedOverlaps=0, totalOverlaps=100))
+for tick in range(10):
+    fake['progress']['resolvedOverlaps'] = tick * 5
+    tracker.update(tick, fake, {'rss': 1}, 100)
+assert abs(tracker.rate(9, 300) - 5) < 1e-9
+low, mid, high = tracker.degree_eta(9, 55)
+assert abs(mid - 11) < 1e-9
+for width, height in ((140, 50), (80, 24), (60, 10), (30, 4)):
+    text = module.render(dict(fake, updatedUnixSeconds=time.time()), {'rss': 1}, {}, tracker, width, height, module.Style(True))
+    assert all(module.visible(line) <= width for line in text.splitlines()) and len(text.splitlines()) <= height
 print('Workspace parity, three-reserve admission, native telemetry and dashboard passed')

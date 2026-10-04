@@ -75,6 +75,9 @@ static void emit_json(FILE *out, const char *payload) {
     free(tier);int end=j.t[entry].end;i++;while(i<j.n&&j.t[i].start<end)i++;
    }
   }
+ }else if(event&&!strcmp(event,"pair-plan-adopted")){
+  u64 kept=0,candidates=0;human_number(&j,0,"retainedCommittedPairs",&kept);human_number(&j,0,"plannedCandidates",&candidates);
+  fprintf(out,"Whole-degree pair plan adopted: %" PRIu64 " committed pairs retained; %" PRIu64 " remaining candidates.\n",kept,candidates);
  }else if(event&&!strcmp(event,"checkpoint")){
   char *file=json_string(&j,json_key(&j,0,"file"));
   fprintf(out,"Checkpoint saved: %s.\n",file?file:"safe frontier");free(file);
@@ -111,6 +114,8 @@ static void emit_json(FILE *out, const char *payload) {
   fprintf(out,"Native memory plan: %" PRIu64 " workers.\n",workers);human_memory(out,&j);
   if(human_flag(&j,"wasmLimit"))fputs("Wasm allowance limit enabled.\n",out);
  }
+ int plan=json_key(&j,0,"pairPlan");u64 order=0;
+ if(plan>=0&&human_number(&j,plan,"order",&order)&&order){u64 count=0,bytes=0;human_number(&j,plan,"candidates",&count);human_number(&j,plan,"allocatedBytes",&bytes);fprintf(out,"Pair priority: %s; %" PRIu64 " candidates; %.3f MiB plan storage.\n",order==1?"largest overlap first":"sparser input first",count,(double)bytes/1048576.0);}
  if(human_flag(&j,"conditionalOnExternalDimensions"))fputs("Results are conditional on the supplied external Hilbert dimensions.\n",out);
  if(human_flag(&j,"conditionalOnImportedFkDimensions"))fputs("Results are conditional on the imported FK6 dimensions; external proof package not replayed here.\n",out);
  free(event);json_free(&j);

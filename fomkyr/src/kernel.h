@@ -49,6 +49,9 @@ API int gn_memory_policy(u32 enabled);
 API int gn_batch_retry(u32 workers,u32 first);
 API u64 gn_memory_stat(u32 key);
 API u64 gn_reserve_stat(u32 lane,u32 key);
+API int gn_pair_plan_config(u32 order,u32 min_degree,u64 bytes);
+API int gn_pair_plan_adopt(void); /* 1 adopted, 0 ordinary/already active, <0 error */
+API u64 gn_pair_plan_stat(u32 key);
 API u32 gn_abi(void);
 API u64 gn_heap_base(void);
 API int gn_init(u32 generators,u32 degree,u32 workers,u64 budget,u64 scratch_pool,u32 hash_bits,u32 modulus,u32 spill);

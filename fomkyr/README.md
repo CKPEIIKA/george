@@ -8,7 +8,7 @@ FOMKYR(1)                     Fomkyr Manual                     FOMKYR(1)
 
 ## VERSION
 
-**0.7.0**, [MIT license](LICENSE). Fomkyr is a standalone C engine and a
+**0.7.1**, [MIT license](LICENSE). Fomkyr is a standalone C engine and a
 subproject of [George](../README.md). George also runs this kernel through
 WebAssembly; its engine chooser marks that integration experimental.
 
@@ -42,6 +42,29 @@ continue the saved calculation or inspect its checkpoint:
 A C11 compiler, make and POSIX threads are sufficient for native execution.
 Node.js and Python are used by optional Wasm tools and test utilities.
 `make install PREFIX=/desired/prefix` installs the executable and manual page.
+
+## WHOLE-DEGREE PAIR PLANNING
+
+Version 0.7.1 adds an optional shared plan of the remaining critical pairs in a
+degree. `--pair-order overlap` prioritizes longer common factors, then smaller
+input polynomials. `--pair-order sparse` prioritizes smaller inputs first.
+The exact reducers, helper rows and budgeted overflow workspaces remain active.
+
+```sh
+./dist/fomkyr --resume /path/to/fk6-job -d 14 -j 4 --memory 4G \
+  --pair-order overlap --human
+```
+
+General defaults retain `legacy` order. Planning starts at degree 12 and has a
+64 MiB shared allowance. George exposes these controls under Engine → Scheduling;
+its FK6 example selects overlap order. Imported FK dimensions require separate
+explicit authorization with `--fk-gate` or the mathematical settings.
+
+Planned partial checkpoints use frontier version 2 and require a 0.7.1 reader.
+Committed work is retained when adopting a legacy checkpoint. Keep a backup
+before changing versions. See [planning and resume](docs/PAIR_PLANNING_071.md).
+`make audit-tools` builds the independent scanner used by
+`tools/stream_canonical.py` for bounded-memory canonical comparisons.
 
 ## OPTIONAL FK6 DIMENSION PROFILE
 
@@ -82,6 +105,9 @@ not globally interreduced. Some presentations have infinite Gröbner bases.
 | `--resume DIR` | Resume with saved input and field. |
 | `--checkpoint-seconds N` | Save at safe boundaries; default 30. Zero saves at every available boundary. |
 | `--time-limit N` | Request cancellation after N seconds following initialization; zero is unlimited. |
+| `--pair-order MODE` | `legacy` (default), `overlap`, or `sparse`; optional whole-degree priority. |
+| `--plan-min-degree N` | First degree using the selected nonlegacy order; default 12. |
+| `--pair-plan-memory SIZE` | Shared planning allowance; default 64 MiB, bounded by total memory. |
 | `--batch-pairs N` | 1–512 pairs per batch; default 128. |
 | `--field N` | Zero for ℚ, otherwise a supported prime characteristic. |
 | `--export` | Stream the complete text basis to `result.gb`. |
@@ -180,6 +206,8 @@ These are George's defaults for a new Fomkyr job:
 | Shared overflow reserve | Automatic: up to 512 MiB | Rescues exceptional rational rows within the kernel allowance. |
 | Workers | Automatic, reported CPU threads minus one, within 1–32 | Compare explicit counts for the presentation; scaling depends on the workload. |
 | Execution / addressing | Automatic | Shared multicore when available; memory64 for allowances above 4095 MiB. |
+| Global pair priority | Legacy | Optional overlap/sparse whole-degree plan; saved active degree keeps its order. |
+| Plan activation / allowance | Degree 12 / 64 MiB | Shared candidate pool, inside overall kernel allowance. |
 | Reduction scheduling | Cooperative | Preserve unfinished exact rows across yields; commit ready rows after reduction against the current basis. Barrier mode waits for a whole batch. |
 | Worker slice / pending window | 250 ms / 128 descriptors | Soft yield target; bounded work supply. One arithmetic operation or serial commit may exceed the target. |
 | Cached radix maxima | On | Reduce exact queue scans without changing the monomial order. |
@@ -285,7 +313,7 @@ the external proof package is not included or replayed here. See
 [the verification contract](fk_gate/docs/PROOF_OF_COMPUTATION.md).
 Optional Hilbert coefficients appear in **Series** and CSV/JSON downloads.
 
-Ordinary basis records remain ABI 3; partial frontiers require 0.6.5 or later.
+Ordinary basis records remain ABI 3. Unplanned partial frontiers require 0.6.5 or later; planned frontier v2 requires 0.7.1 or later.
 Assisted metadata uses ABI 4 and requires 0.6.6 and the same evidence on resume.
 Avoid opening assisted or newer partial jobs with older engines. Native and Wasm
 can exchange compatible record/checkpoint files; the browser UI currently keeps

@@ -58,7 +58,7 @@ try {
     return verified;
    }
    assert.match(await page.locator('#basisOut .summary').textContent(),/265 elements, in degrees 2 to 4/);
-   assert.match(await page.locator('#runChipWrap').textContent(),/Through degree 4.*Computed through degree 4/);
+   assert.match(await page.locator('#runChipWrap').textContent(),/Through degree 4.*Computed through degree 4/s);
    assert.doesNotMatch(await page.locator('#basisOut').textContent(),/computation did not finish|incomplete/i);
    assert.deepEqual(await page.locator('#basisOut .degree h3').allTextContents(),['Degree 2100 elements','Degree 376 elements','Degree 489 elements']);
    assert.ok(await page.locator('#basisOut .polys li').count()<265);
@@ -95,8 +95,13 @@ try {
     const input=JSON.parse(fs.readFileSync('test/fixtures/coefficient-workloads/affine-q-serre-q2.json')).inputText;
     const parsed=readInputFile('(ALGFORMINPUT)\n'+input);
     await page.locator('#vars').fill(parsed.vars.join(','));await page.locator('#rels').fill(parsed.rels.join(','));await page.locator('#maxdeg').fill('14');
+    await page.locator('#fomkyr-group-scheduling').evaluate(node=>node.open=true);
+    await page.locator('#fomkyr-pairOrder').selectOption('overlap');
+    await page.locator('#fomkyr-planMinDegree').fill('12');
     const coefficient=await compute();assert.equal(coefficient.basisSize,21);assert.equal(coefficient.completedThroughDegree,14);
     assert.ok(coefficient.bigRationalSuccesses>0);assert.equal(coefficient.fastBigDivision,true);assert.equal(coefficient.growingRationalHeap,true);
+    assert.ok(coefficient.pairPlan.builds>0);assert.equal(coefficient.pairPlan.order,1);
+    await page.locator('#fomkyr-group-scheduling').evaluate(node=>node.open=false);
     coefficientRules=coefficient.basisSize;
     const basis=await page.locator('#filesOut .file').evaluateAll(nodes=>nodes.find(n=>n.querySelector('.name').textContent==='result.gb').querySelector('pre').textContent);
     fs.writeFileSync(path.join(output,name+'-q-serre-d14.gb'),basis);
@@ -110,6 +115,8 @@ try {
     assert.equal(await page.locator('#nativeWorkers').getAttribute('placeholder'),'Automatic');
     assert.equal(await page.locator('#maxdeg').inputValue(),'11');
     assert.equal(await page.locator('#fomkyr-bits').inputValue(),'auto');
+    assert.equal(await page.locator('#fomkyr-pairOrder').inputValue(),'overlap');
+    assert.equal(await page.locator('#fomkyr-planMinDegree').inputValue(),'12');
     assert.equal(await page.locator('#monomialPruning').isChecked(),true);
     await page.locator('#engineSettings').evaluate(node=>node.open=true);
     assert.equal(await page.locator('#fomkyrOptions > details').count(),5);

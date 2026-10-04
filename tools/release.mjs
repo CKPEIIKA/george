@@ -12,6 +12,7 @@ import {FK6_REGRESSION_MAX_DEGREE,NATIVE_REGRESSION_CHECKS} from './suite-profil
 if(process.argv.includes('--help')){
   console.log(`Usage: node tools/release.mjs [options]
   --full                 Include upstream and extended recovery audits.
+  --quick                Run bounded regressions without historical exact audits.
   --refresh-oracles      Recompute independent references.
   --out <directory>      Use an explicit resumable release directory.
   --previous-root <dir>  Check upgrades from this saved engine.
@@ -21,7 +22,7 @@ if(process.argv.includes('--help')){
 Checks resume automatically. Packaging and preparation do not run the suites.`);
   process.exit(0);
 }
-const switches=new Set(['--full','--refresh-oracles','--package','--prepare']);
+const switches=new Set(['--full','--quick','--refresh-oracles','--package','--prepare']);
 const valued=new Set(['--out','--previous-root','--singular-report']);
 for(let i=2;i<process.argv.length;i++){
   const option=process.argv[i];
@@ -33,7 +34,8 @@ const repository=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..')
 process.chdir(repository);
 const arg=(name,fallback)=>{const at=process.argv.indexOf(name);if(at<0)return fallback;
   assert.ok(process.argv[at+1]&&!process.argv[at+1].startsWith('--'),'Missing value for '+name);return process.argv[at+1];};
-const full=process.argv.includes('--full'),refresh=process.argv.includes('--refresh-oracles');
+const full=process.argv.includes('--full'),quick=process.argv.includes('--quick'),refresh=process.argv.includes('--refresh-oracles');
+assert.ok(!(full&&quick),'Choose quick or full checks.');
 const preparation=process.argv.includes('--prepare'),packaging=process.argv.includes('--package');
 assert.ok(!preparation||!packaging,'Choose packaging or preparation.');
 const appVersion=JSON.parse(fs.readFileSync('package.json')).version;
@@ -51,7 +53,7 @@ const automaticPrevious=fs.existsSync('local/baselines')?fs.readdirSync('local/b
   .sort((a,b)=>compareVersions(b.slice(7),a.slice(7)))
   .map(name=>'local/baselines/'+name+'/engine').find(root=>fs.existsSync(path.join(root,'build.json'))):null;
 const previousRoot=arg('--previous-root',automaticPrevious);
-const protocol=saved?.protocol??{schema:2,appVersion,coreVersion:VERSION,full,refreshOracles:refresh,node:process.version,lhsCases:64,
+const protocol=saved?.protocol??{schema:2,appVersion,coreVersion:VERSION,full,...(quick?{profile:'quick'}:{}),refreshOracles:refresh,node:process.version,lhsCases:64,
   fk6RegressionMaxDegree:FK6_REGRESSION_MAX_DEGREE,nativeSuite:full?'extended':'regression',
   singularBuild:digest(stableJSON(singularIdentity(path.resolve('build/oracles/root')))),
   previousEngine:previousRoot?{directory:path.resolve(previousRoot),files:inventory([previousRoot])}:null};
@@ -70,18 +72,21 @@ const git=args=>execFileSync('git',args,{encoding:'utf8',maxBuffer:16*1024*1024}
 // Retain the original report and its hashes when borrowing a completed phase.
 const initialRunnerHash='5b8c1faf9d665b003e2323c8137e2ea41b4c2086f9411d8a74944783360e6d2b';
 const independentOfNativeRunner=new Set(['row-growth','exact','matrix','published','fk6-prefixes','browser','static-chromium','static-firefox','upgrade']);
-const nativeOnlyInputs=new Set(['fomkyr/SOURCE.json',
+const nativeOnlyInputs=new Set(['fomkyr/SOURCE.json','fomkyr/native/cli.c','fomkyr/tests/test_dashboard.py','fomkyr/tools/dashboard.py',
   'fomkyr/tests/test_cooperative_pressure_067.mjs','fomkyr/tests/test_cooperative_reserve_067.mjs',
   'fomkyr/tests/test_fk_gate_wasm_068.mjs','fomkyr/tests/audit_fk_gate_wasm_068.py',
   'fomkyr/tests/test_cli_065.py','fomkyr/tests/test_fk_gate_068.py','fomkyr/tools/test_gate_ubsan_068.sh','docs/development/RELEASING.md']);
 const originalNativeOnlyInputs=new Set(['fomkyr/SOURCE.json',
   'fomkyr/tests/test_cooperative_pressure_067.mjs','fomkyr/tests/test_cooperative_reserve_067.mjs']);
+const beforeCliScopeInputs=new Set([...nativeOnlyInputs].filter(file=>!['fomkyr/native/cli.c','fomkyr/tests/test_dashboard.py','fomkyr/tools/dashboard.py'].includes(file)));
 const preCliNativeOnlyInputs=new Set([...nativeOnlyInputs].filter(file=>!['fomkyr/tests/test_cli_065.py','docs/development/RELEASING.md'].includes(file)));
 function phaseInputs(hashes,name,legacy=false){
   return Object.fromEntries(Object.entries(hashes).filter(([file])=>
     file!=='tools/release.mjs' && (name==='browser'||file!=='tools/validate-correction-release.mjs')
     && (legacy===true||!independentOfNativeRunner.has(name)||file!=='tools/validate-fomkyr-native.mjs')
-    && (legacy==='pre-fk-audit-split'
+    && (legacy==='pre-native-cli-scope'
+      ? !independentOfNativeRunner.has(name)||!beforeCliScopeInputs.has(file)
+      : legacy==='pre-fk-audit-split'
       ? !independentOfNativeRunner.has(name)||!originalNativeOnlyInputs.has(file)
       : legacy==='pre-cli-deadline'
       ? !independentOfNativeRunner.has(name)||!preCliNativeOnlyInputs.has(file)
@@ -105,7 +110,7 @@ function borrowPhase(name,contract,evidence,validate,legacyContract){
       // matches and the newly scoped inputs match. The native runner is not
       // imported or executed by these phases; native-cli still checks it.
       const compatibleLegacy=independentOfNativeRunner.has(name)&&previous.sourceHashes
-        &&[true,'native-runner-only','pre-fk-audit-split','pre-cli-deadline'].some(mode=>row.contract===legacyContract(previous.sourceHashes,mode))
+        &&[true,'native-runner-only','pre-fk-audit-split','pre-cli-deadline','pre-native-cli-scope'].some(mode=>row.contract===legacyContract(previous.sourceHashes,mode))
         &&stableJSON(phaseInputs(previous.sourceHashes,name))===stableJSON(phaseInputs(sourceHashes,name));
       const compatibleInitial=!row.contract&&previous.sourceHashes?.['tools/release.mjs']===initialRunnerHash
         &&stableJSON(phaseInputs(previous.sourceHashes,name))===stableJSON(phaseInputs(sourceHashes,name));
@@ -228,7 +233,7 @@ if(preparation){
     // The full runner contains the exact suites; the exact runner reuses those
     // production-host results and adds only its remaining property checks.
     if(full)await phase('matrix',process.execPath,matrixArgs,{evidence:path.join(matrix,'report.json'),timeoutSeconds:3600,validate:r=>assert.equal(r.cases.length,95)});
-    await phase('exact',process.execPath,['tools/validate-fomkyr-exact.mjs',exact,'--resume',...(full?['--upstream-report',path.join(matrix,'report.json')]:[])],{
+    if(!quick)await phase('exact',process.execPath,['tools/validate-fomkyr-exact.mjs',exact,'--resume',...(full?['--upstream-report',path.join(matrix,'report.json')]:[])],{
       evidence:path.join(exact,'report.json'),timeoutSeconds:900,env:{GEORGE_REFRESH_ORACLES:refresh?'1':'0'},validate:r=>assert.ok(r.tests.length>=10&&r.tests.every(test=>test.passed))});
     if(!full)await phase('matrix',process.execPath,matrixArgs,{evidence:path.join(matrix,'report.json'),validate:r=>assert.equal(r.cases.length,95)});
     const published=path.join(out,'published');

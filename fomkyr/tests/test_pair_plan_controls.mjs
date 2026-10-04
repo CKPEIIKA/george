@@ -1,0 +1,5 @@
+import assert from 'node:assert/strict';import fs from 'node:fs';
+let settings={};globalThis.localStorage={getItem:()=>JSON.stringify(settings),setItem(){}};
+let mod=await import('../web/controls.js?test=defaults');let opt=mod.readFomkyrOptions();assert.equal(opt.pairOrder,'legacy');assert.equal(opt.planMinDegree,12);assert.equal(opt.pairPlanBytes,64*1048576);
+settings={workers:7,pairOrder:'overlap',planMinDegree:14,pairPlanMiB:32,monomialPruning:false,memoryPolicy:'auto',scratchMiB:8};mod=await import('../web/controls.js?test=saved');opt=mod.readFomkyrOptions();assert.equal(opt.workers,7);assert.equal(opt.pairOrder,'overlap');assert.equal(opt.planMinDegree,14);assert.equal(opt.pairPlanBytes,32*1048576);assert.equal(opt.monomialPruning,false);assert.equal(opt.scratchBytes,undefined);
+fs.writeFileSync('results/0.7.1/plan-controls.json',JSON.stringify({passed:true,defaultLegacy:true,preservedUnrelatedPreferences:true,automaticMemoryStillAuthoritative:true},null,2));console.log('PLAN CONTROLS PASS');

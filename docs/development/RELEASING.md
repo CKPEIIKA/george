@@ -12,7 +12,7 @@ npm run release:check
 
 The command checks application/core versions and source hashes in `fomkyr/` first, then runs unit
 tests, exact arithmetic, reserve and automatic memory checks, the 95-case mathematical matrix,
-nine coefficient/structural comparisons, FK6 degrees 1–6, the 18-check native
+nine coefficient/structural comparisons, FK6 degrees 1–6, the short native
 CLI/frontier/profile/Hilbert-authority regression profile, and Chromium/Firefox
 interface (including full text ZIP export) and Pages-style hosting checks. It also checks checkpoint upgrades
 when a previous engine exists under `local/baselines/`, or when supplied with
@@ -34,6 +34,23 @@ browser UI checks use FK6 degree 5 for complete counts/preview expansion and
 degree 4 for independently checked verification downloads. Degree 9, 10 and 11
 timings and the literature stress ladder have a separate
 [benchmark entry point](BENCHMARKS.md); neither release profile starts that ladder.
+
+## Quick patch release
+
+For a patch whose solver changes have already passed their focused exact and
+recovery audits during development:
+
+```sh
+npm run release:check -- --quick
+```
+
+This profile runs fresh units, native/Wasm row-growth properties, the 95-case
+matrix, nine independent coefficient comparisons, FK6 degrees 1–6, the short
+native regression suite including planner/frontier/streaming-audit checks, both browser interface/hosting checks and checkpoint
+upgrades. Independent references use the same validated cache. It omits the
+historical exact-arithmetic and automatic-retry audit group; use the routine or
+full profile when those paths change. Its report explicitly records `quick`.
+Packaging and preparation use that report without rerunning checks.
 
 ## Reuse and deadlines
 
@@ -100,6 +117,12 @@ bash build/publication/publish.sh [ssh-key]
 
 GitHub Pages deployment originates on `gh-pages`, matching its environment
 protection rules. Publication verifies the deployed bytes after pushing.
+
+Native C CLI and its dashboard test are excluded from Wasm/algebra phase inputs.
+Their edits rerun every native check that executes the CLI and rebuild its binary;
+unchanged kernel properties retain their source-bound evidence. The native report
+records the changed input list and previous report hashes. Native-only edits still
+require a fresh source inventory and release snapshot.
 
 ## Performance comparisons
 

@@ -25,7 +25,7 @@ const report=prior??{state:'running',version:VERSION,suite,sourceHashes,engineHa
  scope:suite==='regression'
   ?'Production C properties, cached radix Wasm parity, worker telemetry, native CLI/frontier edges, profile authority, human output and small verification bundles. Long cooperative recovery and multi-runtime Hilbert audits are in the extended profile. No Singular reruns.'
   :'Production C sources and George Wasm adapter; standalone pthread CLI, partial checkpoints, cross-runtime resume, exact independent small-case oracles and optional Hilbert authority rejection. Serial checks; individual calculations retain their deadlines. Multi-job CLI recovery suites have a 600-second aggregate cap; other process groups have a 120-second cap. No Singular reruns.'};
-const reusableInputs=new Set(['tools/release.mjs','tools/validate-fomkyr-native.mjs','fomkyr/SOURCE.json',
+const reusableInputs=new Set(['tools/release.mjs','tools/validate-correction-release.mjs','fomkyr/native/cli.c','fomkyr/tests/test_dashboard.py','fomkyr/tools/dashboard.py','tools/validate-fomkyr-native.mjs','fomkyr/SOURCE.json',
  'fomkyr/tests/test_cooperative_pressure_067.mjs','fomkyr/tests/test_cooperative_reserve_067.mjs',
  'fomkyr/tests/test_fk_gate_wasm_068.mjs','fomkyr/tests/audit_fk_gate_wasm_068.py',
  'fomkyr/tests/test_cli_065.py','fomkyr/tests/test_fk_gate_068.py','fomkyr/tools/test_gate_ubsan_068.sh','docs/development/RELEASING.md']);
@@ -51,7 +51,10 @@ if(!prior&&reuseFile){
  const changed=[...new Set([...Object.keys(previous.sourceHashes),...Object.keys(sourceHashes)])]
   .filter(file=>previous.sourceHashes[file]!==sourceHashes[file]);
  assert.ok(changed.every(file=>allowed.has(file)),'Core or shared inputs changed; completed native checks cannot be reused.');
+ const cliChanged=changed.includes('fomkyr/native/cli.c');
  const excluded=new Set([
+  ...(cliChanged?['native-build','planner-cross','planner-budget','stream-audit','fk-gate-cli','cli-resume','cli-edges','human-cli','verification-bundle','workspace-cli-dashboard','hilbert-authority']:[]),
+  ...(changed.some(file=>['fomkyr/tests/test_dashboard.py','fomkyr/tools/dashboard.py'].includes(file))?['workspace-cli-dashboard']:[]),
   ...(changed.includes('fomkyr/tests/test_cooperative_pressure_067.mjs')?['cooperative-pressure']:[]),
   ...(changed.includes('fomkyr/tests/test_cooperative_reserve_067.mjs')?['cooperative-reserve']:[]),
   ...(changed.includes('fomkyr/tests/test_cli_065.py')?['cli-resume']:[]),
@@ -63,6 +66,7 @@ if(!prior&&reuseFile){
  // Retain the previously built local executables; their source and every
  // production Wasm/host input matched above. Historical reports stay intact.
  fs.cpSync(path.join(path.dirname(reuseFile),'source','dist'),path.join(stage,'dist'),{recursive:true});
+ if(cliChanged)fs.rmSync(path.join(stage,'dist','fomkyr'),{force:true});
  report.previousEvidence={report:path.resolve(reuseFile),sourceHashes:previous.sourceHashes};
 }
 report.state='running';const save=()=>writeJSON(reportFile,report);save();
@@ -76,6 +80,16 @@ const checks=[
  ['packed-word-properties','./dist/packed-word-properties',[]],
  ['native-build','make',['native']],
  ['kernel-reference-build','clang',['-std=c11','-O3','-flto','-fno-builtin','-fPIC','-shared','src/kernel.c','tests/host.c','-fuse-ld=lld','-o','dist/libfomkyr.so']],
+ ['planner-native','python3',['tests/test_pair_plan.py']],
+ ['planner-frontier','python3',['tests/test_pair_plan_frame.py']],
+ ['planner-controls',process.execPath,['tests/test_pair_plan_controls.mjs']],
+ ['planner-wasm',process.execPath,['--experimental-wasm-memory64','tests/test_pair_plan_wasm.mjs']],
+ ['planner-cross','python3',['tests/test_pair_plan_cross.py']],
+ ['planner-budget','python3',['tests/test_pair_plan_budget.py']],
+ ['planner-gate','python3',['tests/test_pair_plan_gate.py']],
+ ['planner-ubsan','bash',['tools/test_plan_ubsan.sh']],
+ ['audit-tool-build','make',['audit-tools']],
+ ['stream-audit','python3',['tests/test_stream_canonical.py']],
  ['fk-profile-identity','python3',['tests/test_fk_profile_identity_068.py']],
  ['fk-gate-native','python3',['tests/test_fk_gate_068.py']],
  ['fk-gate-wasm',process.execPath,['--experimental-wasm-memory64','tests/test_fk_gate_wasm_068.mjs']],

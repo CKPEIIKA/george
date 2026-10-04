@@ -190,3 +190,21 @@ test('big-row capacity is automatic by default, configurable and saved in shares
   assert.equal(available({fomkyrOptions:{rationalHeap:false}}).bigRowMaxTerms,true);
   assert.equal(available({fomkyrOptions:{rationalHeap:false}}).reserveInPlace,true);
 });
+
+
+test('pair planning round-trips policies and budgets while old shares retain legacy order',async()=>{
+ const form={backend:'fomkyr',varsText:'x,y',relsText:'x^2,y^2',nativeWorkers:2};
+ assert.equal(FOMKYR_DEFAULTS.pairOrder,'legacy');
+ assert.equal(fomkyrEngineOptions(form).pairPlanBytes,64*1048576);
+ for(const pairOrder of ['legacy','overlap','sparse']){
+  const value={...form,fomkyrOptions:{pairOrder,planMinDegree:4,pairPlanMiB:32}};
+  const job=fomkyrEngineOptions(value);
+  assert.equal(job.pairOrder,pairOrder);assert.equal(job.planMinDegree,4);assert.equal(job.pairPlanBytes,32*1048576);
+  const saved=await readShareLink(new URL(await createShareLink(value,'https://example.test/george/')).hash);
+  assert.equal(saved.fomkyrOptions.pairOrder,pairOrder);assert.equal(saved.fomkyrOptions.pairPlanMiB,32);
+  const enabled=fomkyrControlAvailability(value);
+  assert.equal(enabled.planMinDegree,pairOrder!=='legacy');assert.equal(enabled.pairPlanMiB,pairOrder!=='legacy');
+ }
+ for(const options of [{pairOrder:'f4'},{planMinDegree:0},{pairPlanMiB:-1}])assert.throws(()=>validateFomkyrOptions(options));
+ assert.equal(fomkyrControlAvailability({...form,backend:'optimized'}).pairOrder,false);
+});

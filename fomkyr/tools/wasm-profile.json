@@ -1,21 +1,22 @@
 {
   "kind": "frontend",
   "compilerMajor": 23,
-  "profileSha256": "3af74e6f787ab14b89c4000eed6f762bc7fb3830263cb4aab4f0224c302bf9a9",
+  "profileSha256": "8ea2e8c23c0c5f03ec016ed8779715210b12e42a5d2bdec0996f9de6da850e8e",
   "sourceHashes": {
     "src/big_rational_nf.inc": "aac2eb4b417b53b510dfeaf7dd15e30e5067061f45040c8ceb3742ae7c68dae6",
     "src/cooperative.inc": "970eb9a9d5ed0b8d44cfa8f8ac23385cf11b4105aa92a899949dc95d7b6bbf4b",
     "src/fk_gate.inc": "bbb8029f8760f20ba710cc3f5816cf823122febfe908538d4d5e0a0a5884aa22",
-    "src/frontier.inc": "da6bbecec147f3b1790bb422457700a47affe33417e24b2a23d4e8adfb2f7400",
+    "src/frontier.inc": "7991c58ac14822a0bb44dd157a1ae86c4e49939c74507a7ddaf7cc0481378196",
     "src/heap_nf.inc": "cd2f44061c1f8066facf0acbe3a542153d60b4279356cdae3eeaa71332205131",
     "src/hilbert.inc": "1061a3ffe010548ca4860ce13ed069a541934745f75a1f64a91e18a08874106a",
     "src/hilbert_gate.inc": "161e31af6513d48df8de9b6a625d1feb11009033ae6b8470ee29c5e7b878ecb1",
-    "src/kernel.c": "24247e91a5f047d8e266a8c7f3b02c11f0f89e3f8ae93c95153a3a887040eacd",
-    "src/kernel.h": "b3ae6bd147e38db10065e1646fe0f3915f31e5338edfa38b9c5a1caa41793b74",
+    "src/kernel.c": "5d45e96f85490dc387365a95be3b820d58f214a15c79fdb195c16c0c8fbc1537",
+    "src/kernel.h": "c1c0199bb9a5df808c5106f1c029edb7e0c6db0e56452763d51cb17b729bac2c",
     "src/limb_division.inc": "21e0ce64037a12722ed2452aa47095f605755b5ab9fb19d7fb11bb09c52f673d",
     "src/local_rewrites.inc": "23c0956afbff9860f7c35ccb6606576ba5247c885aef2151ac532d8d5ed64a6c",
     "src/lower_bound.inc": "9cb27bbd3845d2416aa8af2287314da19b9ef6eb1b08ca93913708faefd2c7c7",
     "src/matcher.inc": "55bba38d1299c5ba77078eb482602d9eab0f9259048f5cef903bc5f982cb2ccc",
+    "src/pair_plan.inc": "8a6f4e5f126fe7a83c6c6f73abc3a533f36a46bfa8be08e3f9bbfee23ac9ac06",
     "src/radix_queue.inc": "c4f8827260c7e3aef28cbb7e3ae90315c731261bb2fc3e572710371798f836db",
     "src/rational_heap_nf.inc": "5b8e733883b6579efe58c4e556e9dc97d40ee6957d65568ae9ed869700921c48",
     "fk_gate/src/fk_gate.c": "d30393da5c103b82ef8ace19b3a673fcedd77b2fafc0a20ae8d14133ccd4d18b",
@@ -106,21 +107,18 @@
       "basisCount": 497,
       "basisSha256": "dd649bc25f1cd9ab562468d11927350a14d8219c3654eb20f8f91d733070b510",
       "hilbertGate": true
+    },
+    {
+      "fixtureSha256": "fb142fc0401326d0299c2f8b7bbde1943bb284fd54f874457d899d9da2fee21b",
+      "degree": 16,
+      "workers": 4,
+      "shared": true,
+      "modulus": 0,
+      "basisCount": 29,
+      "basisSha256": "46134b1db3b3e8df1daea6ca183672ba624a7f0f7a4b58b39b3d46c02d3c08ec",
+      "pairOrder": "overlap",
+      "planMinDegree": 12
     }
   ],
-  "method": "Real Chromium Wasm branch counters. One algebra per job, no resume. Shared FK6 training uses atomic updates across four lanes; all other training runs use one lane. Single mode supplies its distinct function hashes. No native profile or host-specific measurements are included.",
-  "supplementalTraining": [
-    {
-      "kind": "verified synthetic exact normal forms",
-      "degree": 17,
-      "checks": [
-        "resumable commit against an immutable basis",
-        "concurrent read-only commit preparation",
-        "worker/coordinator state isolation",
-        "completed-row output backpressure"
-      ],
-      "oracle": "commutation normal form with independently counted word populations",
-      "browser": "Chromium"
-    }
-  ]
+  "method": "Real Chromium Wasm branch counters from nine independent cold jobs. Shared FK6, FK-gate and overlap-planner cases use four atomic-counter lanes. Other cases use one lane. Shared/single modules contribute their distinct function hashes. No native profile or host measurements are included."
 }

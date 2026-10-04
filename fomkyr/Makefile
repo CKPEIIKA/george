@@ -47,3 +47,10 @@ install: native
 	install -m 644 man/fomkyr.1 $(DESTDIR)$(PREFIX)/share/man/man1/fomkyr.1
 clean:
 	rm -f $(BUILD_DIR)/fomkyr $(BUILD_DIR)/kernel-native.o $(BUILD_DIR)/native-flags
+
+# Independent streaming record/normalization precondition checker, not solver code.
+.PHONY: audit-tools
+audit-tools: $(BUILD_DIR)/packed-basis-audit
+$(BUILD_DIR)/packed-basis-audit: tools/packed_basis_audit.c
+	@mkdir -p $(BUILD_DIR)
+	$(CC) -std=c11 -O2 -Wall -Wextra tools/packed_basis_audit.c -o $@

@@ -202,7 +202,12 @@ API int test_multi_reserves(u32 radix){
   REQUIRE(big_rational_nf(&S.lanes[i],original[i],0,2)==0);
   REQUIRE(S.lanes[i].result.n==rule(2)->n&&!S.lanes[i].reserve_slot);
   REQUIRE(gn_reserve_pool_stat(4)==1-i);
-  if(!i)REQUIRE(gn_hilbert(3,1u<<20)==GN_STATE);
+  if(!i){
+   REQUIRE(gn_hilbert(3,1u<<20)==GN_STATE);
+   P.requested=1;P.min_degree=1;
+   REQUIRE(gn_pair_plan_adopt()==-GN_STATE); /* only the extra reserve is leased */
+   P.requested=0;
+  }
  }
  REQUIRE(PTR(Term,S.lanes[0].result.off)[0].w.lo==PTR(Term,S.lanes[1].result.off)[0].w.lo);
  REQUIRE(reserve_acquire(&S.lanes[0])&&reserve_acquire(&S.lanes[1]));

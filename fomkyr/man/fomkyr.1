@@ -1,4 +1,4 @@
-.TH FOMKYR 1 "October 2026" "fomkyr 0.7.0"
+.TH FOMKYR 1 "October 2026" "fomkyr 0.7.1"
 .SH NAME
 fomkyr \- fast pure C engine for exact homogeneous noncommutative Groebner bases
 .SH SYNOPSIS
@@ -93,6 +93,23 @@ Use the same imported authority for total-degree closure without sector skips.
 .BI \-\-fk-gate-memory " SIZE"
 Maximum temporary space for the optional normal-word counter (default 128M).
 This is separate from, and remains within, the overall memory ceiling.
+.TP
+.BI \-\-pair-order " legacy|overlap|sparse"
+Use original enumeration (default), decreasing overlap length, or increasing
+input-term count across the whole active degree. This is an ordering option,
+not a new monomial order or coefficient approximation.
+.TP
+.BI \-\-plan-min-degree " N"
+First degree using the requested global plan; default 12.
+.TP
+.BI \-\-pair-plan-memory " SIZE"
+Shared candidate-plan allowance; default 64 MiB, bounded by the total kernel
+budget. New plans may decline if they do not fit. Restoring a planned frontier
+requires enough allowance to regenerate it; a resource refusal retains saved work.
+.PP
+Planned partial jobs use frontier version 2 and need reader 0.7.1 or later.
+Do not downgrade them to 0.7.0: old readers can ignore/reject the frontier and fall
+back to an earlier checkpoint. Binary basis records remain ABI 3.
 .SH SIGNALS
 SIGUSR1 requests a safe checkpoint and continues. SIGINT and SIGTERM request
 cancellation and retain a safe frontier. SIGKILL cannot create a new checkpoint.

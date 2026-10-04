@@ -95,6 +95,7 @@ export function stats(e) {
     for(const [key,name] of [[1,'reserveAttempts'],[2,'reserveSuccesses'],[3,'reserveBusy'],[4,'reserveMisses'],[6,'reservePromotions']]){s[name]=0;for(let lane=0;lane<laneSlots;lane++)s[name]+=Number(e.gn_reserve_stat(lane,key));}
     s.reserveInPlace=!!e.gn_reserve_stat(0,7);s.radixHeap=!!e.gn_reserve_stat(0,8);s.reserveLeased=!!e.gn_reserve_stat(0,9);s.reservePeakBytes=0;for(let lane=0;lane<laneSlots;lane++)s.reservePeakBytes=Math.max(s.reservePeakBytes,Number(e.gn_reserve_stat(lane,5)));
   }
+  if(e.gn_pair_plan_stat){const g=k=>Number(e.gn_pair_plan_stat(k));s.pairPlan={active:!!g(0),order:g(1),candidates:g(2),next:g(3),totalRawOverlaps:g(4),adoptedSeen:g(5),adoptedPending:g(6),allocatedBytes:g(7),builds:g(8),declines:g(9),adoptions:g(10),buildMicroseconds:g(11)};}
   return s;
 }
 export function setStack(e, lane, bits) {

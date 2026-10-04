@@ -144,6 +144,11 @@ static void reserve_pool_admit(void){
  u32 i=S.reserve_extra_count;S.reserve_extra_base[i]=S.bump;GN_STORE(&S.reserve_extra_lock[i],0);
  S.bump+=S.reserve_bytes;S.allocated_peak=MAX(S.allocated_peak,S.bump);S.reserve_extra_count++;S.reserve_pool_admissions++;
 }
+/* A bounded whole-degree ambiguity plan. Working polynomials remain per-lane. */
+typedef struct {u32 f,g,k,ordinal;} PlanPair;
+typedef struct {u32 requested,mode,min_degree,active,anchor_n,count,cursor;u64 base,capacity,allocated,budget,total,anchor_seen,builds,declines,adoptions,build_us;BatchTask anchor[BATCH_MAX];} PairPlan;
+static PairPlan P;
+
 #ifndef __wasm__
 static u8 *native_base;
 void gn_bind(void *base){native_base=(u8*)base;}
@@ -696,7 +701,7 @@ API int gn_batch_mode(u32 enabled){S.batch_enabled=!!enabled;return gn_workers(S
 API int gn_init(u32 generators,u32 degree,u32 workers,u64 budget,u64 scratch_pool,u32 hash_bits,u32 modulus,u32 spill){
  if(!generators||generators>16||degree>GN_INDEX_MAX||budget>GN_HARD_BYTES||scratch_pool>budget||scratch_pool<1024*1024||hash_bits<8||hash_bits>26||modulus==1||modulus>2147483647u)return GN_INPUT;
  if(modulus){for(u32 d=2;(u64)d*d<=modulus;d++)if(modulus%d==0)return GN_INPUT;}
- gn_lb_release();memset(&S,0,sizeof(S));S.abi=GN_ABI;S.generators=generators;S.target=degree?degree:GN_INDEX_MAX;S.pruning=1;S.heap_enabled=1;S.rational_enabled=1;S.rational_rewrites=1;S.big_rational_enabled=1;S.growing_rational=1;S.reserve_growth=1;S.radix_enabled=1;S.radix_cache_enabled=1;S.matcher_enabled=1;S.chain_enabled=1;S.telemetry_enabled=1;S.eager_pruning=1;S.quadratic_rewrite=1;S.cost_scheduling=1;S.matcher_limit=MIN(budget/16,UINT64_C(67108864));S.cache_percent=12;S.heap_threshold=16;S.budget=budget;S.modulus=modulus;S.spill=!!spill;S.base=gn_heap_base();S.bump=S.base;S.stack_base=alloc_p((u64)GN_MAX_WORKERS*STACK_BYTES);if(!S.stack_base)return S.error;
+ gn_lb_release();memset(&P,0,sizeof(P));memset(&S,0,sizeof(S));S.abi=GN_ABI;S.generators=generators;S.target=degree?degree:GN_INDEX_MAX;S.pruning=1;S.heap_enabled=1;S.rational_enabled=1;S.rational_rewrites=1;S.big_rational_enabled=1;S.growing_rational=1;S.reserve_growth=1;S.radix_enabled=1;S.radix_cache_enabled=1;S.matcher_enabled=1;S.chain_enabled=1;S.telemetry_enabled=1;S.eager_pruning=1;S.quadratic_rewrite=1;S.cost_scheduling=1;S.matcher_limit=MIN(budget/16,UINT64_C(67108864));S.cache_percent=12;S.heap_threshold=16;S.budget=budget;S.modulus=modulus;S.spill=!!spill;S.base=gn_heap_base();S.bump=S.base;S.stack_base=alloc_p((u64)GN_MAX_WORKERS*STACK_BYTES);if(!S.stack_base)return S.error;
  S.scratch_base=alloc_p(scratch_pool);if(!S.scratch_base)return S.error;S.scratch_size=scratch_pool;int rc=gn_workers(workers);if(rc)return rc;
  S.hash_mask=((u32)1<<hash_bits)-1;u64 hb=((u64)S.hash_mask+1)*4;S.lm_heads=alloc_p(hb);S.prefix_heads=alloc_p(hb);if(S.error)return S.error;memset(PTR(u8,S.lm_heads),0,(size_t)hb);memset(PTR(u8,S.prefix_heads),0,(size_t)hb);
  S.table_capacity=(u32)MIN((budget/(PAGE_N*sizeof(Prefix))+2),(u64)UINT32_MAX/PAGE_N+1);u64 tb=(u64)S.table_capacity*8;S.rule_pages=alloc_p(tb);S.prefix_pages=alloc_p(tb);if(S.error)return S.error;memset(PTR(u8,S.rule_pages),0,(size_t)tb);memset(PTR(u8,S.prefix_pages),0,(size_t)tb);return 0;
@@ -779,6 +784,7 @@ API int gn_input_bytes(u32 length,i64 coefficient){
 API int gn_input_end(void){if(S.input_used!=S.input_expected||!S.input_expected)return GN_STATE;S.input_expected=0;Lane*l=&S.lanes[0];Term*t=PTR(Term,l->result.off);u32 n=l->result.n;/* Inputs are small; insertion sort avoids library allocation. */
  for(u32 i=1;i<n;i++){Term x=t[i];u32 j=i;while(j&&wcmp(t[j-1].w,x.w)<0){t[j]=t[j-1];--j;}t[j]=x;}
  u32 k=0;for(u32 i=0;i<n;i++){if(k&&weq(t[k-1].w,t[i].w)){t[k-1].c=addf(&l->a[0],t[k-1].c,t[i].c);if(!t[k-1].c)--k;}else if(t[i].c)t[k++]=t[i];}l->result.n=k;if(l->a[0].error)return l->a[0].error;int rc=normalise(&l->result,&l->a[0]);if(!rc)rc=nf(l,S.nrules);if(!rc)rc=S.certifying?(l->result.n?GN_REJECTED:0):append_rule(l->result,0,0);return rc;}
+#include "pair_plan.inc"
 static void reset_degree_progress(void){S.degree_seen=0;S.degree_scheduled=0;S.degree_committed=0;S.degree_monomial=0;S.degree_chain=0;}
 API int gn_start_degree(u32 degree){
  if(cancelled())return GN_CANCELLED;if(S.current||degree!=S.completed+1||degree>S.target)return GN_STATE;
@@ -802,10 +808,12 @@ API int gn_start_degree(u32 degree){
   }
   S.degree_total_known=1;
  }
+ P.active=0;P.count=P.cursor=0;P.anchor_seen=P.anchor_n=0;
+ if(P.requested&&degree>=P.min_degree){int planned=plan_build(P.requested,0,NULL,0);if(planned<0)return -planned;}
  return 0;
 }
-API int gn_rewind_degree(void){if(!S.current)return GN_STATE;reset_degree_progress();S.degree_replays++;S.iter_f=1;S.iter_k=1;S.iter_node=0;S.iter_ready=0;S.iter_done=0;return 0;}
-API int gn_next_pair(u32 lane){if(lane>=S.workers||!S.current)return -GN_STATE;Lane*l=&S.lanes[lane];if(S.iter_done)return 0;u64 polls=0;
+API int gn_rewind_degree(void){if(!S.current)return GN_STATE;if(P.active&&P.anchor_seen){int rc=plan_build(P.mode,0,NULL,0);if(rc<0)return -rc;if(!rc)P.active=0;}else if(P.active)P.cursor=0;reset_degree_progress();S.degree_replays++;S.iter_f=1;S.iter_k=1;S.iter_node=0;S.iter_ready=0;S.iter_done=0;return 0;}
+API int gn_next_pair(u32 lane){if(lane>=S.workers||!S.current)return -GN_STATE;if(P.active)return S.iter_done?0:plan_next(lane);Lane*l=&S.lanes[lane];if(S.iter_done)return 0;u64 polls=0;
  while(S.iter_f<=S.degree_snapshot){if((++polls&1023)==0){if(S.telemetry_enabled)(void)gn_host_clock();if(cancelled())return -GN_CANCELLED;}Rule*f=rule(S.iter_f);if(f->degree>=S.current||S.iter_k>=f->degree){S.iter_f++;S.iter_k=1;S.iter_ready=0;continue;}
   u32 k=S.iter_k,glen=S.current-f->degree+k;Word suffix=part(f->lm,f->degree,f->degree-k,k);
   if(glen<=k||glen>=S.current){S.iter_k++;S.iter_ready=0;continue;}
@@ -1066,3 +1074,24 @@ API int gn_radix_queue(u32 enabled){if(enabled>1)return GN_INPUT;if(S.current||S
 #include "frontier.inc"
 
 #include "cooperative.inc"
+
+API int gn_pair_plan_config(u32 order,u32 min_degree,u64 bytes){
+ if(order>2||!min_degree||min_degree>GN_INDEX_MAX||S.current||S.input_expected||S.nrules)return GN_INPUT;
+ P.requested=order;P.min_degree=min_degree;P.budget=MIN(bytes,S.budget/8);return 0;
+}
+API int gn_pair_plan_adopt(void){
+ if(!P.requested||!S.current||S.current<P.min_degree||P.active)return 0;
+ if(S.input_expected||GN_LOAD(&S.batch_running)||reserve_pool_busy()||C.commit_task)return -GN_STATE;
+ for(u32 i=0;i<S.workers;i++)if(S.lanes[i].resume_tier||GN_LOAD(&C.assigned[i]))return -GN_STATE;
+ u32 pending=S.batch_n-S.batch_committed;
+ for(u32 i=0;i<pending;i++)if(S.tasks[S.batch_committed+i].rc!=GN_STATE&&S.tasks[S.batch_committed+i].rc!=GN_DEFERRED)return -GN_STATE;
+ if(S.degree_scheduled<S.degree_committed||S.degree_scheduled-S.degree_committed!=pending)return -GN_STATE;
+ u64 seen=S.degree_seen;
+ int rc=plan_build(P.requested,seen,&S.tasks[S.batch_committed],pending);if(rc<=0)return rc;
+ /* Only pending work is put back in the candidate pool. All committed input
+  * basis bytes and every already-committed pair remain retained. */
+ S.degree_seen-=pending;S.degree_scheduled-=pending;S.pair_count-=pending;
+ S.batch_n=S.batch_first=S.batch_committed=S.batch_work_n=0;GN_STORE(&S.batch_next,0);
+ S.iter_f=1;S.iter_k=1;S.iter_node=S.iter_ready=0;S.iter_done=P.count==0;P.adoptions++;return 1;
+}
+API u64 gn_pair_plan_stat(u32 key){switch(key){case 0:return P.active;case 1:return P.mode;case 2:return P.count;case 3:return P.cursor;case 4:return P.total;case 5:return P.anchor_seen;case 6:return P.anchor_n;case 7:return P.allocated;case 8:return P.builds;case 9:return P.declines;case 10:return P.adoptions;case 11:return P.build_us;default:return 0;}}

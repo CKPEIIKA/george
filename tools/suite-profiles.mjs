@@ -4,6 +4,8 @@ export const NATIVE_REGRESSION_CHECKS = [
   'cached-radix-property-build', 'cached-radix-properties', 'cached-radix-wasm',
   'worker-progress-build', 'worker-progress',
   'packed-word-property-build', 'packed-word-properties',
+  'planner-native', 'planner-frontier', 'planner-controls', 'planner-wasm',
+  'planner-cross', 'planner-budget', 'planner-gate', 'audit-tool-build', 'stream-audit',
   'native-build', 'kernel-reference-build', 'reserve-pool', 'fk-profile-identity', 'fk-gate-cli',
   'certified-profile-subsystem', 'certified-profile-totals',
   'native-frontier', 'cli-edges', 'human-cli', 'workspace-cli-dashboard', 'verification-bundle', 'hilbert-authority',

@@ -54,3 +54,6 @@ __pycache__/
 # FK profile checks and reference builds generate local evidence only.
 /fomkyr/fk_gate/evidence/
 /fomkyr/fk_gate/dist/
+
+# Optional independent Fomkyr audit executable.
+/fomkyr/dist/packed-basis-audit

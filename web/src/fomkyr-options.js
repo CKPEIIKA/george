@@ -4,6 +4,7 @@ import {defaultMemoryMiB} from './backends.js';
 import {planMemory} from '../engine/fomkyr/memory-policy.js';
 import {formatMemorySize} from './memory-monitor.js';
 export const FOMKYR_DEFAULTS = Object.freeze({
+  pairOrder: 'legacy', planMinDegree: 12, pairPlanMiB: 64,
   hilbertGate: false, hilbertSectors: true, gateMiB: 128,
   scheduler: 'cooperative', quantumMs: 250, lookahead: 128, maxLookahead: 512, elasticWindow: true, sectorPriority: true, radixMaxCache: true, helperRows: true, largeRowWorkspaces: 0,
   execution: 'auto', bits: 'auto', memoryPolicy: 'auto', autoWorkerMiB: 0, spill: true, resume: 'auto', hilbert: false,
@@ -18,6 +19,8 @@ export const FOMKYR_DEFAULTS = Object.freeze({
   rewriteMiB: null, sharedCacheMiB: null,
 });
 export const FOMKYR_FIELDS = Object.freeze([
+  ['pairOrder', 'select', ['legacy', 'overlap', 'sparse']],
+  ['planMinDegree', 'number', 1, 4294967294], ['pairPlanMiB', 'number', 0, 14304],
   ['hilbertGate', 'checkbox'], ['hilbertSectors', 'checkbox'], ['gateMiB', 'number', 0, 14304],
   ['scheduler', 'select', ['cooperative', 'barrier']],
   ['quantumMs', 'number', 1, 10000], ['lookahead', 'number', 1, 512], ['radixMaxCache', 'checkbox'],
@@ -44,7 +47,7 @@ export const FOMKYR_FIELDS = Object.freeze([
 ]);
 export const FOMKYR_GROUPS=Object.freeze({
   execution:['execution','bits','memoryPolicy'],
-  scheduling:['scheduler','quantumMs','lookahead','maxLookahead','elasticWindow','sectorPriority','helperRows','batchPairs','costScheduling','autoWorkerMiB'],
+  scheduling:['pairOrder','planMinDegree','pairPlanMiB','scheduler','quantumMs','lookahead','maxLookahead','elasticWindow','sectorPriority','helperRows','batchPairs','costScheduling','autoWorkerMiB'],
   memory:['largeRowWorkspaces','scratchMiB','rowReserveMiB','reserveInPlace','bigRowMaxTerms','cachePercent','sharedCacheMiB','hashBits'],
   reduction:['heapReduction','heapThreshold','rationalHeap','bigRationalHeap','growingRationalHeap','fastBigDivision','radixHeap','radixMaxCache','eagerPruning','quadraticRewrite'],
   caches:['wordMatcher','chainCriterion','wordCacheEntries','matcherMiB','compiledRewrites','rationalRewrites','rewriteDegree','rewriteSupport','rewriteMiB'],
@@ -78,6 +81,7 @@ export function fomkyrControlAvailability(form) {
   const rewrites = heap && o.compiledRewrites && o.rewriteMiB !== 0;
   const reserve = rational && heap && (o.rationalHeap || o.bigRationalHeap);
   return Object.fromEntries(FOMKYR_FIELDS.map(([key]) => [key, enabled && ({
+    planMinDegree: o.pairOrder !== 'legacy', pairPlanMiB: o.pairOrder !== 'legacy',
     hilbertGate: rational, hilbertSectors: rational && o.hilbertGate, gateMiB: rational && o.hilbertGate,
     quantumMs: o.scheduler === 'cooperative' && o.batchPairs !== 0,
     lookahead: o.scheduler === 'cooperative' && o.batchPairs !== 0,
@@ -136,9 +140,10 @@ export function updateFomkyrControlAvailability(form, root = document, translate
 }
 export function fomkyrEngineOptions(form) {
   const options = validateFomkyrOptions(form.fomkyrOptions);
-  const {gateMiB, scratchMiB, hilbertMiB, matcherMiB, rewriteMiB, sharedCacheMiB, rowReserveMiB, progressIntervalSeconds, ...engine} = options;
+  const {pairPlanMiB, gateMiB, scratchMiB, hilbertMiB, matcherMiB, rewriteMiB, sharedCacheMiB, rowReserveMiB, progressIntervalSeconds, ...engine} = options;
   const memoryMiB=Number(form.memoryMiB??defaultMemoryMiB('fomkyr'));
   const availability = fomkyrControlAvailability({...form, backend: 'fomkyr', fomkyrOptions: options});
+  engine.pairPlanBytes=pairPlanMiB*1048576;
   engine.arithmeticMode='exact';
   if (engine.batchPairs === null) engine.batchPairs=FOMKYR_DEFAULTS.batchPairs;
   if (options.memoryPolicy === 'manual' && scratchMiB !== null) {
