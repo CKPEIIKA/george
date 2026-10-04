@@ -14,8 +14,8 @@
       "originalSha256": "81ef045823e8c497ea45ece5e498f6b63df285466aaee1445e721505f400b834"
     },
     "README.md": {
-      "bytes": 23409,
-      "sha256": "ef27dbdfa6fb904279bf1065f1296d9aae5a31605f682963d97760b6cc9b6cb3",
+      "bytes": 24552,
+      "sha256": "9d8f76e530a5f8ef161dcda986b36612e6af81a2e9631d856fd2da94d144098d",
       "originalSha256": "5228e1adab7cda107101829daa28ada54a51cc5a3232e56bfd7f598bdeb08419"
     },
     "dist/fomkyr32-single.wasm": {
@@ -474,14 +474,18 @@
       "bytes": 518,
       "sha256": "d9b0501081006b7d0e8b2b926b4e70651abe4f35b7d5390e7530e0ce4d49e696"
     },
+    "fomkyr-dashboard.sh": {
+      "bytes": 199,
+      "sha256": "6337d2bf29cf9eab2b563e25ec46cef494131b3e771c6077c5166e1d9ccf99f9"
+    },
     "man/fomkyr.1": {
-      "bytes": 7131,
-      "sha256": "118a8fd67286a2b1753c713c7dbb2f537293df3955c48504d465b833dba791d4",
+      "bytes": 7690,
+      "sha256": "cc8dd3eb2b36aed0bf4f95b78bda4445765b2e432dfeb0bb39df75b863601821",
       "originalSha256": "01608e07455d95028d94d225fa50ddfb30589c01a560dbcc2c3bec6084e529bf"
     },
     "native/cli.c": {
-      "bytes": 44889,
-      "sha256": "8c13f4e63cd58558b3874d337e3c0c29d5f744e76a7dace65565e304388251b6",
+      "bytes": 48531,
+      "sha256": "0e81c420b03a3911f6c10f997fad710efc37f744f74c89839838f346e1ba3543",
       "originalSha256": "00e2807d9fe3cc56413cf12e6819412a96ad20d5d35ecb5d935c9b15e5197f6d"
     },
     "native/fixture.c": {
@@ -541,8 +545,8 @@
       "sha256": "367133c491bb2e81fb00d2ab18fffa5b00c01b061547b3425944d40ce57f2be8"
     },
     "native/wasm-cli.mjs": {
-      "bytes": 9677,
-      "sha256": "6c88fe6762cffe0d88e09437d3f5f20d068f5ff905c07399e10d6dc3cc97453d",
+      "bytes": 10520,
+      "sha256": "1b97d6543a8f88cdfdf65102a256927aedd76745d9718d7699acf8ba05a0fb2a",
       "originalSha256": "b4aed0c967c06304938ddb4369360d25af7eb555fab58bf58b23856b7853437a"
     },
     "package.json": {
@@ -917,6 +921,10 @@
       "sha256": "59b64b7ac98b2400386b2659141d91b1f6342320f86fa6f1a374734e6f06d434",
       "originalSha256": "5e3305eebdf14632919fbe1c7ea0d0bee28a5eee8e47688389d6c4f8844a6564"
     },
+    "tests/test_dashboard.py": {
+      "bytes": 4722,
+      "sha256": "9066c716f3577f04c6e4bb36e2ad44bca499153b7ccbf706f00a969dcd400e5e"
+    },
     "tests/test_deep_polish_wasm.mjs": {
       "bytes": 2487,
       "sha256": "02c69562416c282ea729e1b7d0b5363a17e02d818ae9759b2853e8f53ab14833"
@@ -1137,6 +1145,10 @@
     "tools/check_george_oracles.mjs": {
       "bytes": 9014,
       "sha256": "d3a19a4297cbbe18a17b3d5b2a349a8806d135983c290fbf679f706c500c6ae0"
+    },
+    "tools/dashboard.py": {
+      "bytes": 10290,
+      "sha256": "2968a81d9db58eddaac90a4a6771a6d428b1ea1429e9f0a6eb362265494d99e8"
     },
     "tools/export-verification.py": {
       "bytes": 6052,

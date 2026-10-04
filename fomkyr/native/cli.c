@@ -26,6 +26,8 @@
 static u32 quantum_ms=250,lookahead=128,coop_flags=3,coop_max_window=512,cache_maxima=1,big_row_max_terms=0,cache_percent=12;
 static u64 shared_cache_bytes=UINT64_MAX;
 static u32 helper_rows=1,large_row_workspaces=0;
+static const char *scratch_arg="auto",*reserve_arg="auto",*telemetry_path;
+static u64 planned_scratch,planned_reserve;
 #define MIB UINT64_C(1048576)
 #define PAGE UINT64_C(65536)
 #include "human.h"
@@ -109,6 +111,19 @@ static int restore_cp(Checkpoint*cp,u32*workers){u64 off=0;
 }
 static char identity[65],runkey[80];static const char*run_dir;static Buffer safe_payload;static int safe_partial,quiet;
 static u64 sequence,checkpoints_written;static double checkpoint_ms=30000,last_checkpoint,started,last_log,progress_ms=5000,prior_elapsed_ms=0;
+static int telemetry_failed;
+static void telemetry_save(const char *state,const char *progress,double now){
+ if(!telemetry_path)return;
+ Buffer b={0};
+ buf_printf(&b,"{\"schema\":1,\"engine\":\"fomkyr-native\",\"version\":\"%s\",\"pid\":%ld,\"state\":\"%s\",\"updatedUnixSeconds\":%lld,\"budgetBytes\":%" PRIu64 ",\"ordinaryScratchBytes\":%" PRIu64 ",\"rowReserveBytes\":%" PRIu64 ",\"allocatedBytes\":%" PRIu64 ",\"sharedCacheBytes\":%" PRIu64 ",\"sharedCacheUsedBytes\":%" PRIu64 ",\"basisSize\":%" PRIu64 ",\"diskBytes\":%" PRIu64 ",\"checkpointSequence\":%" PRIu64 ",\"checkpointAgeSeconds\":%.3f,\"sessionElapsedSeconds\":%.3f,\"cumulativeElapsedSeconds\":%.3f,\"hilbertAssumed\":%s,\"fkGateEnabled\":%s,\"fkSectorsEnabled\":%s,\"progress\":%s",
+ VERSION,(long)getpid(),state,(long long)time(NULL),gn_stat(5),planned_scratch,planned_reserve,gn_stat(4),gn_stat(39),gn_stat(40),gn_stat(0),gn_stat(6),sequence,(now-last_checkpoint)/1000,(now-started)/1000,(prior_elapsed_ms+now-started)/1000,hc.enabled&&hc.assumed?"true":"false",fg_enabled?"true":"false",fg_enabled&&fg_sectors?"true":"false",progress?progress:"null");
+ buf_printf(&b,",\"currentDegree\":%" PRIu64 ",\"completedThroughDegree\":%" PRIu64 ",\"workers\":%" PRIu64 ",\"largeRowWorkspaces\":%" PRIu64 ",\"activeLargeRowWorkspaces\":%" PRIu64,gn_stat(3),gn_stat(2),gn_stat(10),gn_reserve_pool_stat(0),gn_reserve_pool_stat(4));
+ if(fg_enabled){u64 deficit=(u64)gn_fg_limb(2,0)|((u64)gn_fg_limb(2,1)<<32);buf_printf(&b,",\"fkGate\":{\"degree\":%" PRIu64 ",\"closedSectors\":%" PRIu64 ",\"totalSectors\":360,\"deficit\":%" PRIu64 ",\"sectorSkips\":%" PRIu64 "}",gn_fg_stat(0),gn_fg_stat(20),deficit,gn_fg_stat(8));}
+ buf_add(&b,"}\n");
+ char *directory=strdup(telemetry_path);if(!directory){buf_free(&b);return;}char *slash=strrchr(directory,'/');const char *name=telemetry_path;
+ if(slash){name=telemetry_path+(slash-directory)+1;if(slash==directory)slash[1]=0;else *slash=0;}else strcpy(directory,".");
+ int failed=write_atomic(directory,name,b.s,b.n);if(failed&&!telemetry_failed)fprintf(stderr,"Dashboard status write failed: %s (computation continues).\n",telemetry_path);telemetry_failed=failed;free(directory);buf_free(&b);
+}
 #include "hilbert_reference.h"
 static void capture_safe(int partial){
  /* A dimension-closed degree must be finished before publishing its frontier. */
@@ -119,7 +134,7 @@ static void capture_safe(int partial){
 }
 static int save_safe(int force){if(!safe_payload.s)return 0;double now=gn_host_clock();if(!force&&!native_checkpoint&&now-last_checkpoint<checkpoint_ms)return 0;Buffer p={0},e={0};buf_n(&p,safe_payload.s,safe_payload.n);buf_printf(&p,",\"sequence\":%" PRIu64 ",\"sessionElapsedMs\":%" PRIu64 ",\"cumulativeElapsedMs\":%" PRIu64 "}",++sequence,(u64)(now-started),(u64)(prior_elapsed_ms+now-started));char hash[65];sha256_hex(p.s,p.n,hash);buf_printf(&e,"{\"schema\":2,\"payload\":%s,\"sha256\":\"%s\"}\n",p.s,hash);char name[64];snprintf(name,sizeof(name),"%s-%u.json",safe_partial?"partial":"checkpoint",safe_partial?(unsigned)(sequence%2):(unsigned)(gn_stat(2)%2));int rc=native_sync()||write_atomic(run_dir,name,e.s,e.n)?GN_IO:0;if(!rc){last_checkpoint=gn_host_clock();native_checkpoint=0;checkpoints_written++;if(!quiet)log_json(stderr,"{\"event\":\"checkpoint\",\"partial\":%s,\"sequence\":%" PRIu64 ",\"file\":\"%s\"}\n",safe_partial?"true":"false",sequence,name);}buf_free(&p);buf_free(&e);return rc;}
 static void log_pulse(double now){
- if(quiet||now-last_log<progress_ms)return;last_log=now;
+ if((quiet&&!telemetry_path)||now-last_log<progress_ms)return;last_log=now;
  u64 steps=0,terms=0,reserve_waits=0;u32 parked=0,active=0,committing=0,slots=(u32)gn_memory_stat(1);
  const char*tiers[]={"unknown","compact-integer","compact-rational","fraction-free","big-rational","reserve-rational","reserve-big-rational"};
  Buffer lanes={0};buf_add(&lanes,"[");
@@ -138,8 +153,9 @@ static void log_pulse(double now){
   buf_add(&lanes,"}");
  }
  buf_add(&lanes,"]");
- log_json(stderr,"{\"event\":\"progress\",\"phase\":\"%s\",\"degree\":%" PRIu64 ",\"completedThroughDegree\":%" PRIu64 ",\"resolvedOverlaps\":%" PRIu64 ",\"totalOverlaps\":%" PRIu64 ",\"scheduledOverlaps\":%" PRIu64 ",\"committedOverlaps\":%" PRIu64 ",\"sampledRewrites\":%" PRIu64 ",\"maxActiveTerms\":%" PRIu64 ",\"activeLanes\":%u,\"parkedReductions\":%u,\"reserveWaits\":%" PRIu64 ",\"helperStarted\":%" PRIu64 ",\"helperFinished\":%" PRIu64 ",\"helperDeferred\":%" PRIu64 ",\"helperWorkspaceBytes\":%" PRIu64 ",\"largeRowWorkspaces\":%" PRIu64 ",\"activeLargeRowWorkspaces\":%" PRIu64 ",\"largeRowWorkspaceBytes\":%" PRIu64 ",\"largeRowAdmissionDeclines\":%" PRIu64 ",\"workers\":%" PRIu64 ",\"workspaceRetries\":%" PRIu64 ",\"activityApproximate\":true,\"lanes\":%s,\"elapsedSeconds\":%.3f}\n",pool_waiting?"waiting-workers":(commit_task||committing)?"committing":active?"reducing":"preparing",gn_stat(3),gn_stat(2),gn_progress_stat(2)+gn_progress_stat(4)+gn_progress_stat(5),gn_progress_stat(0),gn_progress_stat(3),gn_progress_stat(2),steps,terms,active,parked,reserve_waits,gn_coop_stat(22),gn_coop_stat(23),gn_coop_stat(24),gn_coop_stat(25),gn_reserve_pool_stat(0),gn_reserve_pool_stat(4),gn_reserve_pool_stat(2),gn_reserve_pool_stat(6),gn_stat(10),gn_memory_stat(3),lanes.s,(now-started)/1000);
- buf_free(&lanes);fg_pulse();
+ Buffer progress={0};buf_printf(&progress,"{\"event\":\"progress\",\"phase\":\"%s\",\"degree\":%" PRIu64 ",\"completedThroughDegree\":%" PRIu64 ",\"resolvedOverlaps\":%" PRIu64 ",\"totalOverlaps\":%" PRIu64 ",\"scheduledOverlaps\":%" PRIu64 ",\"committedOverlaps\":%" PRIu64 ",\"sampledRewrites\":%" PRIu64 ",\"maxActiveTerms\":%" PRIu64 ",\"activeLanes\":%u,\"parkedReductions\":%u,\"reserveWaits\":%" PRIu64 ",\"helperStarted\":%" PRIu64 ",\"helperFinished\":%" PRIu64 ",\"helperDeferred\":%" PRIu64 ",\"helperWorkspaceBytes\":%" PRIu64 ",\"largeRowWorkspaces\":%" PRIu64 ",\"activeLargeRowWorkspaces\":%" PRIu64 ",\"largeRowWorkspaceBytes\":%" PRIu64 ",\"largeRowAdmissionDeclines\":%" PRIu64 ",\"workers\":%" PRIu64 ",\"workspaceRetries\":%" PRIu64 ",\"activityApproximate\":true,\"lanes\":%s,\"elapsedSeconds\":%.3f}\n",pool_waiting?"waiting-workers":(commit_task||committing)?"committing":active?"reducing":"preparing",gn_stat(3),gn_stat(2),gn_progress_stat(2)+gn_progress_stat(4)+gn_progress_stat(5),gn_progress_stat(0),gn_progress_stat(3),gn_progress_stat(2),steps,terms,active,parked,reserve_waits,gn_coop_stat(22),gn_coop_stat(23),gn_coop_stat(24),gn_coop_stat(25),gn_reserve_pool_stat(0),gn_reserve_pool_stat(4),gn_reserve_pool_stat(2),gn_reserve_pool_stat(6),gn_stat(10),gn_memory_stat(3),lanes.s,(now-started)/1000);
+ if(!quiet)emit_json(stderr,progress.s);telemetry_save("running",progress.s,now);buf_free(&progress);
+ buf_free(&lanes);if(!quiet)fg_pulse();
 }
 static int execute_batch(u32 n,u32*workers){u32 first=0;for(;;){u32 active=*workers<n-first?*workers:n-first;if(!active)active=1;int rc=pool_reduce(active);if(rc)return rc;int pressure=0;for(u32 i=first;i<n;i++){int r=(int)gn_batch_status(i);if(r==GN_SCRATCH||r==GN_BATCH_FULL||r==GN_REPACK)pressure=1;else if(r&&r!=GN_DEFERRED)return r;}
  if(pressure){if(*workers==1)return GN_SCRATCH;u32 after=*workers/2;rc=gn_batch_retry(after,first);if(rc)return rc;*workers=after;if(!quiet)log_json(stderr,"{\"event\":\"memory-adaptation\",\"workers\":%u,\"replayFromTask\":%u}\n",after,first);continue;}
@@ -179,6 +195,10 @@ static void help(void){puts(
 "      --resume DIR          Continue this job root (input inferred if saved)\n"
 "      --fresh               Explicitly discard this matching algebra's cache\n"
 "      --memory auto|SIZE    One ceiling; auto uses OS/cgroup headroom; K/M/G/T binary\n"
+"      --scratch SIZE      Ordinary scratch; auto uses 4/7 of the budget\n"
+"      --row-reserve SIZE  Each large-row arena; auto uses 1/7\n"
+"      --progress-seconds N  Progress interval (default 5)\n"
+"      --telemetry FILE    Atomic native dashboard status JSON\n"
 "      --scheduler MODE      cooperative (default) or barrier (legacy)\n"
 "      --quantum-ms N        Soft exact-row timeslice, default 250 ms\n"
 "      --big-row-max-terms N  Big-rational term ceiling: auto/0 (default), or power of two\n"
@@ -255,12 +275,12 @@ int main(int argc,char**argv){
  {const u32 endian=1;if(*(const unsigned char*)&endian!=1)die("This release requires a little-endian native host for ABI-3 records");}
  for(int i=1;i<argc;i++)if(!strcmp(argv[i],"--wasm"))wasm_exec(argc,argv);
  const char*input=NULL,*workdir="fomkyr-job",*mem="auto",*hilbert_file=NULL;int hilbert_assumed=0;u32 target=20,workers=native_cpus(),prime=0,batch=128,hashbits=18;int fresh=0,status=0,dry=0,dump=0,wasmlimit=0,hilbert=0,export=0,radix=1,prime_set=0,resume_requested=0;double time_limit=0;
- static const struct option opts[]={{"input",1,0,'i'},{"degree",1,0,'d'},{"workers",1,0,'j'},{"workdir",1,0,1000},{"resume",1,0,1001},{"fresh",0,0,1002},{"memory",1,0,1003},{"wasm-limit",0,0,1004},{"checkpoint-seconds",1,0,1005},{"time-limit",1,0,1006},{"batch-pairs",1,0,1007},{"field",1,0,1008},{"hilbert",0,0,1009},{"export",0,0,1010},{"no-radix",0,0,1011},{"status",0,0,1012},{"dry-run",0,0,1013},{"dump-fixture",0,0,1014},{"version",0,0,1015},{"hilbert-certificate",1,0,1016},{"assume-hilbert",1,0,1017},{"hilbert-fixed-batch",0,0,1018},{"scheduler",1,0,1019},{"quantum-ms",1,0,1020},{"lookahead",1,0,1021},{"no-radix-cache",0,0,1022},{"fk-gate",0,0,1023},{"fk-total-only",0,0,1024},{"fk-gate-memory",1,0,1025},{"human",0,0,1026},{"big-row-max-terms",1,0,1027},{"cache-percent",1,0,1028},{"shared-cache",1,0,1029},{"max-lookahead",1,0,1030},{"no-elastic-window",0,0,1031},{"no-sector-priority",0,0,1032},{"no-helper-rows",0,0,1033},{"large-row-workspaces",1,0,1034},{"quiet",0,0,'q'},{"help",0,0,'h'},{0,0,0,0}};
+ static const struct option opts[]={{"input",1,0,'i'},{"degree",1,0,'d'},{"workers",1,0,'j'},{"workdir",1,0,1000},{"resume",1,0,1001},{"fresh",0,0,1002},{"memory",1,0,1003},{"wasm-limit",0,0,1004},{"checkpoint-seconds",1,0,1005},{"time-limit",1,0,1006},{"batch-pairs",1,0,1007},{"field",1,0,1008},{"hilbert",0,0,1009},{"export",0,0,1010},{"no-radix",0,0,1011},{"status",0,0,1012},{"dry-run",0,0,1013},{"dump-fixture",0,0,1014},{"version",0,0,1015},{"hilbert-certificate",1,0,1016},{"assume-hilbert",1,0,1017},{"hilbert-fixed-batch",0,0,1018},{"scheduler",1,0,1019},{"quantum-ms",1,0,1020},{"lookahead",1,0,1021},{"no-radix-cache",0,0,1022},{"fk-gate",0,0,1023},{"fk-total-only",0,0,1024},{"fk-gate-memory",1,0,1025},{"human",0,0,1026},{"big-row-max-terms",1,0,1027},{"cache-percent",1,0,1028},{"shared-cache",1,0,1029},{"max-lookahead",1,0,1030},{"no-elastic-window",0,0,1031},{"no-sector-priority",0,0,1032},{"no-helper-rows",0,0,1033},{"large-row-workspaces",1,0,1034},{"scratch",1,0,1035},{"row-reserve",1,0,1036},{"progress-seconds",1,0,1037},{"telemetry",1,0,1038},{"quiet",0,0,'q'},{"help",0,0,'h'},{0,0,0,0}};
  int ch;while((ch=getopt_long(argc,argv,"i:d:j:qh",opts,NULL))!=-1){u64 n;switch(ch){case'i':input=optarg;break;case'd':n=parse_u64(optarg);if(n>GN_INDEX_MAX)die("degree index exceeds uint32 representation");target=(u32)n;break;case'j':n=parse_u64(optarg);if(!n||n>32)die("workers must be 1..32");workers=(u32)n;break;case'q':quiet=1;break;case'h':help();return 0;case 1000:workdir=optarg;break;case 1001:workdir=optarg;resume_requested=1;break;case 1002:fresh=1;break;case 1003:mem=optarg;break;case 1004:wasmlimit=1;break;case 1005:checkpoint_ms=parse_seconds(optarg)*1000;break;case 1006:time_limit=parse_seconds(optarg);break;case 1007:n=parse_u64(optarg);if(!n||n>512)die("batch-pairs must be 1..512");batch=(u32)n;break;case 1008:n=parse_u64(optarg);if(n>2147483647)die("characteristic too large");prime=(u32)n;prime_set=1;break;case 1009:hilbert=1;break;case 1010:export=1;break;case 1011:radix=0;break;case 1012:status=1;break;case 1013:dry=1;break;case 1014:dump=1;break;case 1015:puts(VERSION);return 0;case 1016:case 1017:if(hilbert_file)die("choose only one Hilbert authority");hilbert_file=optarg;hilbert_assumed=ch==1017;break;case 1018:closure_adaptive=0;break;
  case 1019:if(!strcmp(optarg,"barrier"))quantum_ms=0;else if(!strcmp(optarg,"cooperative")){if(!quantum_ms)quantum_ms=250;}else die("scheduler must be cooperative or barrier");break;
  case 1020:n=parse_u64(optarg);if(n<1||n>10000)die("quantum-ms must be 1..10000");quantum_ms=(u32)n;break;
  case 1021:n=parse_u64(optarg);if(!n||n>512)die("lookahead must be 1..512");lookahead=(u32)n;break;
- case 1022:cache_maxima=0;break;case 1023:fg_requested=1;fg_sectors=1;break;case 1024:fg_requested=1;fg_sectors=0;break;case 1025:fg_budget=parse_bytes(optarg);break;case 1026:human_output=1;break;case 1027:n=!strcmp(optarg,"auto")?0:parse_u64(optarg);if(n&&(n<128||n>(1u<<30)||(n&(n-1))))die("big-row-max-terms must be auto, 0, or a power of two from 128 to 1073741824");big_row_max_terms=(u32)n;break;case 1028:n=parse_u64(optarg);if(n>40)die("cache-percent must be 0..40");cache_percent=(u32)n;break;case 1029:shared_cache_bytes=!strcmp(optarg,"auto")?UINT64_MAX:parse_bytes(optarg);break;case 1030:n=parse_u64(optarg);if(!n||n>512)die("max-lookahead must be 1..512");coop_max_window=(u32)n;break;case 1031:coop_flags&=~1u;break;case 1032:coop_flags&=~2u;break;case 1033:helper_rows=0;break;case 1034:n=!strcmp(optarg,"auto")?0:parse_u64(optarg);if(n>33)die("large-row-workspaces must be auto, 0, or 1..33");large_row_workspaces=(u32)n;break;default:help();return 2;}}
+ case 1022:cache_maxima=0;break;case 1023:fg_requested=1;fg_sectors=1;break;case 1024:fg_requested=1;fg_sectors=0;break;case 1025:fg_budget=parse_bytes(optarg);break;case 1026:human_output=1;break;case 1027:n=!strcmp(optarg,"auto")?0:parse_u64(optarg);if(n&&(n<128||n>(1u<<30)||(n&(n-1))))die("big-row-max-terms must be auto, 0, or a power of two from 128 to 1073741824");big_row_max_terms=(u32)n;break;case 1028:n=parse_u64(optarg);if(n>40)die("cache-percent must be 0..40");cache_percent=(u32)n;break;case 1029:shared_cache_bytes=!strcmp(optarg,"auto")?UINT64_MAX:parse_bytes(optarg);break;case 1030:n=parse_u64(optarg);if(!n||n>512)die("max-lookahead must be 1..512");coop_max_window=(u32)n;break;case 1031:coop_flags&=~1u;break;case 1032:coop_flags&=~2u;break;case 1033:helper_rows=0;break;case 1034:n=!strcmp(optarg,"auto")?0:parse_u64(optarg);if(n>33)die("large-row-workspaces must be auto, 0, or 1..33");large_row_workspaces=(u32)n;break;case 1035:scratch_arg=optarg;break;case 1036:reserve_arg=optarg;break;case 1037:progress_ms=parse_seconds(optarg)*1000;if(progress_ms<100)die("progress-seconds must be at least 0.1");break;case 1038:telemetry_path=optarg;if(!*telemetry_path||telemetry_path[strlen(telemetry_path)-1]=='/')die("telemetry must name a file");break;default:help();return 2;}}
  if((coop_flags&1)&&coop_max_window<lookahead)die("max-lookahead must be at least lookahead");
  if(optind<argc){if(input||optind+1!=argc)die("unexpected arguments");input=argv[optind];}
  char*saved_identity=NULL;char*jobpath=path_join(workdir,"job.json");char*jobtext=read_file(jobpath,65536,NULL);free(jobpath);
@@ -272,7 +292,10 @@ int main(int argc,char**argv){
  if(wasmlimit&&budget>GN_WASM_HARD_BYTES)budget=GN_WASM_HARD_BYTES&~(PAGE-1);
  if(budget<16*MIB||budget>GN_HARD_BYTES)die("memory ceiling must be >=16 MiB and fit native address representation");
  if(shared_cache_bytes!=UINT64_MAX&&shared_cache_bytes>budget)die("shared-cache must fit inside the memory ceiling");
- u64 scratch=(budget/7*4)&~(PAGE-1),reserve=(budget>=128*MIB?budget/7:0)&~(PAGE-1);
+ u64 scratch=(!strcmp(scratch_arg,"auto")?budget/7*4:parse_bytes(scratch_arg))&~(PAGE-1);
+ u64 reserve=(!strcmp(reserve_arg,"auto")?(budget>=128*MIB?budget/7:0):parse_bytes(reserve_arg))&~(PAGE-1);
+ if(scratch<MIB||scratch>=budget||reserve>budget-scratch||budget-scratch-reserve<MIB)die("scratch and row-reserve must fit within memory with metadata headroom");
+ planned_scratch=scratch;planned_reserve=reserve;
  while(workers>1&&scratch/workers<MIB)workers/=2;
  if(dry){log_json(stdout,"{\"engine\":\"native\",\"wasmLimit\":%s,\"budgetBytes\":%" PRIu64 ",\"ordinaryScratchBytes\":%" PRIu64 ",\"rowReserveBytes\":%" PRIu64 ",\"availableHintBytes\":%" PRIu64 ",\"workers\":%u,\"identity\":\"%s\"}\n",wasmlimit?"true":"false",budget,scratch,reserve,available,workers,identity);fixture_free(&fixture);return 0;}
  if(!status){if(mkdir_tree(workdir))die("cannot create job directory");if(lock_job(workdir))die("job is locked by another process (or lock is unreadable)");}
@@ -298,7 +321,7 @@ int main(int argc,char**argv){
  for(u32 i=0;i<count;i++)cp_free(&cps[i]);if(rc){fprintf(stderr,"Initialization: %s\n",ename(rc));native_close();return 70;}
  if(!quiet)log_json(stderr,"{\"event\":\"start\",\"engine\":\"native\",\"version\":\"%s\",\"budgetBytes\":%" PRIu64 ",\"ordinaryScratchBytes\":%" PRIu64 ",\"rowReserveBytes\":%" PRIu64 ",\"workers\":%u,\"resumedFromDegree\":%u,\"resumedPartial\":%s,\"pendingPairs\":%u}\n",VERSION,budget,scratch,reserve,workers,restored,restored_partial?"true":"false",resumed_pending);
  rc=closure_verify(&fixture,budget);if(rc){fprintf(stderr,"Hilbert certificate rejected: %s\n",ename(rc));native_close();return 65;}if(hc.enabled&&write_atomic(run_dir,"hilbert-evidence.json",hc.text,strlen(hc.text)))die("could not persist Hilbert evidence");
- native_set_pulse(log_pulse);int pe=pool_open(workers);if(pe){fprintf(stderr,"pthread_create: %s\n",strerror(pe));pool_close();native_close();return 71;}
+ telemetry_save("starting",NULL,gn_host_clock());native_set_pulse(log_pulse);int pe=pool_open(workers);if(pe){fprintf(stderr,"pthread_create: %s\n",strerror(pe));pool_close();native_close();return 71;}
  if(time_limit)gn_deadline(gn_host_clock()+time_limit*1000);
  u32 bound=target?target:GN_INDEX_MAX;
  for(u32 d=(u32)gn_stat(2)+1;d<=bound;d++){
@@ -315,6 +338,7 @@ int main(int argc,char**argv){
  }
  if(rc){if(gn_coop_stat(0)){gn_coop_discard();capture_safe(1);}int saved=save_safe(1);if(saved)fprintf(stderr,"Checkpoint save failed: %s (previous durable checkpoint retained)\n",ename(saved));}
  else {gn_deadline(0);native_set_pulse(NULL);if(hilbert)rc=export_hilbert(target?target:(u32)gn_stat(2),budget);if(!rc&&export)rc=export_basis(&fixture);}
+ last_log=0;log_pulse(gn_host_clock());telemetry_save(rc?"stopped":"complete",NULL,gn_host_clock());
  double elapsed=(gn_host_clock()-started)/1000;native_set_pulse(NULL);pool_close();struct rusage usage;getrusage(RUSAGE_SELF,&usage);u64 rss=(u64)usage.ru_maxrss;
 #ifndef __APPLE__
  rss*=1024;

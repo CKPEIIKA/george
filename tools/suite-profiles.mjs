@@ -6,5 +6,5 @@ export const NATIVE_REGRESSION_CHECKS = [
   'packed-word-property-build', 'packed-word-properties',
   'native-build', 'kernel-reference-build', 'reserve-pool', 'fk-profile-identity', 'fk-gate-cli',
   'certified-profile-subsystem', 'certified-profile-totals',
-  'native-frontier', 'cli-edges', 'human-cli', 'verification-bundle', 'hilbert-authority',
+  'native-frontier', 'cli-edges', 'human-cli', 'workspace-cli-dashboard', 'verification-bundle', 'hilbert-authority',
 ];

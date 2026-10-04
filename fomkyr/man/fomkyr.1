@@ -1,4 +1,4 @@
-.TH FOMKYR 1 "October 2026" "fomkyr 0.6.8"
+.TH FOMKYR 1 "October 2026" "fomkyr 0.7.0"
 .SH NAME
 fomkyr \- fast pure C engine for exact homogeneous noncommutative Groebner bases
 .SH SYNOPSIS
@@ -22,6 +22,20 @@ The last declared generator is greatest in degree-left-lex order.
 .BI \-\-memory " auto|SIZE"
 One allocation ceiling. K, M, G and T are binary units. Native execution has no
 WASM application ceiling; OS and representation limits still apply.
+.TP
+.BI \-\-scratch " auto|SIZE"
+Ordinary scratch pool. Default auto uses four sevenths of the memory ceiling.
+.TP
+.BI \-\-row-reserve " auto|SIZE"
+Size of each exceptional-row workspace. Default auto uses one seventh of the
+memory ceiling. Additional workspaces remain inside that ceiling.
+.TP
+.BI \-\-progress-seconds " N"
+Progress interval, at least 0.1 seconds; default 5.
+.TP
+.BI \-\-telemetry " FILE"
+Write an atomic native status snapshot for fomkyr-dashboard.sh. Works with
+human and quiet output. Use --progress-seconds 1 for a one-second dashboard.
 .TP
 .B \-\-wasm
 Execute the packaged WebAssembly engine using Node, retaining WASM memory limits.

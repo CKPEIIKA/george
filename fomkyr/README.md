@@ -390,6 +390,32 @@ reserve, and `2` through `33` cap the number admitted. Progress reports show
 admitted and active workspaces. In the browser, the corresponding ceiling is
 under Engine → Memory; zero selects automatic admission.
 
+Native `--scratch SIZE` and `--row-reserve SIZE` override the ordinary scratch
+pool and the size of each exceptional-row reserve. Their defaults remain
+`auto`, using 4/7 and 1/7 of the overall memory allowance. A larger pool needs
+room for every admitted reserve, caches and metadata. Table capacities grow
+in powers of two, so a smaller workspace can retain the same table capacity;
+coefficient storage and output still need their own headroom.
+
+For a live Linux terminal dashboard, add these options to the calculation:
+
+```sh
+--telemetry fk6-job/status.json --progress-seconds 1
+```
+
+Then open another terminal in this source directory:
+
+```sh
+./fomkyr-dashboard.sh fk6-job
+```
+
+The dashboard refreshes every second and shows CPU use, resident RAM, available
+host RAM, row terms and coefficient pools, reserve occupancy, overlap and
+component progress, recent rates, and checkpoint age. With no argument it
+finds a recent `status.json` in a job directory. `--once` prints one snapshot.
+Closing the dashboard leaves the computation running. CPU and RAM are sampled
+directly from Linux; solver counters carry the age of their latest status.
+
 Use `--scheduler barrier` for whole-batch scheduling, `--quantum-ms N` for the
 soft slice target, and `--no-radix-cache` to disable cached bucket maxima.
 The browser engine menu exposes the same controls.
