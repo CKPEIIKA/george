@@ -3,6 +3,8 @@
  * No malloc, GC, C++ runtime, MEMFS, unbounded pair queue, or floating point algebra.
  */
 #include "kernel.h"
+#include "../fk_gate/src/fk_gate.h"
+#include "../fk_gate/profiles/fk6_sectors.h"
 #define PAGE_N 1024u
 #ifdef GN_SINGLE
 #define GN_ATOMIC(T) T
@@ -64,6 +66,11 @@ typedef struct __attribute__((aligned(64))) {
 } LiveLane;
 
 typedef struct {
+  FkgGate fgate;
+  u32 fg_sector_enabled,fg_sector_ready,fg_closed,fg_sector_error,fg_sector_nodes;
+  u64 fg_sector_upper[360],fg_poll_calls,fg_skipped,fg_recounts,fg_sector_peak;
+  GN_ATOMIC(u64) fg_sector_skipped,fg_parked_skipped,fg_commit_skipped;
+  double fg_count_ms,fg_sector_ms;
   u64 reserve_base,reserve_bytes;u32 reserve_growth,radix_enabled,radix_cache_enabled;
   u32 coop_ms,coop_lookahead;GN_ATOMIC(u32) reserve_lock;
   GN_ATOMIC(u32) batch_next,batch_running;
@@ -547,9 +554,14 @@ static int reserve_slots(u32 nmore){if(S.nrules==UINT32_MAX||nmore>UINT32_MAX-S.
  u64*rp=PTR(u64,S.rule_pages),*pp=PTR(u64,S.prefix_pages);if(!rp[rpage]){u64 o=alloc_p(PAGE_N*sizeof(Rule));if(!o)return S.error;rp[rpage]=o;}
  if(nmore)for(u32 i=pfirst;i<=plast;i++)if(!pp[i]){u64 o=alloc_p(PAGE_N*sizeof(Prefix));if(!o)return S.error;pp[i]=o;}return 0;
 }
+static int fg_append_check(Poly p,int restoring);
+static int fg_append_done(Poly p,int restoring);
+static int fg_sector_ids(u32 f,u32 g,u32 k);
+static int fg_sector_pair(Lane*l);
 static int append_rule(Poly p,u64 existing_disk,int restoring){
  if(!p.n){S.commit_zero++;return 0;}Word leading=pw(p,0);if(S.nrules&&p.degree<rule(S.nrules)->degree)return GN_STATE;
  if(exact_rule(leading,p.degree,S.nrules))return GN_STATE;
+ int gate_rc=fg_append_check(p,restoring);if(gate_rc)return gate_rc;
  int rc=reserve_slots(p.degree-1);if(rc)return rc;u64 size=record_bytes(p),location=0;Lane*l=&S.lanes[0];
  if(S.spill){location=restoring?existing_disk:S.disk_end;if(!restoring){rc=write_record(p,l->io_base,l->io_size);if(rc)return rc;if(!gn_host_write(location,l->io_base,(u32)size))return GN_IO;}S.disk_end=MAX(S.disk_end,location+size);}
  else{location=alloc_p(size);if(!location)return S.error;rc=write_record(p,location,size);if(rc)return rc;}
@@ -577,7 +589,7 @@ static int append_rule(Poly p,u64 existing_disk,int restoring){
   else{int prc=write_record(p,dest,size);if(prc)return prc;}
   r->pinned=dest;S.pin_used+=A8(size);
  }
- S.terms+=p.n;return 0;
+ S.terms+=p.n;return fg_append_done(p,restoring);
 }
 API u32 gn_abi(void){return GN_ABI;}
 API u64 gn_heap_base(void){
@@ -739,6 +751,7 @@ API int gn_next_pair(u32 lane){if(lane>=S.workers||!S.current)return -GN_STATE;L
  S.iter_done=1;return 0;
 }
 static int reduce_pair_impl(u32 lane){if(lane>=S.workers)return GN_INPUT;Lane*l=&S.lanes[lane];l->error=0;reset_a(&l->a[0]);reset_a(&l->a[1]);l->active=0;l->result=(Poly){0};l->pairs++;
+ if(fg_sector_pair(l))return 0;
  Rule*f=rule(l->f),*g=rule(l->g);u32 nr=g->degree-l->k;Word suffix=part(g->lm,g->degree,l->k,nr),left=part(f->lm,f->degree,0,f->degree-l->k);Poly fp=load_rule(l->f,l);if(l->error)return l->error;
  Poly p=copy_poly(fp,&l->a[0],(Word){0,0},suffix,nr,S.current);if(l->a[0].error)return l->a[0].error;Poly gp=load_rule(l->g,l);if(l->error)return l->error;Coef a=pc(gp,0),b=pc(p,0);Arena*ar=&l->a[1];Coef z=S.modulus?2:gcdc(ar,a,b);Coef sp=S.modulus?a:exactdiv(ar,a,z),sg=negf(S.modulus?b:exactdiv(ar,b,z));if(ar->error)return ar->error;
  l->result=combine(p,sp,gp,sg,left,(Word){0,0},0,ar);l->active=1;if(ar->error)return ar->error;int rc=nf(l,l->snapshot);l->error=rc;return rc;
@@ -798,6 +811,7 @@ API int gn_batch_reduce(u32 lane){
 API u32 gn_batch_status(u32 task){return task<S.batch_n?S.tasks[task].rc:GN_INPUT;}
 static int batch_commit_impl(u32 task){
  if(task>=S.batch_n)return GN_INPUT;BatchTask*t=&S.tasks[task];
+ if(!t->rc&&t->bytes&&fg_sector_ids(t->f,t->g,t->k)){GN_FETCH_ADD(&S.fg_commit_skipped,1);S.commit_zero++;S.degree_committed++;return 0;}
  if(t->rc==GN_DEFERRED){
   /* Parallel readers are finished. Recompute this one deferred pair, with
    * its original snapshot, then run the ordinary updated-basis commit. */
@@ -871,6 +885,7 @@ API u64 gn_canonical_rule(u32 id){
 }
 #include "hilbert.inc"
 #include "hilbert_gate.inc"
+#include "fk_gate.inc"
 #include "lower_bound.inc"
 
 #ifndef __wasm__

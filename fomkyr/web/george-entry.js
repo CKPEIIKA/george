@@ -35,7 +35,7 @@ export async function dispatchFomkyr(message,send=postMessage){
       files['hilbert.json']=JSON.stringify(result.hilbert,null,2);
       if(result.hilbert.coefficients){
         files['hilbert.csv']=hilbertCSV(result.hilbert);
-        files['result.hs']=(result.hilbert.conditionalOnExternalDimensions?'% CONDITIONAL ON EXPLICITLY ASSUMED EXTERNAL DIMENSIONS; evidence '+result.hilbert.hilbertEvidenceId+'\n':'')+'% Exact coefficients through degree '+result.hilbert.certifiedThroughDegree+'; no rational extrapolation\n'+result.hilbert.coefficients.map((c,d)=>`${c}*t^${d}`).join(' + ')+` + O(t^${result.hilbert.certifiedThroughDegree+1})\n`;
+        files['result.hs']=(result.hilbert.conditionalOnImportedFkDimensions?'% CONDITIONAL ON IMPORTED FK6 DIMENSIONS; profile '+result.hilbert.fkGateProfileId+'; external proof not replayed here\n':'')+(result.hilbert.conditionalOnExternalDimensions?'% CONDITIONAL ON EXPLICITLY ASSUMED EXTERNAL DIMENSIONS; evidence '+result.hilbert.hilbertEvidenceId+'\n':'')+'% Exact coefficients through degree '+result.hilbert.certifiedThroughDegree+'; no rational extrapolation\n'+result.hilbert.coefficients.map((c,d)=>`${c}*t^${d}`).join(' + ')+` + O(t^${result.hilbert.certifiedThroughDegree+1})\n`;
       }
     }
     send({id,result:{files,fomkyr:result,stdout,connected:true,elapsedMs:result.elapsedMs,memoryBytes:engine.memory.buffer.byteLength}});

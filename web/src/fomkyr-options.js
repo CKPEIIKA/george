@@ -4,6 +4,7 @@ import {defaultMemoryMiB} from './backends.js';
 import {planMemory} from '../engine/fomkyr/memory-policy.js';
 import {formatMemorySize} from './memory-monitor.js';
 export const FOMKYR_DEFAULTS = Object.freeze({
+  hilbertGate: false, hilbertSectors: true, gateMiB: 128,
   scheduler: 'cooperative', quantumMs: 250, lookahead: 128, radixMaxCache: true,
   execution: 'auto', bits: 'auto', memoryPolicy: 'auto', spill: true, resume: 'auto', hilbert: false,
   heapReduction: true, cachePercent: 12, heapThreshold: 16, batchPairs: 128,
@@ -17,6 +18,7 @@ export const FOMKYR_DEFAULTS = Object.freeze({
   rewriteMiB: null, sharedCacheMiB: null,
 });
 export const FOMKYR_FIELDS = Object.freeze([
+  ['hilbertGate', 'checkbox'], ['hilbertSectors', 'checkbox'], ['gateMiB', 'number', 0, 14304],
   ['scheduler', 'select', ['cooperative', 'barrier']],
   ['quantumMs', 'number', 1, 10000], ['lookahead', 'number', 1, 512], ['radixMaxCache', 'checkbox'],
   ['execution', 'select', ['auto', 'single', 'multicore']],
@@ -62,6 +64,7 @@ export function fomkyrControlAvailability(form) {
   const rewrites = heap && o.compiledRewrites && o.rewriteMiB !== 0;
   const reserve = rational && heap && (o.rationalHeap || o.bigRationalHeap);
   return Object.fromEntries(FOMKYR_FIELDS.map(([key]) => [key, enabled && ({
+    hilbertGate: rational, hilbertSectors: rational && o.hilbertGate, gateMiB: rational && o.hilbertGate,
     quantumMs: o.scheduler === 'cooperative' && o.batchPairs !== 0,
     lookahead: o.scheduler === 'cooperative' && o.batchPairs !== 0,
     radixMaxCache: heap && o.radixHeap,
@@ -112,7 +115,7 @@ export function updateFomkyrControlAvailability(form, root = document, translate
 }
 export function fomkyrEngineOptions(form) {
   const options = validateFomkyrOptions(form.fomkyrOptions);
-  const {scratchMiB, hilbertMiB, matcherMiB, rewriteMiB, sharedCacheMiB, rowReserveMiB, progressIntervalSeconds, ...engine} = options;
+  const {gateMiB, scratchMiB, hilbertMiB, matcherMiB, rewriteMiB, sharedCacheMiB, rowReserveMiB, progressIntervalSeconds, ...engine} = options;
   const memoryMiB=Number(form.memoryMiB??defaultMemoryMiB('fomkyr'));
   const availability = fomkyrControlAvailability({...form, backend: 'fomkyr', fomkyrOptions: options});
   engine.arithmeticMode='exact';
@@ -126,6 +129,7 @@ export function fomkyrEngineOptions(form) {
     // workspace and room for hash tables, reducer caches and the reserve.
     engine.scratchBytes=Math.floor(Math.min(2048,Math.max(memoryMiB/3,memoryMiB-1536)))*1048576;
   }
+  engine.gateBudgetBytes = gateMiB * 1048576;
   engine.hilbertBudgetBytes = hilbertMiB * 1048576;
   if (matcherMiB !== null) {
     if (availability.matcherMiB && matcherMiB >= memoryMiB) throw new Error('Fomkyr matcher space must fit the memory budget.');
@@ -164,7 +168,7 @@ export function writeFomkyrOptions(options = {}, root = document, {strict = true
 }
 export function installFomkyrControls(root, t) {
   for (const [key, type, min, max] of FOMKYR_FIELDS) {
-    const container = root.getElementById(key === 'hilbert' ? 'fomkyrMathOptions' : 'fomkyrOptions');
+    const container = root.getElementById(['hilbert', 'hilbertGate', 'hilbertSectors'].includes(key) ? 'fomkyrMathOptions' : 'fomkyrOptions');
     const label = root.createElement('label');
     const title = root.createElement('span'); title.className = 'label-row';
     const text = root.createElement('span'); text.dataset.i18n = 'fomkyr.' + key; text.textContent = t(text.dataset.i18n);

@@ -193,3 +193,11 @@ test('publication checks include the complete fomkyr runtime', () => {
   const selected=publicationAssets([...base,...files]);
   for(const file of files)assert.ok(selected.includes(file),file);
 });
+
+test('public FK6 profile identity accepts its identical upstream authority only', async () => {
+  const {FK_GATE_PROFILE_ID,FK_GATE_UPSTREAM_PROFILE_ID,sameFkGateProfile}=await import('../web/engine/fomkyr/fk-gate.js');
+  assert.equal(sameFkGateProfile(FK_GATE_PROFILE_ID,FK_GATE_UPSTREAM_PROFILE_ID),true);
+  assert.equal(sameFkGateProfile(FK_GATE_UPSTREAM_PROFILE_ID,FK_GATE_PROFILE_ID),true);
+  assert.equal(sameFkGateProfile(FK_GATE_PROFILE_ID,'0'.repeat(64)),false);
+  assert.equal(sameFkGateProfile(FK_GATE_PROFILE_ID,null),false);
+});

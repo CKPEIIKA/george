@@ -8,7 +8,7 @@ FOMKYR(1)                     Fomkyr Manual                     FOMKYR(1)
 
 ## VERSION
 
-**0.6.7**, [MIT license](LICENSE). Fomkyr is a standalone C engine and a
+**0.6.8**, [MIT license](LICENSE). Fomkyr is a standalone C engine and a
 subproject of [George](../README.md). George also runs this kernel through
 WebAssembly; its engine chooser marks that integration experimental.
 
@@ -36,6 +36,14 @@ continue the saved calculation or inspect its checkpoint:
 A C11 compiler, make and POSIX threads are sufficient for native execution.
 Node.js and Python are used by optional Wasm tools and test utilities.
 `make install PREFIX=/desired/prefix` installs the executable and manual page.
+
+## OPTIONAL FK6 DIMENSION PROFILE
+
+Version 0.6.8 adds an opt-in product-permutation shortcut for the original FK6
+presentation over Q through degree 16. Use `--fk-gate`, or accept the profile
+in George’s mathematical settings. Results depend on imported dimensions; the
+external proof package is not replayed here. See [FK6 profile](docs/FK_GATE.md)
+for applicability, counting workspace and checkpoint requirements.
 
 ## DESCRIPTION
 
@@ -99,7 +107,7 @@ exported basis path; combine it with `--quiet` for only the final summary.
 Saved job metadata remains JSON for checkpoint compatibility. `--dump-fixture`
 always writes a JSON fixture, including when `--human` is selected.
 
-Version 0.6.7 caches radix-bucket maxima during sparse reduction. Native progress
+Version 0.6.8 caches radix-bucket maxima during sparse reduction. Native progress
 continues while the coordinator waits for other workers and reports active pairs,
 reduction tiers and sampled rewrites. The overlap count advances when results are
 committed or pairs are discarded by valid criteria; a long pending reduction can
@@ -282,7 +290,7 @@ components retain their own licenses.
 [backend integration](../docs/development/BACKENDS.md),
 [developer release procedure](../docs/development/RELEASING.md).
 
-## Cooperative scheduling in 0.6.7
+## Cooperative scheduling in 0.6.8
 
 The default scheduler preserves a live exact reduction across soft 250 ms slices.
 Finished rows can commit while an earlier row remains pending. Each committed row

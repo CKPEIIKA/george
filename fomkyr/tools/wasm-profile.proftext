@@ -1,10 +1,175 @@
+fkg_begin
+# Func Hash:
+84876481233954336
+# Num Counters:
+6
+# Counter Values:
+6
+0
+0
+0
+0
+4
+
+fkg_bind
+# Func Hash:
+1023380461925892578
+# Num Counters:
+9
+# Counter Values:
+1
+0
+1
+1
+1
+1
+1
+64
+1
+
+fkg_certificate_sha256
+# Func Hash:
+24
+# Num Counters:
+1
+# Counter Values:
+0
+
+fkg_close
+# Func Hash:
+1146079378784308296
+# Num Counters:
+8
+# Counter Values:
+6
+0
+0
+6
+6
+0
+6
+6
+
+fkg_compare
+# Func Hash:
+75014344239289432
+# Num Counters:
+4
+# Counter Values:
+1771
+7084
+1551
+1551
+
+fkg_covers
+# Func Hash:
+6817949435950749
+# Num Counters:
+11
+# Counter Values:
+12
+12
+12
+12
+12
+12
+12
+12
+12
+12
+12
+
+fkg_deficit
+# Func Hash:
+564352464229452872
+# Num Counters:
+8
+# Counter Values:
+556
+0
+556
+556
+556
+556
+556
+556
+
+fkg_exact_total_degree
+# Func Hash:
+24
+# Num Counters:
+1
+# Counter Values:
+0
+
+fkg_from_u64
+# Func Hash:
+24
+# Num Counters:
+1
+# Counter Values:
+977
+
+fkg_observe
+# Func Hash:
+1128201387173919216
+# Num Counters:
+20
+# Counter Values:
+397
+0
+0
+397
+397
+0
+0
+0
+0
+0
+0
+397
+397
+397
+397
+397
+397
+0
+0
+393
+
+fkg_profile_degree
+# Func Hash:
+24
+# Num Counters:
+1
+# Counter Values:
+0
+
+fkg_reset
+# Func Hash:
+0
+# Num Counters:
+1
+# Counter Values:
+1
+
+fkg_subtract
+# Func Hash:
+187824641898558552
+# Num Counters:
+3
+# Counter Values:
+953
+0
+3812
+
 gn_abi
 # Func Hash:
 24
 # Num Counters:
 1
 # Counter Values:
-7
+8
 
 gn_batch_commit
 # Func Hash:
@@ -52,7 +217,7 @@ gn_batch_mode
 # Num Counters:
 1
 # Counter Values:
-7
+8
 
 gn_batch_reduce
 # Func Hash:
@@ -118,13 +283,13 @@ gn_big_rational_heap
 # Num Counters:
 7
 # Counter Values:
-7
+8
 0
 0
-7
-7
-7
-7
+8
+8
+8
+8
 
 gn_cancel
 # Func Hash:
@@ -140,7 +305,7 @@ gn_cancel_ptr
 # Num Counters:
 1
 # Counter Values:
-13
+15
 
 gn_candidate_check
 # Func Hash:
@@ -194,13 +359,13 @@ gn_commit
 # Num Counters:
 7
 # Counter Values:
-3008
+3406
 0
 0
-3008
+3406
 0
 0
-3008
+3406
 
 gn_completion_bound
 # Func Hash:
@@ -208,8 +373,8 @@ gn_completion_bound
 # Num Counters:
 2
 # Counter Values:
-7
-7
+8
+8
 
 gn_coop_commit
 # Func Hash:
@@ -217,41 +382,41 @@ gn_coop_commit
 # Num Counters:
 35
 # Counter Values:
-368
+375
 0
-368
-368
-368
-368
+375
+375
+375
+375
 0
-42956
-2549
-40407
-40407
-40508
-40407
+45305
+0
+45305
+45305
+45305
+45305
 0
 0
 0
-1719
-42956
-2549
-788
-101
 0
-788
-788
-9974
+45305
 0
+855
+0
+0
+855
+855
 0
 0
 0
 0
 0
 0
-788
-788
-81
+0
+0
+855
+855
+0
 
 gn_coop_discard
 # Func Hash:
@@ -259,9 +424,9 @@ gn_coop_discard
 # Num Counters:
 4
 # Counter Values:
+6
 0
-0
-0
+24
 0
 
 gn_coop_fill
@@ -270,59 +435,62 @@ gn_coop_fill
 # Num Counters:
 19
 # Counter Values:
-422
+429
 0
-422
-422
-422
-422
-422
-422
-422
-422
-422
-422
+429
+429
+429
+429
+429
+429
+429
+429
+429
+429
 0
 0
 0
-40506
-99
+45393
+88
 0
-368
+375
 
 gn_coop_reduce
 # Func Hash:
-1118043938522842241
+1055975342953271777
 # Num Counters:
-27
+30
 # Counter Values:
-788
+825
 0
-788
-788
-788
-788
-41144
-0
-101
-636
-101
-101
-0
-3008
-40407
-3008
+825
+825
+825
+825
+46000
 0
 0
-3008
-3008
-3008
-40407
-51
-40407
-40356
-788
-700
+853
+0
+0
+0
+0
+0
+0
+3482
+45245
+3482
+0
+0
+3470
+3470
+3480
+45241
+0
+45223
+45167
+846
+749
 
 gn_coop_retry
 # Func Hash:
@@ -346,37 +514,37 @@ gn_coop_stat
 # Num Counters:
 31
 # Counter Values:
-5579
-2435
-320
-313
-313
-313
-313
-313
-313
-313
-313
-313
+6046
+2780
+333
+325
+325
+325
+325
+325
+325
+325
+325
+325
 0
 0
-7
-2435
-487
-2435
-487
-487
-1948
-487
-487
-1461
-487
-487
-974
-487
-487
-487
-487
+8
+2780
+556
+2780
+556
+556
+2224
+556
+556
+1668
+556
+556
+1112
+556
+556
+556
+556
 
 gn_cooperative
 # Func Hash:
@@ -384,20 +552,20 @@ gn_cooperative
 # Num Counters:
 17
 # Counter Values:
-7
+8
 0
-7
-7
-7
-7
-7
-7
-7
-7
-7
-7
-7
-7
+8
+8
+8
+8
+8
+8
+8
+8
+8
+8
+8
+8
 0
 0
 0
@@ -408,7 +576,7 @@ gn_deadline
 # Num Counters:
 1
 # Counter Values:
-7
+8
 
 gn_deep_stat
 # Func Hash:
@@ -416,14 +584,14 @@ gn_deep_stat
 # Num Counters:
 9
 # Counter Values:
-830
+2180
 0
 0
-166
-166
-166
-166
-166
+436
+436
+436
+436
+436
 0
 
 gn_exact_stat
@@ -432,21 +600,21 @@ gn_exact_stat
 # Num Counters:
 16
 # Counter Values:
-1839
+4692
 0
 0
-166
-166
-166
-166
-166
-166
-166
-166
-115
-115
-166
-115
+436
+436
+436
+436
+436
+436
+436
+436
+256
+256
+436
+256
 0
 
 gn_export_rule
@@ -455,14 +623,14 @@ gn_export_rule
 # Num Counters:
 11
 # Counter Values:
-3002
+3499
 0
-3002
-3002
-3002
+3499
+3499
+3499
 0
-3002
-3002
+3499
+3499
 0
 0
 0
@@ -475,16 +643,204 @@ gn_export_size
 # Counter Values:
 0
 
+gn_fg_begin
+# Func Hash:
+243700670389583072
+# Num Counters:
+22
+# Counter Values:
+6
+0
+6
+6
+6
+6
+6
+6
+0
+0
+0
+6
+0
+0
+0
+0
+0
+0
+2160
+0
+0
+0
+
+gn_fg_bind
+# Func Hash:
+184433139694273624
+# Num Counters:
+8
+# Counter Values:
+1
+0
+1
+1
+1
+1
+1
+1
+
+gn_fg_class
+# Func Hash:
+1124358121813373169
+# Num Counters:
+7
+# Counter Values:
+0
+0
+0
+0
+0
+0
+0
+
+gn_fg_close
+# Func Hash:
+1080491083643638676
+# Num Counters:
+23
+# Counter Values:
+6
+0
+6
+6
+6
+6
+0
+0
+0
+6
+6
+0
+0
+0
+0
+0
+0
+0
+0
+6
+0
+6
+6
+
+gn_fg_group
+# Func Hash:
+2882812422198797
+# Num Counters:
+5
+# Counter Values:
+0
+0
+0
+0
+0
+
+gn_fg_limb
+# Func Hash:
+201944917774239920
+# Num Counters:
+6
+# Counter Values:
+1668
+0
+556
+556
+556
+0
+
+gn_fg_poll
+# Func Hash:
+664790789005263690
+# Num Counters:
+14
+# Counter Values:
+45
+0
+45
+45
+45
+45
+0
+45
+45
+0
+45
+45
+45
+45
+
+gn_fg_sector_mode
+# Func Hash:
+2881779648791640
+# Num Counters:
+6
+# Counter Values:
+1
+0
+1
+1
+1
+1
+
+gn_fg_stat
+# Func Hash:
+139098807076898422
+# Num Counters:
+26
+# Counter Values:
+1692
+0
+141
+141
+0
+0
+141
+141
+0
+0
+141
+141
+141
+141
+0
+0
+0
+0
+141
+141
+141
+0
+141
+139
+50040
+0
+
+gn_fg_status
+# Func Hash:
+24
+# Num Counters:
+1
+# Counter Values:
+423
+
 gn_finish_degree
 # Func Hash:
 662032523141813406
 # Num Counters:
 9
 # Counter Values:
-54
+60
 0
-54
-54
+60
+60
 0
 54
 54
@@ -497,23 +853,23 @@ gn_frontier_export
 # Num Counters:
 17
 # Counter Values:
-790
+804
 0
-790
-790
-790
-790
-790
-790
-790
+804
+804
+804
+804
+804
+804
+804
 0
 0
 0
-790
-790
+804
+804
 0
-31600
-45505
+32160
+45305
 
 gn_frontier_hash_bits
 # Func Hash:
@@ -521,8 +877,8 @@ gn_frontier_hash_bits
 # Num Counters:
 2
 # Counter Values:
-1580
-28440
+1608
+28944
 
 gn_frontier_pending
 # Func Hash:
@@ -530,8 +886,8 @@ gn_frontier_pending
 # Num Counters:
 2
 # Counter Values:
-1580
-1580
+1608
+1608
 
 gn_frontier_restore
 # Func Hash:
@@ -656,7 +1012,7 @@ gn_frontier_size
 # Num Counters:
 1
 # Counter Values:
-790
+804
 
 gn_growing_rational
 # Func Hash:
@@ -664,13 +1020,13 @@ gn_growing_rational
 # Num Counters:
 7
 # Counter Values:
-7
+8
 0
 0
-7
-7
-7
-7
+8
+8
+8
+8
 
 gn_heap_base
 # Func Hash:
@@ -678,7 +1034,7 @@ gn_heap_base
 # Num Counters:
 1
 # Counter Values:
-7
+8
 
 gn_hilbert
 # Func Hash:
@@ -735,14 +1091,14 @@ gn_hilbert_gate_stat
 # Num Counters:
 15
 # Counter Values:
+172
+172
 0
 0
 0
 0
 0
-0
-0
-0
+172
 0
 0
 0
@@ -797,12 +1153,12 @@ gn_hilbert_limb
 # Num Counters:
 6
 # Counter Values:
+12
 0
-0
-0
-0
-0
-0
+12
+12
+12
+12
 
 gn_hilbert_limbs
 # Func Hash:
@@ -810,7 +1166,7 @@ gn_hilbert_limbs
 # Num Counters:
 1
 # Counter Values:
-0
+24
 
 gn_hilbert_release
 # Func Hash:
@@ -818,10 +1174,10 @@ gn_hilbert_release
 # Num Counters:
 4
 # Counter Values:
-0
-0
-0
-0
+12
+12
+12
+12
 
 gn_hilbert_upper
 # Func Hash:
@@ -829,7 +1185,7 @@ gn_hilbert_upper
 # Num Counters:
 1
 # Counter Values:
-0
+12
 
 gn_import_buffer
 # Func Hash:
@@ -837,7 +1193,7 @@ gn_import_buffer
 # Num Counters:
 1
 # Counter Values:
-0
+1
 
 gn_import_capacity
 # Func Hash:
@@ -854,36 +1210,36 @@ gn_init
 # Num Counters:
 31
 # Counter Values:
-7
+8
 0
-7
-7
-7
-7
-7
-7
-7
-7
-7
-7
-7
-7
-7
-7
-7
-7
-7
-7
+8
+8
+8
+8
+8
+8
+8
+8
+8
+8
+8
+8
+8
+8
+8
+8
+8
+8
 2
 9
 0
-7
+8
 0
 0
 0
 0
 0
-7
+8
 0
 
 gn_input_begin
@@ -892,18 +1248,18 @@ gn_input_begin
 # Num Counters:
 14
 # Counter Values:
-407
+507
 0
-407
-407
-407
-407
-407
-407
-407
-407
-407
-407
+507
+507
+507
+507
+507
+507
+507
+507
+507
+507
 0
 0
 
@@ -940,23 +1296,23 @@ gn_input_end
 # Num Counters:
 19
 # Counter Values:
-407
+507
 0
-407
-407
-514
-398
-615
-398
-921
+507
+507
+639
+497
+765
+497
+1146
 0
-514
+639
 0
 0
-921
+1146
 0
-407
-407
+507
+507
 0
 0
 
@@ -966,19 +1322,19 @@ gn_input_term
 # Num Counters:
 16
 # Counter Values:
-921
+1146
 0
-921
-921
-921
-921
-921
-921
-921
-921
+1146
+1146
+1146
+1146
+1146
+1146
+1146
+1146
 0
 0
-1858
+2308
 0
 450
 250
@@ -997,35 +1353,35 @@ gn_lane_stat
 # Num Counters:
 30
 # Counter Values:
-3662
+9606
 0
 0
-166
-166
-166
-166
-166
-166
-166
-166
-166
-166
-166
+436
+436
+436
+436
+436
+436
+436
+436
+436
+436
+436
 0
 0
 0
-10
-166
-166
-166
-166
-166
-166
-166
-166
-166
-166
-166
+14
+436
+436
+436
+436
+436
+436
+436
+436
+436
+436
+436
 0
 
 gn_lb_begin
@@ -1169,7 +1525,7 @@ gn_lb_release
 # Num Counters:
 4
 # Counter Values:
-7
+8
 0
 0
 0
@@ -1216,13 +1572,13 @@ gn_legacy_big_division
 # Num Counters:
 7
 # Counter Values:
-7
+8
 0
 0
-7
-7
-7
-7
+8
+8
+8
+8
 
 gn_live_stat
 # Func Hash:
@@ -1230,23 +1586,23 @@ gn_live_stat
 # Num Counters:
 18
 # Counter Values:
-1935
+1947
 0
 0
-555
+644
 0
 0
 0
-555
+644
 0
 0
-555
+644
 0
-54
-54
-54
-54
-54
+3
+3
+3
+3
+3
 0
 
 gn_local_rewrites
@@ -1255,29 +1611,29 @@ gn_local_rewrites
 # Num Counters:
 24
 # Counter Values:
-7
+8
 0
-7
-7
-7
-7
-7
-7
-7
-7
-7
-7
-7
-7
-7
-7
+8
+8
+8
+8
+8
+8
+8
+8
+8
+8
+8
+8
+8
+8
 0
-7
-7
-7
+8
+8
+8
 0
-7
-7
+8
+8
 0
 
 gn_local_rule
@@ -1305,14 +1661,14 @@ gn_memory_policy
 # Num Counters:
 8
 # Counter Values:
-7
+8
 0
-7
-7
-7
-7
-7
-7
+8
+8
+8
+8
+8
+8
 
 gn_memory_stat
 # Func Hash:
@@ -1320,13 +1676,13 @@ gn_memory_stat
 # Num Counters:
 9
 # Counter Values:
-1803
+2626
 0
-115
-1343
-115
-115
-115
+256
+1602
+256
+256
+256
 0
 0
 
@@ -1336,7 +1692,7 @@ gn_modulus
 # Num Counters:
 1
 # Counter Values:
-115
+256
 
 gn_next_pair
 # Func Hash:
@@ -1344,40 +1700,40 @@ gn_next_pair
 # Num Counters:
 34
 # Counter Values:
-40506
+45393
 0
-40506
-40506
-45
-63282
+45393
+45393
+32
+70788
 0
 0
 0
-6502
-62875
-56780
+7385
+70381
+63403
 0
-56780
-56780
-16373
-40889
+63403
+63403
+18100
+45811
 0
 0
 0
 112
-40877
-40777
+45799
+45699
 14
-40763
-40763
-60
-2110
-60
-40763
-2110
-296
-40703
-296
+45685
+45685
+75
+2470
+75
+45685
+2470
+305
+45610
+305
 
 gn_optimize
 # Func Hash:
@@ -1385,14 +1741,14 @@ gn_optimize
 # Num Counters:
 8
 # Counter Values:
-7
+8
 0
-7
-7
-7
-7
-7
-7
+8
+8
+8
+8
+8
+8
 
 gn_pin_cache
 # Func Hash:
@@ -1400,23 +1756,23 @@ gn_pin_cache
 # Num Counters:
 18
 # Counter Values:
-7
+8
 0
-7
-7
-7
-7
-7
-7
+8
+8
+8
+8
+8
+8
 0
-7
-7
+8
+8
 0
 0
-7
-7
-7
-7
+8
+8
+8
+8
 0
 
 gn_progress_stat
@@ -1425,16 +1781,16 @@ gn_progress_stat
 # Num Counters:
 11
 # Counter Values:
-6830
+7036
 0
-1150
-360
-1940
-360
-1150
-1150
-360
-360
+1181
+377
+1985
+377
+1181
+1181
+377
+377
 0
 
 gn_radix_cache
@@ -1443,12 +1799,12 @@ gn_radix_cache
 # Num Counters:
 6
 # Counter Values:
-7
+8
 0
-7
-7
-7
-7
+8
+8
+8
+8
 
 gn_radix_queue
 # Func Hash:
@@ -1456,13 +1812,13 @@ gn_radix_queue
 # Num Counters:
 7
 # Counter Values:
-7
+8
 0
 0
-7
-7
-7
-7
+8
+8
+8
+8
 
 gn_rational_heap
 # Func Hash:
@@ -1470,12 +1826,12 @@ gn_rational_heap
 # Num Counters:
 6
 # Counter Values:
-7
+8
 0
-7
-7
-7
-7
+8
+8
+8
+8
 
 gn_rational_rewrites
 # Func Hash:
@@ -1483,13 +1839,13 @@ gn_rational_rewrites
 # Num Counters:
 7
 # Counter Values:
-7
+8
 0
 0
-7
-7
-7
-7
+8
+8
+8
+8
 
 gn_reduce_pair
 # Func Hash:
@@ -1497,7 +1853,7 @@ gn_reduce_pair
 # Num Counters:
 2
 # Counter Values:
-40407
+45126
 0
 
 gn_reserve_growth
@@ -1506,13 +1862,13 @@ gn_reserve_growth
 # Num Counters:
 7
 # Counter Values:
-7
+8
 0
 0
-7
-7
-7
-7
+8
+8
+8
+8
 
 gn_reserve_stat
 # Func Hash:
@@ -1520,19 +1876,19 @@ gn_reserve_stat
 # Num Counters:
 14
 # Counter Values:
-1456
-115
+3640
+256
 0
 0
-166
-166
-166
-166
-166
-166
-115
-115
-115
+436
+436
+436
+436
+436
+436
+256
+256
+256
 0
 
 gn_restore_rule
@@ -1583,20 +1939,20 @@ gn_row_reserve
 # Num Counters:
 15
 # Counter Values:
-7
+8
 0
-7
-7
-7
-7
-7
-7
+8
+8
+8
+8
+8
+8
 2
-7
-5
+8
+6
 0
-5
-5
+6
+6
 0
 
 gn_rule_stat
@@ -1605,14 +1961,14 @@ gn_rule_stat
 # Num Counters:
 12
 # Counter Values:
-3002
+3499
 0
-3002
-3002
+3499
+3499
 0
 0
 0
-3002
+3499
 0
 0
 0
@@ -1624,8 +1980,8 @@ gn_stack_top
 # Num Counters:
 2
 # Counter Values:
-3
-3
+6
+6
 
 gn_start_degree
 # Func Hash:
@@ -1633,24 +1989,24 @@ gn_start_degree
 # Num Counters:
 19
 # Counter Values:
-54
+60
 0
 0
-54
-54
-54
-54
+60
+60
+60
+60
 0
 0
-54
-6502
+60
+7503
 0
 0
-407
-16373
+507
+18143
 0
-16373
-16373
+18143
+18143
 0
 
 gn_stat
@@ -1659,58 +2015,58 @@ gn_stat
 # Num Counters:
 53
 # Counter Values:
-12164
+17458
 0
-3914
-905
-987
-1803
-169
-115
-905
-115
-115
-115
-475
-115
-115
-0
-0
-0
-16
+4567
+1060
+1152
+1992
+316
+256
+1060
+256
+256
+256
+633
+256
+256
 0
 0
 0
-0
-115
-115
-0
-0
-115
-115
-115
-115
-115
+22
 0
 0
 0
 0
+256
+256
 0
 0
-115
-115
-115
-115
-115
-115
-115
-115
-115
-115
-115
-115
-115
-115
+256
+256
+256
+256
+256
+0
+0
+0
+0
+0
+0
+256
+256
+256
+256
+256
+256
+256
+256
+256
+256
+256
+256
+256
+256
 0
 
 gn_test_big
@@ -1786,18 +2142,18 @@ gn_tune
 # Num Counters:
 12
 # Counter Values:
-7
+8
 0
-7
-7
-7
-7
-7
-7
-7
-7
-7
-7
+8
+8
+8
+8
+8
+8
+8
+8
+8
+8
 
 gn_word_cache
 # Func Hash:
@@ -1805,18 +2161,18 @@ gn_word_cache
 # Num Counters:
 20
 # Counter Values:
-7
+8
 0
-7
-7
-7
-7
-7
-7
+8
+8
+8
+8
+8
+8
 0
 0
-7
-7
+8
+8
 0
 0
 0
@@ -1832,7 +2188,7 @@ gn_workers
 # Num Counters:
 1
 # Counter Values:
-21
+24
 
 kernel.c:addc
 # Func Hash:
@@ -1840,16 +2196,16 @@ kernel.c:addc
 # Num Counters:
 17
 # Counter Values:
-522491
+516280
 0
 0
 0
-515434
-515675
-515434
-515351
-515394
-515351
+510040
+509691
+509918
+510421
+510210
+510304
 1962
 0
 3359
@@ -1864,7 +2220,7 @@ kernel.c:addf
 # Num Counters:
 2
 # Counter Values:
-629421
+623057
 172746
 
 kernel.c:alloc_a
@@ -1873,10 +2229,10 @@ kernel.c:alloc_a
 # Num Counters:
 4
 # Counter Values:
-762104
+758850
 0
 0
-7648
+7798
 
 kernel.c:alloc_p
 # Func Hash:
@@ -1884,58 +2240,59 @@ kernel.c:alloc_p
 # Num Counters:
 8
 # Counter Values:
-66
+99
 0
-66
-66
-66
-66
+99
+99
+99
+99
 0
-0
+14
 
 kernel.c:append_rule
 # Func Hash:
-432812122411174145
+63832235116030097
 # Num Counters:
-39
+40
 # Counter Values:
-3415
-413
+3913
+414
 0
-2995
-0
-0
-0
-3002
-0
-3002
+3491
 0
 0
 0
 0
+3499
+0
+3499
 0
 0
 0
-13042
-405
-60
-60
-60
-182
-182
-182
-182
-182
-182
-182
-182
-182
-182
-182
+0
+0
+0
+0
+14626
+505
+75
+75
+75
+227
+227
+227
+227
+227
+227
+227
+227
+227
+227
+227
 90
-3002
-3002
-3002
+3499
+3499
+3499
 0
 0
 
@@ -1954,16 +2311,21 @@ kernel.c:badd
 
 kernel.c:batch_commit_impl
 # Func Hash:
-521648670644888831
+1011093430692996793
 # Num Counters:
-7
+12
 # Counter Values:
-40407
+45305
+0
+76
+3482
+76
+45305
+3482
 0
 0
 0
-0
-37399
+41823
 0
 
 kernel.c:batch_weight
@@ -1972,7 +2334,7 @@ kernel.c:batch_weight
 # Num Counters:
 1
 # Counter Values:
-187738
+214308
 
 kernel.c:bbytes
 # Func Hash:
@@ -2033,8 +2395,8 @@ kernel.c:big_rational_nf
 # Num Counters:
 46
 # Counter Values:
-30
-13
+17
+0
 0
 221
 221
@@ -2043,11 +2405,11 @@ kernel.c:big_rational_nf
 0
 2268
 0
-30
-15771
+17
+15758
 256
 0
-13
+0
 0
 15758
 15758
@@ -2199,8 +2561,8 @@ kernel.c:cabs
 # Num Counters:
 2
 # Counter Values:
-1015975
-275675
+1009320
+276419
 
 kernel.c:cabs64
 # Func Hash:
@@ -2208,8 +2570,8 @@ kernel.c:cabs64
 # Num Counters:
 2
 # Counter Values:
-2503578
-1076203
+2488276
+1063615
 
 kernel.c:cancelled
 # Func Hash:
@@ -2217,10 +2579,10 @@ kernel.c:cancelled
 # Num Counters:
 5
 # Counter Values:
-108068
+114738
 0
 0
-108068
+114744
 0
 
 kernel.c:checksum
@@ -2229,8 +2591,8 @@ kernel.c:checksum
 # Num Counters:
 2
 # Counter Values:
-12014
-2852824
+13972
+3070924
 
 kernel.c:cl
 # Func Hash:
@@ -2249,8 +2611,8 @@ kernel.c:clonec
 # Num Counters:
 2
 # Counter Values:
-4600655
-4583055
+4098253
+4082012
 
 kernel.c:clonew
 # Func Hash:
@@ -2258,8 +2620,8 @@ kernel.c:clonew
 # Num Counters:
 3
 # Counter Values:
-3369174
-3369174
+3119886
+3121285
 0
 
 kernel.c:cn
@@ -2279,7 +2641,7 @@ kernel.c:cneg
 # Num Counters:
 2
 # Counter Values:
-2176885
+2120651
 5702
 
 kernel.c:combine
@@ -2288,19 +2650,19 @@ kernel.c:combine
 # Num Counters:
 13
 # Counter Values:
-531852
+528539
 0
 0
-4891832
-672559
-531852
-2698421
-140707
-2193411
-3369174
-893237
+4387092
+660871
+524753
+2533260
+142589
+2088252
+3122372
+879338
 0
-4262515
+3871406
 
 kernel.c:compactc
 # Func Hash:
@@ -2319,8 +2681,8 @@ kernel.c:context
 # Num Counters:
 6
 # Counter Values:
-8176186
-8176186
+7202968
+7217447
 0
 0
 0
@@ -2332,7 +2694,7 @@ kernel.c:coop_clear_lane
 # Num Counters:
 3
 # Counter Values:
-0
+24
 0
 0
 
@@ -2342,26 +2704,26 @@ kernel.c:coop_order
 # Num Counters:
 20
 # Counter Values:
-422
-42956
-42855
-101
-101
-148
-422
-148
-978
-17486
-17429
-16508
-122885
-37660
-17486
-114043
-93869
-52974
-61816
-107
+429
+45305
+45305
+0
+0
+168
+429
+168
+1118
+19946
+19920
+18828
+140462
+44201
+19946
+131409
+107154
+61421
+70474
+61
 
 kernel.c:copy_poly
 # Func Hash:
@@ -2369,9 +2731,9 @@ kernel.c:copy_poly
 # Num Counters:
 3
 # Counter Values:
-43415
+44614
 0
-198590
+201304
 
 kernel.c:count_add
 # Func Hash:
@@ -2379,8 +2741,8 @@ kernel.c:count_add
 # Num Counters:
 3
 # Counter Values:
-0
-0
+26100
+26100
 0
 
 kernel.c:csign
@@ -2389,11 +2751,11 @@ kernel.c:csign
 # Num Counters:
 5
 # Counter Values:
-3279461
+3184504
 44663
 22345
-1493326
-1741472
+1454660
+1744012
 
 kernel.c:csmall
 # Func Hash:
@@ -2401,7 +2763,7 @@ kernel.c:csmall
 # Num Counters:
 1
 # Counter Values:
-12178643
+10782631
 
 kernel.c:cvalue
 # Func Hash:
@@ -2409,7 +2771,7 @@ kernel.c:cvalue
 # Num Counters:
 1
 # Counter Values:
-11522762
+11155798
 
 kernel.c:divisor
 # Func Hash:
@@ -2417,43 +2779,43 @@ kernel.c:divisor
 # Num Counters:
 37
 # Counter Values:
-1004412
+1060393
 0
 0
 0
 0
 0
-1004412
+1059425
 0
 0
 0
-17043
-18196
-987661
-18196
-3748
-1153
-14448
-14448
+17888
+19069
+1039309
+19069
+4508
+1181
+14563
+14563
 0
-987355
-987355
-986448
-986448
-986448
-987369
-986448
-260634
-904405
+1037269
+1037428
+1036463
+1036557
+1036574
+1037533
+1036463
+311650
+937882
 0
-62876
+67177
 0
 0
 0
-63803
-7621
-987369
-987369
+68343
+7671
+1027595
+1027814
 
 kernel.c:divmodc
 # Func Hash:
@@ -2471,17 +2833,17 @@ kernel.c:eager_zero
 # Num Counters:
 20
 # Counter Values:
-5672336
+5098911
 157562
-5514774
-5514774
-5672336
-5514774
-5672336
-5672336
-5514774
-5514774
-5514774
+4953766
+4957379
+5106731
+4951158
+5103627
+5108029
+4895049
+4955578
+4893032
 0
 0
 0
@@ -2498,11 +2860,11 @@ kernel.c:eager_zero_short
 # Num Counters:
 5
 # Counter Values:
-5514774
-5514774
-458096
-38467196
-190731
+4901279
+4908121
+453506
+34162912
+189905
 
 kernel.c:exact_rule
 # Func Hash:
@@ -2510,13 +2872,13 @@ kernel.c:exact_rule
 # Num Counters:
 7
 # Counter Values:
-66805
-7729
-7621
-7641
-7621
-7721
-7641
+71837
+7775
+7671
+7691
+7671
+7777
+7691
 
 kernel.c:exactdiv
 # Func Hash:
@@ -2524,11 +2886,182 @@ kernel.c:exactdiv
 # Num Counters:
 5
 # Counter Values:
-614555
+616038
 0
 0
-351070
+352573
 49819
+
+kernel.c:fg_append_check
+# Func Hash:
+838120505224559699
+# Num Counters:
+26
+# Counter Values:
+3499
+3102
+497
+397
+497
+497
+3499
+497
+0
+397
+397
+397
+397
+397
+397
+397
+397
+397
+397
+0
+1672
+0
+0
+397
+0
+0
+
+kernel.c:fg_append_done
+# Func Hash:
+806859348107595574
+# Num Counters:
+10
+# Counter Values:
+3499
+3102
+497
+397
+497
+497
+3499
+497
+397
+0
+
+kernel.c:fg_quiet
+# Func Hash:
+269433511898904181
+# Num Counters:
+6
+# Counter Values:
+65
+0
+65
+65
+260
+0
+
+kernel.c:fg_sector_count
+# Func Hash:
+291572269278557891
+# Num Counters:
+51
+# Counter Values:
+6
+0
+6
+6
+6
+6
+6
+6
+1001
+1001
+0
+6
+6
+6
+0
+0
+1001
+0
+0
+0
+0
+2871
+0
+1233
+90
+75
+1233
+18495
+1158
+1239
+1001
+0
+0
+1239
+238
+3570
+21
+1175
+0
+21
+0
+423000
+410133
+193005
+73918
+0
+2160
+238
+85680
+0
+6
+
+kernel.c:fg_sector_ids
+# Func Hash:
+1044821235228132398
+# Num Counters:
+13
+# Counter Values:
+48631
+43374
+5263
+5262
+5266
+5265
+5262
+5265
+5258
+5262
+0
+14295
+11104
+
+kernel.c:fg_sector_pair
+# Func Hash:
+11178443864
+# Num Counters:
+2
+# Counter Values:
+45147
+41249
+
+kernel.c:fg_upper
+# Func Hash:
+871840278261364002
+# Num Counters:
+5
+# Counter Values:
+12
+0
+12
+12
+0
+
+kernel.c:fg_word_group
+# Func Hash:
+1160280
+# Num Counters:
+2
+# Counter Values:
+2466
+12522
 
 kernel.c:fpow
 # Func Hash:
@@ -2564,11 +3097,11 @@ kernel.c:frontier_hash
 # Num Counters:
 5
 # Counter Values:
-790
-980880
-6320
-961920
-6320
+804
+982160
+6432
+962864
+6432
 
 kernel.c:fw32
 # Func Hash:
@@ -2576,8 +3109,8 @@ kernel.c:fw32
 # Num Counters:
 2
 # Counter Values:
-182020
-728080
+181220
+724880
 
 kernel.c:fw64
 # Func Hash:
@@ -2585,8 +3118,8 @@ kernel.c:fw64
 # Num Counters:
 2
 # Counter Values:
-32390
-259120
+32964
+263712
 
 kernel.c:gate_upper
 # Func Hash:
@@ -2614,9 +3147,9 @@ kernel.c:gcdc
 # Num Counters:
 24
 # Counter Values:
-313136
+313902
 0
-89298
+90073
 276686
 223838
 0
@@ -2645,8 +3178,8 @@ kernel.c:hash
 # Num Counters:
 3
 # Counter Values:
-128637
-128637
+140831
+140819
 0
 
 kernel.c:heap_down
@@ -2668,18 +3201,18 @@ kernel.c:heap_nf
 # Num Counters:
 12
 # Counter Values:
-18089
-131
-131
-131
-87
-19496
-19409
-18089
+18147
+130
+130
+130
 0
-1407
-1407
-1407
+19551
+19554
+18148
+0
+1406
+1406
+1406
 
 kernel.c:heap_nf_try
 # Func Hash:
@@ -2687,48 +3220,48 @@ kernel.c:heap_nf_try
 # Num Counters:
 42
 # Counter Values:
-19496
-87
+19551
 0
-19409
 0
-386274
+19554
+0
+384237
 4
 0
-19492
-2106042
-22669
+19549
+1989645
+22814
 0
-87
-2105955
 0
-1937391
-26336
-4363607
-2092376
-1684313
+1993404
+0
+1836533
+26337
+3894927
+1969673
+1604457
 145237
 0
-4218370
+3763424
 0
-975
-37333
+974
+38127
 0
-131231
+130304
 0
 0
 57
-770251
+747943
 0
 8555
-372740
-374124
+367923
+368846
 0
-761696
+740438
 0
 432
 0
-36720
+37632
 
 kernel.c:heap_remove
 # Func Hash:
@@ -2736,8 +3269,8 @@ kernel.c:heap_remove
 # Num Counters:
 6
 # Counter Values:
-3351039
-3351039
+3109106
+3111065
 0
 0
 0
@@ -2759,6 +3292,12 @@ kernel.c:hilbert_impl
 # Num Counters:
 57
 # Counter Values:
+12
+0
+12
+12
+12
+12
 0
 0
 0
@@ -2768,53 +3307,47 @@ kernel.c:hilbert_impl
 0
 0
 0
+2399
+2399
+0
+48
+0
+12
+0
+0
+12
+12
+0
+2399
 0
 0
 0
 0
+7623
+3023
 0
+180
+150
+3023
 0
+10
 0
+45345
+2873
+42
+14412
 0
+42
 0
+14412
+13011
+21015
 0
+11688
 0
+14412
 0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
+12
 0
 
 kernel.c:layout_one
@@ -2823,13 +3356,13 @@ kernel.c:layout_one
 # Num Counters:
 7
 # Counter Values:
-47
+64
 0
-27
-470
-470
-470
-27
+36
+640
+640
+640
+36
 
 kernel.c:layout_workers
 # Func Hash:
@@ -2837,16 +3370,16 @@ kernel.c:layout_workers
 # Num Counters:
 10
 # Counter Values:
-28
+32
 0
-28
-28
-7
+32
+32
+8
 0
 0
-40
-40
-7
+56
+56
+8
 
 kernel.c:lb_add
 # Func Hash:
@@ -2909,7 +3442,7 @@ kernel.c:letter
 # Num Counters:
 2
 # Counter Values:
-5267875
+5355243
 0
 
 kernel.c:limb_divmodc
@@ -2964,8 +3497,8 @@ kernel.c:load_rule
 # Num Counters:
 17
 # Counter Values:
-915634
-915634
+953376
+951886
 0
 0
 0
@@ -2988,52 +3521,52 @@ kernel.c:local_build
 # Num Counters:
 46
 # Counter Values:
-54
-47
-35
-7
-54
-35
-54
-54
+60
+52
+40
+8
+60
+40
+60
+60
 0
-1069
-1069
-1069
-458752
+1334
+1334
+1334
+524288
 0
-1792
+2048
 0
-1190304
-256074
-256074
-15384
+1428880
+270985
+270985
+19215
 0
 32
-155098
-245625
-245626
-245625
+193856
+306999
+307000
+306999
 0
 122748
 122748
 0
-54187
-310335
-310979
-310335
+67718
+387896
+388701
+387896
 155122
-31760
-49360
+47640
+74040
 1
-155213
+232774
 1
-1041
+1301
 0
-188154
-35692
-218046
-35692
+235179
+44615
+272544
+44615
 
 kernel.c:local_find
 # Func Hash:
@@ -3041,19 +3574,19 @@ kernel.c:local_find
 # Num Counters:
 15
 # Counter Values:
-2134567
-29501
-2105066
-2105066
-2105066
-2105066
-2105066
-2105066
-2134439
-2105066
-5954279
-1937391
-1937391
+2036928
+29523
+2014720
+2004710
+2013458
+2013573
+2012620
+2013084
+2040321
+2012095
+5611356
+1836275
+1799273
 0
 0
 
@@ -3063,20 +3596,20 @@ kernel.c:local_sum
 # Num Counters:
 14
 # Counter Values:
-364521
+455613
 0
-498637
-15570
+623275
+19459
 7778
 0
 0
-7792
-3874
+11681
+5804
 0
-3918
+5877
 0
 14
-1040
+1300
 
 kernel.c:magcmp
 # Func Hash:
@@ -3115,10 +3648,10 @@ kernel.c:maskw
 # Num Counters:
 5
 # Counter Values:
-4251387
+4018029
 0
 0
-4251387
+4019974
 0
 
 kernel.c:matcher_build
@@ -3127,52 +3660,52 @@ kernel.c:matcher_build
 # Num Counters:
 46
 # Counter Values:
-54
-9
-54
-45
-54
-54
+60
+10
+60
+50
+60
+60
 0
 0
-13
-38
-13
-6077
+14
+42
+14
+6978
 0
-22
-51
-51
-51
-0
-0
-22
-22
-22
-22
-22
-22
-0
-6077
+26
+61
+61
+61
 0
 0
-0
-4052
-22426
-8121
-0
-327
-313
-8121
-32
-32
+26
+26
+26
+26
+26
+26
+3
+6978
 0
 0
 0
+4553
+25097
+9239
+0
+387
+373
+9239
+36
+36
 0
 0
-117682
-7808
+0
+0
+0
+134452
+8866
 
 kernel.c:matcher_find
 # Func Hash:
@@ -3180,12 +3713,12 @@ kernel.c:matcher_find
 # Num Counters:
 6
 # Counter Values:
-986448
-4861427
-938863
-948875
-938863
-621771
+1036436
+4864993
+950509
+959880
+950417
+665011
 
 kernel.c:matcher_interior
 # Func Hash:
@@ -3193,15 +3726,15 @@ kernel.c:matcher_interior
 # Num Counters:
 9
 # Counter Values:
-40703
+45610
 0
-40703
-40703
-40703
-40703
-178762
-104088
-296
+45610
+45610
+45610
+45610
+194093
+113728
+305
 
 kernel.c:mix
 # Func Hash:
@@ -3209,7 +3742,7 @@ kernel.c:mix
 # Num Counters:
 1
 # Counter Values:
-18067850
+16274599
 
 kernel.c:mulc
 # Func Hash:
@@ -3217,17 +3750,17 @@ kernel.c:mulc
 # Num Counters:
 19
 # Counter Values:
-4399275
+3815981
 0
 0
-4399275
-4399275
-3144019
-664251
-587062
-587180
-587062
-582289
+3817230
+3818823
+2789939
+651378
+582192
+581432
+582041
+575733
 0
 19893
 0
@@ -3243,7 +3776,7 @@ kernel.c:mulf
 # Num Counters:
 2
 # Counter Values:
-5521253
+4935591
 1348615
 
 kernel.c:negf
@@ -3252,7 +3785,7 @@ kernel.c:negf
 # Num Counters:
 3
 # Counter Values:
-531820
+525780
 140326
 140326
 
@@ -3262,23 +3795,23 @@ kernel.c:nf
 # Num Counters:
 70
 # Counter Values:
-43923
-101
+45047
 0
-87
 0
-13
-1
+0
+0
+0
+0
 2602
-43822
-2602
-43822
-43822
-18002
-18089
-87
-17941
-17941
+45089
+2601
+45073
+45083
+18149
+18150
+0
+18087
+18087
 61
 61
 61
@@ -3289,8 +3822,8 @@ kernel.c:nf
 17
 17
 17
-30
-13
+17
+0
 17
 17
 0
@@ -3308,27 +3841,27 @@ kernel.c:nf
 0
 0
 0
-41221
-624320
-15400
-624320
-15400
-624320
-624320
-624320
-624320
+42498
+620674
+15546
+621763
+15546
+621263
+621579
+620820
+621049
 0
-41221
+42512
 0
-1
-604558
-583099
-25820
-91654
-583099
-91654
 0
-491413
+609341
+574681
+26961
+92637
+574095
+92644
+0
+485939
 0
 0
 0
@@ -3339,22 +3872,22 @@ kernel.c:normalise
 # Num Counters:
 16
 # Counter Values:
-576081
-48320
+569199
+48710
 138552
 1013211
 6772
 6772
 6772
-389560
+385287
 6772
 23
-389186
-389186
+383596
+383939
 1827
 1099
-158928
-1373171
+159599
+1363608
 
 kernel.c:order_batch
 # Func Hash:
@@ -3385,9 +3918,9 @@ kernel.c:part
 # Num Counters:
 5
 # Counter Values:
-5407537
-1205394
-4202143
+5084666
+1180678
+3968458
 0
 0
 
@@ -3397,7 +3930,7 @@ kernel.c:pc
 # Num Counters:
 1
 # Counter Values:
-10537685
+9540340
 
 kernel.c:prefix
 # Func Hash:
@@ -3405,7 +3938,7 @@ kernel.c:prefix
 # Num Counters:
 1
 # Counter Values:
-71105
+79803
 
 kernel.c:prefix_count
 # Func Hash:
@@ -3413,15 +3946,15 @@ kernel.c:prefix_count
 # Num Counters:
 9
 # Counter Values:
-29415
-17174
-17056
-17056
-17056
-17070
-17056
-17174
-17070
+32769
+19366
+19247
+19247
+19247
+19261
+19247
+19366
+19261
 
 kernel.c:prefix_hash
 # Func Hash:
@@ -3429,7 +3962,7 @@ kernel.c:prefix_hash
 # Num Counters:
 1
 # Counter Values:
-58830
+65495
 
 kernel.c:publish_lane
 # Func Hash:
@@ -3437,12 +3970,12 @@ kernel.c:publish_lane
 # Num Counters:
 6
 # Counter Values:
-152056
+163223
 0
-13859
-110924
-110924
-97065
+14343
+114808
+114808
+100465
 
 kernel.c:pw
 # Func Hash:
@@ -3450,7 +3983,7 @@ kernel.c:pw
 # Num Counters:
 1
 # Counter Values:
-6687616
+6097975
 
 kernel.c:quadratic_precondition
 # Func Hash:
@@ -3458,13 +3991,13 @@ kernel.c:quadratic_precondition
 # Num Counters:
 17
 # Counter Values:
-4871301
+4373999
 0
-4871301
-4871301
-4871301
-4871301
-4871301
+4384183
+4328527
+4377752
+4381391
+4329971
 0
 0
 0
@@ -3482,17 +4015,17 @@ kernel.c:quadratic_precondition_short
 # Num Counters:
 11
 # Counter Values:
-4871301
-36018090
-34189036
+4323269
+30427482
+29431586
 51042
 1302
-884278
+867574
 0
 0
-1778012
+1709161
 0
-1559416
+1503038
 
 kernel.c:rabs
 # Func Hash:
@@ -3540,9 +4073,9 @@ kernel.c:radix_bucket
 # Num Counters:
 3
 # Counter Values:
-16254728
+13209274
 0
-12017110
+10099476
 
 kernel.c:radix_erase
 # Func Hash:
@@ -3550,11 +4083,11 @@ kernel.c:radix_erase
 # Num Counters:
 5
 # Counter Values:
-3366531
-2784573
-543667
-505333
-2676859
+3131249
+2613393
+538081
+500690
+2526289
 
 kernel.c:radix_insert
 # Func Hash:
@@ -3562,7 +4095,7 @@ kernel.c:radix_insert
 # Num Counters:
 2
 # Counter Values:
-3589506
+3429584
 0
 
 kernel.c:radix_link
@@ -3571,13 +4104,13 @@ kernel.c:radix_link
 # Num Counters:
 7
 # Counter Values:
-12888197
-12888197
-4802985
-2081037
-7943421
-2081037
-8085212
+10805862
+10836407
+4394255
+1995032
+6955461
+1993209
+7053466
 
 kernel.c:radix_top
 # Func Hash:
@@ -3585,21 +4118,21 @@ kernel.c:radix_top
 # Num Counters:
 15
 # Counter Values:
-2118809
+2006333
 0
 0
-2118809
+2006595
 0
 0
-2011205
-2118809
-2011205
-107604
-2118809
-2011205
-392699
-121080
-9298691
+1913016
+2007802
+1911708
+107546
+1996859
+1902222
+391999
+121144
+8173470
 
 kernel.c:radix_word
 # Func Hash:
@@ -3607,7 +4140,7 @@ kernel.c:radix_word
 # Num Counters:
 1
 # Counter Values:
-34653078
+27812754
 
 kernel.c:rational_nf
 # Func Hash:
@@ -3700,19 +4233,20 @@ kernel.c:record_bytes
 # Num Counters:
 4
 # Counter Values:
-15022
-149961
+17456
+161220
 834
 0
 
 kernel.c:reduce_pair_impl
 # Func Hash:
-154842514062966942
+1024663101967568809
 # Num Counters:
-10
+11
 # Counter Values:
-40407
+45262
 0
+3986
 0
 0
 0
@@ -3773,19 +4307,19 @@ kernel.c:reserve_slots
 # Num Counters:
 14
 # Counter Values:
-3002
+3499
 0
-3002
-3002
+3499
+3499
 0
-3002
-3002
+3499
+3499
 0
-7
+8
 0
-3002
-3008
-17
+3499
+3505
+19
 0
 
 kernel.c:reset_a
@@ -3794,7 +4328,7 @@ kernel.c:reset_a
 # Num Counters:
 1
 # Counter Values:
-699793
+702600
 
 kernel.c:reset_degree_progress
 # Func Hash:
@@ -3802,7 +4336,7 @@ kernel.c:reset_degree_progress
 # Num Counters:
 1
 # Counter Values:
-54
+60
 
 kernel.c:resolved
 # Func Hash:
@@ -3810,7 +4344,7 @@ kernel.c:resolved
 # Num Counters:
 2
 # Counter Values:
-10537685
+9529397
 2858
 
 kernel.c:rgcd
@@ -3910,34 +4444,34 @@ kernel.c:row_add
 # Num Counters:
 28
 # Counter Values:
-5520128
+4918352
 0
 0
 0
 0
 0
-5520128
-648827
-735677
-2037679
-735677
-1302002
+4929743
+638671
+724028
+1990686
+723965
+1269949
 0
 56167
 12
 0
-1245835
-621806
+1214655
+614537
 0
-624029
+616726
 0
-56918
+56900
 120491
 4041
 0
-2521418
-1407
-3567892
+2430580
+1406
+3411303
 
 kernel.c:row_hash
 # Func Hash:
@@ -3945,7 +4479,7 @@ kernel.c:row_hash
 # Num Counters:
 1
 # Counter Values:
-8185007
+7307912
 
 kernel.c:row_remove
 # Func Hash:
@@ -3953,8 +4487,8 @@ kernel.c:row_remove
 # Num Counters:
 2
 # Counter Values:
-3313706
-158402
+3066582
+158042
 
 kernel.c:rrow_add
 # Func Hash:
@@ -4062,7 +4596,7 @@ kernel.c:rule
 # Num Counters:
 1
 # Counter Values:
-6781133
+6922292
 
 kernel.c:shl
 # Func Hash:
@@ -4070,8 +4604,8 @@ kernel.c:shl
 # Num Counters:
 4
 # Counter Values:
-16352372
-1773654
+14434784
+1735059
 0
 0
 
@@ -4081,7 +4615,7 @@ kernel.c:shortcat
 # Num Counters:
 1
 # Counter Values:
-16352372
+14455790
 
 kernel.c:shr
 # Func Hash:
@@ -4089,8 +4623,8 @@ kernel.c:shr
 # Num Counters:
 4
 # Counter Values:
-15424297
-3307181
+14246534
+3103128
 0
 0
 
@@ -4100,8 +4634,8 @@ kernel.c:slice_expired
 # Num Counters:
 2
 # Counter Values:
-64236
-3438
+65712
+3936
 
 kernel.c:try_lock
 # Func Hash:
@@ -4117,24 +4651,21 @@ kernel.c:validate_record
 # Num Counters:
 41
 # Counter Values:
-3002
+3499
 0
 0
-3002
-3002
-3002
-3002
-3002
-3002
-3002
-3002
-3002
-3002
+3499
+3499
+3499
+3499
+3499
+3499
+3499
+3499
+3499
+3499
 0
-28853
-0
-0
-0
+31147
 0
 0
 0
@@ -4143,12 +4674,15 @@ kernel.c:validate_record
 0
 0
 0
-28853
-28853
 0
-25851
 0
-204086
+0
+31147
+31147
+0
+27648
+0
+215177
 0
 154
 0
@@ -4165,14 +4699,14 @@ kernel.c:wcmp
 # Num Counters:
 17
 # Counter Values:
-14788235
-14788235
-14788235
-14788235
+12481267
+12484850
+12471043
+12482046
 0
 0
-14158814
-3483487
+11960479
+3050670
 0
 0
 0
@@ -4189,12 +4723,12 @@ kernel.c:weq
 # Num Counters:
 10
 # Counter Values:
-3246483
-3246483
-3246483
-3246483
-1528607
-1528607
+3200441
+3197777
+3195427
+3197102
+1506591
+1506942
 0
 0
 0
@@ -4206,7 +4740,7 @@ kernel.c:wlong
 # Num Counters:
 1
 # Counter Values:
-69341696
+50988891
 
 kernel.c:wresolved
 # Func Hash:
@@ -4214,7 +4748,7 @@ kernel.c:wresolved
 # Num Counters:
 2
 # Counter Values:
-6687616
+6101446
 0
 
 kernel.c:write_record
@@ -4223,11 +4757,11 @@ kernel.c:write_record
 # Num Counters:
 8
 # Counter Values:
-9012
+10473
 0
-9012
-9012
-89407
+10470
+10469
+96196
 0
 494
 0
@@ -4238,8 +4772,8 @@ memcpy
 # Num Counters:
 2
 # Counter Values:
-222665
-6079244
+269339
+7445136
 
 memmove
 # Func Hash:
@@ -4247,9 +4781,9 @@ memmove
 # Num Counters:
 4
 # Counter Values:
-101829
-93948
-11948984
+102812
+94949
+12039707
 152156
 
 memset
@@ -4258,6 +4792,6 @@ memset
 # Num Counters:
 2
 # Counter Values:
-30104
-264332624
+30419
+292105748
 

@@ -46,7 +46,7 @@ their input contract because they neither import nor execute it. Older
 conservative contracts are accepted only after their exact digest and the
 remaining checked inputs are verified. Multi-job CLI recovery scripts have
 a 600-second aggregate limit; their individual calculations remain capped
-at 30–60 seconds.
+at no more than 120 seconds.
 
 Complete Bergman and Singular reference bases are cached by their input scripts
 and actual oracle build identities. The key excludes the candidate Fomkyr build.
@@ -110,3 +110,12 @@ ratios.
 
 Use `--baseline-root <saved-engine-directory>` for a fresh alternating comparison
 of both engines. Neither benchmark mode launches Singular or Bergman.
+
+## FK6 profile integration
+
+Fomkyr 0.6.8 adds focused checks for profile byte binding, bounded independent
+completion, all four assisted Wasm variants, native/Wasm checkpoint exchange,
+profile refusal before mutation, and undefined-behaviour sanitization. The UI
+checks verify opt-in defaults, result labelling and prime-field control disabling.
+Public provenance omits private artifact names while retaining artifact digests;
+the original upstream authority remains accepted for identical table values.

@@ -90,3 +90,17 @@ test('unused Fomkyr draft settings cannot block a Bergman job or its share link'
   const share=await createShareLink({...form,varsText:'a,b',relsText:'a^2',fomkyrOptions:saved},'https://example.org/');
   assert.deepEqual((await readShareLink(new URL(share).hash)).fomkyrOptions.scratchMiB,4096);
 });
+
+test('FK6 dimension assistance requires opt-in and keeps mathematical choices shareable', async () => {
+  assert.equal(FOMKYR_DEFAULTS.hilbertGate,false);
+  assert.equal(available({}).hilbertSectors,false);
+  assert.equal(available({}).gateMiB,false);
+  assert.equal(available({fomkyrOptions:{hilbertGate:true}}).hilbertSectors,true);
+  assert.equal(available({field:'101',fomkyrOptions:{hilbertGate:true}}).hilbertGate,false);
+  const options={hilbertGate:true,hilbertSectors:false,gateMiB:64};
+  const share=await createShareLink({...form,varsText:'a,b',relsText:'a^2',fomkyrOptions:options},'https://example.org/');
+  const decoded=await readShareLink(new URL(share).hash);
+  const engine=fomkyrEngineOptions({...form,fomkyrOptions:decoded.fomkyrOptions});
+  assert.equal(engine.hilbertGate,true);assert.equal(engine.hilbertSectors,false);
+  assert.equal(engine.gateBudgetBytes,64*1048576);assert.equal(engine.gateMiB,undefined);
+});

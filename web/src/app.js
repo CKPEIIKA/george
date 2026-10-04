@@ -546,6 +546,7 @@ function renderResults(job, res) {
     else if (!summary.complete) html += `<p class="notice">${t('basis.partial')}</p>`;
     else if (res.fomkyr?.unrestrictedBasisComplete) html += `<p class="notice">${t('fomkyr.completeBasis')}</p>`;
     else if (summary.completedThroughDegree !== undefined || job.degreeBound) html += `<p class="notice">${t(res.fomkyr ? 'fomkyr.bounded' : 'basis.bounded', { d: summary.completedThroughDegree ?? job.degreeBound })}</p>`;
+    if (res.fomkyr?.conditionalOnImportedFkDimensions) html += `<p class="notice">${t('fomkyr.importedDimensionsNotice')}</p>`;
     if (res.fomkyr?.reduced === false) html += `<p class="notice">${t('native.unreduced')}</p>`;
     if (summary.truncated) {
       html += `<p class="notice">${t('basis.previewCount', { shown: summary.shown, total: n })} ${t('native.preview')} <button type="button" class="quiet small" data-goto="files">${t('tab.files')}</button></p>`;

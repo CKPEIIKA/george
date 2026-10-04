@@ -4,7 +4,7 @@ import {requestPersistentStorage,listCachedRuns,deleteCachedRun} from './storage
 import {browserCapabilities} from './capabilities.js';
 import {requestIsolation} from './isolation.js';
 const KEY='fomkyr-options-v3'; // keep existing user tuning on upgrade
-const defaults={scheduler:'cooperative',quantumMs:250,lookahead:128,radixMaxCache:true,hilbertClosureMode:'off',hilbertEvidenceText:'',hilbertClosureBatching:true,arithmeticMode:'exact',memoryPolicy:'auto',modularMinPrimes:2,modularMaxPrimes:8,workers:0,execution:'auto',bits:'auto',spill:true,hilbert:true,resume:'auto',ioMode:'auto',monomialPruning:true,heapReduction:true,rationalHeap:true,bigRationalHeap:true,fastBigDivision:true,growingRationalHeap:true,radixHeap:true,reserveInPlace:true,rowReserveMiB:null,compiledRewrites:true,rewriteDegree:4,rewriteSupport:8,rewriteMiB:8,sharedCacheMiB:null,cachePercent:12,heapThreshold:16,batchPairs:null,hashBits:18,scratchMiB:null,hilbertMiB:256,wordMatcher:true,chainCriterion:true,eagerPruning:true,quadraticRewrite:true,costScheduling:true,wordCacheEntries:256,progress:true,progressIntervalMs:1000,midDegreeCheckpoints:true,checkpointIntervalMs:30000,referenceProgress:true};
+const defaults={hilbertGate:false,hilbertSectors:true,gateMiB:128,scheduler:'cooperative',quantumMs:250,lookahead:128,radixMaxCache:true,hilbertClosureMode:'off',hilbertEvidenceText:'',hilbertClosureBatching:true,arithmeticMode:'exact',memoryPolicy:'auto',modularMinPrimes:2,modularMaxPrimes:8,workers:0,execution:'auto',bits:'auto',spill:true,hilbert:true,resume:'auto',ioMode:'auto',monomialPruning:true,heapReduction:true,rationalHeap:true,bigRationalHeap:true,fastBigDivision:true,growingRationalHeap:true,radixHeap:true,reserveInPlace:true,rowReserveMiB:null,compiledRewrites:true,rewriteDegree:4,rewriteSupport:8,rewriteMiB:8,sharedCacheMiB:null,cachePercent:12,heapThreshold:16,batchPairs:null,hashBits:18,scratchMiB:null,hilbertMiB:256,wordMatcher:true,chainCriterion:true,eagerPruning:true,quadraticRewrite:true,costScheduling:true,wordCacheEntries:256,progress:true,progressIntervalMs:1000,midDegreeCheckpoints:true,checkpointIntervalMs:30000,referenceProgress:true};
 let state={...defaults};
 try{const saved=JSON.parse(globalThis.localStorage?.getItem(KEY)||'{}');for(const key of Object.keys(defaults))if(Object.hasOwn(saved,key))state[key]=saved[key];}catch{}
 // Public George controls retain only the measured direct mode. The explicit
@@ -19,6 +19,7 @@ export function readFomkyrOptions(){
     else if(state.hilbertClosureMode==='external-assumption')out.hilbertClosure={assume:data};
     else throw new Error('Unknown Hilbert closure mode');
   }
+  delete out.gateMiB;out.gateBudgetBytes=Number(state.gateMiB)*1048576;
   delete out.scratchMiB;delete out.hilbertMiB;delete out.rewriteMiB;delete out.sharedCacheMiB;delete out.rowReserveMiB;
   out.rewriteBudgetBytes=Number(state.rewriteMiB??8)*1048576;
   if(state.sharedCacheMiB!==null)out.sharedReducerCacheBytes=Number(state.sharedCacheMiB)*1048576;
@@ -48,6 +49,11 @@ export function installFomkyrControls(){
   const evidence=label('Certificate / dimension JSON',closureBox),area=document.createElement('textarea');area.id='fomkyr-hilbertEvidenceText';area.rows=5;area.style.width='100%';area.value=state.hilbertEvidenceText;area.onchange=()=>{state.hilbertEvidenceText=area.value;persist();};evidence.append(area);
   const upload=document.createElement('input');upload.type='file';upload.accept='.json,application/json';upload.onchange=async()=>{const file=upload.files?.[0];if(!file)return;if(file.size>64*1048576){alert('Hilbert evidence file exceeds 64 MiB');return;}area.value=await file.text();state.hilbertEvidenceText=area.value;persist();};closureBox.append(upload);
   const closureNote=document.createElement('p');closureNote.textContent='Equality of the normal-word upper bound with an independently justified lower bound closes only that degree. Trusted external dimensions are assumptions, not replayed proofs. Assisted checkpoints require the same evidence file on resume. A deficit is not an ETA.';closureBox.append(closureNote);
+  const fkBox=document.createElement('details');const fkTitle=document.createElement('summary');fkTitle.textContent='Optional FK Gate 0.3 (imported dimension profile)';fkBox.append(fkTitle);box.append(fkBox);
+  check('hilbertGate','Accept the imported FK6/Q dimension profile through degree 16',fkBox);
+  check('hilbertSectors','Skip reductions in already-complete product-permutation grades',fkBox);
+  number('gateMiB','Temporary exact grade-counter budget, MiB',0,14304,fkBox);
+  const fkNote=document.createElement('p');fkNote.textContent='This option is restricted to the authenticated original FK6 input over Q. Profile proof artifacts are referenced, not replayed by this runtime. Results and checkpoints remain explicitly conditional on that imported profile. Degrees above 16, other fields, and unmatched presentations retain ordinary completion. A completed conjugacy class is not assumed from a single representative normal-word count. Re-enable the same profile when resuming an assisted job.';fkBox.append(fkNote);
   choice('execution','Execution',[['auto','Automatic: shared multicore when available'],['single','Single worker: no shared-memory requirement'],['multicore','Require shared multicore; fail if isolation is unavailable']]);
   if(!document.getElementById('nativeWorkers'))number('workers','CPU lanes (0 = automatic)',0,32);
   choice('bits','WASM addressing',[['auto','Automatic: 32-bit unless the budget needs memory64'],['32','32-bit'],['64','64-bit, with capability fallback']]);

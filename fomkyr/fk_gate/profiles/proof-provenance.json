@@ -1,0 +1,40 @@
+{
+  "dimensions14To16": [
+    346652740,
+    850296030,
+    2031123484
+  ],
+  "exactTotalThroughDegree": 16,
+  "field": "Q",
+  "name": "FK Gate exact FK6 profile provenance",
+  "notes": [
+    "Digest binds bytes; it is not by itself a mathematical proof.",
+    "Runtime applicability is restricted to the exact FK6 presentation, Q, and the supported monomial-order semantics.",
+    "No exact full original-order Groebner basis through degree 16 is bundled."
+  ],
+  "presentationIdentity": "17c5a3b13bbae1fd6e03ece75139f297d437bda2ae062b093d77a92f091b88bf",
+  "profileThroughDegree": 16,
+  "proofBundleDigestSHA256": "51466d4cc0650b31d0df50d228195ac3893c7c45d6199e065cfce07a8d46c964",
+  "proofStatus": "computational proof package; independently replayed within project; external specialist review pending",
+  "runtimeUsesProofSearch": false,
+  "sourceArtifacts": {
+    "computationalProofNote": {
+      "sha256": "afd3a55304218507570459af34454164576538e62aed2ff16e4b71da23bf5be8"
+    },
+    "exactProfile": {
+      "sha256": "d1c1c42799f784cf9cde3634831a16a461c2309b3291fa2555117675e1f42327"
+    },
+    "frontierArchive": {
+      "sha256": "689d2fd4ded5be56617a0576a11c3ea5228d629d7a7522aca1fda35feffdc25a"
+    },
+    "frontierValidation": {
+      "sha256": "ccede2f591519a6459b914678d4e9971966b9d6f5dc4ae036641f689aa850151"
+    },
+    "nonzeroCertificate": {
+      "sha256": "ce34533fd4a3f76de507a93ffab32dd37f5055cd0f75c3d69798587ecbb3f79a"
+    }
+  },
+  "version": "0.3.0",
+  "upstreamProvenanceSha256": "eac1ce2d35a3a2405e7e760edb2226a4febda3f265c29ce65d150ff1e90ad013",
+  "upstreamAuthorityId": "a8d7ec405a7aa566c995b075d45de463dc83940db86891545ee6ea26da665314"
+}

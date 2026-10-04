@@ -30,6 +30,10 @@ export function humanReport(report) {
     lines.push(`Workspace pressure: using ${report.workers} workers; retrying pending work${report.replayFromTask == null ? '' : ` from task ${report.replayFromTask}`}.`);
   } else if (type === 'hilbert-degree-closure') {
     lines.push(`Hilbert closure at degree ${report.degree ?? report.details?.degree} (${report.evidence ?? report.mode ?? 'evidence'}).`);
+  } else if (type === 'fk-gate-degree-closure') {
+    lines.push(`FK6 imported-profile closure at degree ${report.degree}.`);
+  } else if (type === 'fk-gate-state') {
+    lines.push(`FK6 degree ${report.degree}: ${report.closedSectors ?? 0} closed components; dimension deficit ${report.deficit ?? '?'}.`);
   } else if (type === 'warning' || type === 'stdout') {
     lines.push(String(report.message ?? report.text).trimEnd());
   } else if (Object.hasOwn(report, 'complete')) {
@@ -50,5 +54,6 @@ export function humanReport(report) {
     memory();
   }
   if (report.conditionalOnExternalDimensions) lines.push('Results are conditional on the supplied external Hilbert dimensions.');
+  if (report.conditionalOnImportedFkDimensions) lines.push('Results are conditional on the imported FK6 dimensions; external proof package not replayed here.');
   return lines.join('\n');
 }

@@ -1,4 +1,4 @@
-.TH FOMKYR 1 "October 2026" "fomkyr 0.6.7"
+.TH FOMKYR 1 "October 2026" "fomkyr 0.6.8"
 .SH NAME
 fomkyr \- fast pure C engine for exact homogeneous noncommutative Groebner bases
 .SH SYNOPSIS
@@ -66,6 +66,19 @@ labelled conditional on this document. This is not a replayable certificate.
 .TP
 .B \-\-hilbert-fixed-batch
 Disable bound-aware batch lookahead in the optional closure mode.
+.TP
+.B \-\-fk-gate
+Explicitly accept the compiled FK Gate 0.3 product-permutation dimension profile.
+Only the authenticated original-order FK6 presentation over Q, through degree 16,
+is eligible. Output is conditional on the imported dimensions; the referenced
+proof bundle is not replayed by the runtime. Disabled by default.
+.TP
+.B \-\-fk-total-only
+Use the same imported authority for total-degree closure without sector skips.
+.TP
+.BI \-\-fk-gate-memory " SIZE"
+Maximum temporary space for the optional normal-word counter (default 128M).
+This is separate from, and remains within, the overall memory ceiling.
 .SH SIGNALS
 SIGUSR1 requests a safe checkpoint and continues. SIGINT and SIGTERM request
 cancellation and retain a safe frontier. SIGKILL cannot create a new checkpoint.
@@ -80,8 +93,9 @@ For a resumable break, press Ctrl+C, wait for exit, then restart with
 .SH FILES
 The job directory contains fixture.json, job.json, cli.lock and a content-keyed
 fomkyr/alg-* directory. Basis records have ABI 3; mid-degree frontiers use version 1.
-Assisted metadata uses ABI 4 and requires the same evidence on resume. Do not
-open an assisted job with 0.6.5 or older: old readers may ignore this metadata
+Scalar-Hilbert metadata uses ABI 4. FK-Gate metadata uses ABI 5 and requires
+the same imported profile on resume; prior scalar authorities are retained. Do not
+open FK-Gate jobs with 0.6.7 or older: old readers may ignore this metadata
 and fall back to earlier checkpoints. Ordinary records retain ABI 3.
 .SH LIMITATIONS
 No guarantee of termination, available physical memory, or bounded cancellation

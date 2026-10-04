@@ -1,7 +1,8 @@
+import {sameFkGateProfile} from './fk-gate.js';
 // SPDX-License-Identifier: MIT
 // OPFS data are origin-local. Persistence is a request, never a backup guarantee.
 export const STORE='fomkyr';
-export const VERSION='0.6.7';
+export const VERSION='0.6.8';
 const encoder=new TextEncoder();
 export async function sha256(bytes){
   const hash=await crypto.subtle.digest('SHA-256',typeof bytes==='string'?encoder.encode(bytes):bytes);
@@ -38,13 +39,14 @@ export async function writeJSON(directory,name,payload,{checkpoint=false}={}){
   const h=await (await directory.getFileHandle(name,{create:true})).createSyncAccessHandle();
   try{h.truncate(0);let at=0;while(at<bytes.length){const n=h.write(bytes.subarray(at),{at});if(!n)throw new Error('Short metadata write');at+=n;}h.flush();}finally{h.close();}
 }
-export async function checkpointCandidates(directory,identity,diskBytes,evidenceId=null){
-  const result=[];let evidenceMismatch=false;
+export async function checkpointCandidates(directory,identity,diskBytes,evidenceId=null,fkProfileId=null){
+  const result=[];let evidenceMismatch=false,fkMismatch=false;
   for(const name of ['checkpoint-0.json','checkpoint-1.json','partial-0.json','partial-1.json']){
     try{
       const cp=await readCheckpoint(await directory.getFileHandle(name));
-      if(![2,3,4].includes(cp.abi)||cp.identity!==identity)continue;
-      if(cp.abi===4&&(!evidenceId||cp.hilbertEvidenceId!==evidenceId)){evidenceMismatch=true;continue;}
+      if(![2,3,4,5].includes(cp.abi)||cp.identity!==identity)continue;
+      if((cp.abi===4||cp.hilbertEvidenceId)&&(!evidenceId||cp.hilbertEvidenceId!==evidenceId)){evidenceMismatch=true;continue;}
+      if(cp.abi===5&&(!fkProfileId||!sameFkGateProfile(cp.fkGateProfileId,fkProfileId))){fkMismatch=true;continue;}
       if(!Number.isInteger(cp.completedThroughDegree)||cp.completedThroughDegree<0||cp.completedThroughDegree>0xfffffffe)continue;
       if(!Number.isSafeInteger(cp.basisSize)||cp.basisSize<0||!Number.isSafeInteger(cp.diskBytes)||cp.diskBytes<cp.basisSize*56||cp.diskBytes>diskBytes)continue;
       if(cp.partial){
@@ -54,6 +56,7 @@ export async function checkpointCandidates(directory,identity,diskBytes,evidence
       result.push(cp);
     }catch{}
   }
+  if(fkMismatch){const e=new Error('Checkpoint depends on the SAME imported FK Gate profile: explicitly enable hilbertGate. Cache left unchanged.');e.code='FK_GATE_PROFILE_REQUIRED';throw e;}
   if(evidenceMismatch){const e=new Error('Checkpoint depends on Hilbert evidence: explicitly supply the SAME policy/mode; cache left unchanged.');e.code='HILBERT_EVIDENCE_REQUIRED';throw e;}
   return result.sort((a,b)=>b.completedThroughDegree-a.completedThroughDegree||Number(!!b.partial)-Number(!!a.partial)||(b.sequence??0)-(a.sequence??0));
 }

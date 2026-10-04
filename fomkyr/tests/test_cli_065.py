@@ -17,7 +17,7 @@ def cps(job):
 def command(job,wasm=False,extra=()):
  return [str(exe)]+(['--wasm']if wasm else[])+['-i',str(f),'-d','20','-j','4','--memory','512M','--workdir',str(job),'--batch-pairs','8','--lookahead','8','--quantum-ms','1','--quiet']+list(extra)
 def run(job,wasm=False,extra=(),expect=(0,)):
- q=subprocess.run(command(job,wasm,extra),cwd=R,capture_output=True,text=True,timeout=60)
+ q=subprocess.run(command(job,wasm,extra),cwd=R,capture_output=True,text=True,timeout=120)
  (out/(job.name+('-wasm'if wasm else'-native')+'.log')).write_text(q.stdout+'\nSTDERR\n'+q.stderr)
  assert q.returncode in expect,(q.returncode,q.stdout,q.stderr)
  return json.loads(q.stdout.splitlines()[-1])

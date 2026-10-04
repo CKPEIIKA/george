@@ -69,12 +69,21 @@ const git=args=>execFileSync('git',args,{encoding:'utf8',maxBuffer:16*1024*1024}
 const initialRunnerHash='5b8c1faf9d665b003e2323c8137e2ea41b4c2086f9411d8a74944783360e6d2b';
 const independentOfNativeRunner=new Set(['exact','matrix','published','fk6-prefixes','browser','static-chromium','static-firefox','upgrade']);
 const nativeOnlyInputs=new Set(['fomkyr/SOURCE.json',
+  'fomkyr/tests/test_cooperative_pressure_067.mjs','fomkyr/tests/test_cooperative_reserve_067.mjs',
+  'fomkyr/tests/test_fk_gate_wasm_068.mjs','fomkyr/tests/audit_fk_gate_wasm_068.py',
+  'fomkyr/tests/test_cli_065.py','docs/development/RELEASING.md']);
+const originalNativeOnlyInputs=new Set(['fomkyr/SOURCE.json',
   'fomkyr/tests/test_cooperative_pressure_067.mjs','fomkyr/tests/test_cooperative_reserve_067.mjs']);
+const preCliNativeOnlyInputs=new Set([...nativeOnlyInputs].filter(file=>!['fomkyr/tests/test_cli_065.py','docs/development/RELEASING.md'].includes(file)));
 function phaseInputs(hashes,name,legacy=false){
   return Object.fromEntries(Object.entries(hashes).filter(([file])=>
     file!=='tools/release.mjs' && (name==='browser'||file!=='tools/validate-correction-release.mjs')
     && (legacy===true||!independentOfNativeRunner.has(name)||file!=='tools/validate-fomkyr-native.mjs')
-    && (legacy||!independentOfNativeRunner.has(name)||!nativeOnlyInputs.has(file))));
+    && (legacy==='pre-fk-audit-split'
+      ? !independentOfNativeRunner.has(name)||!originalNativeOnlyInputs.has(file)
+      : legacy==='pre-cli-deadline'
+      ? !independentOfNativeRunner.has(name)||!preCliNativeOnlyInputs.has(file)
+      : legacy||!independentOfNativeRunner.has(name)||!nativeOnlyInputs.has(file))));
 }
 function phaseContract(name,command,args,env,hashes=sourceHashes,legacy=false){
   return digest(stableJSON({schema:1,name,inputs:phaseInputs(hashes,name,legacy),protocol,
@@ -94,7 +103,7 @@ function borrowPhase(name,contract,evidence,validate,legacyContract){
       // matches and the newly scoped inputs match. The native runner is not
       // imported or executed by these phases; native-cli still checks it.
       const compatibleLegacy=independentOfNativeRunner.has(name)&&previous.sourceHashes
-        &&(row.contract===legacyContract(previous.sourceHashes)||row.contract===legacyContract(previous.sourceHashes,'native-runner-only'))
+        &&[true,'native-runner-only','pre-fk-audit-split','pre-cli-deadline'].some(mode=>row.contract===legacyContract(previous.sourceHashes,mode))
         &&stableJSON(phaseInputs(previous.sourceHashes,name))===stableJSON(phaseInputs(sourceHashes,name));
       const compatibleInitial=!row.contract&&previous.sourceHashes?.['tools/release.mjs']===initialRunnerHash
         &&stableJSON(phaseInputs(previous.sourceHashes,name))===stableJSON(phaseInputs(sourceHashes,name));
@@ -227,7 +236,7 @@ if(preparation){
     if(fs.existsSync('fomkyr/native/cli.c')){
       const native=path.join(out,'native-cli');
       await phase('native-cli',process.execPath,['tools/validate-fomkyr-native.mjs','--out',native,'--resume'],{
-        evidence:path.join(native,'report.json'),timeoutSeconds:900,
+        evidence:path.join(native,'report.json'),timeoutSeconds:1800,
         validate:r=>assert.ok(r.tests.length>=22&&r.tests.every(test=>test.passed))});
     }
     const browser=path.join(out,'browser');

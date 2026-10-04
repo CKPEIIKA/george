@@ -5,7 +5,8 @@ import {fileURLToPath} from 'node:url';
 
 export const FOMKYR_SOURCE = 'fomkyr';
 export function fomkyrSourceInput(relative) {
-  return !/^(?:results|\.cache)(?:\/|$)/.test(relative)
+  return !/^fk_gate\/(?:evidence|dist)(?:\/|$)/.test(relative)
+    && !/^(?:results|\.cache)(?:\/|$)/.test(relative)
     && !(relative.startsWith('dist/') && !relative.endsWith('.wasm'))
     && !/^fomkyr-job(?:\/|$)/.test(relative)
     && !/(?:^|\/)__pycache__(?:\/|$)/.test(relative)

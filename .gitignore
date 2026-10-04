@@ -50,3 +50,7 @@ __pycache__/
 !vendor/bergman-1.001/tests/test_bergman/lin~
 !vendor/bergman-1.001/tests/test_bergman/nhom~
 !vendor/bergman-1.001/tests/test_bergman/simp_w_max~
+
+# FK profile checks and reference builds generate local evidence only.
+/fomkyr/fk_gate/evidence/
+/fomkyr/fk_gate/dist/

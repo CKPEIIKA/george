@@ -45,12 +45,12 @@ static void closure_metadata(Buffer*b){
  if(!hc.enabled)return;buf_printf(b,",\"hilbertEvidenceId\":\"%s\",\"hilbertEvidenceMode\":\"%s\",\"conditionalOnExternalDimensions\":%s,\"hilbertClosureEvents\":[",hc.key,hc.assumed?"external-assumption":"replayed-integer-duals",hc.assumed?"true":"false");
  if(hc.events.s)buf_n(b,hc.events.s,hc.events.n);buf_add(b,"]");
 }
-static int closure_begin(u64 budget){
+static int scalar_closure_begin(u64 budget){
  int e=closure_entry((u32)gn_stat(3));if(e<0)return 0;
  u64 available=budget-gn_stat(4);int rc=gn_hilbert_gate_begin(closure_u64(&hc.json,json_key(&hc.json,e,"dimension")),available<256*MIB?available:256*MIB);
  if(rc==GN_MEMORY||rc==GN_LIMIT){fprintf(stderr,"Hilbert closure unavailable at degree %" PRIu64 ": %s; ordinary exact completion continues.\n",gn_stat(3),ename(rc));return 0;}return rc;
 }
-static int closure_try(void){
+static int scalar_closure_try(void){
  if(!hc.enabled||!gn_hilbert_gate_stat(0)||gn_hilbert_gate_stat(3))return 0;
  int rc=gn_hilbert_gate_try();if(rc<0)return -rc;if(!rc)return 0;
  Buffer b={0};buf_printf(&b,"{\"degree\":%" PRIu64 ",\"dimension\":\"%" PRIu64 "\",\"basisSize\":%" PRIu64 ",\"individuallyCommittedPairs\":%" PRIu64 ",\"overlapsBypassed\":%" PRIu64 ",\"notYetEnumerated\":%" PRIu64 ",\"scheduledNotCommitted\":%" PRIu64 "}",gn_stat(3),gn_hilbert_gate_stat(2),gn_stat(0),gn_progress_stat(2),gn_hilbert_gate_stat(5),gn_hilbert_gate_stat(8),gn_hilbert_gate_stat(9));

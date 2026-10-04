@@ -77,6 +77,11 @@ static void emit_json(FILE *out, const char *payload) {
   int details=json_key(&j,0,"details");human_number(&j,details,"degree",&degree);
   char *evidence=json_string(&j,json_key(&j,0,"evidence"));
   fprintf(out,"Hilbert closure at degree %" PRIu64 " (%s).\n",degree,evidence?evidence:"evidence");free(evidence);
+ }else if(event&&!strcmp(event,"fk-gate-degree-closure")){
+  human_number(&j,0,"degree",&degree);fprintf(out,"FK6 imported-profile closure at degree %" PRIu64 ".\n",degree);
+ }else if(event&&!strcmp(event,"fk-gate-progress")){
+  u64 deficit=0,closed=0;human_number(&j,0,"degree",&degree);human_number(&j,0,"deficit",&deficit);human_number(&j,0,"closedSectors",&closed);
+  fprintf(out,"FK6 degree %" PRIu64 ": %" PRIu64 " closed components; dimension deficit %" PRIu64 ".\n",degree,closed,deficit);
  }else if(event&&!strcmp(event,"start")){
   char *version=json_string(&j,json_key(&j,0,"version"));
   fprintf(out,"Fomkyr %s — native C; %" PRIu64 " workers.\n",version?version:"",workers);free(version);
@@ -99,6 +104,7 @@ static void emit_json(FILE *out, const char *payload) {
   if(human_flag(&j,"wasmLimit"))fputs("Wasm allowance limit enabled.\n",out);
  }
  if(human_flag(&j,"conditionalOnExternalDimensions"))fputs("Results are conditional on the supplied external Hilbert dimensions.\n",out);
+ if(human_flag(&j,"conditionalOnImportedFkDimensions"))fputs("Results are conditional on the imported FK6 dimensions; external proof package not replayed here.\n",out);
  free(event);json_free(&j);
 }
 #if defined(__GNUC__) || defined(__clang__)

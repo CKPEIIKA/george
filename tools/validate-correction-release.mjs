@@ -119,7 +119,22 @@ try {
     assert.equal(calculated.reserveInPlace,true);assert.equal(calculated.reserveLeased,false);
     defaultWorkspace={budgetMiB:3584,scratchMiB:2048,reserveMiB:512,batchPairs:128,verified:true};
    }
-   assert.deepEqual(errors,[]);report.checks.push({browser:name,fullTextZip:true,truncatedTotals:true,allDegreeCounts:true,expandedPolynomials:265,fk6Degree9Rules:1451,timerOnlySeconds:true,coefficientRules,defaultWorkspace});
+   await page.locator('#preset').selectOption('tutorial:fk6');
+   assert.equal(await page.locator('#fomkyr-hilbertGate').isChecked(),false);
+   assert.equal(await page.locator('#fomkyr-hilbertSectors').isDisabled(),true);
+   await page.locator('details.advanced').evaluate(node=>node.open=true);
+   // Exercise assisted computation rather than reuse the ordinary D9 job above.
+   await page.locator('#engineSettings').evaluate(node=>node.open=true);
+   await page.locator('#fomkyr-resume').uncheck();
+   await page.locator('#fomkyr-hilbertGate').check();
+   assert.equal(await page.locator('#fomkyr-hilbertSectors').isDisabled(),false);
+   await page.locator('#maxdeg').fill('4');
+   const gated=await compute();assert.equal(gated.completedThroughDegree,4);
+   assert.equal(gated.conditionalOnImportedFkDimensions,true);assert.equal(gated.fkGateProofReplayedHere,false);
+   assert.match(await page.locator('#basisOut').textContent(),/conditional on imported FK6 dimensions/i);
+   await page.locator('[name=field][value=p]').check();await page.locator('#modulus').fill('101');
+   assert.equal(await page.locator('#fomkyr-hilbertGate').isDisabled(),true);
+   assert.deepEqual(errors,[]);report.checks.push({browser:name,fkGateOptIn:true,conditionalResultNotice:true,primeFieldDisablesGate:true,fullTextZip:true,truncatedTotals:true,allDegreeCounts:true,expandedPolynomials:265,fk6Degree9Rules:1451,timerOnlySeconds:true,coefficientRules,defaultWorkspace});
    console.log(name,'PASS');await context.close();
   } finally {await browser.close();}
  }

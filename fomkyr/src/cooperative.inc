@@ -71,7 +71,10 @@ API int gn_coop_reduce(u32 lane){
   else {u32 next=GN_FETCH_ADD(&S.batch_next,1);if(next>=S.batch_work_n)break;index=S.batch_order[next];C.assigned[lane]=index+1;GN_FETCH_ADD(&C.started,1);l->resume_tier=0;l->error=0;
    BatchTask*t=&S.tasks[index];l->f=t->f;l->g=t->g;l->k=t->k;l->snapshot=t->snapshot;}
   BatchTask*t=&S.tasks[index];int rc;
-  if(l->resume_tier){l->error=0;l->busy=1;publish_lane(l,0,0);rc=nf(l,t->snapshot);l->error=rc;l->busy=0;publish_lane(l,l->result.n,0);}
+  if(l->resume_tier&&fg_sector_pair(l)){
+   coop_clear_lane(lane);l->result=(Poly){0};l->active=0;GN_FETCH_ADD(&S.fg_parked_skipped,1);rc=0;
+  }
+  else if(l->resume_tier){l->error=0;l->busy=1;publish_lane(l,0,0);rc=nf(l,t->snapshot);l->error=rc;l->busy=0;publish_lane(l,l->result.n,0);}
   else rc=gn_reduce_pair(lane);
   t->rc=(u32)rc;
   if(rc==GN_YIELD)break;

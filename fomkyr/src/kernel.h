@@ -94,6 +94,18 @@ API int gn_coop_retry(u32 workers);
 API void gn_coop_discard(void);
 API u64 gn_coop_stat(u32 key);
 API int gn_radix_cache(u32 enabled);
+/* Optional imported FK6/Q profile. Host must explicitly authorize provenance.
+ * Bind before input/restore. Rebuild actual counts at each degree/restore. */
+API int gn_fg_bind(u32 length);
+API int gn_fg_sector_mode(u32 enabled);
+API int gn_fg_begin(u64 budget);
+API int gn_fg_poll(void);
+API int gn_fg_close(u64 budget);
+API int gn_fg_status(void);
+API u32 gn_fg_limb(u32 item,u32 limb);
+API u64 gn_fg_stat(u32 item);
+API u64 gn_fg_class(u32 cls,u32 lower);
+API u64 gn_fg_group(u32 group,u32 lower);
 API int gn_batch_mode(u32 enabled);
 API int gn_batch_fill(u32 limit);
 API int gn_batch_reduce(u32 lane);
