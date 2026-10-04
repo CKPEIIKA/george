@@ -84,6 +84,7 @@ const checks=[
  ['certified-profile-subsystem','bash',['fk_gate/tools/build_and_test.sh']],
  ['certified-profile-totals','python3',['fk_gate/tools/verify_profile.py']],
  ['cooperative-native','python3',['tests/test_cooperative_067.py']],
+ ['cooperative-helpers','python3',['tests/test_cooperative_helpers.py']],
  ['cooperative-wasm',process.execPath,['--experimental-wasm-memory64','tests/test_cooperative_wasm_067.mjs']],
  ['cooperative-pressure',process.execPath,['--experimental-wasm-memory64','tests/test_cooperative_pressure_067.mjs']],
  ['cooperative-reserve',process.execPath,['--experimental-wasm-memory64','tests/test_cooperative_reserve_067.mjs']],

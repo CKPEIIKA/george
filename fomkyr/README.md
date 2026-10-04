@@ -373,6 +373,13 @@ by remaining component deficit, then estimated input size. Closing a component
 can retire pending rows in that component under the same dimension assumption.
 `--no-sector-priority` disables this ordering for comparisons.
 
+When a large row holds the shared reserve, waiting workers can calculate other
+pairs in independent helper arenas. These use at most 1/64 of the total memory
+budget and preserve primary scratch and reserve sizes. A pair that needs more
+workspace remains pending for a primary lane. Helper starts, completions and
+deferrals are included in progress reports. `--no-helper-rows` disables this
+path for comparisons. The browser kernel uses the same automatic policy.
+
 Use `--scheduler barrier` for whole-batch scheduling, `--quantum-ms N` for the
 soft slice target, and `--no-radix-cache` to disable cached bucket maxima.
 The browser engine menu exposes the same controls.

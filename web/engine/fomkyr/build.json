@@ -14,7 +14,7 @@
     "pgo": true,
     "compilerVersion": "23.1.1",
     "profileKind": "frontend",
-    "profileSha256": "aaaa0a427780672495268217632a444777c9f48f5f928cd157795dbb560b487f"
+    "profileSha256": "aac345eb0a07574c82ef84ff319c6e282b6a5eee5c171412aacfc8d15e69e784"
   },
   "variants": [
     "wasm32-shared",
@@ -66,7 +66,7 @@
     },
     "build-info.js": {
       "bytes": 605,
-      "sha256": "4e0888bcf69d8b9347e50a6fab5245f03b5cd7dde243ea66111a766761d25ab7"
+      "sha256": "a6841cb8da17a289bc0b23948d1b332a4763f1920758ab515f4ffbcdcb24baf7"
     },
     "candidate-verifier.js": {
       "bytes": 3942,
@@ -89,8 +89,8 @@
       "sha256": "4805cdd611774acdff74583661be3723774eaeca60b926bccdbfcb8c012ba3aa"
     },
     "engine.js": {
-      "bytes": 49624,
-      "sha256": "d69d2d2219fd7a992ecfd39a50f0ed18e9ee6b3dbecd6b6708b4ab352f6bf381"
+      "bytes": 49876,
+      "sha256": "c54b476c730a222ae5a04b804f415b88f31352141bfe321699c5a6d270dcc5d3"
     },
     "fk-gate.js": {
       "bytes": 4005,
@@ -101,20 +101,20 @@
       "sha256": "41bf71ff70c5e98858ace8dc2a9168911bf38f591307e2254f7314eb30ac49dc"
     },
     "fomkyr32-single.wasm": {
-      "bytes": 200527,
-      "sha256": "089e4c8bc29aabd70bef3f1354deabcddb65a059c8fb49a63f764a45009b5138"
+      "bytes": 234642,
+      "sha256": "fb11194717911a118add26186e60b3a665ce1020e103c3f53d4df45308100ba9"
     },
     "fomkyr32.wasm": {
-      "bytes": 200862,
-      "sha256": "61cf0aed0277eb6477486c97c19409d2ffd90946ef8afd6c3aa25fadbd3316d2"
+      "bytes": 235023,
+      "sha256": "4140213fab9770a697618369416200f0f02cc2768998727a9c7ca6c9fab50c3c"
     },
     "fomkyr64-single.wasm": {
-      "bytes": 226411,
-      "sha256": "21df332fa67ea27e772a60071e165b1cc21728872234be4521149125eec46141"
+      "bytes": 253450,
+      "sha256": "921a0129d0a2e011a8d55e0f57c79c9e6f3ac9383a5834f322948e02d2b2e9cb"
     },
     "fomkyr64.wasm": {
-      "bytes": 226704,
-      "sha256": "2df4fb6f4bf3f767d6ada81e18ea5ffdaa671092035cdcdd2bc2eeb832a888f8"
+      "bytes": 253717,
+      "sha256": "a02068566fac0ff30c43b038a969df074899b34af28f27096712501b9a51b0f6"
     },
     "form-options.js": {
       "bytes": 1409,

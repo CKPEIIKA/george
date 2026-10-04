@@ -28,6 +28,9 @@ code=x.test_commit_slices();assert not code,code
 rows.append(dict(property='commit-slices',code=code))
 code=x.test_output_wait();assert not code,code
 rows.append(dict(property='output-backpressure',code=code))
+for n in [0,1]:
+ code=x.test_coop_helpers(n);assert not code,code
+ rows.append(dict(property='reserve-wait-helpers',queue='radix' if n else 'binary',code=code))
 print(json.dumps(rows))`;
 rows.push({runtime:'native-ubsan',tests:JSON.parse(run('python3',['-c',python,native]))});
 for(const bits of [32,64])for(const shared of [false,true]){
@@ -41,7 +44,8 @@ async function properties(url,bits,shared){
  const tests=[];let cacheCode=e.test_shared_cache();if(cacheCode)throw Error('Shared cache property failure '+cacheCode);tests.push({property:'explicit-shared-cache',code:cacheCode});for(const mode of [0,1,2,3]){const t=performance.now(),code=e.test_big_row_growth(mode);if(code)throw Error(`Property failure at C line ${code}, mode ${mode}`);tests.push({large:!!(mode&1),queue:mode&2?'radix':'binary',code,seconds:(performance.now()-t)/1000});}
  for(const mode of [0,1]){const code=e.test_deep_rows(mode);if(code)throw Error(`Deep-row property failure at C line ${code}, mode ${mode}`);tests.push({property:'deep-rows',queue:mode?'radix':'binary',code});}
  let code=e.test_commit_slices();if(code)throw Error(`Commit-slice property failure at C line ${code}`);tests.push({property:'commit-slices',code});
- code=e.test_output_wait();if(code)throw Error(`Output-backpressure property failure at C line ${code}`);tests.push({property:'output-backpressure',code});return tests;
+ code=e.test_output_wait();if(code)throw Error(`Output-backpressure property failure at C line ${code}`);tests.push({property:'output-backpressure',code});
+ for(const mode of [0,1]){code=e.test_coop_helpers(mode);if(code)throw Error(`Helper property failure at C line ${code}`);tests.push({property:'reserve-wait-helpers',queue:mode?'radix':'binary',code});}return tests;
 }
 const server=staticServer('.', '/', {isolate:true}),serve=server.listeners('request')[0];server.removeAllListeners('request');
 let reportBrowser;

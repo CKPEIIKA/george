@@ -149,3 +149,8 @@ when component dimensions and cost scheduling are active.
 .TP
 .B --no-radix-cache
 Disable cached exact bucket maxima.
+.TP
+.B --no-helper-rows
+Disable bounded helper calculations while primary rows wait for the shared
+exceptional reserve. Helpers are enabled by default when their independent
+arenas fit within the memory budget. Unfinished primary rows retain their state.

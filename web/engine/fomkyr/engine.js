@@ -196,6 +196,7 @@ export class FomkyrEngine {
     if(this.e.gn_radix_cache)checked(this.e.gn_radix_cache(this.options.radixMaxCache===false?0:1));
     if(this.e.gn_cooperative){checked(this.e.gn_cooperative(this.cooperative?quantum:0,lookahead));if(this.cooperative&&!Number(this.e.gn_coop_stat(0))){this.cooperative=false;this.emit('scheduler-fallback',{reason:'Workspace too small for a separate commit arena; retaining the legacy exact scheduler',scheduler:'barrier'});}}
     if(this.e.gn_coop_policy)checked(this.e.gn_coop_policy((this.options.elasticWindow===false?0:1)|(this.options.sectorPriority===false?0:2),maxLookahead));
+    if(this.e.gn_coop_helper_mode)checked(this.e.gn_coop_helper_mode(this.options.helperRows===false?0:1));
     if(this.cooperative){const each=Number(this.e.gn_coop_stat(11));this.memoryPlan={...this.memoryPlan,initialBytesPerLane:each,commitWorkspaceBytes:each,scheduler:'cooperative'};}else this.memoryPlan={...this.memoryPlan,commitWorkspaceBytes:0,scheduler:'barrier'};
     this.fkGate?.bind(this.e,this.memory);
     this.cancelView=new Int32Array(this.memory.buffer,Number(this.e.gn_cancel_ptr()),1);
@@ -338,8 +339,8 @@ export class FomkyrEngine {
   }
   cooperativeStats(){
     if(!this.e?.gn_coop_stat)return null;const get=k=>Number(this.e.gn_coop_stat(k));
-    return {quantumMs:get(0),epochs:get(1),started:get(2),finished:get(3),committed:get(4),nonprefixCommits:get(5),capacityReplayPairs:get(6),pending:get(7),commitRewrites:get(8),reserveDeferredAttempts:get(12),window:get(13),windowExpansions:get(14),sectorOrderings:get(15),policyFlags:get(16),maxWindow:get(17),parkedCommit:get(18),commitYields:get(19),commitResumes:get(20),preparedCommitSlices:get(21),
-      lanes:Array.from({length:Number(this.e.gn_memory_stat(1))},(_,i)=>({activeMicroseconds:get(100+i),maxSliceMicroseconds:get(200+i),yields:get(300+i),resumes:get(400+i),parkedTask:get(500+i)}))};
+    return {quantumMs:get(0),epochs:get(1),started:get(2),finished:get(3),committed:get(4),nonprefixCommits:get(5),capacityReplayPairs:get(6),pending:get(7),commitRewrites:get(8),reserveDeferredAttempts:get(12),window:get(13),windowExpansions:get(14),sectorOrderings:get(15),policyFlags:get(16),maxWindow:get(17),parkedCommit:get(18),commitYields:get(19),commitResumes:get(20),preparedCommitSlices:get(21),helperStarted:get(22),helperFinished:get(23),helperDeferred:get(24),helperWorkspaceBytes:get(25),helpersEnabled:!!get(26),
+      lanes:Array.from({length:Number(this.e.gn_memory_stat(1))},(_,i)=>({activeMicroseconds:get(100+i),maxSliceMicroseconds:get(200+i),yields:get(300+i),resumes:get(400+i),parkedTask:get(500+i),helperTask:get(600+i)}))};
   }
   async completeCooperativeDegree(){
     for(;;){

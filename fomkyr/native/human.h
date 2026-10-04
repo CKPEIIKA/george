@@ -55,6 +55,8 @@ static void emit_json(FILE *out, const char *payload) {
    fprintf(out,"  %s; %" PRIu64 " active reductions; %" PRIu64 " sampled rewrites; largest active row: %" PRIu64 " terms.\n",human_phase(phase),active,rewrites,terms);free(phase);
    u64 parked=0,waits=0;human_number(&j,0,"parkedReductions",&parked);human_number(&j,0,"reserveWaits",&waits);
    if(parked||waits)fprintf(out,"  Parked reductions: %" PRIu64 "; reserve wait attempts: %" PRIu64 ".\n",parked,waits);
+   u64 helpers=0,deferred=0;human_number(&j,0,"helperFinished",&helpers);human_number(&j,0,"helperDeferred",&deferred);
+   if(helpers||deferred)fprintf(out,"  Helper pairs completed: %" PRIu64 "; deferred to full workspaces: %" PRIu64 ".\n",helpers,deferred);
    int array=json_key(&j,0,"lanes");
    if(array>=0)for(int i=array+1;i<j.n&&j.t[i].start<j.t[array].end;){
     int entry=i;u64 lane=0,left=0,right=0,overlap=0,task=0;

@@ -26,6 +26,7 @@ static int try_lock(_Atomic(u32)*p){u32 expected=0;return atomic_compare_exchang
 #define WORD_LONG (UINT64_C(1)<<63)
 #define BATCH_MAX 512u
 #define RED_CACHE_N 256u
+#define GN_RESUME_SLOTS (2u*GN_MAX_WORKERS+1u)
 #define SMALL_MAX INT64_C(4611686018427387903)
 #define MAGIC UINT32_C(0x31424e47)
 #define STACK_BYTES (128u*1024u)
@@ -48,7 +49,7 @@ typedef struct {
   u64 cache_data,cache_capacity,cache_used,cache_hits;
   u32 cache_epoch,cache_mask; RedCache red[RED_CACHE_N];
   Poly result;u32 f,g,k,snapshot,error,active;
-  u32 slice_enabled,resume_tier,resume_capacity,reserve_retry,resume_slot; double slice_end;
+  u32 slice_enabled,resume_tier,resume_capacity,reserve_retry,resume_slot,no_reserve,reserve_waiting; double slice_end;
   Arena reserve_saved; GN_ATOMIC(u64) slice_yields,slice_resumes;
   u64 reductions,pruned,reads,read_bytes,pairs,peak;
   u64 hash_probes,matcher_queries,matcher_characters,redcache_hits,heap_attempts,heap_successes,heap_fallbacks;
@@ -74,7 +75,7 @@ typedef struct {
   GN_ATOMIC(u64) fg_sector_skipped,fg_parked_skipped,fg_commit_skipped;
   double fg_count_ms,fg_sector_ms;
   u64 reserve_base,reserve_bytes;u32 reserve_growth,radix_enabled,radix_cache_enabled;
-  u32 coop_ms,coop_lookahead;GN_ATOMIC(u32) reserve_lock;
+  u32 coop_ms,coop_lookahead;u64 helper_base,helper_bytes;GN_ATOMIC(u32) reserve_lock;
   GN_ATOMIC(u32) batch_next,batch_running;
   u32 auto_memory,lane_slots,batch_first,batch_committed,batch_work_n;u64 memory_retries,memory_replayed_pairs;
   u32 batch_n,batch_enabled,hilbert_degree,hilbert_nodes;
@@ -484,6 +485,7 @@ static void quadratic_precondition(Word*w,u32 degree,i64*c,Lane*l){
  * a busy reserve defers the task to the ordered commit barrier. Successful results
  * are wholly owned by the original output arena before releasing the lease. */
 static int reserve_nf(Lane*l,Poly p,u32 active,u32 snapshot){
+ if(l->no_reserve)return GN_DEFERRED;
  if(!l->reserve_retry){
   if(!S.reserve_base||S.reserve_bytes<=l->a[active^1].end-l->a[active^1].base)return HEAP_MISS;
   if(!GN_TRY_LOCK(&S.reserve_lock)){l->reserve_busy++;return GN_DEFERRED;}
@@ -503,7 +505,7 @@ static int reserve_nf(Lane*l,Poly p,u32 active,u32 snapshot){
  GN_UNLOCK(&S.reserve_lock);return rc;
 }
 typedef struct {Poly p;u32 active,scan,tried;u64 steps;} NResume;
-static NResume nresume[GN_MAX_WORKERS+1];
+static NResume nresume[GN_RESUME_SLOTS];
 static int nf(Lane*l,u32 snapshot){
  u32 active=l->active;Poly p=l->result;u64 steps=0;u32 scan=0,heap_tried=0;
  u64 capacity_mark=l->big_capacity_misses+l->big_pool_misses+l->big_arena_misses;
@@ -609,6 +611,7 @@ API u64 gn_heap_base(void){
 #endif
 }
 static Lane coop_coordinator;
+static Lane coop_helpers[GN_MAX_WORKERS];
 static void layout_one(Lane*l,u64 begin,u64 bytes){
  u64 cache_bytes=MAX(UINT64_C(2048),(bytes*S.cache_percent/100)&~UINT64_C(7));
  u64 work=((bytes-bytes/8-(S.batch_enabled?bytes/8:0)-cache_bytes)/2)&~UINT64_C(7);
@@ -631,7 +634,24 @@ static int layout_workers(u32 workers,int preserve){
   l->resume_tier=0;l->slice_enabled=0;l->reserve_retry=0;l->resume_slot=i;
   layout_one(l,S.scratch_base+bytes*i,bytes);
  }
- if(S.coop_ms){memset(&coop_coordinator,0,sizeof(coop_coordinator));coop_coordinator.resume_slot=GN_MAX_WORKERS;layout_one(&coop_coordinator,S.scratch_base+bytes*workers,bytes);}
+ if(S.coop_ms){
+  memset(&coop_coordinator,0,sizeof(coop_coordinator));coop_coordinator.resume_slot=GN_MAX_WORKERS;layout_one(&coop_coordinator,S.scratch_base+bytes*workers,bytes);
+  /* Optional helper arenas use at most 1/64 of the configured total budget.
+   * Primary scratch and the exceptional reserve keep their original sizes.
+   * Admission is optional: retain room for persistent rules and never fail
+   * the calculation merely because helpers cannot fit. */
+  if(workers>1&&!S.helper_base){
+   u64 wanted=S.budget/64,each=(wanted/workers)&~UINT64_C(65535),total=each*workers;
+   if(each>=1048576&&S.bump<=S.budget&&total<=(S.budget-S.bump)/4&&gn_host_ensure(S.bump+total)){
+    S.helper_base=S.bump;S.helper_bytes=total;S.bump+=total;S.allocated_peak=MAX(S.allocated_peak,S.bump);
+   }
+  }
+  for(u32 i=0;i<GN_MAX_WORKERS;i++)memset(&coop_helpers[i],0,sizeof(Lane));
+  u64 each=(S.helper_bytes/workers)&~UINT64_C(65535);
+  if(S.helper_base&&each>=1048576)for(u32 i=0;i<workers;i++){
+   Lane*h=&coop_helpers[i];h->resume_slot=GN_MAX_WORKERS+1+i;h->no_reserve=1;layout_one(h,S.helper_base+each*i,each);
+  }
+ }
  return 0;
 }
 API int gn_workers(u32 workers){return layout_workers(workers,0);}

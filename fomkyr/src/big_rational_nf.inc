@@ -102,10 +102,11 @@ static void brow_report(BRow*r){
 }
 static int brow_promote(BRow*r){
  Lane*l=r->lane;
+  if(l->no_reserve)return GN_DEFERRED;
   u32 available=brow_budget_capacity(S.reserve_bytes);
   if(!S.reserve_growth||!S.reserve_base||l->reserve_owned||l->reserve_retry||available<r->capacity||S.reserve_bytes<=r->workspace_bytes)return HEAP_MISS;
   if(!GN_TRY_LOCK(&S.reserve_lock)){
-   l->reserve_busy++;l->big_reserve_waits++;
+   l->reserve_busy++;l->big_reserve_waits++;l->reserve_waiting=1;
    /* Retain even a partially emitted rewrite when the reserve is occupied.
     * A later cooperative wave retries this one tail, not the S-polynomial. */
    return l->slice_enabled?GN_YIELD:HEAP_MISS;
@@ -164,7 +165,7 @@ static int brow_add(BRow*r,Word w,BCoef delta){
  r->lane->big_peak_terms=MAX(r->lane->big_peak_terms,(u64)r->heap_n+r->normal_n);return 0;
 }
 typedef struct {BRow row;u64 steps;} BRowResume;
-static BRowResume saved_BRow[GN_MAX_WORKERS+1];
+static BRowResume saved_BRow[GN_RESUME_SLOTS];
 static int big_rational_nf_inner(Lane*l,Poly original,u32 active,u32 snapshot){
  BRow r;u64 steps=0;
  if(l->resume_tier==4){r=saved_BRow[l->resume_slot].row;steps=saved_BRow[l->resume_slot].steps;goto resumed_heap;}

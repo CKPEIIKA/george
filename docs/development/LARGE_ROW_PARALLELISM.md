@@ -1,7 +1,9 @@
 # Large-row parallelism
 
-This is a source review and an implementation plan. The scheduler changes below
-have not been applied to the solver.
+Bounded helper execution is implemented in the shared C kernel. A reserve
+waiter retains its exact continuation while its worker can run other pairs in
+an independently budgeted helper arena. Multiple exceptional-row reserves and
+modular F4 remain future work.
 
 ## Current Fomkyr bottleneck
 
@@ -12,10 +14,10 @@ The owner retains the lock across cooperative yields because its live nodes,
 coefficient pools and pending rewrite occupy that workspace.
 
 [`gn_coop_reduce()`](../../fomkyr/src/cooperative.inc) resumes the task in
-`C.assigned[lane]` before taking another descriptor. A lane waiting for the
-reserve therefore cannot execute a fresh pair, even when ready descriptors
-remain. The elastic window expands when lanes exhaust ready work; assigned
-reserve waiters do not meet that condition.
+`C.assigned[lane]` before taking another descriptor. The original scheduler
+left reserve waiters attached to execution lanes. The helper path now gives
+each waiting worker another arena and a distinct continuation slot. Helpers
+that exhaust ready work can also trigger the elastic window.
 
 Consequently, one large exact reduction can keep the remaining lanes waiting
 for memory. Rewrite counters can continue increasing while committed overlaps
@@ -60,7 +62,19 @@ state that this makes correctness probabilistic. An exact Fomkyr path must
 disable that shortcut or certify every skipped dependency. Proofs of output
 ideal membership alone do not certify that all required ambiguities vanished.
 
-## Changes to implement first
+## Implemented scheduling and remaining work
+
+The first scheduler step is implemented: helper arenas use at most 1/64 of the
+configured total budget, with optional admission when memory is tight. Primary
+scratch and exceptional reserve sizes are preserved. Helpers cannot acquire the
+exceptional reserve; pairs that exceed helper workspace remain pending for the
+full-sized primary lanes. Timed helper continuations and output records survive
+ordinary waves. Both kinds of descriptor are included in portable checkpoints.
+`--no-helper-rows` supplies a native ablation and rollback switch. Progress and
+result metadata report helper starts, completions, deferrals and workspace bytes.
+
+The remaining work includes admitting multiple large workspaces and separating
+arbitrarily many parked continuations from the current two contexts per worker.
 
 1. **Separate parked continuations from execution lanes.** Keep every waiting
    row's nodes, coefficients, cursor, pivot and pending rewrite intact. A lane

@@ -108,3 +108,53 @@ API int test_big_row_growth(u32 large){
  return 0;
 }
 #include "deep_rows.inc"
+/* A real reserve wait with a partially emitted exact rewrite must not occupy
+ * the only execution context of its worker. Exercise helper output commit,
+ * descriptor remapping, budget deferral and cancellation under both queues. */
+API int test_coop_helpers(u32 radix){
+ REQUIRE(gn_init(16,4,2,256u<<20,32u<<20,8,0,0)==0);
+ REQUIRE(gn_tune(2,2,16)==0);REQUIRE(gn_optimize(0,0)==0);
+ REQUIRE(gn_rational_rewrites(0)==0);REQUIRE(gn_radix_queue(radix)==0);
+ REQUIRE(gn_row_reserve(1u<<20)==0);REQUIRE(gn_batch_mode(1)==0);
+ REQUIRE(gn_cooperative(100,16)==0);REQUIRE(S.helper_bytes<=S.budget/64&&coop_helpers[0].io_size);
+ REQUIRE(coop_helpers[0].resume_slot!=S.lanes[0].resume_slot&&coop_helpers[0].resume_slot!=coop_coordinator.resume_slot);
+ S.completed=1;REQUIRE(gn_input_begin(2,2)==0);
+ REQUIRE(gn_input_term(238,0,1)==0);REQUIRE(gn_input_term(221,0,-1)==0);REQUIRE(gn_input_end()==0);
+ S.completed=2;REQUIRE(gn_input_begin(3,301)==0);REQUIRE(gn_input_term(4095,0,1)==0);
+ for(u32 i=1;i<=300;i++)REQUIRE(gn_input_term(i,0,1)==0);
+ REQUIRE(gn_input_end()==0&&S.nrules==2);S.current=3;S.degree_snapshot=2;S.iter_done=1;
+ Lane*l=&S.lanes[0];Arena original_arena=l->a[1];l->a[1].end=l->a[1].base+20480;
+ reset_a(&l->a[0]);Poly p={alloc_a(&l->a[0],2*sizeof(Term)),2,3,0};
+ PTR(Term,p.off)[0]=(Term){{4095,0},2};PTR(Term,p.off)[1]=(Term){{350,0},2};l->result=p;l->active=0;
+ l->slice_enabled=1;l->slice_end=1e30;GN_STORE(&S.reserve_lock,1);
+ REQUIRE(big_rational_nf(l,p,0,2)==GN_YIELD);REQUIRE(l->reserve_waiting&&l->resume_tier==4);
+ u32 tail=saved_BRow[0].row.pending_tail;u64 steps=saved_BRow[0].steps;
+ S.tasks[0]=(BatchTask){2,2,1,2,GN_YIELD,0,0};S.tasks[1]=(BatchTask){1,1,1,2,GN_STATE,0,0};S.batch_n=2;
+ GN_STORE(&C.assigned[0],1);coop_order();REQUIRE(gn_coop_reduce(0)==0);
+ REQUIRE(GN_LOAD(&C.helper_finished)==1&&GN_LOAD(&C.assigned[0])==1);
+ REQUIRE(saved_BRow[0].row.pending_tail==tail&&saved_BRow[0].steps==steps);
+ REQUIRE(PTR(Term,p.off)[0].w.lo==4095&&l->result.off==p.off&&l->resume_tier==4);
+ REQUIRE(S.tasks[1].rc==0&&S.tasks[1].bytes&&S.tasks[1].output>=coop_helpers[0].out_base);
+ REQUIRE(GN_LOAD(&S.reserve_lock)==1&&!coop_helpers[0].reserve_owned);
+ REQUIRE(gn_coop_commit()==0&&S.batch_n==1&&GN_LOAD(&C.assigned[0])==1);
+ REQUIRE(C.nonprefix_commits==1&&S.nrules==3&&coop_helpers[0].out_used==0);
+ /* An unsuitable helper task remains pending for a full-size primary lane.
+  * It is not retried by a helper in every subsequent wave. */
+ S.tasks[1]=(BatchTask){1,1,1,2,GN_STATE,0,0};S.batch_n=2;u64 io=coop_helpers[0].io_size;
+ coop_helpers[0].io_size=32;coop_order();REQUIRE(gn_coop_reduce(0)==0);
+ REQUIRE(S.tasks[1].rc==COOP_HELPER_DEFERRED&&GN_LOAD(&C.helper_deferred)==1);
+ coop_order();REQUIRE(gn_coop_reduce(0)==0&&GN_LOAD(&C.helper_deferred)==1);
+ REQUIRE(saved_BRow[0].row.pending_tail==tail&&saved_BRow[0].steps==steps);
+ coop_helpers[0].io_size=io;
+ GN_STORE(&S.reserve_lock,0);coop_order();REQUIRE(gn_coop_reduce(0)==0);
+ REQUIRE(!GN_LOAD(&C.assigned[0])&&!l->resume_tier&&S.tasks[0].bytes);
+ REQUIRE(PTR(Record,S.tasks[0].output)->n==rule(2)->n);
+ Term*first=PTR(Term,S.tasks[0].output+sizeof(Record));REQUIRE(first->w.lo==350&&first->c==2);
+ REQUIRE(!GN_LOAD(&S.reserve_lock)&&S.tasks[0].rc==0&&S.tasks[1].rc==0);
+ /* Discard drops only this process's live state; durable descriptors survive. */
+ gn_cancel(1);gn_coop_discard();REQUIRE(!C.assigned[0]&&!C.helper_assigned[0]);
+ REQUIRE(S.tasks[0].rc==GN_STATE&&S.tasks[1].rc==GN_STATE);gn_cancel(0);l->a[1]=original_arena;
+ REQUIRE(gn_init(2,4,2,16u<<20,4u<<20,8,0,0)==0);
+ REQUIRE(gn_cooperative(1,16)==0&&S.helper_bytes==0); /* optional admission */
+ return 0;
+}

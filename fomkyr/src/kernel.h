@@ -93,6 +93,10 @@ API int gn_cooperative(u32 quantum_ms,u32 lookahead);
 /* flags: 1=elastic bounded window, 2=FK component-aware ready-work ordering.
  * max_window is a descriptor ceiling (<=512); no row workspace is added. */
 API int gn_coop_policy(u32 flags,u32 max_window);
+/* Optional bounded helper rows while a primary continuation waits for reserve.
+ * Default on; helpers cannot lease the exceptional-row workspace. Configure
+ * before input. Workspace admission is automatic within the total budget. */
+API int gn_coop_helper_mode(u32 enabled);
 API int gn_coop_fill(u32 limit);
 API int gn_coop_reduce(u32 lane);
 /* After lane zero's worker call returns, prepare its parked commit NF while

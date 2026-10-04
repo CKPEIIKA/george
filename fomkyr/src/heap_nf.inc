@@ -56,7 +56,7 @@ static int row_add(HRow*r,Word w,i64 delta){
  r->heap[r->heap_n++]=id;heap_up(r,r->heap_n-1);return 0;
 }
 typedef struct {HRow row;u64 steps;} HRowResume;
-static HRowResume saved_HRow[GN_MAX_WORKERS+1];
+static HRowResume saved_HRow[GN_RESUME_SLOTS];
 static int heap_nf_try(Lane*l,Poly original,u32 active,u32 snapshot,u32 capacity){
  HRow row;u64 steps=0;
  if(l->resume_tier==1){row=saved_HRow[l->resume_slot].row;steps=saved_HRow[l->resume_slot].steps;goto resumed_heap;}

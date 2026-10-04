@@ -58,6 +58,7 @@ static void rrow_remove(RRow*r,u32 id){
 static int rrow_grow(RRow*r){
  if(r->capacity>=r->reserved){
   Lane*l=r->lane;u64 item=sizeof(RNode)+16+(r->radix_enabled?4:0);
+  if(l->no_reserve)return GN_DEFERRED;
   if(!S.reserve_growth||!S.reserve_base||l->reserve_owned||S.reserve_bytes<=(u64)r->reserved*item)return HEAP_FULL;
   u32 available=128;while(available<(1u<<26)&&(u64)available*2*item<=S.reserve_bytes)available*=2;
   if(available<=r->reserved)return HEAP_FULL;
@@ -97,7 +98,7 @@ static int rrow_add(RRow*r,Word w,RCoef delta){
  r->heap[r->heap_n++]=id;rheap_up(r,r->heap_n-1);return 0;
 }
 typedef struct {RRow row;u64 steps;} RRowResume;
-static RRowResume saved_RRow[GN_MAX_WORKERS+1];
+static RRowResume saved_RRow[GN_RESUME_SLOTS];
 static int rational_nf_try(Lane*l,Poly original,u32 active,u32 snapshot,u32 capacity){
  RRow row;u64 steps=0;
  if(l->resume_tier==2){row=saved_RRow[l->resume_slot].row;steps=saved_RRow[l->resume_slot].steps;goto resumed_heap;}
