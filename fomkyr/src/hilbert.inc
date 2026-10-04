@@ -15,7 +15,7 @@ API u64 gn_hilbert_coefficient(u32 degree,u32 high){
  u32 i=high?2:0;return (u64)gn_hilbert_limb(degree,i)|((u64)gn_hilbert_limb(degree,i+1)<<32);
 }
 static int hilbert_impl(u32 degree,u64 extra_budget,u32 upper){
- if(S.input_expected||GN_LOAD(&S.batch_running)||GN_LOAD(&S.reserve_lock))return GN_STATE;
+ if(S.input_expected||GN_LOAD(&S.batch_running)||reserve_pool_busy())return GN_STATE;
  if(!upper && (S.current||(degree>S.completed && (u64)S.completed<gn_completion_bound())))return GN_STATE;
  if(degree>GN_INDEX_MAX)return GN_LIMIT;
  if(S.hilbert_end && S.bump==S.hilbert_end)S.bump=S.hilbert_base;

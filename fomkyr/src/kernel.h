@@ -42,6 +42,8 @@ API u64 gn_local_rule(u32 key); /* idle-boundary serialized identity for audit *
 API int gn_pin_cache(u64 bytes);
 API int gn_radix_queue(u32 enabled);
 API int gn_row_reserve(u64 bytes);
+API int gn_reserve_pool(u32 count); /* 0: automatic, 1: original single reserve */
+API u64 gn_reserve_pool_stat(u32 key);
 API int gn_reserve_growth(u32 enabled);
 API int gn_memory_policy(u32 enabled);
 API int gn_batch_retry(u32 workers,u32 first);

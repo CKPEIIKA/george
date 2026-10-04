@@ -59,11 +59,11 @@ static int rrow_grow(RRow*r){
  if(r->capacity>=r->reserved){
   Lane*l=r->lane;u64 item=sizeof(RNode)+16+(r->radix_enabled?4:0);
   if(l->no_reserve)return GN_DEFERRED;
-  if(!S.reserve_growth||!S.reserve_base||l->reserve_owned||S.reserve_bytes<=(u64)r->reserved*item)return HEAP_FULL;
+  if(!S.reserve_growth||!S.reserve_base||l->reserve_owned||l->reserve_retry||S.reserve_bytes<=(u64)r->reserved*item)return HEAP_FULL;
   u32 available=128;while(available<(1u<<26)&&(u64)available*2*item<=S.reserve_bytes)available*=2;
   if(available<=r->reserved)return HEAP_FULL;
-  if(!GN_TRY_LOCK(&S.reserve_lock)){l->reserve_busy++;return GN_DEFERRED;}
-  u64 p=S.reserve_base;
+  if(!reserve_acquire(l)){l->reserve_busy++;l->reserve_waiting=1;return GN_DEFERRED;}
+  u64 base=reserve_lease_base(l),p=base;
   RNode*nodes=PTR(RNode,p);p+=(u64)available*sizeof(RNode);
   u32*heads=PTR(u32,p);p+=(u64)available*8;
   u32*heap=PTR(u32,p);p+=(u64)available*4;
@@ -72,7 +72,7 @@ static int rrow_grow(RRow*r){
   memcpy(heap,r->heap,(size_t)(r->radix_enabled?r->used:r->heap_n)*4);memcpy(normal,r->normal,(size_t)r->normal_n*4);
   if(r->radix_enabled){u32*previous=PTR(u32,p);p+=(u64)available*4;memcpy(previous,r->radix.previous,(size_t)r->used*4);r->radix.previous=previous;r->radix.next=heap;}
   r->nodes=nodes;r->heads=heads;r->heap=heap;r->normal=normal;r->reserved=available;
-  l->reserve_owned=1;l->reserve_attempts++;l->reserve_promotions++;l->reserve_peak=MAX(l->reserve_peak,p-S.reserve_base);l->reduction_tier=5;
+  l->reserve_owned=1;l->reserve_attempts++;l->reserve_promotions++;l->reserve_peak=MAX(l->reserve_peak,p-base);l->reduction_tier=5;
  }
  u32 cap=MIN(r->capacity*2,r->reserved);r->capacity=cap;r->mask=2*cap-1;
  memset(r->heads,0,(size_t)cap*2*sizeof(u32));
@@ -169,7 +169,7 @@ static int rational_nf(Lane*l,Poly p,u32 active,u32 snapshot){
  if(rc==GN_YIELD)return rc;
  if(l->reserve_owned){
   if(!rc)l->reserve_successes++;else if(rc<0)l->reserve_misses++;
-  l->reserve_owned=0;GN_UNLOCK(&S.reserve_lock);
+  l->reserve_owned=0;reserve_release(l);
  }
  return rc;
 }

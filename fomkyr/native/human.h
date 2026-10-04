@@ -57,6 +57,8 @@ static void emit_json(FILE *out, const char *payload) {
    if(parked||waits)fprintf(out,"  Parked reductions: %" PRIu64 "; reserve wait attempts: %" PRIu64 ".\n",parked,waits);
    u64 helpers=0,deferred=0;human_number(&j,0,"helperFinished",&helpers);human_number(&j,0,"helperDeferred",&deferred);
    if(helpers||deferred)fprintf(out,"  Helper pairs completed: %" PRIu64 "; deferred to full workspaces: %" PRIu64 ".\n",helpers,deferred);
+   u64 arenas=0,leased=0,poolbytes=0;
+   if(human_number(&j,0,"largeRowWorkspaces",&arenas)){human_number(&j,0,"activeLargeRowWorkspaces",&leased);human_number(&j,0,"largeRowWorkspaceBytes",&poolbytes);fprintf(out,"  Large-row workspaces: %" PRIu64 " active / %" PRIu64 "; total allowance %.2f GiB.\n",leased,arenas,(double)poolbytes/1073741824.0);}
    int array=json_key(&j,0,"lanes");
    if(array>=0)for(int i=array+1;i<j.n&&j.t[i].start<j.t[array].end;){
     int entry=i;u64 lane=0,left=0,right=0,overlap=0,task=0;

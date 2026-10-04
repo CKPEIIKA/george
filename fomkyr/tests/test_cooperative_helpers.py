@@ -16,12 +16,14 @@ fixture = json.loads((ROOT / 'fixtures/published/affine-q-serre-q3.json').read_t
 degree = 16
 
 
-def engine(helpers=True):
+def engine(helpers=True, pool=1):
     e = CooperativeEngine(fixture, degree, workers=4, budget=256 << 20,
                           scratch=6 << 20, row_reserve=64 << 20,
                           quantum=1, lookahead=64)
     for name, args, result in [
         ('gn_coop_helper_mode', [C.c_uint32], C.c_int),
+        ('gn_reserve_pool', [C.c_uint32], C.c_int),
+        ('gn_reserve_pool_stat', [C.c_uint32], C.c_uint64),
         ('gn_frontier_export', [], C.c_uint64),
         ('gn_frontier_size', [], C.c_uint32),
         ('gn_frontier_restore', [C.c_uint32], C.c_int),
@@ -29,6 +31,7 @@ def engine(helpers=True):
         fn = getattr(e.lib, name)
         fn.argtypes, fn.restype = args, result
     check(e.lib.gn_coop_helper_mode(int(helpers)))
+    check(e.lib.gn_reserve_pool(pool))
     return e
 
 
@@ -68,7 +71,7 @@ def run(e, pause=False):
                     check(reader.result())
                 # Capture before commit, so completed helper outputs and all
                 # unfinished rows still belong to the portable pending frontier.
-                if pause and int(e.lib.gn_coop_stat(23)):
+                if (pause(e) if callable(pause) else pause and int(e.lib.gn_coop_stat(23))):
                     saved = capture(e)
                     e.lib.gn_cancel(1)
                     e.lib.gn_coop_discard()
@@ -78,31 +81,32 @@ def run(e, pause=False):
             check(e.lib.gn_finish_degree())
 
 
-started = time.monotonic()
-e = engine(False)
-run(e)
-reference = e.basis()
-e = engine()
-records, cursor, parked_helpers = run(e, pause=True)
-assert records and cursor
-e = engine()
-for record in records:
-    C.memmove(e.lib.host_pointer(e.lib.gn_import_buffer()), record, len(record))
-    check(e.lib.gn_restore_rule(len(record), 0))
-C.memmove(e.lib.host_pointer(e.lib.gn_import_buffer()), cursor, len(cursor))
-check(e.lib.gn_frontier_restore(len(cursor)))
-assert e.lib.gn_stat(3)
-run(e)
-basis = e.basis()
-assert all(not normal(p, reference) for p in basis)
-assert all(not normal(p, basis) for p in reference)
-compositions = certify(basis, fixture['relations'], degree)
-report = dict(passed=True, degree=degree, basisSize=len(basis),
-              checkpointRecords=len(records), parkedHelpers=parked_helpers,
-              independentCompositions=compositions,
-              helperFinished=int(e.lib.gn_coop_stat(23)),
-              seconds=time.monotonic() - started)
-destination = ROOT / 'results/0.7.0/cooperative-helpers.json'
-destination.parent.mkdir(parents=True, exist_ok=True)
-destination.write_text(json.dumps(report, indent=2) + '\n')
-print('HELPER_FRONTIER_EXACT_PARITY_PASSED', json.dumps(report), flush=True)
+if __name__ == '__main__':
+    started = time.monotonic()
+    e = engine(False)
+    run(e)
+    reference = e.basis()
+    e = engine()
+    records, cursor, parked_helpers = run(e, pause=True)
+    assert records and cursor
+    e = engine()
+    for record in records:
+        C.memmove(e.lib.host_pointer(e.lib.gn_import_buffer()), record, len(record))
+        check(e.lib.gn_restore_rule(len(record), 0))
+    C.memmove(e.lib.host_pointer(e.lib.gn_import_buffer()), cursor, len(cursor))
+    check(e.lib.gn_frontier_restore(len(cursor)))
+    assert e.lib.gn_stat(3)
+    run(e)
+    basis = e.basis()
+    assert all(not normal(p, reference) for p in basis)
+    assert all(not normal(p, basis) for p in reference)
+    compositions = certify(basis, fixture['relations'], degree)
+    report = dict(passed=True, degree=degree, basisSize=len(basis),
+                  checkpointRecords=len(records), parkedHelpers=parked_helpers,
+                  independentCompositions=compositions,
+                  helperFinished=int(e.lib.gn_coop_stat(23)),
+                  seconds=time.monotonic() - started)
+    destination = ROOT / 'results/0.7.0/cooperative-helpers.json'
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_text(json.dumps(report, indent=2) + '\n')
+    print('HELPER_FRONTIER_EXACT_PARITY_PASSED', json.dumps(report), flush=True)

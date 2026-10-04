@@ -6,7 +6,7 @@ export function humanReport(report) {
   const memory = () => {
     const values = {...report.memoryPlan, ...report};
     for (const [key, label] of [['budgetBytes', 'Memory allowance'], ['ordinaryScratchBytes', 'Reduction workspace'],
-      ['rowReserveBytes', 'Shared row reserve'], ['allocatedBytes', 'Allocated capacity'],
+      ['rowReserveBytes', 'Large-row workspace size'], ['allocatedBytes', 'Allocated capacity'],
       ['linearMemoryBytes', 'Wasm linear memory'], ['peakRSSBytes', 'Peak physical RAM']]) {
       const bytes = Number(values[key]);
       if (Number.isFinite(bytes)) {
@@ -19,6 +19,8 @@ export function humanReport(report) {
     const counts = report.overlaps ?? {};
     lines.push(`Degree ${report.currentDegree}: ${counts.resolved ?? '?'} / ${counts.total ?? '?'} overlaps; completed through degree ${report.completedThroughDegree}.`);
     if (time) lines.push(time);
+    const pool=report.cooperative?.largeRowPool;
+    if(pool)lines.push(`Large-row workspaces: ${pool.active} active / ${pool.workspaces}; total allowance ${(pool.workspaceBytes/1073741824).toFixed(2)} GiB.`);
   } else if (type === 'degree') {
     lines.push(`Completed degree ${report.completedThroughDegree}: ${report.basisSize} polynomials.`);
     if (time) lines.push(time);

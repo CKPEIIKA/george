@@ -23,7 +23,7 @@ typedef struct {u32 word,pad;i64 c;} LBTerm;
 static struct {u64 base,end,vec,piv,rel,term;u32 degree,dim,cols,nr,nt,ri,ti,want,pivot_n,vi,active,vector_open;u64 powers[33];} LB;
 API void gn_lb_release(void){if(LB.end&&S.bump==LB.end)S.bump=LB.base;memset(&LB,0,sizeof(LB));}
 API int gn_lb_begin(u32 degree,u32 dimension,u32 relations,u32 terms,u64 budget){
- if(S.input_expected||GN_LOAD(&S.batch_running)||GN_LOAD(&S.reserve_lock)||LB.active||degree>32)return GN_STATE;
+ if(S.input_expected||GN_LOAD(&S.batch_running)||reserve_pool_busy()||LB.active||degree>32)return GN_STATE;
  u64 powers[33];powers[0]=1;for(u32 i=1;i<=degree;i++){if(powers[i-1]>UINT32_MAX/S.generators)return GN_LIMIT;powers[i]=powers[i-1]*S.generators;}
  if(dimension>powers[degree]||!relations||!terms)return GN_INPUT;
  u64 need=A8(powers[degree]*8)+A8((u64)dimension*4)+(u64)relations*sizeof(LBRel)+(u64)terms*sizeof(LBTerm);

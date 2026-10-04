@@ -31,6 +31,9 @@ rows.append(dict(property='output-backpressure',code=code))
 for n in [0,1]:
  code=x.test_coop_helpers(n);assert not code,code
  rows.append(dict(property='reserve-wait-helpers',queue='radix' if n else 'binary',code=code))
+for n in [0,1]:
+ code=x.test_multi_reserves(n);assert not code,code
+ rows.append(dict(property='multiple-large-row-reserves',queue='radix' if n else 'binary',code=code))
 print(json.dumps(rows))`;
 rows.push({runtime:'native-ubsan',tests:JSON.parse(run('python3',['-c',python,native]))});
 for(const bits of [32,64])for(const shared of [false,true]){
@@ -45,7 +48,8 @@ async function properties(url,bits,shared){
  for(const mode of [0,1]){const code=e.test_deep_rows(mode);if(code)throw Error(`Deep-row property failure at C line ${code}, mode ${mode}`);tests.push({property:'deep-rows',queue:mode?'radix':'binary',code});}
  let code=e.test_commit_slices();if(code)throw Error(`Commit-slice property failure at C line ${code}`);tests.push({property:'commit-slices',code});
  code=e.test_output_wait();if(code)throw Error(`Output-backpressure property failure at C line ${code}`);tests.push({property:'output-backpressure',code});
- for(const mode of [0,1]){code=e.test_coop_helpers(mode);if(code)throw Error(`Helper property failure at C line ${code}`);tests.push({property:'reserve-wait-helpers',queue:mode?'radix':'binary',code});}return tests;
+ for(const mode of [0,1]){code=e.test_coop_helpers(mode);if(code)throw Error(`Helper property failure at C line ${code}`);tests.push({property:'reserve-wait-helpers',queue:mode?'radix':'binary',code});}
+ for(const mode of [0,1]){code=e.test_multi_reserves(mode);if(code)throw Error(`Multiple-reserve property failure at C line ${code}`);tests.push({property:'multiple-large-row-reserves',queue:mode?'radix':'binary',code});}return tests;
 }
 const server=staticServer('.', '/', {isolate:true}),serve=server.listeners('request')[0];server.removeAllListeners('request');
 let reportBrowser;

@@ -2,14 +2,15 @@
 
 Bounded helper execution is implemented in the shared C kernel. A reserve
 waiter retains its exact continuation while its worker can run other pairs in
-an independently budgeted helper arena. Multiple exceptional-row reserves and
-modular F4 remain future work.
+an independently budgeted helper arena. A budgeted pool also admits additional
+full-sized exceptional-row reserves at quiescent wave boundaries. Modular F4
+and more than two continuation contexts per worker remain future work.
 
 ## Current Fomkyr bottleneck
 
-The shared exceptional-row workspace has one owner. In
+Each exceptional-row workspace has one owner. In
 [`brow_promote()`](../../fomkyr/src/big_rational_nf.inc), a reduction that cannot
-acquire `S.reserve_lock` keeps its exact continuation and returns `GN_YIELD`.
+acquire a reserve lease keeps its exact continuation and returns `GN_YIELD`.
 The owner retains the lock across cooperative yields because its live nodes,
 coefficient pools and pending rewrite occupy that workspace.
 
@@ -19,8 +20,9 @@ left reserve waiters attached to execution lanes. The helper path now gives
 each waiting worker another arena and a distinct continuation slot. Helpers
 that exhaust ready work can also trigger the elastic window.
 
-Consequently, one large exact reduction can keep the remaining lanes waiting
-for memory. Rewrite counters can continue increasing while committed overlaps
+When the budget cannot admit another reserve, one large exact reduction can
+keep the remaining lanes waiting for memory. Rewrite counters can continue
+increasing while committed overlaps
 and component counts stay unchanged. The degree display alone cannot
 distinguish this state from an inactive calculation.
 
@@ -73,8 +75,16 @@ ordinary waves. Both kinds of descriptor are included in portable checkpoints.
 `--no-helper-rows` supplies a native ablation and rollback switch. Progress and
 result metadata report helper starts, completions, deferrals and workspace bytes.
 
-The remaining work includes admitting multiple large workspaces and separating
-arbitrarily many parked continuations from the current two contexts per worker.
+The reserve pool responds to pressure between worker waves. It admits one
+additional arena per requested wave when a full-sized arena fits while leaving
+1/32 of the total budget for persistent metadata. Existing reserves retain
+their capacity. Worker threads acquire distinct leases without modifying the
+bump allocator. Reserve-aware Hilbert, FK gate and checkpoint guards inspect
+every lease. `--large-row-workspaces 1` supplies the original single-reserve
+comparison; automatic admission is enabled by default in native and Wasm.
+
+The remaining work includes separating arbitrarily many parked continuations
+from the current two contexts per worker and investigating modular F4.
 
 1. **Separate parked continuations from execution lanes.** Keep every waiting
    row's nodes, coefficients, cursor, pivot and pending rewrite intact. A lane

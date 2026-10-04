@@ -32,6 +32,30 @@ test('explicit shared cache exceeds old budget/16 ceiling and adapts after Wasm3
 const form = {backend:'fomkyr',field:'0',nativeWorkers:4,monomialPruning:true};
 const available = change => fomkyrControlAvailability({...form,...change});
 
+test('large-row admission and helper execution default to automatic and remain shareable', async () => {
+  assert.equal(FOMKYR_DEFAULTS.largeRowWorkspaces,0);
+  assert.equal(FOMKYR_DEFAULTS.helperRows,true);
+  assert.equal(available({}).largeRowWorkspaces,true);
+  assert.equal(available({}).helperRows,true);
+  for(const largeRowWorkspaces of [0,1,2,33]) {
+    const value={...form,fomkyrOptions:{largeRowWorkspaces,helperRows:false}};
+    const options=fomkyrEngineOptions(value);
+    assert.equal(options.largeRowWorkspaces,largeRowWorkspaces);
+    assert.equal(options.helperRows,false);
+    const decoded=await readShareLink(new URL(await createShareLink(value,'https://example.org/')).hash);
+    assert.equal(decoded.fomkyrOptions.largeRowWorkspaces,largeRowWorkspaces);
+    assert.equal(decoded.fomkyrOptions.helperRows,false);
+  }
+  for(const largeRowWorkspaces of [-1,1.5,34,'auto'])
+    assert.throws(()=>validateFomkyrOptions({largeRowWorkspaces}));
+  for(const change of [{field:'101'},{fomkyrOptions:{heapReduction:false}},
+    {fomkyrOptions:{memoryPolicy:'manual',rowReserveMiB:0}}])
+    assert.equal(available(change).largeRowWorkspaces,false);
+  for(const change of [{nativeWorkers:1},{fomkyrOptions:{execution:'single'}},
+    {fomkyrOptions:{scheduler:'barrier'}},{fomkyrOptions:{batchPairs:0}}])
+    assert.equal(available(change).helperRows,false);
+});
+
 test('cooperative window and FK dispatch choices are wired and shareable', async () => {
   assert.equal(FOMKYR_DEFAULTS.elasticWindow,true);
   assert.equal(FOMKYR_DEFAULTS.sectorPriority,true);

@@ -5,7 +5,7 @@ import {planMemory} from '../engine/fomkyr/memory-policy.js';
 import {formatMemorySize} from './memory-monitor.js';
 export const FOMKYR_DEFAULTS = Object.freeze({
   hilbertGate: false, hilbertSectors: true, gateMiB: 128,
-  scheduler: 'cooperative', quantumMs: 250, lookahead: 128, maxLookahead: 512, elasticWindow: true, sectorPriority: true, radixMaxCache: true,
+  scheduler: 'cooperative', quantumMs: 250, lookahead: 128, maxLookahead: 512, elasticWindow: true, sectorPriority: true, radixMaxCache: true, helperRows: true, largeRowWorkspaces: 0,
   execution: 'auto', bits: 'auto', memoryPolicy: 'auto', autoWorkerMiB: 0, spill: true, resume: 'auto', hilbert: false,
   heapReduction: true, cachePercent: 12, heapThreshold: 16, batchPairs: 128,
   hashBits: 18, scratchMiB: null, hilbertMiB: 256, ioMode: 'auto',
@@ -21,6 +21,7 @@ export const FOMKYR_FIELDS = Object.freeze([
   ['hilbertGate', 'checkbox'], ['hilbertSectors', 'checkbox'], ['gateMiB', 'number', 0, 14304],
   ['scheduler', 'select', ['cooperative', 'barrier']],
   ['quantumMs', 'number', 1, 10000], ['lookahead', 'number', 1, 512], ['radixMaxCache', 'checkbox'],
+  ['helperRows', 'checkbox'], ['largeRowWorkspaces', 'number', 0, 33],
   ['maxLookahead', 'number', 1, 512], ['elasticWindow', 'checkbox'], ['sectorPriority', 'checkbox'],
   ['execution', 'select', ['auto', 'single', 'multicore']],
   ['bits', 'select', ['auto', '32', '64']],
@@ -43,8 +44,8 @@ export const FOMKYR_FIELDS = Object.freeze([
 ]);
 export const FOMKYR_GROUPS=Object.freeze({
   execution:['execution','bits','memoryPolicy'],
-  scheduling:['scheduler','quantumMs','lookahead','maxLookahead','elasticWindow','sectorPriority','batchPairs','costScheduling','autoWorkerMiB'],
-  memory:['scratchMiB','rowReserveMiB','reserveInPlace','bigRowMaxTerms','cachePercent','sharedCacheMiB','hashBits'],
+  scheduling:['scheduler','quantumMs','lookahead','maxLookahead','elasticWindow','sectorPriority','helperRows','batchPairs','costScheduling','autoWorkerMiB'],
+  memory:['largeRowWorkspaces','scratchMiB','rowReserveMiB','reserveInPlace','bigRowMaxTerms','cachePercent','sharedCacheMiB','hashBits'],
   reduction:['heapReduction','heapThreshold','rationalHeap','bigRationalHeap','growingRationalHeap','fastBigDivision','radixHeap','radixMaxCache','eagerPruning','quadraticRewrite'],
   caches:['wordMatcher','chainCriterion','wordCacheEntries','matcherMiB','compiledRewrites','rationalRewrites','rewriteDegree','rewriteSupport','rewriteMiB'],
   storage:['spill','resume','ioMode','progress','progressIntervalSeconds'],
@@ -83,6 +84,8 @@ export function fomkyrControlAvailability(form) {
     elasticWindow: o.scheduler === 'cooperative' && o.batchPairs !== 0,
     maxLookahead: o.scheduler === 'cooperative' && o.batchPairs !== 0 && o.elasticWindow,
     sectorPriority: o.scheduler === 'cooperative' && o.batchPairs !== 0 && o.costScheduling && o.execution !== 'single' && Number(form.nativeWorkers) !== 1 && rational && o.hilbertGate && o.hilbertSectors,
+    helperRows: o.scheduler === 'cooperative' && o.batchPairs !== 0 && o.execution !== 'single' && Number(form.nativeWorkers) !== 1,
+    largeRowWorkspaces: reserve && (o.memoryPolicy === 'auto' || o.rowReserveMiB !== 0),
     radixMaxCache: heap && o.radixHeap,
     resume: o.spill, ioMode: o.spill && o.execution !== 'single' && Number(form.nativeWorkers) !== 1,
     sharedCacheMiB: o.spill, progressIntervalSeconds: o.progress,

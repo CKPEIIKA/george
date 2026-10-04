@@ -27,6 +27,7 @@ static int try_lock(_Atomic(u32)*p){u32 expected=0;return atomic_compare_exchang
 #define BATCH_MAX 512u
 #define RED_CACHE_N 256u
 #define GN_RESUME_SLOTS (2u*GN_MAX_WORKERS+1u)
+#define GN_RESERVE_SLOTS (GN_MAX_WORKERS+1u)
 #define SMALL_MAX INT64_C(4611686018427387903)
 #define MAGIC UINT32_C(0x31424e47)
 #define STACK_BYTES (128u*1024u)
@@ -54,7 +55,7 @@ typedef struct {
   u64 reductions,pruned,reads,read_bytes,pairs,peak;
   u64 hash_probes,matcher_queries,matcher_characters,redcache_hits,heap_attempts,heap_successes,heap_fallbacks;
   u64 insertion_prunes,commuting_prunes,quadratic_swaps;
-  u64 reserve_attempts,reserve_successes,reserve_busy,reserve_misses,reserve_peak,reserve_promotions;u32 reserve_owned;
+  u64 reserve_attempts,reserve_successes,reserve_busy,reserve_misses,reserve_peak,reserve_promotions;u32 reserve_owned,reserve_slot;
   u32 allow_repack;u32 rational_maxed,rational_full_capacity;u64 rational_table_growths;u64 big_attempts,big_successes,big_fallbacks,big_steps,big_compactions,big_pool_misses,big_capacity_misses,big_arena_misses;
   u64 big_growths,big_peak_terms,big_capacity,big_reserved,big_coefficient_live,big_coefficient_bytes,big_reserve_waits,general_fallbacks;
   u64 rational_attempts,rational_successes,rational_fallbacks,integer_steps,rational_steps,local_hits,pinned_hits;u64 rational_local_hits,rational_space_misses,rational_coefficient_misses,rational_arithmetic_misses,rational_table_retries;u32 publications,busy,skip_rule,reduction_tier;
@@ -76,6 +77,9 @@ typedef struct {
   double fg_count_ms,fg_sector_ms;
   u64 reserve_base,reserve_bytes;u32 reserve_growth,radix_enabled,radix_cache_enabled;
   u32 coop_ms,coop_lookahead;u64 helper_base,helper_bytes;GN_ATOMIC(u32) reserve_lock;
+  u64 reserve_extra_base[GN_RESERVE_SLOTS-1];GN_ATOMIC(u32) reserve_extra_lock[GN_RESERVE_SLOTS-1];
+  u32 reserve_extra_count,reserve_pool_limit,reserve_pool_denied;GN_ATOMIC(u32) reserve_pool_requested;
+  u64 reserve_pool_admissions,reserve_pool_declines;
   GN_ATOMIC(u32) batch_next,batch_running;
   u32 auto_memory,lane_slots,batch_first,batch_committed,batch_work_n;u64 memory_retries,memory_replayed_pairs;
   u32 batch_n,batch_enabled,hilbert_degree,hilbert_nodes;
@@ -107,6 +111,39 @@ typedef struct {
   Lane lanes[GN_MAX_WORKERS];
 } State;
 static State S;
+/* Extra arenas are admitted only between worker waves. Every arena has the
+ * original reserve's size; its live row keeps an exclusive lease across yields.
+ * Worker threads only acquire/release leases and request later admission. */
+static u32 reserve_pool_limit(void){return S.reserve_pool_limit?S.reserve_pool_limit:MIN(GN_RESERVE_SLOTS,S.workers+(S.coop_ms?1u:0u));}
+static u32 reserve_pool_busy(void){
+ u32 n=!!GN_LOAD(&S.reserve_lock);for(u32 i=0;i<S.reserve_extra_count;i++)n+=!!GN_LOAD(&S.reserve_extra_lock[i]);return n;
+}
+static u64 reserve_lease_base(Lane*l){return l->reserve_slot==1?S.reserve_base:S.reserve_extra_base[l->reserve_slot-2];}
+static int reserve_acquire(Lane*l){
+ if(l->no_reserve||l->reserve_slot)return 0;
+ u32 count=MIN(1+S.reserve_extra_count,reserve_pool_limit());
+ for(u32 i=0;i<count;i++){
+  GN_ATOMIC(u32)*lock=i?&S.reserve_extra_lock[i-1]:&S.reserve_lock;
+  if(GN_TRY_LOCK(lock)){l->reserve_slot=i+1;return 1;}
+ }
+ if(!S.reserve_pool_denied&&count<reserve_pool_limit())GN_STORE(&S.reserve_pool_requested,1);
+ return 0;
+}
+static void reserve_release(Lane*l){
+ u32 slot=l->reserve_slot;if(!slot)return;
+ if(slot==1)GN_UNLOCK(&S.reserve_lock);else GN_UNLOCK(&S.reserve_extra_lock[slot-2]);l->reserve_slot=0;
+}
+static void reserve_pool_admit(void){
+ if(!GN_LOAD(&S.reserve_pool_requested)||GN_LOAD(&S.batch_running))return;
+ GN_STORE(&S.reserve_pool_requested,0);
+ if(!S.reserve_base||S.reserve_pool_denied||1+S.reserve_extra_count>=reserve_pool_limit())return;
+ u64 headroom=MAX(UINT64_C(1048576),S.budget/32);
+ if(S.bump>S.budget||headroom>S.budget-S.bump||S.reserve_bytes>S.budget-S.bump-headroom||!gn_host_ensure(S.bump+S.reserve_bytes)){
+  S.reserve_pool_denied=1;S.reserve_pool_declines++;return;
+ }
+ u32 i=S.reserve_extra_count;S.reserve_extra_base[i]=S.bump;GN_STORE(&S.reserve_extra_lock[i],0);
+ S.bump+=S.reserve_bytes;S.allocated_peak=MAX(S.allocated_peak,S.bump);S.reserve_extra_count++;S.reserve_pool_admissions++;
+}
 #ifndef __wasm__
 static u8 *native_base;
 void gn_bind(void *base){native_base=(u8*)base;}
@@ -481,16 +518,16 @@ static void quadratic_precondition(Word*w,u32 degree,i64*c,Lane*l){
 #include "heap_nf.inc"
 #include "rational_heap_nf.inc"
 #include "big_rational_nf.inc"
-/* One bounded overflow workspace, shared by exceptional rows. No spinning:
+/* Budgeted overflow workspaces leased by exceptional rows. No spinning:
  * a busy reserve defers the task to the ordered commit barrier. Successful results
  * are wholly owned by the original output arena before releasing the lease. */
 static int reserve_nf(Lane*l,Poly p,u32 active,u32 snapshot){
  if(l->no_reserve)return GN_DEFERRED;
  if(!l->reserve_retry){
   if(!S.reserve_base||S.reserve_bytes<=l->a[active^1].end-l->a[active^1].base)return HEAP_MISS;
-  if(!GN_TRY_LOCK(&S.reserve_lock)){l->reserve_busy++;return GN_DEFERRED;}
+  if(!reserve_acquire(l)){l->reserve_busy++;l->reserve_waiting=1;return GN_DEFERRED;}
   l->reserve_attempts++;l->reserve_saved=l->a[active^1];l->reserve_retry=1;
-  l->a[active^1]=(Arena){S.reserve_base,S.reserve_base,S.reserve_base+S.reserve_bytes,0,0};
+  u64 base=reserve_lease_base(l);l->a[active^1]=(Arena){base,base,base+S.reserve_bytes,0,0};
   l->rational_maxed=0;
  }
  int rc=HEAP_MISS;
@@ -502,7 +539,7 @@ static int reserve_nf(Lane*l,Poly p,u32 active,u32 snapshot){
  l->resume_tier=0;l->reserve_peak=MAX(l->reserve_peak,l->a[active^1].peak);
  l->a[active^1]=l->reserve_saved;l->reserve_retry=0;
  if(!rc)l->reserve_successes++;else if(rc<0)l->reserve_misses++;
- GN_UNLOCK(&S.reserve_lock);return rc;
+ reserve_release(l);return rc;
 }
 typedef struct {Poly p;u32 active,scan,tried;u64 steps;} NResume;
 static NResume nresume[GN_RESUME_SLOTS];
@@ -817,6 +854,7 @@ static void order_batch(void){
 }
 API int gn_batch_fill(u32 limit){
  if(!S.batch_enabled||!S.current||!limit||limit>BATCH_MAX)return -GN_STATE;
+ reserve_pool_admit();
  S.batch_n=0;S.batch_first=0;S.batch_committed=0;GN_STORE(&S.batch_next,0);
  for(u32 l=0;l<S.workers;l++)S.lanes[l].out_used=0;
  for(u32 i=0;i<limit;i++){
@@ -868,7 +906,7 @@ API int gn_batch_commit(u32 task){
  if(!rc)S.batch_committed++;return rc;
 }
 API int gn_batch_retry(u32 workers,u32 first){
- if(!S.auto_memory||!S.current||S.input_expected||GN_LOAD(&S.batch_running)||GN_LOAD(&S.reserve_lock)||!workers||workers>=S.workers||first!=S.batch_committed||first>=S.batch_n)return GN_STATE;
+ if(!S.auto_memory||!S.current||S.input_expected||GN_LOAD(&S.batch_running)||reserve_pool_busy()||!workers||workers>=S.workers||first!=S.batch_committed||first>=S.batch_n)return GN_STATE;
  int rc=layout_workers(workers,1);if(rc)return rc;
  for(u32 i=workers;i<S.lane_slots;i++){S.lanes[i].busy=0;publish_lane(&S.lanes[i],0,1);}
  for(u32 i=first;i<S.batch_n;i++){S.tasks[i].rc=GN_STATE;S.tasks[i].bytes=0;S.tasks[i].output=0;}
@@ -1005,9 +1043,20 @@ API int gn_row_reserve(u64 bytes){
  if(bytes>S.budget-S.bump||!gn_host_ensure(S.bump+bytes))return 0;
  S.reserve_base=S.bump;S.reserve_bytes=bytes;S.bump+=bytes;S.allocated_peak=MAX(S.allocated_peak,S.bump);return 0;
 }
+API int gn_reserve_pool(u32 count){
+ if(count>GN_RESERVE_SLOTS)return GN_INPUT;
+ if(S.current||S.input_expected||S.nrules||GN_LOAD(&S.batch_running)||reserve_pool_busy())return GN_STATE;
+ S.reserve_pool_limit=count;return 0;
+}
+API u64 gn_reserve_pool_stat(u32 key){
+ switch(key){case 0:return S.reserve_base?1+S.reserve_extra_count:0;case 1:return reserve_pool_limit();
+ case 2:return S.reserve_bytes*(S.reserve_base?1+S.reserve_extra_count:0);case 3:return S.reserve_bytes*S.reserve_extra_count;
+ case 4:return reserve_pool_busy();case 5:return S.reserve_pool_admissions;case 6:return S.reserve_pool_declines;
+ case 7:return GN_LOAD(&S.reserve_pool_requested);default:return 0;}
+}
 API u64 gn_reserve_stat(u32 lane,u32 key){
  if(key==0)return S.reserve_bytes;if(lane>=S.lane_slots)return 0;Lane*l=&S.lanes[lane];
- switch(key){case 1:return l->reserve_attempts;case 2:return l->reserve_successes;case 3:return l->reserve_busy;case 4:return l->reserve_misses;case 5:return l->reserve_peak;case 6:return l->reserve_promotions;case 7:return S.reserve_growth;case 8:return S.radix_enabled;case 9:return GN_LOAD(&S.reserve_lock);default:return 0;}
+ switch(key){case 1:return l->reserve_attempts;case 2:return l->reserve_successes;case 3:return l->reserve_busy;case 4:return l->reserve_misses;case 5:return l->reserve_peak;case 6:return l->reserve_promotions;case 7:return S.reserve_growth;case 8:return S.radix_enabled;case 9:return !!reserve_pool_busy();default:return 0;}
 }
 
 API int gn_reserve_growth(u32 enabled){if(enabled>1)return GN_INPUT;if(S.current||S.input_expected||S.nrules)return GN_STATE;S.reserve_growth=enabled;return 0;}

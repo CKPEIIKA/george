@@ -12,7 +12,7 @@ API int test_shared_cache(void){
 #define REQUIRE(x) do { if(!(x))return __LINE__; } while(0)
 API int test_big_row_growth(u32 large){
  u32 radix=large>>1;large&=1;
- Lane*l=&S.lanes[0];memset(&S,0,sizeof(S));S.telemetry_enabled=1;S.lane_slots=1;
+ Lane*l=&S.lanes[0];memset(&S,0,sizeof(S));S.telemetry_enabled=1;S.lane_slots=S.workers=1;
  S.radix_enabled=radix;S.radix_cache_enabled=1;
  REQUIRE(gn_big_row_limit(127)==GN_INPUT);REQUIRE(gn_big_row_limit(129)==GN_INPUT);
  REQUIRE(gn_big_row_limit(1u<<30)==0);REQUIRE(gn_big_row_limit(0)==0);
@@ -54,7 +54,7 @@ API int test_big_row_growth(u32 large){
  u32 id=bheap_top(&r);bheap_remove(&r,id);brow_remove(&r,id);
  REQUIRE(brow_add(&r,(Word){130,0},(BCoef){big,2})==0);REQUIRE(r.used==129);
  REQUIRE(r.nodes[id-1].w.lo==130&&magcmp(r.nodes[id-1].c.n,big)==0);
- l->reserve_owned=0;GN_UNLOCK(&S.reserve_lock);
+ l->reserve_owned=0;reserve_release(l);
  /* Coefficient pressure can promote too, including an existing-node update.
   * Returning an old node pointer after relocation would silently lose it. */
  REQUIRE(brow_layout(&r,l,&small,128,128,4)==0);memset(r.heads,0,128*8);
@@ -63,7 +63,7 @@ API int test_big_row_growth(u32 large){
  reset_a(&r.temp);REQUIRE(brow_add(&r,(Word){1,0},(BCoef){big,2})==0);
  REQUIRE(l->reserve_owned&&r.used==1&&r.heap_n==1);
  REQUIRE(magcmp(r.nodes[0].c.n,mulc(&coeff,big,4))==0);
- l->reserve_owned=0;GN_UNLOCK(&S.reserve_lock);
+ l->reserve_owned=0;reserve_release(l);
  /* Exhaustion means the explicit ceiling or the real workspace, not 2^20. */
  REQUIRE(gn_big_row_limit(128)==0);S.reserve_base=0;
  REQUIRE(brow_layout(&r,l,&small,128,128,4)==0);memset(r.heads,0,128*8);
@@ -156,5 +156,63 @@ API int test_coop_helpers(u32 radix){
  REQUIRE(S.tasks[0].rc==GN_STATE&&S.tasks[1].rc==GN_STATE);gn_cancel(0);l->a[1]=original_arena;
  REQUIRE(gn_init(2,4,2,16u<<20,4u<<20,8,0,0)==0);
  REQUIRE(gn_cooperative(1,16)==0&&S.helper_bytes==0); /* optional admission */
+ return 0;
+}
+/* Two genuine partially emitted rational rewrites keep disjoint full-sized
+ * reserves. Admission, cancellation and budget refusal preserve both rows. */
+API int test_multi_reserves(u32 radix){
+ REQUIRE(gn_init(16,4,2,256u<<20,32u<<20,8,0,0)==0);
+ REQUIRE(gn_tune(2,2,16)==0&&gn_optimize(0,0)==0);
+ REQUIRE(gn_rational_rewrites(0)==0&&gn_radix_queue(radix)==0);
+ REQUIRE(gn_row_reserve(1u<<20)==0&&gn_batch_mode(1)==0&&gn_cooperative(100,16)==0);
+ REQUIRE(gn_reserve_pool(2)==0);
+ S.completed=1;REQUIRE(gn_input_begin(2,2)==0);
+ REQUIRE(gn_input_term(238,0,1)==0&&gn_input_term(221,0,-1)==0&&gn_input_end()==0);
+ S.completed=2;REQUIRE(gn_input_begin(3,301)==0&&gn_input_term(4095,0,1)==0);
+ for(u32 i=1;i<=300;i++)REQUIRE(gn_input_term(i,0,1)==0);
+ REQUIRE(gn_input_end()==0);S.current=3;S.degree_snapshot=2;
+ GN_STORE(&S.reserve_lock,1);
+ u32 tails[2];u64 steps[2];Poly original[2];
+ for(u32 i=0;i<2;i++){
+  Lane*l=&S.lanes[i];l->a[1].end=l->a[1].base+20480;reset_a(&l->a[0]);
+  original[i]=(Poly){alloc_a(&l->a[0],2*sizeof(Term)),2,3,0};
+  PTR(Term,original[i].off)[0]=(Term){{4095,0},2};PTR(Term,original[i].off)[1]=(Term){{350,0},2};
+  l->result=original[i];l->active=0;l->slice_enabled=1;l->slice_end=1e30;
+  REQUIRE(big_rational_nf(l,original[i],0,2)==GN_YIELD&&l->resume_tier==4);
+  tails[i]=saved_BRow[i].row.pending_tail;steps[i]=saved_BRow[i].steps;
+ }
+ REQUIRE(gn_reserve_pool_stat(0)==1&&gn_reserve_pool_stat(7)==1);
+ /* Reader waves cannot mutate the global bump allocator. */
+ GN_STORE(&S.batch_running,1);u64 bump=S.bump;reserve_pool_admit();
+ REQUIRE(S.bump==bump&&gn_reserve_pool_stat(0)==1);GN_STORE(&S.batch_running,0);
+ reserve_pool_admit();REQUIRE(gn_reserve_pool_stat(0)==2&&S.bump==bump+S.reserve_bytes);
+ REQUIRE(gn_reserve_pool_stat(3)==S.reserve_bytes&&S.bump<=S.budget);
+ GN_UNLOCK(&S.reserve_lock);
+ for(u32 i=0;i<2;i++){
+  REQUIRE(brow_promote(&saved_BRow[i].row)==0);
+  REQUIRE(saved_BRow[i].row.pending_tail==tails[i]&&saved_BRow[i].steps==steps[i]);
+  REQUIRE(saved_BRow[i].row.workspace_bytes==S.reserve_bytes);
+  REQUIRE(PTR(Term,original[i].off)[0].w.lo==4095);
+ }
+ REQUIRE(S.lanes[0].reserve_slot==1&&S.lanes[1].reserve_slot==2);
+ REQUIRE(saved_BRow[0].row.nodes!=saved_BRow[1].row.nodes&&gn_reserve_pool_stat(4)==2);
+ /* Every analysis that needs idle arenas must see the second lease too. */
+ REQUIRE(gn_hilbert(3,1u<<20)==GN_STATE);
+ for(u32 i=0;i<2;i++){
+  REQUIRE(big_rational_nf(&S.lanes[i],original[i],0,2)==0);
+  REQUIRE(S.lanes[i].result.n==rule(2)->n&&!S.lanes[i].reserve_slot);
+  REQUIRE(gn_reserve_pool_stat(4)==1-i);
+  if(!i)REQUIRE(gn_hilbert(3,1u<<20)==GN_STATE);
+ }
+ REQUIRE(PTR(Term,S.lanes[0].result.off)[0].w.lo==PTR(Term,S.lanes[1].result.off)[0].w.lo);
+ REQUIRE(reserve_acquire(&S.lanes[0])&&reserve_acquire(&S.lanes[1]));
+ S.lanes[0].reserve_owned=S.lanes[1].reserve_owned=1;
+ gn_cancel(1);gn_coop_discard();REQUIRE(!reserve_pool_busy());gn_cancel(0);
+ /* Tight budgets leave the original reserve and allocator state intact. */
+ REQUIRE(gn_init(2,4,2,16u<<20,4u<<20,8,0,0)==0&&gn_row_reserve(6u<<20)==0);
+ REQUIRE(gn_cooperative(1,16)==0);bump=S.bump;GN_STORE(&S.reserve_pool_requested,1);reserve_pool_admit();
+ REQUIRE(S.bump==bump&&gn_reserve_pool_stat(0)==1&&gn_reserve_pool_stat(6)==1&&!S.error);
+ REQUIRE(gn_reserve_pool(1)==0);GN_STORE(&S.reserve_pool_requested,1);reserve_pool_admit();
+ REQUIRE(gn_reserve_pool_stat(0)==1);
  return 0;
 }

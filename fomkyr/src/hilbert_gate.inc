@@ -12,7 +12,7 @@ static int gate_upper(u64 budget,u64 *out){
  gn_hilbert_release();return 0;
 }
 API int gn_hilbert_gate_begin(u64 lower,u64 budget){
- if(!S.current||S.current!=S.completed+1||S.input_expected||S.certifying||GN_LOAD(&S.batch_running)||GN_LOAD(&S.reserve_lock))return GN_STATE;
+ if(!S.current||S.current!=S.completed+1||S.input_expected||S.certifying||GN_LOAD(&S.batch_running)||reserve_pool_busy())return GN_STATE;
  S.gate_active=0;S.gate_closed=0;u64 upper;int rc=gate_upper(budget,&upper);if(rc)return rc;
  if(upper<lower)return GN_REJECTED;
  S.gate_degree=S.current;S.gate_upper=upper;S.gate_rules=S.nrules;S.gate_lower=lower;S.gate_budget=budget;
@@ -37,8 +37,8 @@ API u64 gn_hilbert_gate_stat(u32 key){
 API int gn_hilbert_gate_try(void){
  if(S.gate_closed)return 1;
  if(!S.gate_active)return 0;
- if(S.coop_ms&&GN_LOAD(&S.reserve_lock))return 0;
- if(!S.current||S.gate_degree!=S.current||S.current!=S.completed+1||S.input_expected||S.certifying||GN_LOAD(&S.batch_running)||GN_LOAD(&S.reserve_lock)||S.nrules<S.gate_rules)return -GN_STATE;
+ if(S.coop_ms&&reserve_pool_busy())return 0;
+ if(!S.current||S.gate_degree!=S.current||S.current!=S.completed+1||S.input_expected||S.certifying||GN_LOAD(&S.batch_running)||reserve_pool_busy()||S.nrules<S.gate_rules)return -GN_STATE;
  u64 delta=S.nrules-S.gate_rules;if(delta>S.gate_upper)return -GN_REJECTED;
  u64 predicted=S.gate_upper-delta;if(predicted<S.gate_lower)return -GN_REJECTED;if(predicted>S.gate_lower)return 0;
  /* Never close on the incremental counter alone. Recount all forbidden words. */

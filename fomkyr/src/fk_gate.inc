@@ -43,7 +43,7 @@ API int gn_fg_bind(u32 length){
 API int gn_fg_sector_mode(u32 enabled){if(!fg_quiet()||S.current||enabled>1)return -GN_STATE;S.fg_sector_enabled=enabled;return 0;}
 API int gn_fg_begin(u64 budget){
  S.fg_sector_ready=0;
- if(!fg_quiet()||!S.current||S.certifying||GN_LOAD(&S.reserve_lock))return -GN_STATE;
+ if(!fg_quiet()||!S.current||S.certifying||reserve_pool_busy())return -GN_STATE;
  if(!fkg_covers(&S.fgate,S.current)){S.fgate.status=FKG_UNAVAILABLE;return 0;}
  FkgCount upper;double start=gn_host_clock();int rc=fg_upper(budget,&upper);
  S.fg_count_ms+=gn_host_clock()-start;S.fg_recounts++;
@@ -71,7 +71,7 @@ API int gn_fg_close(u64 budget){
  if(S.fgate.status!=FKG_READY)return S.fgate.status<0?-GN_REJECTED:S.fgate.status;
  /* Wait for all scheduled tasks to take the proof-zero path and be committed.
   * No live heap or reserve is freed behind a worker's back. */
- if(S.batch_n!=S.batch_committed||GN_LOAD(&S.reserve_lock))return FKG_READY;
+ if(S.batch_n!=S.batch_committed||reserve_pool_busy())return FKG_READY;
  FkgCount upper;double start=gn_host_clock();int rc=fg_upper(budget,&upper);S.fg_count_ms+=gn_host_clock()-start;S.fg_recounts++;
  if(rc){if(rc==GN_MEMORY||rc==GN_LIMIT||rc==GN_SCRATCH)S.fgate.status=FKG_UNAVAILABLE;return -rc;}
  if(fkg_close(&S.fgate,upper,1)!=FKG_CLOSED)return -GN_REJECTED;

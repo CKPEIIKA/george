@@ -14,7 +14,7 @@
     "pgo": true,
     "compilerVersion": "23.1.1",
     "profileKind": "frontend",
-    "profileSha256": "aac345eb0a07574c82ef84ff319c6e282b6a5eee5c171412aacfc8d15e69e784"
+    "profileSha256": "3af74e6f787ab14b89c4000eed6f762bc7fb3830263cb4aab4f0224c302bf9a9"
   },
   "variants": [
     "wasm32-shared",
@@ -37,6 +37,8 @@
     "elasticWindow": true,
     "sectorPriority": true,
     "radixMaxCache": true,
+    "helperRows": true,
+    "largeRowWorkspaces": 0,
     "arithmeticMode": "exact",
     "memoryPolicy": "auto",
     "budgetBytes": 3758096384,
@@ -66,7 +68,7 @@
     },
     "build-info.js": {
       "bytes": 605,
-      "sha256": "a6841cb8da17a289bc0b23948d1b332a4763f1920758ab515f4ffbcdcb24baf7"
+      "sha256": "772dc2821a316c7e9c2a4835b0eb960f90c7819042910fe6caa130ce876204c5"
     },
     "candidate-verifier.js": {
       "bytes": 3942,
@@ -89,8 +91,8 @@
       "sha256": "4805cdd611774acdff74583661be3723774eaeca60b926bccdbfcb8c012ba3aa"
     },
     "engine.js": {
-      "bytes": 49876,
-      "sha256": "c54b476c730a222ae5a04b804f415b88f31352141bfe321699c5a6d270dcc5d3"
+      "bytes": 50345,
+      "sha256": "27060e52e2ccfaf2ac28782d9630d7691ca91c4ef3f612a2bf761d95c7a637c4"
     },
     "fk-gate.js": {
       "bytes": 4005,
@@ -101,20 +103,20 @@
       "sha256": "41bf71ff70c5e98858ace8dc2a9168911bf38f591307e2254f7314eb30ac49dc"
     },
     "fomkyr32-single.wasm": {
-      "bytes": 234642,
-      "sha256": "fb11194717911a118add26186e60b3a665ce1020e103c3f53d4df45308100ba9"
+      "bytes": 238746,
+      "sha256": "82620f61265c164c64cd3ee732041ce407fc9e26e7635b05e5c3e7235969f63a"
     },
     "fomkyr32.wasm": {
-      "bytes": 235023,
-      "sha256": "4140213fab9770a697618369416200f0f02cc2768998727a9c7ca6c9fab50c3c"
+      "bytes": 239064,
+      "sha256": "28d1e8d43ac031d5a229ee8179468268f3ff34b99aa0abfa50a82e68b22e480a"
     },
     "fomkyr64-single.wasm": {
-      "bytes": 253450,
-      "sha256": "921a0129d0a2e011a8d55e0f57c79c9e6f3ac9383a5834f322948e02d2b2e9cb"
+      "bytes": 257707,
+      "sha256": "3c5961efd08e1e4bd5371ab72b4a0a41a82542e5abf69c500cfa06f9c0cc6934"
     },
     "fomkyr64.wasm": {
-      "bytes": 253717,
-      "sha256": "a02068566fac0ff30c43b038a969df074899b34af28f27096712501b9a51b0f6"
+      "bytes": 257856,
+      "sha256": "0c9193c6295ca174d7ae6b9b628c436adfe2afa2f7df73e406bc25a6e9e7e295"
     },
     "form-options.js": {
       "bytes": 1409,

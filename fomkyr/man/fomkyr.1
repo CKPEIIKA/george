@@ -154,3 +154,10 @@ Disable cached exact bucket maxima.
 Disable bounded helper calculations while primary rows wait for the shared
 exceptional reserve. Helpers are enabled by default when their independent
 arenas fit within the memory budget. Unfinished primary rows retain their state.
+.TP
+.B --large-row-workspaces auto|N
+Admit independent full-sized overflow arenas when rows wait and the total
+allocation budget has room. Default auto; 1 retains one arena, 2 through 33
+cap the admitted count. Additional arenas preserve the original reserve size
+and leave at least 1/32 of the budget for growing solver metadata. Each lease
+survives timed yields. Checkpoints store unfinished task descriptors for replay.

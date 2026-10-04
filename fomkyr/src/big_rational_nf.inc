@@ -105,18 +105,18 @@ static int brow_promote(BRow*r){
   if(l->no_reserve)return GN_DEFERRED;
   u32 available=brow_budget_capacity(S.reserve_bytes);
   if(!S.reserve_growth||!S.reserve_base||l->reserve_owned||l->reserve_retry||available<r->capacity||S.reserve_bytes<=r->workspace_bytes)return HEAP_MISS;
-  if(!GN_TRY_LOCK(&S.reserve_lock)){
+  if(!reserve_acquire(l)){
    l->reserve_busy++;l->big_reserve_waits++;l->reserve_waiting=1;
    /* Retain even a partially emitted rewrite when the reserve is occupied.
     * A later cooperative wave retries this one tail, not the S-polynomial. */
    return l->slice_enabled?GN_YIELD:HEAP_MISS;
   }
-  Arena a={S.reserve_base,S.reserve_base,S.reserve_base+S.reserve_bytes,0,0};BRow next;
+  u64 base=reserve_lease_base(l);Arena a={base,base,base+S.reserve_bytes,0,0};BRow next;
   int rc=brow_layout(&next,l,&a,available,r->capacity,r->degree);
   u64 need=bbytes(r->pivot);
   if(!rc)for(u32 i=0;i<r->used;i++)if(r->nodes[i].pos!=UINT32_MAX){u64 n=bbytes(r->nodes[i].c);if(n>next.pool[0].end-next.pool[0].base||need>next.pool[0].end-next.pool[0].base-n){rc=HEAP_MISS;break;}need+=n;}
   if(!rc&&need>next.pool[0].end-next.pool[0].base)rc=HEAP_MISS;
-  if(rc){GN_UNLOCK(&S.reserve_lock);return rc;}
+  if(rc){reserve_release(l);return rc;}
   memcpy(next.nodes,r->nodes,(size_t)r->used*sizeof(BNode));
   memcpy(next.heap,r->heap,(size_t)(r->radix_enabled?r->used:r->heap_n)*4);memcpy(next.normal,r->normal,(size_t)r->normal_n*4);
   if(r->radix_enabled)memcpy(next.radix.previous,r->radix.previous,(size_t)r->used*4);
@@ -228,6 +228,6 @@ static int big_rational_nf_inner(Lane*l,Poly original,u32 active,u32 snapshot){
 static int big_rational_nf(Lane*l,Poly original,u32 active,u32 snapshot){
  int rc=big_rational_nf_inner(l,original,active,snapshot);
  if(rc==GN_YIELD)return rc;
- if(l->reserve_owned){if(!rc)l->reserve_successes++;else l->reserve_misses++;l->reserve_owned=0;GN_UNLOCK(&S.reserve_lock);}
+ if(l->reserve_owned){if(!rc)l->reserve_successes++;else l->reserve_misses++;l->reserve_owned=0;reserve_release(l);}
  return rc;
 }

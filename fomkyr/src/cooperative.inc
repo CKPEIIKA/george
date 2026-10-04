@@ -44,8 +44,8 @@ API int gn_coop_helper_mode(u32 enabled){
  C.helpers_enabled=enabled;return 0;
 }
 static void coop_release_lane(Lane*l){
- if(l->reserve_retry){l->a[l->active^1]=l->reserve_saved;l->reserve_retry=0;GN_UNLOCK(&S.reserve_lock);}
- if(l->reserve_owned){l->reserve_owned=0;GN_UNLOCK(&S.reserve_lock);}
+ if(l->reserve_retry){l->a[l->active^1]=l->reserve_saved;l->reserve_retry=0;reserve_release(l);}
+ if(l->reserve_owned){l->reserve_owned=0;reserve_release(l);}
  l->resume_tier=0;l->slice_enabled=0;l->error=0;l->busy=0;l->reserve_waiting=0;
 }
 static void coop_clear_lane(u32 lane){
@@ -97,6 +97,7 @@ static void coop_order(void){
 API int gn_coop_fill(u32 limit){
  if(!S.coop_ms||!S.batch_enabled||!S.current||GN_LOAD(&S.batch_running)||!limit||limit>BATCH_MAX)return -GN_STATE;
  if(cancelled())return -GN_CANCELLED;
+ reserve_pool_admit();
  /* An existing persisted legacy prefix may have first/committed offsets. This
   * reader starts with an uncommitted compact descriptor array after restore. */
  if(S.batch_committed)return -GN_STATE;

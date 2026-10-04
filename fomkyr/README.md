@@ -380,6 +380,16 @@ workspace remains pending for a primary lane. Helper starts, completions and
 deferrals are included in progress reports. `--no-helper-rows` disables this
 path for comparisons. The browser kernel uses the same automatic policy.
 
+If rows continue waiting, the solver can admit additional full-sized overflow
+workspaces between worker waves. Each has an exclusive lease that survives
+timed yields, and the original reserve retains its capacity. Admission stays
+inside the total memory allowance and leaves at least 1/32 of that allowance
+for growing solver metadata. Insufficient space retains the existing solver
+workspaces. `--large-row-workspaces auto` enables this policy; `1` keeps a single
+reserve, and `2` through `33` cap the number admitted. Progress reports show
+admitted and active workspaces. In the browser, the corresponding ceiling is
+under Engine → Memory; zero selects automatic admission.
+
 Use `--scheduler barrier` for whole-batch scheduling, `--quantum-ms N` for the
 soft slice target, and `--no-radix-cache` to disable cached bucket maxima.
 The browser engine menu exposes the same controls.
