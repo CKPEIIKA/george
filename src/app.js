@@ -142,7 +142,8 @@ function writeForm(s, {restoreDraft = false} = {}) {
   if (s.matrix !== undefined) els.matrix.value = s.matrix;
   els.maxdeg.value = s.maxdeg || '';
   els.timeoutMinutes.value = String(s.timeoutMinutes ?? els.timeoutMinutes.value ?? 0);
-  $('nativeWorkers').value = String(s.nativeWorkers ?? $('nativeWorkers').value ?? 0);
+  const nativeWorkers = Number(s.nativeWorkers ?? $('nativeWorkers').value ?? 0);
+  $('nativeWorkers').value = nativeWorkers ? String(nativeWorkers) : '';
   const formBackend = s.backend ?? els.backend.value;
   if (s.monomialPruning !== undefined) {
     els.monomialPruning.checked = s.monomialPruning;

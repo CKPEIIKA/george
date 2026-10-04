@@ -22,6 +22,7 @@ export function forwardFomkyrProgress(event){
  else bar.removeAttribute('value');
  activity.textContent=`${a.activeLanes} active lane(s); ${a.maxActiveRowTerms} terms in the largest sampled active row; ${a.sampledReductions} sampled reductions. `+
   `${o.chainSkipped} lower-degree chain skips. This bar measures overlap count, not elapsed-time completion.`;
+ const c=event.cooperative;if(c?.quantumMs)activity.textContent+=` ${c.lanes.filter(l=>l.parkedTask).length} retained active rows; ${c.pending} pending pairs; ${c.nonprefixCommits} commits while earlier rows remained pending.`;
  const eta=event.eta.currentDegreeSeconds;
  estimate.textContent=eta?`Current-degree estimate: ${seconds(eta[0])}–${seconds(eta[1])}. ${event.eta.reason}`:`Remaining time: unknown. ${event.eta.reason}`;
  if(event.checkpoint?.partial)estimate.textContent+=` Saved unfinished degree ${event.checkpoint.currentDegree}: ${event.checkpoint.retainedCommittedPairs??0} committed pairs retained.`;

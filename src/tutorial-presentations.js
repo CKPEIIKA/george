@@ -4,7 +4,7 @@
 export const TUTORIAL_PRESENTATIONS = {
   fk6: {
     vars: ["a", "b", "c", "d", "e", "f", "g", "h", "k", "m", "n", "p", "q", "r", "s"],
-    task: 'gb', maxdeg: '4',
+    task: 'gb', maxdeg: '11',
     rels: [
       "a^2",
       "b^2",
