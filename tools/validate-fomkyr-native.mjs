@@ -6,9 +6,12 @@ import {spawn,execFileSync} from 'node:child_process';
 import {copyFomkyrSource} from './fomkyr-source.mjs';
 import {validationSnapshot,engineHashes,writeJSON} from './release-support.mjs';
 import {VERSION} from '../web/engine/fomkyr/storage.js';
+import {NATIVE_REGRESSION_CHECKS} from './suite-profiles.mjs';
 
 const arg=(name,fallback)=>{const i=process.argv.indexOf(name);return i<0?fallback:process.argv[i+1];};
-const out=path.resolve(arg('--out','local/validation/fomkyr-'+VERSION+'-native'));
+const suite=arg('--suite','regression');
+assert.ok(['regression','extended'].includes(suite),'Choose --suite regression or extended');
+const out=path.resolve(arg('--out','local/validation/fomkyr-'+VERSION+'-native-'+suite));
 const stage=path.join(out,'source'),reportFile=path.join(out,'report.json');
 const sourceHashes=validationSnapshot(),hashes=engineHashes();
 const prior=process.argv.includes('--resume')&&fs.existsSync(reportFile)?JSON.parse(fs.readFileSync(reportFile)):null;
@@ -17,8 +20,11 @@ else{
  copyFomkyrSource(stage);fs.cpSync('web/engine/fomkyr',path.join(stage,'web'),{recursive:true});
  for(const v of ['0.6.5','0.6.6','0.6.7','0.6.8'])fs.mkdirSync(path.join(stage,'results',v),{recursive:true});
 }
-const report=prior??{state:'running',version:VERSION,sourceHashes,engineHashes:hashes,tests:[],
- scope:'Production C sources and George Wasm adapter; standalone pthread CLI, partial checkpoints, cross-runtime resume, exact independent small-case oracles and optional Hilbert authority rejection. Serial checks; individual calculations retain their deadlines. Multi-job CLI recovery suites have a 600-second aggregate cap; other process groups have a 120-second cap. No Singular reruns.'};
+if(prior)assert.equal(prior.suite,suite,'Cannot resume across suite profiles');
+const report=prior??{state:'running',version:VERSION,suite,sourceHashes,engineHashes:hashes,tests:[],
+ scope:suite==='regression'
+  ?'Production C properties, cached radix Wasm parity, worker telemetry, native CLI/frontier edges, profile authority, human output and small verification bundles. Long cooperative recovery and multi-runtime Hilbert audits are in the extended profile. No Singular reruns.'
+  :'Production C sources and George Wasm adapter; standalone pthread CLI, partial checkpoints, cross-runtime resume, exact independent small-case oracles and optional Hilbert authority rejection. Serial checks; individual calculations retain their deadlines. Multi-job CLI recovery suites have a 600-second aggregate cap; other process groups have a 120-second cap. No Singular reruns.'};
 const reusableInputs=new Set(['tools/release.mjs','tools/validate-fomkyr-native.mjs','fomkyr/SOURCE.json',
  'fomkyr/tests/test_cooperative_pressure_067.mjs','fomkyr/tests/test_cooperative_reserve_067.mjs',
  'fomkyr/tests/test_fk_gate_wasm_068.mjs','fomkyr/tests/audit_fk_gate_wasm_068.py',
@@ -94,8 +100,10 @@ const checks=[
 ];
 const memory64Flags=execFileSync(process.execPath,['--v8-options'],{encoding:'utf8'}).includes('--experimental-wasm-memory64')?['--experimental-wasm-memory64']:[];
 for(const [,command,args] of checks)if(command===process.execPath){const i=args.indexOf('--experimental-wasm-memory64');if(i>=0)args.splice(i,1,...memory64Flags);}
-const selected=arg('--tests',checks.map(([name])=>name).join(',')).split(',');
+const selected=arg('--tests',(suite==='extended'?checks.map(([name])=>name):NATIVE_REGRESSION_CHECKS).join(',')).split(',');
 assert.ok(selected.every(name=>checks.some(([n])=>n===name)),'Unknown check');
+report.selectedTests=selected;
+report.tests=report.tests.filter(row=>selected.includes(row.name));save();
 try{
  for(const [name,command,args] of checks){
  if(!selected.includes(name)||report.tests.some(row=>row.name===name&&row.passed))continue;
@@ -119,6 +127,7 @@ try{
    report.tests.push({name,passed:true,elapsedSeconds:(performance.now()-start)/1000});save();console.log(name,'PASS');
   }finally{fs.closeSync(fd);}
  }
+ assert.ok(selected.every(name=>report.tests.some(row=>row.name===name&&row.passed)));
  report.state='complete';
 }catch(error){report.state='failed';report.error=error.stack;throw error;}
 finally{save();}

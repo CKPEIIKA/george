@@ -116,7 +116,8 @@ and results are compared with a native SBCL build, Bergman 2 and Singular
 
 **Input**
 : Relations with integer coefficients, e.g. `x^2-y^2, xy`. Single letters
-  may be juxtaposed: `xyx`.
+  may be juxtaposed: `xyx`. Commutators, anticommutators and equations are
+  expanded: `[a0,b0] = t^2`, `{g1,g2} = 0`.
 
 **Settings**
 : Field, monomial order, weights and degree limit. Every bergman mode is

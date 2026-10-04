@@ -2,7 +2,9 @@ import { EXAMPLES } from './examples.js';
 import {
   esc, parseVars, splitRelations, parseRelation, isHomogeneous, toBergman, typeset, typesetTerms,
   parseBasis, parseAnick, typesetTensor, typesetWord, readInputFile, buildJob, validateSettings, monomialPruningAvailable, exampleForm, ORDERS, TASKS, TASK_BY_ID, FAMILIES,
+  varHTML, positiveLeading, variableOrder, jobFacts,
 } from './bergman-syntax.js';
+import {runOutcome} from './completeness.js';
 import { EclEngine } from './engine.js';
 import { t, tn, setLanguage, getLanguage, applyTranslations, translateMessage } from './i18n.js';
 import { readPreferences, savePreferences, applyTheme } from './preferences.js';
@@ -13,7 +15,7 @@ import { structuralResolutionDisplay } from './resolution-data.js';
 import { initConsole } from './console.js';
 import { createShareLink, readShareLink, SHARE_PREFIX } from './share.js';
 import { BACKENDS, DEFAULT_BACKEND, validMemoryMiB, memory64Supported, defaultMemoryMiB, preferredBackend } from './backends.js';
-import { applyBackendCapabilities, backendCapabilities } from './backend-capabilities.js';
+import { applyBackendCapabilities, backendCapabilities, backendAllows } from './backend-capabilities.js';
 import { timeoutMilliseconds } from './time-limit.js';
 import { formatMemorySize } from './memory-monitor.js';
 import { attachFomkyrResultLinks, renderFomkyrSeries } from '../engine/fomkyr/result-links.js';
@@ -49,6 +51,7 @@ applyTheme(preferences.theme);
 let engineInfo = null;
 let engineError = null;
 let lastRendered = null;
+let lastOutcome = null;
 let zipSource = null;
 let zipBusy = false;
 let statusState = { key: 'status.idle', params: {}, busy: false };
@@ -221,6 +224,24 @@ function fillTasks() {
   }
   els.taskList.innerHTML = html;
   applyTranslations(els.taskList);
+  $('taskSelect').innerHTML = [...groups].map(([g, ts]) => `<optgroup label="${esc(t(g === 'Resolutions' ? 'group.res' : 'group.bases'))}">` +
+    ts.map(task => `<option value="${task.id}">${esc(t('task.' + task.id))}</option>`).join('') + '</optgroup>').join('');
+}
+
+// The compact select mirrors the radio group, including unavailable choices.
+function syncTaskSelect() {
+  const select = $('taskSelect');
+  for (const option of select.options) {
+    const label = els.taskList.querySelector(`[data-task="${option.value}"]`);
+    const disabled = label.querySelector('input').disabled, ringOnly = TASK_BY_ID.get(option.value).ring;
+    option.hidden = label.classList.contains('backend-hidden');
+    option.disabled = disabled;
+    option.textContent = t('task.' + option.value) + (disabled && !option.hidden && ringOnly ? ` (${t(ringOnly === 'comm' ? 'task.commOnlyShort' : 'task.noncommOnlyShort')})` : '');
+  }
+  for (const group of select.querySelectorAll('optgroup')) group.hidden = [...group.children].every(option => option.hidden);
+  const checked = document.querySelector('input[name="task"]:checked')?.value || 'gb';
+  select.value = checked;
+  $('taskDescription').textContent = t('task.' + checked + '.d');
 }
 
 // ------------------------------------------------------------ presets
@@ -309,6 +330,27 @@ function validate() {
   return { ok: problems.length === 0, anyNonhomog, form: f };
 }
 
+// Computations and settings an engine cannot use are hidden, not listed
+// one by one as unavailable.
+const BERGMAN_SETTINGS = ['strategy', 'lowterms', 'outmode', 'nonhomog', 'augmentation', 'legacy'];
+function updateEngineControls() {
+  const backend = els.backend.value;
+  const {choices = {}, fixedSettings = {}} = backendCapabilities(backend);
+  let blocked = 0;
+  for (const label of els.taskList.querySelectorAll('[data-task]')) {
+    const hide = !backendAllows(backend, 'task', label.dataset.task);
+    label.classList.toggle('backend-hidden', hide);
+    if (hide) blocked++;
+  }
+  for (const group of els.taskList.querySelectorAll('.task-group')) group.classList.toggle('backend-hidden', !group.querySelector('[data-task]:not(.backend-hidden)'));
+  $('tasksUnavailable').hidden = blocked === 0;
+  $('tasksUnavailableText').textContent = t('tasks.unavailable', {n: blocked});
+  for (const id of BERGMAN_SETTINGS) {
+    const unused = Object.hasOwn(fixedSettings, id) || (choices[id]?.length ?? 2) < 2 || (backend === 'fomkyr' && ['nonhomog', 'lowterms'].includes(id));
+    ($(id).closest('.check-row') ?? $(id).closest('label')).classList.toggle('backend-hidden', unused);
+  }
+}
+
 function refresh() {
   shareGeneration++;
   els.sharePanel.hidden = true;
@@ -342,6 +384,11 @@ function refresh() {
     $(key).disabled = true;
     $(key).closest('label')?.classList.add('backend-disabled');
   }
+  updateEngineControls();
+  syncTaskSelect();
+  const chain = variableOrder(f);
+  $('varOrder').innerHTML = chain && chain.length > 1
+    ? `${esc(t(f.order === 'matrix' ? 'order.chainMatrix' : 'order.chain'))}<span class="chain-vars">${chain.map(varHTML).join('<span class="gt"> &gt; </span>')}</span>` : '';
   els.moduleFields.hidden = !task.module;
   els.nmodgenField.hidden = task.module === 'two';
   els.twoModFields.hidden = task.module !== 'two';
@@ -364,6 +411,10 @@ function setStatus(key, params = {}, busy = false) {
   els.runStatus.textContent = t(key, { ...params, seconds, msg: translateMessage(params.msg || '') });
   els.runStatus.classList.toggle('busy', busy);
   els.runMetrics.hidden = !busy;
+  const computing = document.documentElement.classList.contains('computing');
+  document.documentElement.classList.toggle('computing', busy);
+  if (busy && !computing) $('logo').setCurrentTime?.(0);
+  renderChip();
   if (!busy) {
     clearInterval(runTimer);
     runTimer = undefined;
@@ -375,6 +426,16 @@ function setStatus(key, params = {}, busy = false) {
   updateMemoryUsage(allocatedMemoryBytes);
   updateDegreeUsage();
   updateElapsedTime();
+}
+
+const STOPPED = {state: 'stopped', hint: 'basis.stoppedPartial'};
+function renderChip() {
+  const outcome = statusState.busy ? null : statusState.key === 'status.stopped' ? {state: 'stopped', hint: 'chip.stoppedHint'} : lastOutcome;
+  $('runChipWrap').hidden = !outcome;
+  if (!outcome) return;
+  $('runChip').dataset.state = outcome.state;
+  $('runChip').textContent = t({complete: 'chip.complete', bounded: 'chip.through', stopped: 'chip.stopped'}[outcome.state], {d: outcome.degree});
+  $('runChipHint').textContent = t(outcome.hint, outcome.params);
 }
 
 function updateMemoryUsage(bytes) {
@@ -465,6 +526,9 @@ async function compute(ev) {
   try { job = buildJob(f); } catch (error) { setStatus('status.raw', { msg: error.message }); return; }
   if (loadedExample && loadedExample.snapshot === snapshot()) job.exampleId = loadedExample.id;
   lastJob = job;
+  let facts;
+  try { facts = jobFacts(f, job); } catch { facts = {}; }
+  lastOutcome = null;
 
   const generation = ++runGeneration;
   const t0 = performance.now();
@@ -498,11 +562,12 @@ async function compute(ev) {
     });
     if (generation !== runGeneration) return;
     const ms = Math.round(performance.now() - t0);
-    renderResults(job, res);
+    renderResults(job, res, facts);
     setStatus('status.done', { ms });
   } catch (e) {
     if (generation !== runGeneration) return;
-    if (e.partialResult) renderResults(job, e.partialResult);
+    if (e.partialResult) renderResults(job, Object.assign(e.partialResult, {stopped: true}), facts);
+    lastOutcome = ['memory-limit', 'timeout'].includes(e.code) || e.partialResult ? STOPPED : null;
     if (e.code === 'memory-limit') setStatus(job.memoryMiB === 0 ? 'status.memoryUncapped' : 'status.memory', {mib: job.memoryMiB});
     else if (e.code === 'timeout') setStatus('status.timeout');
     else setStatus(e.name === 'AbortError' ? 'status.stopped' : 'status.error', { engine: job.backend === 'fomkyr' ? 'fomkyr' : 'bergman', msg: e.message });
@@ -533,8 +598,9 @@ function notComputed(what) {
     `<p><button type="button" class="quiet small" data-goto="log">${t('showSession')}</button></p></div>`;
 }
 
-function renderResults(job, res) {
-  lastRendered = { job, res };
+function renderResults(job, res, facts = lastRendered?.job === job ? lastRendered.facts : {}) {
+  lastRendered = { job, res, facts };
+  lastOutcome = res.stopped ? STOPPED : runOutcome({job, facts, res, summary: null});
   const files = res.files;
   $('basisEmpty').hidden = true;
   const gbText = files[job.outputs.gb];
@@ -542,13 +608,10 @@ function renderResults(job, res) {
   else {
     const parsed = parseBasis(gbText);
     const summary = basisSummary(parsed.groups, parsed.done, res);
+    if (!res.stopped) lastOutcome = runOutcome({job, facts, res, summary});
     const n = summary.total;
     const degs = summary.degrees;
     let html = `<p class="summary">${(degs.length === 1 ? tn('basis.summary1', n, { a: degs[0] }) : t(degs.length > 1 ? 'basis.summary' : 'basis.summaryFlat', { n, a: degs[0], b: degs.at(-1) }))}${badge(res)}</p>`;
-    if (res.interrupted) html += `<p class="notice">${t('basis.interrupted')}</p>`;
-    else if (!summary.complete) html += `<p class="notice">${t('basis.partial')}</p>`;
-    else if (res.fomkyr?.unrestrictedBasisComplete) html += `<p class="notice">${t('fomkyr.completeBasis')}</p>`;
-    else if (summary.completedThroughDegree !== undefined || job.degreeBound) html += `<p class="notice">${t(res.fomkyr ? 'fomkyr.bounded' : 'basis.bounded', { d: summary.completedThroughDegree ?? job.degreeBound })}</p>`;
     if (res.fomkyr?.conditionalOnImportedFkDimensions) html += `<p class="notice">${t('fomkyr.importedDimensionsNotice')}</p>`;
     if (verificationAvailable(res.fomkyr)) html += `<p><button type="button" class="quiet small" id="downloadVerificationBundle">${t('verification.download')}</button><span id="verificationBundleStatus" role="status"></span></p>`;
     if (res.fomkyr?.reduced === false) html += `<p class="notice">${t('native.unreduced')}</p>`;
@@ -557,10 +620,10 @@ function renderResults(job, res) {
       if (res.fomkyr?.fullBasisPath) html += `<p><button type="button" class="quiet small" id="basisMore">${t('basis.showMore')}</button><span id="basisMoreStatus" role="status"></span></p>`;
     }
     for (const g of summary.groups) {
-      html += `<section class="degree"><h3><span class="d">${t('basis.degree', { d: g.deg })}</span>${tn('basis.count', g.count)}</h3>`;
+      html += `<section class="degree"><h3><span class="d">${t(facts.weighted ? 'basis.weightedDegree' : 'basis.degree', { d: g.deg })}</span>${tn('basis.count', g.count)}</h3>`;
       if (g.polys.length < g.count) html += `<p class="caption">${t('basis.degreePreview', { shown: g.polys.length, total: g.count })}</p>`;
       html += '<div class="polynomial-groups">';
-      const rows = g.polys.map((source, index) => ({source, index, termCount: polynomialTermCount(source)}));
+      const rows = g.polys.map((source, index) => ({source: positiveLeading(source), index, termCount: polynomialTermCount(source)}));
       for (const group of groupRelations(rows)) {
         html += `<ol class="polys" data-term-count="${group.termCount}">`;
         for (const {source, index} of group.relations) html += `<li value="${index+1}"><span class="math-expression" data-math-source="${esc(source)}">${typeset(source, { lead: true })}</span></li>`;
@@ -584,6 +647,7 @@ function renderResults(job, res) {
         files[job.outputs.gb] = previous + next.text;
         res.fomkyr = {...res.fomkyr, previewByteLength:next.offset, previewTruncated:next.truncated};
         renderResults(job, res);
+        renderChip();
       } catch (error) {
         more.disabled = false;
         $('basisMoreStatus').textContent = t('native.unavailable', {msg:error.message});
@@ -592,7 +656,7 @@ function renderResults(job, res) {
   }
 
   if (res.fomkyr?.hilbert) renderFomkyrSeries($('seriesOut'), res.fomkyr.hilbert, t);
-  else if (job.outputs.hs || job.outputs.pb) $('seriesOut').innerHTML = renderSeries(files[job.outputs.hs], files[job.outputs.pb], res);
+  else if (job.outputs.hs || job.outputs.pb) $('seriesOut').innerHTML = renderSeries(files[job.outputs.hs], files[job.outputs.pb], res, job, facts);
   else $('seriesOut').innerHTML = notComputed(t('tab.series'));
   if (job.outputs.anick) {
     const txt = files[job.outputs.anick];
@@ -605,7 +669,7 @@ function renderResults(job, res) {
         ? `<p>${t('betti.ungraded')}</p><div class="table-wrap"><table class="betti"><thead><tr><th scope="col">${t('degree')}</th>${res.homology.betti.map((_,i)=>`<th scope="col">${i}</th>`).join('')}</tr></thead><tbody><tr><th scope="row">${t('dimension')}</th>${res.homology.betti.map(n=>`<td>${n}</td>`).join('')}</tr></tbody></table></div>${res.homology.finiteTailZero?`<p>${t('betti.tail')}</p>`:''}${res.homology.truncatedBetti?`<p>${t('betti.truncated',{degree:res.homology.highestCertifiedDegree})}</p>`:''}<p>${t('betti.raw')}</p>`
         : renderBetti(a, res);
       const resolution = files['resolution.jsonl'] ? structuralResolutionDisplay(files['resolution.jsonl'], readInputFile(job.files['input.bg']).vars) : a;
-      $('resolutionOut').innerHTML = (res.homology?.shifted ? `<p>${t('res.shifted')}</p>` : '') + renderResolution(resolution, res);
+      $('resolutionOut').innerHTML = (res.homology?.shifted ? `<p>${t('res.shifted')}</p>` : '') + renderResolution(resolution, res, job.task === 'anick');
     }
   }
   renderFiles(job, files, res);
@@ -620,9 +684,10 @@ function tidySeries(expr) {
     .replace(/([A-Za-z])\^1(?!\d)/g, '$1');
 }
 
-function renderSeries(hs, pb, res) {
+function renderSeries(hs, pb, res, job, facts) {
   if (hs === undefined && pb === undefined) return notComputed(t('tab.series'));
-  let html = `<p class="summary">${t('series.summary')}${badge(res)}</p>`;
+  const d = facts.seriesBound;
+  let html = `<p class="summary">${t(!d ? 'series.summaryAll' : job.task === 'hilbert' ? 'series.summaryHilbert' : 'series.summary', { d })}${badge(res)}</p>`;
   if (hs !== undefined) {
     const lines = hs.split('\n').map((l) => l.trim()).filter(Boolean);
     if (lines.some((l) => l.includes(':'))) {
@@ -689,11 +754,14 @@ function renderBetti(a, res) {
   return html;
 }
 
-function renderResolution(a, res) {
+// For the trivial module, bergman's D(i, ·) is the differential ∂ᵢ₊₁ on
+// chains in homological degree i + 1, the Betti table column.
+function renderResolution(a, res, homological) {
   if (a.diffs.size === 0) return `<div class="empty"><p>${t('res.none')}</p></div>`;
-  let html = `<p class="summary">${t('res.summary')}${badge(res)}</p><div class="chains">`;
+  let html = `<p class="summary">${t(homological ? 'res.summary' : 'res.summaryRaw')}${badge(res)}</p><div class="chains">`;
   for (const [i, list] of [...a.diffs.entries()].sort((x, y) => x[0] - y[0])) {
-    html += `<section><h3><span class="d"><var>D</var>(${i}, ·)</span> ${tn('res.on', list.length)}</h3>`;
+    const name = homological ? `∂<sub>${i + 1}</sub>` : `<var>D</var>(${i}, ·)`;
+    html += `<section><h3><span class="d" title="D(${i}, ·)">${name}</span> ${tn('res.on', list.length)}</h3>`;
     for (const d of list) html += `<p class="tensor-line"><span class="chain">${d.chainHTML ?? typesetWord(d.chain)}</span><span class="arrow">↦</span>${d.imageHTML ?? typesetTensor(d.image)}</p>`;
     html += '</section>';
   }
@@ -888,6 +956,7 @@ function route() {
     if (a.dataset.view === view) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
   }
   if (view === 'guide' && v !== 'guide') $('guideContent').querySelector(`#${CSS.escape(v)}`)?.scrollIntoView();
+  if (view === 'console') consoleView.shown();
 }
 
 function updateGuide() {
@@ -956,7 +1025,11 @@ function updateLanguage() {
   updateEngineNote();
   updateGuide();
   consoleView.updateLanguage();
+  // Re-rendering in the new language must not replace a failed run's status.
+  const outcome = lastOutcome;
   if (lastRendered) renderResults(lastRendered.job, lastRendered.res);
+  lastOutcome = outcome;
+  renderChip();
   if (lastJob) renderLog(lastJob, fileContents.get('terminal.txt') || '');
 }
 
@@ -1048,9 +1121,18 @@ async function init() {
     refresh();
   });
   els.form.addEventListener('submit', compute);
+  // Runs before the form's own input/change handlers, which read the radios.
+  for (const type of ['input', 'change']) $('taskSelect').addEventListener(type, () => {
+    const radio = document.querySelector(`input[name="task"][value="${$('taskSelect').value}"]`);
+    if (radio && !radio.disabled) radio.checked = true;
+  });
+  $('useBergman').addEventListener('click', () => {
+    els.backend.value = preferredBackend();
+    els.backend.dispatchEvent(new Event('change', { bubbles: true }));
+  });
   els.share.addEventListener('click', sharePresentation);
   els.shareLink.addEventListener('click', () => els.shareLink.select());
-  els.stop.addEventListener('click', () => { runGeneration++; engine.cancel(); running = false; updateZipButton(); els.go.disabled = false; els.stop.hidden = true; setStatus('status.stopped'); });
+  els.stop.addEventListener('click', () => { runGeneration++; lastOutcome = null; engine.cancel(); running = false; updateZipButton(); els.go.disabled = false; els.stop.hidden = true; setStatus('status.stopped'); });
   els.resultsZip.addEventListener('click',downloadResultsZip);
   els.tabs.addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) selectTab(b.dataset.tab); });
   els.tabs.addEventListener('keydown', (e) => {

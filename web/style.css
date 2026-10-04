@@ -14,6 +14,9 @@
   --tint: rgba(27, 42, 74, 0.06);
   --mark: #ffe45c;
   --mark-ink: #1b2a4a;
+  --logo-face: #ffe45c;
+  --ok: #1f7a46;
+  --ok-bg: rgba(31, 122, 70, 0.1);
   --accent: #1b2a4a;
   --on-accent: #fbfcfc;
   --focus: #2f6fd6;
@@ -51,6 +54,9 @@
     --tint: rgba(230, 236, 245, 0.07);
     --mark: rgba(255, 228, 92, 0.3);
     --mark-ink: #fff4c2;
+    --logo-face: #f5d443;
+    --ok: #74d39b;
+    --ok-bg: rgba(116, 211, 155, 0.12);
     --accent: #e6ecf5;
     --on-accent: #111a27;
     --focus: #7fb0ff;
@@ -79,6 +85,9 @@
   --tint: rgba(230, 236, 245, 0.07);
   --mark: rgba(255, 228, 92, 0.3);
   --mark-ink: #fff4c2;
+  --logo-face: #f5d443;
+  --ok: #74d39b;
+  --ok-bg: rgba(116, 211, 155, 0.12);
   --accent: #e6ecf5;
   --on-accent: #111a27;
   --focus: #7fb0ff;
@@ -138,10 +147,17 @@ code, .code { font-family: var(--mono); font-size: 0.9em; }
 .brand-version { font: 400 0.8rem/1 var(--sans); color: var(--ink-2); }
 .brand-name { font: 600 1.6rem/1 var(--serif); letter-spacing: 0.005em; }
 /* the diamond of the diamond lemma */
-.logo { width: 26px; height: 26px; align-self: center; flex: none; }
-.logo-face { fill: var(--mark); }
+.logo { width: 26px; height: 26px; align-self: center; flex: none; overflow: visible; }
+.logo-face { fill: var(--logo-face); }
 .logo-edge { fill: none; stroke: var(--ink); stroke-width: 1.7; stroke-linejoin: round; }
 .logo circle { fill: var(--ink); }
+/* while computing, two reductions run down the diamond and meet at the bottom */
+.logo-run { display: none; }
+.computing .logo-run { display: inline; }
+.logo .logo-trace { fill: none; stroke: var(--focus); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1 1; }
+.logo .logo-walker { fill: var(--focus); }
+.logo .logo-ripple { fill: none; stroke: var(--focus); stroke-width: 1.2; }
+@media (prefers-reduced-motion: reduce) { .computing .logo-run { display: none; } }
 .brand-sub { font: italic 400 1rem/1 var(--serif); color: var(--ink-2); }
 .brand-sub a { color: inherit; text-underline-offset: 3px; }
 .views { display: flex; gap: 2px; margin-left: auto; }
@@ -210,7 +226,6 @@ code, .code { font-family: var(--mono); font-size: 0.9em; }
 }
 .engine-note.live::before { background: #2e9e5b; }
 
-.guide { max-width: 960px; }
 .guide section { scroll-margin-top: 16px; }
 .guide-contents { display: flex; flex-wrap: wrap; gap: 8px 18px; padding: 12px 0; border-block: 1px solid var(--rule); }
 .guide h3 { font: 600 1.05rem/1.35 var(--serif); margin: 20px 0 6px; }
@@ -385,6 +400,10 @@ input[aria-invalid="true"], textarea[aria-invalid="true"] { border-color: var(--
 .check { display: flex; gap: 8px; align-items: center; margin-top: 10px; font-size: 0.95rem; cursor: pointer; }
 .check input { width: 18px; height: 18px; accent-color: var(--accent); }
 #matrixField { margin-top: 10px; }
+.var-order { margin: 6px 0 0; color: var(--ink-2); font-size: 0.86rem; }
+.var-order:empty { display: none; }
+.var-order .chain-vars { font-family: var(--serif); font-size: 1.08rem; color: var(--ink); margin-left: 4px; white-space: nowrap; }
+.var-order .gt { color: var(--ink-3); white-space: pre; }
 .module-fields { margin-top: 12px; display: grid; gap: 10px; }
 .advanced { display: grid; gap: 12px; }
 .advanced summary, .engine-settings summary { cursor: pointer; list-style-position: inside; }
@@ -456,6 +475,12 @@ input[aria-invalid="true"], textarea[aria-invalid="true"] { border-color: var(--
 .task:has(input:checked) { background: var(--tint); box-shadow: inset 3px 0 0 var(--accent); }
 .task.unavailable .t-label, .task.unavailable .t-desc { color: var(--ink-3); }
 .backend-disabled { color: var(--ink-3); }
+.backend-hidden { display: none !important; }
+.task-field { padding: 4px 0 12px; border-bottom: 1px solid var(--rule); }
+.task-field select { font-weight: 700; }
+.task-field select option, .task-field select optgroup { font-weight: 400; }
+.task-field .hint { margin-top: 2px; }
+.tasks-unavailable { display: flex; align-items: center; gap: 6px 10px; flex-wrap: wrap; margin: 2px 0 0; padding: 6px 10px; color: var(--ink-2); font-size: 0.86rem; }
 .presentation :is(input, select, textarea):disabled { color: var(--ink-3); cursor: not-allowed; }
 .seg input:disabled + span { color: var(--ink-3); opacity: 0.65; cursor: not-allowed; }
 .views a[aria-disabled="true"] { color: var(--ink-3); cursor: not-allowed; }
@@ -527,6 +552,16 @@ button { font: inherit; cursor: pointer; }
 .metric-button .icon { flex: 0 0 auto; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 #timeValue { display: inline-block; min-width: 8ch; text-align: right; font-variant-numeric: tabular-nums; }
 .run-status { margin: 0; color: var(--ink-2); font-size: 0.92rem; }
+.run-chip-wrap { margin: 0; }
+.run-chip-wrap .run-chip {
+  width: auto; height: auto; padding: 2px 10px;
+  border: 1px solid currentColor; border-radius: 999px;
+  font: 700 0.8rem/1.4 var(--sans); white-space: nowrap;
+}
+.run-chip-wrap .run-chip[data-state="complete"] { color: var(--ok); background: var(--ok-bg); }
+.run-chip-wrap .run-chip[data-state="bounded"] { color: var(--warn); background: var(--warn-bg); }
+.run-chip-wrap .run-chip[data-state="stopped"] { color: var(--error); background: transparent; }
+.run-chip-wrap .run-chip:hover, .run-chip-wrap.open .run-chip { border-color: currentColor; filter: brightness(0.92); }
 .run-status.busy::before {
   content: "";
   display: inline-block;
@@ -583,6 +618,8 @@ button { font: inherit; cursor: pointer; }
 }
 var { font-family: var(--serif); font-style: italic; }
 sup { font-size: 0.68em; line-height: 0; vertical-align: 0.55em; margin-left: 0.04em; }
+sub { font-size: 0.68em; line-height: 0; vertical-align: -0.28em; margin-left: 0.02em; font-style: normal; }
+.var-long { margin: 0 0.07em; }
 .math-power { display: inline-block; white-space: nowrap; }
 .op { margin: 0 0.28em; }
 .op.sign { margin: 0 0.1em 0 0; }
@@ -678,7 +715,7 @@ pre.code-block {
   font: 0.9rem/1.5 var(--mono);
   white-space: pre-wrap;
   overflow-wrap: anywhere;
-  height: min(58vh, 540px);
+  height: min(60vh, 760px);
   overflow-y: auto;
 }
 .terminal .in { color: var(--ink-2); margin-top: 6px; }
@@ -761,7 +798,13 @@ pre.code-block {
 
 /* ------------------------------------------------------------ about */
 
-.prose { max-width: 72ch; padding: 24px 28px; }
+/* Text pages sit centred under the header; the guide is wider for its cards
+   and tables, while running text keeps a readable measure. */
+.prose { max-width: 72ch; margin-inline: auto; padding: 24px 28px; }
+.prose.guide { max-width: 920px; }
+.guide :is(p, ul, ol, h1, h2, h3) { max-width: 78ch; }
+.guide .example-cards p { max-width: none; }
+.view-guide > .hint { max-width: 920px; margin-inline: auto; }
 .prose h1 { font: 600 1.7rem/1.2 var(--serif); margin: 0 0 12px; }
 .prose h2 { font: 600 1.2rem/1.3 var(--serif); margin: 22px 0 6px; }
 .prose p { margin: 0 0 10px; }
@@ -779,3 +822,9 @@ p.small { color: var(--ink-3); font-size: 0.85rem; margin-top: 20px; }
 .fomkyr-options label { min-width: 0; }
 .fomkyr-options .check .label-row { display: inline-flex; }
 #fomkyr-autoMemorySummary { grid-column: 1 / -1; margin: 0; }
+
+/* Very wide screens: give results and the console more room. */
+@media (min-width: 1800px) {
+  .top, .engine-note, main { max-width: 1600px; }
+  .view-compute { grid-template-columns: minmax(380px, 460px) minmax(0, 1fr); }
+}

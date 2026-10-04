@@ -1,0 +1,8 @@
+vars a,b,c,d;
+
+a*b-b*a-2*c*d-2*d*c,
+a*c-c*a-3*d*b-3*b*d,
+7*a*d-7*d*a+5*b*c+5*c*b,
+a*b+b*a-c*d+d*c,
+a*c+c*a-d*b+b*d,
+a*d+d*a-b*c+c*b;

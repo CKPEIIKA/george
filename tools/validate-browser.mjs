@@ -86,7 +86,7 @@ try {
   });
   await page.locator('#go').click();
   await page.waitForFunction(()=>document.querySelector('#runStatus').textContent.startsWith('Stopped after reaching'),null,{timeout:60000});
-  assert.match(await page.locator('#basisOut .notice').textContent(),/saved partial basis/);
+  assert.match(await page.locator('#runChipWrap').textContent(),/Stopped.*output shown is partial/);
   assert.ok(await page.locator('#basisOut .polys li').count()>0);
   await page.locator('[data-lang="ru"]').click();
   assert.match(await page.locator('#runStatus').textContent(),/предел памяти 128/);
@@ -98,7 +98,7 @@ try {
   await page.locator('#vars').fill('x, y');
   await page.locator('#rels').fill('x^2-1');
   await page.locator('#maxdeg').fill('6');
-  await page.locator('input[name="task"][value="anick"]').check();
+  await page.locator('#taskSelect').selectOption('anick');
   await page.locator('details').evaluate(el=>el.open=true);
   await page.locator('#augmentation').selectOption('monoid');
   await page.locator('#go').click();

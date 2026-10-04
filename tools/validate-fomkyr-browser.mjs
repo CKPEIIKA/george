@@ -165,7 +165,7 @@ try {
           console.log(name,'unbounded finished');
           assert.equal(unlimited.storage,'memory');assert.equal(unlimited.unrestrictedBasisComplete,true);
           assert.equal(unlimited.monomialPruning,false);assert.equal(unlimited.target,null);
-          assert.match(await page.locator('#basisOut').textContent(),/A finite complete Gröbner basis was proved/);
+          assert.match(await page.locator('#runChipWrap').textContent(),/Complete.*A finite complete Gröbner basis was proved/);
           await page.locator('#fomkyr-rewriteDegree').fill('3');
           await page.locator('#fomkyr-rewriteSupport').fill('1');
           await page.locator('#fomkyr-rewriteMiB').fill('0');

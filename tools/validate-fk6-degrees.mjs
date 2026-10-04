@@ -11,6 +11,9 @@ import {normalWordCounts} from '../test/support/normal-word-counts.mjs';
 import {CheckTimings, engineHashes, validationSnapshot, writeJSON} from './release-support.mjs';
 
 const out=path.resolve(process.argv[2]??'build/validation/fk6-degrees');fs.mkdirSync(out,{recursive:true});
+const maxAt=process.argv.indexOf('--max-degree');
+const maxDegree=maxAt<0?6:Number(process.argv[maxAt+1]);
+assert.ok(Number.isInteger(maxDegree)&&maxDegree>=1&&maxDegree<=8,'Regression prefixes use bounds 1–8; degree 9 and above belong in benchmark:stress.');
 const fixtureFile='test/fixtures/fomin-kirillov-user.json';
 const {vars,rels}=readInputFile('(ALGFORMINPUT)\n'+JSON.parse(fs.readFileSync(fixtureFile)).inputText);
 const a=algebra(vars),sha=file=>crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
@@ -18,14 +21,14 @@ const manifest=JSON.parse(fs.readFileSync('web/engine/fomkyr/build.json'));
 const expected=JSON.parse(fs.readFileSync('test/fixtures/fk6-degree-prefixes.json'));
 const timings=new CheckTimings(out),hashes=engineHashes(),sourceHashes=validationSnapshot();
 const previous=process.argv.includes('--resume')&&fs.existsSync(path.join(out,'report.json'))?JSON.parse(fs.readFileSync(path.join(out,'report.json'))):null;
-if(previous){assert.deepEqual(previous.kernelHashes,hashes);assert.deepEqual(previous.validationSourceHashes,sourceHashes);}
+if(previous){assert.deepEqual(previous.kernelHashes,hashes);assert.deepEqual(previous.validationSourceHashes,sourceHashes);assert.equal(previous.maxDegree,maxDegree);}
 const retainedAt=process.argv.indexOf('--singular-report');
 const retainedFile=retainedAt<0?null:path.resolve(process.argv[retainedAt+1]);
 const retained=retainedFile?JSON.parse(fs.readFileSync(retainedFile)):null;
 if(retained){assert.equal(retained.state,'complete');assert.equal(retained.inputSha256,sha(fixtureFile));}
-const report={state:'running',version:manifest.version,inputSha256:sha(fixtureFile),timeLimitSeconds:120,
+const report={state:'running',version:manifest.version,inputSha256:sha(fixtureFile),timeLimitSeconds:120,maxDegree,
   kernelHashes:hashes,validationSourceHashes:sourceHashes,startedAt:previous?.startedAt??new Date().toISOString(),
-  method:'Fresh degree 1–9 jobs for each of the four Wasm variants. Exact leading words, independent BigInt normal-word DP, input membership and changed-tail mutual reductions against archived reference bases. Full critical-pair certificates through degree 5. Singular bounded leading ideals are checked until its first two-minute limit; higher skipped oracles are explicitly recorded.',cases:[]};
+  method:`Fresh degree 1–${maxDegree} regression jobs for each of the four Wasm variants. Exact leading words, independent BigInt normal-word DP, input membership and changed-tail mutual reductions against archived reference bases. Full critical-pair certificates through degree 5. Singular bounded leading ideals are checked until its first two-minute limit; higher skipped oracles are explicitly recorded.`,cases:[]};
 report.cases=previous?.cases??[];
 if(retained)report.retainedSingular={sourceReportSha256:sha(retainedFile),method:'Reuse recorded Singular calculations on the identical input; reread and check their leading words against each exact reference. No independent oracle timing is repeated.'};
 const save=()=>writeJSON(path.join(out,'report.json'),report);save();
@@ -35,7 +38,7 @@ const env={...process.env,LD_LIBRARY_PATH:`${root}/usr/lib/x86_64-linux-gnu:${ro
 env.SINGULAR_PROCS_DIR=path.join(root,'usr/lib/x86_64-linux-gnu/singular/MOD');
 let singularLimit=report.cases.some(row=>row.singular.status==='timeout')?'A previous degree reached the Singular deadline.':null;
 try {
-  for (let degree=1;degree<=9;degree++) {
+  for (let degree=1;degree<=maxDegree;degree++) {
     if(report.cases.some(row=>row.degree===degree))continue;
     const directory=path.join(out,'degree-'+degree);fs.mkdirSync(directory,{recursive:true});
     const anchor=expected.degrees.find(row=>row.degree===degree);
@@ -91,6 +94,6 @@ try {
     }
     report.cases.push(row);save();
   }
-  report.state='complete';report.summary={degreeBounds:9,fomkyrRuns:report.cases.reduce((n,c)=>n+c.engines.length,0),singularPassed:report.cases.filter(c=>c.singular.passed).length,singularCensored:report.cases.filter(c=>c.singular.status==='timeout').length};
+  report.state='complete';report.summary={degreeBounds:maxDegree,fomkyrRuns:report.cases.reduce((n,c)=>n+c.engines.length,0),singularPassed:report.cases.filter(c=>c.singular.passed).length,singularCensored:report.cases.filter(c=>c.singular.status==='timeout').length};
 }catch(error){report.state='failed';report.error=error.stack;throw error;}
 finally{report.finishedAt=new Date().toISOString();save();}

@@ -7,10 +7,11 @@ import {fileURLToPath} from 'node:url';
 import {VERSION} from '../web/engine/fomkyr/storage.js';
 import {fileHash, digest, stableJSON, inventory, validationSnapshot, writeJSON} from './release-support.mjs';
 import {singularIdentity} from './oracle-cache.mjs';
+import {FK6_REGRESSION_MAX_DEGREE,NATIVE_REGRESSION_CHECKS} from './suite-profiles.mjs';
 
 if(process.argv.includes('--help')){
   console.log(`Usage: node tools/release.mjs [options]
-  --full                 Include the inherited upstream suites.
+  --full                 Include upstream and extended recovery audits.
   --refresh-oracles      Recompute independent references.
   --out <directory>      Use an explicit resumable release directory.
   --previous-root <dir>  Check upgrades from this saved engine.
@@ -50,7 +51,8 @@ const automaticPrevious=fs.existsSync('local/baselines')?fs.readdirSync('local/b
   .sort((a,b)=>compareVersions(b.slice(7),a.slice(7)))
   .map(name=>'local/baselines/'+name+'/engine').find(root=>fs.existsSync(path.join(root,'build.json'))):null;
 const previousRoot=arg('--previous-root',automaticPrevious);
-const protocol=saved?.protocol??{schema:1,appVersion,coreVersion:VERSION,full,refreshOracles:refresh,node:process.version,lhsCases:64,
+const protocol=saved?.protocol??{schema:2,appVersion,coreVersion:VERSION,full,refreshOracles:refresh,node:process.version,lhsCases:64,
+  fk6RegressionMaxDegree:FK6_REGRESSION_MAX_DEGREE,nativeSuite:full?'extended':'regression',
   singularBuild:digest(stableJSON(singularIdentity(path.resolve('build/oracles/root')))),
   previousEngine:previousRoot?{directory:path.resolve(previousRoot),files:inventory([previousRoot])}:null};
 const fingerprint=digest(stableJSON({sourceHashes,protocol}));
@@ -231,15 +233,15 @@ if(preparation){
     if(!full)await phase('matrix',process.execPath,matrixArgs,{evidence:path.join(matrix,'report.json'),validate:r=>assert.equal(r.cases.length,95)});
     const published=path.join(out,'published');
     await phase('published',process.execPath,['tools/validate-fomkyr-published.mjs',published,'--resume',...refreshArgs],{
-      evidence:path.join(published,'report.json'),validate:r=>assert.equal(r.cases.length,5)});
+      evidence:path.join(published,'report.json'),validate:r=>assert.equal(r.cases.length,9)});
     const prefixes=path.join(out,'fk6-prefixes'),retained=refresh?null:retainedPrefixes();
-    await phase('fk6-prefixes',process.execPath,['tools/validate-fk6-degrees.mjs',prefixes,'--resume',...(retained?['--singular-report',retained]:[])],{
-      evidence:path.join(prefixes,'report.json'),validate:r=>assert.equal(r.cases.length,9)});
+    await phase('fk6-prefixes',process.execPath,['tools/validate-fk6-degrees.mjs',prefixes,'--max-degree',String(FK6_REGRESSION_MAX_DEGREE),'--resume',...(retained?['--singular-report',retained]:[])],{
+      evidence:path.join(prefixes,'report.json'),validate:r=>assert.equal(r.cases.length,FK6_REGRESSION_MAX_DEGREE)});
     if(fs.existsSync('fomkyr/native/cli.c')){
       const native=path.join(out,'native-cli');
-      await phase('native-cli',process.execPath,['tools/validate-fomkyr-native.mjs','--out',native,'--resume'],{
+      await phase('native-cli',process.execPath,['tools/validate-fomkyr-native.mjs','--out',native,'--suite',full?'extended':'regression','--resume'],{
         evidence:path.join(native,'report.json'),timeoutSeconds:1800,
-        validate:r=>assert.ok(r.tests.length>=22&&r.tests.every(test=>test.passed))});
+        validate:r=>{assert.ok(r.tests.every(test=>test.passed));assert.ok(NATIVE_REGRESSION_CHECKS.every(name=>r.tests.some(test=>test.name===name&&test.passed)));if(full)assert.ok(r.tests.length>=30);}});
     }
     const browser=path.join(out,'browser');
     await phase('browser',process.execPath,['tools/validate-correction-release.mjs',browser,'--defaults-case','--coefficient-case'],{

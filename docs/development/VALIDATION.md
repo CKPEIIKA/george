@@ -39,7 +39,7 @@ Growing FK6 cases use the 15-generator fixture and a scaled presentation, with
 independent Singular checks at matching degree bounds. Finite random FK6-like
 cases stop once the next graded component is zero. Each independent oracle job
 has a two-minute limit; a timeout is reported as censored, never a successful check.
-The prefix suite compares degrees 1–9 with retained exact reference bases and
+The routine prefix suite compares degrees 1–6 with retained exact reference bases and
 independently counted Hilbert coefficients.
 
 Browser tests cover Chromium and Firefox, isolated and ordinary static hosts,

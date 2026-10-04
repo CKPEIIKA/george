@@ -56,6 +56,8 @@
     "benchmark:bergman:regression": "node tools/benchmark-bergman-regression.mjs",
     "fomkyr:build:native": "make -C fomkyr native",
     "test:fomkyr:cli": "node tools/validate-fomkyr-native.mjs",
+    "test:fomkyr:extended": "node tools/validate-fomkyr-native.mjs --suite extended",
+    "benchmark:stress": "node tools/benchmark-free-algebra.mjs",
     "benchmark:fomkyr:native": "node tools/benchmark-fomkyr-native.mjs",
     "test:fomkyr:row-growth": "node tools/validate-fomkyr-row-growth.mjs"
   },

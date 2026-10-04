@@ -12,12 +12,14 @@ npm run release:check
 
 The command checks application/core versions and source hashes in `fomkyr/` first, then runs unit
 tests, exact arithmetic, reserve and automatic memory checks, the 95-case mathematical matrix,
-five coefficient-heavy comparisons, FK6 degrees 1–9, native CLI/frontier/Hilbert authority and cooperative yield/recovery checks, and Chromium/Firefox
+nine coefficient/structural comparisons, FK6 degrees 1–6, the 18-check native
+CLI/frontier/profile/Hilbert-authority regression profile, and Chromium/Firefox
 interface (including full text ZIP export) and Pages-style hosting checks. It also checks checkpoint upgrades
 when a previous engine exists under `local/baselines/`, or when supplied with
 `--previous-root <engine-directory>`.
 
-The inherited upstream suite is available explicitly:
+The inherited upstream suite and the longer native recovery/sanitizer audits are
+available explicitly:
 
 ```sh
 npm run release:check -- --full
@@ -26,6 +28,12 @@ npm run release:check -- --full
 Use it for broader core changes and periodic validation. Its shared arithmetic
 and Wasm tests run against the production host once; the exact runner reuses that
 evidence and runs its remaining property checks.
+
+Run just the extended native audits with `npm run test:fomkyr:extended`. Routine
+browser UI checks use FK6 degree 5 for complete counts/preview expansion and
+degree 4 for independently checked verification downloads. Degree 9, 10 and 11
+timings and the literature stress ladder have a separate
+[benchmark entry point](BENCHMARKS.md); neither release profile starts that ladder.
 
 ## Reuse and deadlines
 

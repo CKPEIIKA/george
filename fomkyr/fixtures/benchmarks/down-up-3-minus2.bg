@@ -1,0 +1,4 @@
+vars u,d;
+
+d*d*u-3*d*u*d+2*u*d*d,
+d*u*u-3*u*d*u+2*u*u*d;

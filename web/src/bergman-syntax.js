@@ -25,7 +25,7 @@ export function tokenize(src) {
       let j = i; while (j < src.length && /[A-Za-z0-9_]/.test(src[j])) j++;
       toks.push({ t: 'id', v: src.slice(i, j), at: i }); i = j; continue;
     }
-    if ('+-*^().'.includes(c)) { toks.push({ t: 'op', v: c, at: i }); i++; continue; }
+    if ('+-*^().[]{},='.includes(c)) { toks.push({ t: 'op', v: c, at: i }); i++; continue; }
     if (c === '−') { toks.push({ t: 'op', v: '-', at: i }); i++; continue; }
     throw new SyntaxError(`Unexpected character “${c}”`);
   }
@@ -53,7 +53,128 @@ export function parseVars(text) {
 
 export function splitRelations(text) {
   // Bergman separates relations by commas and ends the list with ';'.
-  return text.split(/[,;\n]+/).map((s) => s.trim()).filter(Boolean);
+  // Commas inside [a,b] and {a,b} belong to the bracket, not the list.
+  const out = [];
+  let depth = 0, start = 0;
+  for (let i = 0; i <= text.length; i++) {
+    const c = text[i];
+    if (c === '[' || c === '{') depth++;
+    else if ((c === ']' || c === '}') && depth > 0) depth--;
+    else if (i === text.length || (depth === 0 && (c === ',' || c === ';' || c === '\n'))) {
+      out.push(text.slice(start, i).trim());
+      start = i + 1;
+    }
+  }
+  return out.filter(Boolean);
+}
+
+// Physics notation: [A,B] = AB − BA, {A,B} = AB + BA and one “=”.
+// The relation is expanded into a sum of monomials with like terms combined.
+const SUGAR = /[[\]{}=]/;
+const MAX_EXPANDED_TERMS = 100000;
+const MAX_BRACKET_POWER = 64;
+
+function parseSugar(toks, expandId, maxExponent) {
+  let i = 0;
+  const peek = () => toks[i];
+  const isOp = (v) => peek()?.t === 'op' && peek().v === v;
+  // A polynomial maps a word key to { word: [{v, e}], coef: BigInt }.
+  const add = (p, q, s = 1n) => {
+    const r = new Map(p);
+    for (const [k, m] of q) {
+      const c = (r.get(k)?.coef ?? 0n) + s * m.coef;
+      if (c) r.set(k, { word: m.word, coef: c }); else r.delete(k);
+    }
+    return r;
+  };
+  const concat = (a, b) => {
+    if (!a.length) return b;
+    if (!b.length) return a;
+    const last = a[a.length - 1];
+    return last.v === b[0].v ? [...a.slice(0, -1), { v: last.v, e: last.e + b[0].e }, ...b.slice(1)] : [...a, ...b];
+  };
+  const key = (w) => w.map((f) => `${f.v}^${f.e}`).join(' ');
+  const mul = (p, q) => {
+    let r = new Map();
+    for (const a of p.values()) for (const b of q.values()) {
+      const word = concat(a.word, b.word);
+      r = add(r, new Map([[key(word), { word, coef: a.coef * b.coef }]]));
+      if (r.size > MAX_EXPANDED_TERMS) throw new SyntaxError('The expanded relation is too large');
+    }
+    return r;
+  };
+  const one = () => new Map([['', { word: [], coef: 1n }]]);
+  const exponent = () => {
+    i++;
+    const n = peek();
+    if (!n || n.t !== 'num') throw new SyntaxError('Exponents must be non-negative integers');
+    const e = Number(n.v); i++;
+    if (!Number.isSafeInteger(e) || e > maxExponent) throw new SyntaxError(`Exponents must be integers from 0 to ${maxExponent}`);
+    return e;
+  };
+  const power = (p, e) => { let r = one(); for (let k = 0; k < e; k++) r = mul(r, p); return r; };
+  function factor() {
+    const tk = peek();
+    if (!tk) throw new SyntaxError('A term is missing after an operator');
+    if (tk.t === 'num') { i++; return new Map([['', { word: [], coef: BigInt(tk.v) }]]); }
+    if (tk.t === 'id') {
+      const names = expandId(tk);
+      i++;
+      const e = isOp('^') ? exponent() : 1;
+      let word = [];
+      names.forEach((v, k) => { const n = k === names.length - 1 ? e : 1; if (n) word = concat(word, [{ v, e: n }]); });
+      return new Map([[key(word), { word, coef: 1n }]]);
+    }
+    if (tk.t === 'op' && (tk.v === '[' || tk.v === '{')) {
+      const close = tk.v === '[' ? ']' : '}';
+      i++;
+      const a = sum([',']);
+      if (!isOp(',')) throw new SyntaxError(`Write ${tk.v}A, B${close} with two entries`);
+      i++;
+      const b = sum([close]);
+      if (!isOp(close)) throw new SyntaxError(`Close the bracket with “${close}”`);
+      i++;
+      const r = add(mul(a, b), mul(b, a), tk.v === '[' ? -1n : 1n);
+      if (!isOp('^')) return r;
+      const e = exponent();
+      if (e > MAX_BRACKET_POWER) throw new SyntaxError(`Exponents must be integers from 0 to ${MAX_BRACKET_POWER}`);
+      return power(r, e);
+    }
+    if (tk.t === 'op' && (tk.v === '(' || tk.v === ')')) throw new SyntaxError('bergman reads relations as sums of monomials: expand the brackets first');
+    if (tk.t === 'op' && tk.v === '.') throw new SyntaxError('Coefficients must be integers');
+    if (tk.t === 'op' && tk.v === '^') throw new SyntaxError('“^” must follow a generator');
+    throw new SyntaxError(`Unexpected “${tk.v}”`);
+  }
+  function product() {
+    let r = factor();
+    while (peek() && !(peek().t === 'op' && '+-,]}='.includes(peek().v))) {
+      if (isOp('*')) {
+        i++;
+        const next = peek();
+        if (!next || !(['id', 'num'].includes(next.t) || next.v === '[' || next.v === '{')) throw new SyntaxError('A multiplication sign must have a factor on each side');
+      }
+      r = mul(r, factor());
+    }
+    return r;
+  }
+  function sum(stops) {
+    let r = new Map();
+    let first = true;
+    while (peek() && !(peek().t === 'op' && stops.includes(peek().v))) {
+      let s = 1n;
+      while (isOp('+') || isOp('-')) { if (peek().v === '-') s = -s; i++; }
+      if (!peek() || (peek().t === 'op' && stops.includes(peek().v))) throw new SyntaxError('A term is missing after an operator');
+      r = add(r, product(), s);
+      first = false;
+    }
+    if (first) throw new SyntaxError('A term is missing after an operator');
+    return r;
+  }
+  let p = sum(['=', ',', ']', '}']);
+  if (isOp('=')) { i++; p = add(p, sum(['=', ',', ']', '}']), -1n); }
+  if (i < toks.length) throw new SyntaxError(`Unexpected “${peek().v}”`);
+  if (p.size === 0) throw new SyntaxError('The relation expands to zero');
+  return [...p.values()].map(({ word, coef }) => ({ sign: coef < 0n ? -1 : 1, coef: (coef < 0n ? -coef : coef).toString(), factors: word }));
 }
 
 export function parseRelation(src, vars, maxExponent = 10000) {
@@ -69,6 +190,7 @@ export function parseRelation(src, vars, maxExponent = 10000) {
     throw new SyntaxError(`“${tok.v}” is not one of the generators`);
   };
   if (toks.length === 0) throw new SyntaxError('Empty relation');
+  if (SUGAR.test(src)) return parseSugar(toks, expandId, maxExponent);
   while (i < toks.length) {
     let sign = 1;
     while (peek() && peek().t === 'op' && (peek().v === '+' || peek().v === '-')) {
@@ -150,6 +272,48 @@ export function toBergman(terms) {
 
 // ------------------------------------------------------------ typesetting
 
+// A generator name with trailing digits gets them as a subscript: b0 → b₀,
+// a_12 → a₁₂. Names with a longer letter part stay as one upright-spaced unit.
+export function varHTML(name) {
+  const m = /^([A-Za-z][A-Za-z_]*?)_?(\d+)$/.exec(name);
+  const base = m ? m[1] : name;
+  const html = `<var>${esc(base)}</var>${m ? `<sub>${m[2]}</sub>` : ''}`;
+  return base.replace(/_/g, '').length > 1 ? `<span class="var-long">${html}</span>` : html;
+}
+
+// Multiplies a printed polynomial by −1 when its leading coefficient is
+// negative, so a basis element reads with a positive leading term.
+export function positiveLeading(src) {
+  const s = src.trim();
+  if (!s.startsWith('-')) return s;
+  let depth = 0;
+  let out = '';
+  for (const c of s) {
+    if (c === '(') depth++;
+    else if (c === ')') depth--;
+    out += depth === 0 && (c === '+' || c === '-') ? (c === '+' ? '-' : '+') : c;
+  }
+  return out.replace(/^\+/, '');
+}
+
+// Which generator is largest. bergman ranks the last listed generator
+// highest in its noncommutative degree orders, and the first one highest in
+// the elimination and commutative orders; a matrix order compares the
+// columns of the matrix. Returns the names from largest to smallest.
+export function variableOrder(form) {
+  const names = form.reverseVars ? [...form.vars].reverse() : [...form.vars];
+  if (form.order === 'matrix') {
+    const rows = String(form.matrix || '').trim().split('\n').map((r) => r.trim().split(/[\s,]+/).map(Number));
+    if (rows.length !== names.length || rows.some((r) => r.length !== names.length || r.some((v) => !Number.isSafeInteger(v)))) return null;
+    const column = (j) => rows.map((r) => r[j]);
+    const compare = (a, b) => { for (let k = 0; k < a.length; k++) if (a[k] !== b[k]) return b[k] - a[k]; return 0; };
+    const order = names.map((name, j) => ({ name, col: column(j) })).sort((a, b) => compare(a.col, b.col));
+    if (order.some((x, k) => k && compare(order[k - 1].col, x.col) === 0)) return null;
+    return order.map((x) => x.name);
+  }
+  return form.ring === 'noncomm' && ['degleftlex', 'homogelim'].includes(form.order) ? names.reverse() : names;
+}
+
 // Typesets a bergman output expression such as "-2*y*x^2+x^3" or
 // "+t^3*(2*z^2+2*z^3)".  With lead, the first term is marked as the
 // leading monomial.
@@ -195,7 +359,7 @@ export function typeset(src, { lead = false } = {}) {
       html += `<span class="paren">${esc(tk.v)}</span>`;
       prev = tk; continue;
     }
-    const base = tk.t === 'num' ? `<span class="num">${esc(tk.v)}</span>` : `<var>${esc(tk.v)}</var>`;
+    const base = tk.t === 'num' ? `<span class="num">${esc(tk.v)}</span>` : varHTML(tk.v);
     if (toks[i + 1]?.v === '^' && toks[i + 2]) {
       const exponent = toks[i + 2];
       html += `<span class="math-power">${base}<sup>${esc(exponent.v)}</sup></span>`;
@@ -228,12 +392,19 @@ export function parseBasis(text) {
   for (const raw of text.split('\n')) {
     const line = raw.trim();
     const m = /^%\s*(\d+)\s*$/.exec(line);
-    if (m) { flush(); cur = { deg: Number(m[1]), polys: [] }; groups.push(cur); continue; }
+    // Itemwise output repeats the degree header for every element.
+    if (m) {
+      flush();
+      cur = groups.find((g) => g.deg === Number(m[1]));
+      if (!cur) { cur = { deg: Number(m[1]), polys: [] }; groups.push(cur); }
+      continue;
+    }
     if (line === 'Done') { flush(); done = true; continue; }
     if (line.startsWith('%')) continue;
     if (cur) buf += line;
   }
   flush();
+  groups.sort((a, b) => a.deg - b.deg);
   return { groups, done };
 }
 
@@ -290,7 +461,7 @@ export function typesetWord(w) {
   let m;
   while ((m = re.exec(w))) {
     if (m[1]) html += `<span class="num">${m[1]}</span>`;
-    else html += `<var>${esc(m[2])}</var>${m[4] ? `<sup>${m[4]}</sup>` : ''}`;
+    else html += `${varHTML(m[2])}${m[4] ? `<sup>${m[4]}</sup>` : ''}`;
   }
   return html || esc(w);
 }
@@ -566,6 +737,31 @@ export function buildJob(form) {
     job.outputs.anick = outs.anick; // produced by the second stage
   }
   return job;
+}
+
+// What the result display needs to know about a job's presentation. Kept out
+// of the job itself, which is exactly what the engines receive.
+export function jobFacts(form, job) {
+  const task = TASK_BY_ID.get(form.task);
+  const parsed = form.rels.map((r) => parseRelation(r, form.vars, form.backend === 'fomkyr' ? 0xfffffffe : 10000));
+  const weights = new Map(String(form.weights || '').trim().split(/[\s,]+/).filter(Boolean).map((w, i) => [form.vars[i], Number(w)]));
+  const homogeneous = parsed.every((r) => isHomogeneous(r, weights));
+  const facts = {
+    resolutionTask: task.group === 'Resolutions',
+    // Such runs write their basis with GEORGEWRITEBASIS, whose Done marker
+    // already certifies that no critical pair was cut off by the bound.
+    itemwise: form.nonhomog === 'itemwise' || !homogeneous,
+    weighted: [...weights.values()].some((w) => w !== 1),
+    seriesBound: task.id === 'hilbert' ? form.maxserdeg || null : task.id === 'ncpbh' ? job.degreeBound : null,
+  };
+  // Degreewise homogeneous runs can certify completeness from degrees alone.
+  if (homogeneous && form.nonhomog !== 'itemwise' && (form.strategy || 'default') === 'default' && !facts.resolutionTask) {
+    facts.certificate = {
+      relationDegree: Math.max(0, ...parsed.flatMap((terms) => terms.map((term) => termDegree(term, weights)))),
+      minWeight: Math.min(...form.vars.map((v) => weights.get(v) ?? 1)),
+    };
+  }
+  return facts;
 }
 
 // Apply x = u + 1 over the integers. This preserves leading words in the

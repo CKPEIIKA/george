@@ -17,7 +17,18 @@
 <header class="top">
   <div class="brand">
     <a class="brand-home" href="#compute" aria-label="George">
-    <svg class="logo" viewBox="0 0 28 28" aria-hidden="true"><path class="logo-face" d="M14 3 25 14 14 25 3 14Z"/><path class="logo-edge" d="M14 3 25 14 14 25 3 14Z"/><circle cx="14" cy="3.6" r="2"/><circle cx="24.4" cy="14" r="2"/><circle cx="14" cy="24.4" r="2"/><circle cx="3.6" cy="14" r="2"/></svg>
+    <svg class="logo" id="logo" viewBox="0 0 28 28" aria-hidden="true"><path class="logo-face" d="M14 3 25 14 14 25 3 14Z"/><path class="logo-edge" d="M14 3 25 14 14 25 3 14Z"/><circle cx="14" cy="3.6" r="2"/><circle cx="24.4" cy="14" r="2"/><circle cx="14" cy="24.4" r="2"/><circle cx="3.6" cy="14" r="2"/>
+      <!-- While computing: the diamond lemma. An ambiguity at the top is reduced
+           along both sides; the two reductions meet at a common bottom. -->
+      <g class="logo-run">
+        <circle class="logo-ripple" cx="14" cy="3.6" r="2"><animate attributeName="r" values="2;5;5" keyTimes="0;0.16;1" dur="2.4s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;0;0" keyTimes="0;0.16;1" dur="2.4s" repeatCount="indefinite"/></circle>
+        <path class="logo-trace" d="M14 3.6 3.6 14 14 24.4" pathLength="1"><animate attributeName="stroke-dashoffset" values="1;1;0;0;1" keyTimes="0;0.1;0.6;0.95;1" dur="2.4s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;1;1;0;0" keyTimes="0;0.1;0.75;0.95;1" dur="2.4s" repeatCount="indefinite"/></path>
+        <path class="logo-trace" d="M14 3.6 24.4 14 14 24.4" pathLength="1"><animate attributeName="stroke-dashoffset" values="1;1;0;0;1" keyTimes="0;0.1;0.6;0.95;1" dur="2.4s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;1;1;0;0" keyTimes="0;0.1;0.75;0.95;1" dur="2.4s" repeatCount="indefinite"/></path>
+        <circle class="logo-walker" r="1.7"><animateMotion path="M14 3.6 3.6 14 14 24.4" keyPoints="0;0;1;1" keyTimes="0;0.1;0.6;1" calcMode="linear" dur="2.4s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.1;0.6;0.66;1" dur="2.4s" repeatCount="indefinite"/></circle>
+        <circle class="logo-walker" r="1.7"><animateMotion path="M14 3.6 24.4 14 14 24.4" keyPoints="0;0;1;1" keyTimes="0;0.1;0.6;1" calcMode="linear" dur="2.4s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.1;0.6;0.66;1" dur="2.4s" repeatCount="indefinite"/></circle>
+        <circle class="logo-ripple" cx="14" cy="24.4" r="2" opacity="0"><animate attributeName="r" values="2;2;6.5;6.5" keyTimes="0;0.6;0.9;1" dur="2.4s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0;1;0;0" keyTimes="0;0.59;0.6;0.9;1" dur="2.4s" repeatCount="indefinite"/></circle>
+      </g>
+    </svg>
     <span class="brand-name">George <small class="brand-version">0.7.0</small></span>
     </a>
     <span class="brand-sub"><span data-i18n="brand.subPrefix">an interface to bergman and </span><a href="#guide-fomkyr" data-i18n="brand.more">more…</a></span>
@@ -67,6 +78,15 @@
         <span class="label"><var>n</var></span>
         <input type="number" id="presetN" min="2" max="7" value="3" inputmode="numeric">
       </label>
+    </div>
+
+    <div class="field task-field">
+      <label class="label" for="taskSelect" data-i18n="legend.compute">Compute</label>
+      <select id="taskSelect" aria-describedby="taskDescription"></select>
+      <p class="hint" id="taskDescription"></p>
+      <p class="tasks-unavailable" id="tasksUnavailable" hidden><span id="tasksUnavailableText"></span><button type="button" class="quiet small" id="useBergman" data-i18n="tasks.useBergman">Use Bergman</button></p>
+      <!-- The radio group stays the form's model; the select above drives it. -->
+      <div id="taskList" class="task-list" hidden></div>
     </div>
 
     <fieldset class="block">
@@ -121,6 +141,7 @@
     <fieldset class="block">
       <legend data-i18n="legend.order">Monomial order</legend>
       <select id="order" aria-label="Monomial order" data-i18n-attr="aria-label:legend.order"></select>
+      <p class="var-order" id="varOrder" aria-live="polite"></p>
       <label class="check"><input type="checkbox" id="reverseVars"><span data-i18n="reverse">Reverse the variable order</span></label>
       <label class="field" id="matrixField" hidden>
         <span class="label" data-i18n="matrix.label">Order matrix, one row per line</span>
@@ -251,11 +272,6 @@
       </label>
     </details>
 
-    <fieldset class="block tasks">
-      <legend data-i18n="legend.compute">Compute</legend>
-      <div id="taskList" class="task-list"></div>
-    </fieldset>
-
     <div class="actions">
       <button type="submit" class="primary" id="go">Compute Gröbner basis</button>
       <button type="button" class="quiet" id="stop" hidden data-i18n="stop">Stop</button>
@@ -274,6 +290,10 @@
         <h2 id="resultsTitle" data-i18n="results">Results</h2>
       </div>
       <div class="run-info">
+        <span class="help run-chip-wrap" id="runChipWrap" hidden>
+          <button type="button" class="help-btn run-chip" id="runChip" aria-expanded="false" aria-controls="runChipHint" aria-describedby="runChipHint"></button>
+          <span class="help-pop" id="runChipHint"></span>
+        </span>
         <p class="run-status" id="runStatus" aria-live="polite" data-i18n="status.idle">Nothing computed yet.</p>
         <div class="run-metrics" id="runMetrics" hidden>
           <span class="help run-metric" id="memoryUsage" hidden>

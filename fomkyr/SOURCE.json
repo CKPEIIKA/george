@@ -14,8 +14,8 @@
       "originalSha256": "81ef045823e8c497ea45ece5e498f6b63df285466aaee1445e721505f400b834"
     },
     "README.md": {
-      "bytes": 21935,
-      "sha256": "fde966aae641d58cbfe3224d1db15131ba2409a4ad736056153e70e8cf6c5cef",
+      "bytes": 22266,
+      "sha256": "d09e8e301f21e620b2ab3a7e9da26783118599ae79141e91a7040d2f51bbac27",
       "originalSha256": "5228e1adab7cda107101829daa28ada54a51cc5a3232e56bfd7f598bdeb08419"
     },
     "dist/fomkyr32-single.wasm": {
@@ -46,6 +46,66 @@
     "docs/HILBERT_CLOSURE.md": {
       "bytes": 11367,
       "sha256": "dda966749129add891be166e4cbf2a579dbd6a6d40991126b000d9acfc0d4ccc"
+    },
+    "fixtures/benchmarks/catalog.json": {
+      "bytes": 16971,
+      "sha256": "e589edbbbb80c8765ef4d11bd2d36a654732f8570a99aba6e45ad62077d7587f"
+    },
+    "fixtures/benchmarks/down-up-3-minus2.bg": {
+      "bytes": 57,
+      "sha256": "1cce5f3fa30150e782dba268f3681457567d6621db9496b99212a68872fb62f6"
+    },
+    "fixtures/benchmarks/f4ncgb/4nilp5s-10.ms": {
+      "bytes": 235295,
+      "sha256": "88ac5e96135c03da9768e5c92c40df7d335332d433efc6fa00226cf06b93089f"
+    },
+    "fixtures/benchmarks/f4ncgb/LICENSE": {
+      "bytes": 1116,
+      "sha256": "1574ba8948a91e4f4053cae737d7be560fa44acb80e769434154a4bb68d54f91"
+    },
+    "fixtures/benchmarks/f4ncgb/braid3-16.ms": {
+      "bytes": 77,
+      "sha256": "230a364a4eaf05fb6b8698705d2b73448629cd011399526bae895bac50c60cc3"
+    },
+    "fixtures/benchmarks/f4ncgb/braidX-18.ms": {
+      "bytes": 71,
+      "sha256": "763ec3eba70d46bb086c7dbed4166b4259e55bc1104600713afbf93030317616"
+    },
+    "fixtures/benchmarks/f4ncgb/braidXY-12.ms": {
+      "bytes": 109,
+      "sha256": "892c4043820dee92f318b54d9dbd0b32a60393d526c558d207950e4cabf69e0a"
+    },
+    "fixtures/benchmarks/f4ncgb/holt_G3562h-17.ms": {
+      "bytes": 231,
+      "sha256": "4bbd0f637c7e65ad55a2329f0f98a27245410d32b8bcf46b41072f368824c84f"
+    },
+    "fixtures/benchmarks/f4ncgb/lv2d10-100.ms": {
+      "bytes": 32,
+      "sha256": "1fe6c62dcfd9980ce499fbf507a60026a83036b6d0827ef1ce374434f8fae353"
+    },
+    "fixtures/benchmarks/f4ncgb/malle_G12h-100.ms": {
+      "bytes": 180,
+      "sha256": "b797a9ffee4ab06e7421905858a3474003be52abca56059932a5b2b8265d3509"
+    },
+    "fixtures/benchmarks/f4ncgb/serre-e6-17.ms": {
+      "bytes": 449,
+      "sha256": "0e372a031b9e8fb85a86bd06cd1aa263078fc1e52e20735bcc6d0694ad7cadac"
+    },
+    "fixtures/benchmarks/f4ncgb/serre-ha11-17.ms": {
+      "bytes": 188,
+      "sha256": "42ed0161fa8e6f69fbf4a3f5435905a782d9a7f1a1a303fa7056db444b84b72c"
+    },
+    "fixtures/benchmarks/quantum-binomial-non-pbw.bg": {
+      "bytes": 69,
+      "sha256": "4b23e97ad020b0c99c8d987aabd109fb54e8ad868f4831bd716b19620c0ecc1c"
+    },
+    "fixtures/benchmarks/sklyanin4-2-3.bg": {
+      "bytes": 133,
+      "sha256": "a76d5d8e75dfb8af8d753e6fa08bafb29d890e1c350df374cbfb15924e7178a9"
+    },
+    "fixtures/benchmarks/yang-baxter.bg": {
+      "bytes": 69,
+      "sha256": "a18fa72745a8e1a42472d44ff575047ed51cb3c47f7f03c40cdff880a875a51a"
     },
     "fixtures/big-coefficients.json": {
       "bytes": 918,

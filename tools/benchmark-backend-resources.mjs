@@ -29,7 +29,7 @@ if (!Number.isFinite(timeoutSeconds) || timeoutSeconds < 0) throw new Error('Cho
 if (timeoutSeconds === 0 && !process.argv.includes('--allow-no-timeout')) throw new Error('Unlimited measurement requires --allow-no-timeout.');
 if (!Number.isInteger(sampleMs) || sampleMs < 0 || sampleMs > 10000) throw new Error('Choose sampling interval 0..10000 ms; zero takes boundary snapshots only.');
 if (process.platform !== 'linux') throw new Error('Resource sampling requires Linux /proc.');
-if (degrees.some(d => !Number.isInteger(d) || d < 1 || d > 32)) throw new Error('Choose degrees 1..32.');
+if (degrees.some(d => !Number.isInteger(d) || d < 1 || d > 10000)) throw new Error('Choose degrees 1..10000.');
 if (!Number.isInteger(trials) || trials < 1 || trials > 20) throw new Error('Choose 1..20 trials.');
 fs.mkdirSync(out, {recursive: true});
 const temporary = path.join(out, 'browser-profiles');

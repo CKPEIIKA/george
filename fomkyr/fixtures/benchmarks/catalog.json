@@ -1,0 +1,626 @@
+{
+  "schema": 1,
+  "field": "Q",
+  "order": "degree-left-lex",
+  "generatorPriority": "Variables are ascending in each input. Singular Dp uses the reversed list, matching the f4ncgb exporter.",
+  "degreeBound": "Inclusive ambiguity degree for homogeneous inputs.",
+  "defaults": {
+    "suite": "priority",
+    "timeoutSeconds": 120,
+    "memoryMiB": 4096,
+    "workers": 4
+  },
+  "publishedProtocol": {
+    "source": "https://arxiv.org/html/2505.19304v1",
+    "timeoutSeconds": 43200,
+    "memoryBytes": 30000000000,
+    "measuredHere": false
+  },
+  "cases": [
+    {
+      "id": "4nilp5s",
+      "inputFile": "fomkyr/fixtures/benchmarks/f4ncgb/4nilp5s-10.ms",
+      "inputSha256": "88ac5e96135c03da9768e5c92c40df7d335332d433efc6fa00226cf06b93089f",
+      "format": "ms",
+      "variables": [
+        "x1",
+        "x2",
+        "x3",
+        "x4",
+        "x5"
+      ],
+      "homogeneous": true,
+      "targetDegree": 10,
+      "smokeDegree": 5,
+      "suites": [
+        "priority",
+        "stress"
+      ],
+      "family": "sparse-support",
+      "sources": [
+        {
+          "url": "https://gitlab.sai.jku.at/f4ncgb/f4ncgb/-/blob/f152bb0d040d7947d4296f9d68ca849ee135629c/test_inputs/4nilp5s-10.ms",
+          "revision": "f152bb0d040d7947d4296f9d68ca849ee135629c",
+          "license": "MIT",
+          "licenseFile": "fomkyr/fixtures/benchmarks/f4ncgb/LICENSE"
+        },
+        {
+          "url": "https://arxiv.org/html/2505.19304v1",
+          "location": "Section 8, Table 3"
+        }
+      ]
+    },
+    {
+      "id": "braid3",
+      "inputFile": "fomkyr/fixtures/benchmarks/f4ncgb/braid3-16.ms",
+      "inputSha256": "230a364a4eaf05fb6b8698705d2b73448629cd011399526bae895bac50c60cc3",
+      "format": "ms",
+      "variables": [
+        "z",
+        "y",
+        "x"
+      ],
+      "homogeneous": true,
+      "targetDegree": 16,
+      "smokeDegree": 6,
+      "suites": [
+        "priority",
+        "stress"
+      ],
+      "family": "critical-pairs",
+      "sources": [
+        {
+          "url": "https://gitlab.sai.jku.at/f4ncgb/f4ncgb/-/blob/f152bb0d040d7947d4296f9d68ca849ee135629c/test_inputs/braid3-16.ms",
+          "revision": "f152bb0d040d7947d4296f9d68ca849ee135629c",
+          "license": "MIT",
+          "licenseFile": "fomkyr/fixtures/benchmarks/f4ncgb/LICENSE"
+        },
+        {
+          "url": "https://arxiv.org/html/2505.19304v1",
+          "location": "Section 8, Table 3"
+        }
+      ]
+    },
+    {
+      "id": "braidX",
+      "inputFile": "fomkyr/fixtures/benchmarks/f4ncgb/braidX-18.ms",
+      "inputSha256": "763ec3eba70d46bb086c7dbed4166b4259e55bc1104600713afbf93030317616",
+      "format": "ms",
+      "variables": [
+        "z",
+        "y",
+        "x"
+      ],
+      "homogeneous": true,
+      "targetDegree": 18,
+      "smokeDegree": 6,
+      "suites": [
+        "stress"
+      ],
+      "family": "long-run",
+      "sources": [
+        {
+          "url": "https://gitlab.sai.jku.at/f4ncgb/f4ncgb/-/blob/f152bb0d040d7947d4296f9d68ca849ee135629c/test_inputs/braidX-18.ms",
+          "revision": "f152bb0d040d7947d4296f9d68ca849ee135629c",
+          "license": "MIT",
+          "licenseFile": "fomkyr/fixtures/benchmarks/f4ncgb/LICENSE"
+        },
+        {
+          "url": "https://arxiv.org/html/2505.19304v1",
+          "location": "Section 8, Table 3"
+        }
+      ]
+    },
+    {
+      "id": "braidXY",
+      "inputFile": "fomkyr/fixtures/benchmarks/f4ncgb/braidXY-12.ms",
+      "inputSha256": "892c4043820dee92f318b54d9dbd0b32a60393d526c558d207950e4cabf69e0a",
+      "format": "ms",
+      "variables": [
+        "z",
+        "y",
+        "x"
+      ],
+      "homogeneous": true,
+      "targetDegree": 12,
+      "smokeDegree": 6,
+      "suites": [
+        "stress"
+      ],
+      "family": "synchronization",
+      "sources": [
+        {
+          "url": "https://gitlab.sai.jku.at/f4ncgb/f4ncgb/-/blob/f152bb0d040d7947d4296f9d68ca849ee135629c/test_inputs/braidXY-12.ms",
+          "revision": "f152bb0d040d7947d4296f9d68ca849ee135629c",
+          "license": "MIT",
+          "licenseFile": "fomkyr/fixtures/benchmarks/f4ncgb/LICENSE"
+        },
+        {
+          "url": "https://arxiv.org/html/2505.19304v1",
+          "location": "Section 8, Table 3"
+        }
+      ]
+    },
+    {
+      "id": "lp1",
+      "inputFile": "fomkyr/fixtures/published/lp1.bg",
+      "inputSha256": "a36323bfab38b8baaa05b1b83aa34ccd38480b4a0add9be60a5b156d38bdd5c4",
+      "format": "bg",
+      "variables": [
+        "x",
+        "y",
+        "z"
+      ],
+      "homogeneous": true,
+      "targetDegree": 15,
+      "smokeDegree": 5,
+      "suites": [
+        "priority",
+        "stress"
+      ],
+      "family": "mixed-defining-degree",
+      "sources": [
+        {
+          "url": "https://arxiv.org/html/2505.19304v1",
+          "location": "Section 8, Table 3"
+        },
+        {
+          "url": "https://github.com/symbolicdata/data/blob/a5cdf5366150bffba22a2c91a86a012dd23831af/XMLResources/FreeAlgebras/lp1-10.xml",
+          "revision": "a5cdf5366150bffba22a2c91a86a012dd23831af"
+        }
+      ]
+    },
+    {
+      "id": "serre-e6",
+      "inputFile": "fomkyr/fixtures/benchmarks/f4ncgb/serre-e6-17.ms",
+      "inputSha256": "0e372a031b9e8fb85a86bd06cd1aa263078fc1e52e20735bcc6d0694ad7cadac",
+      "format": "ms",
+      "variables": [
+        "f6",
+        "f5",
+        "f4",
+        "f3",
+        "f2",
+        "f1"
+      ],
+      "homogeneous": true,
+      "targetDegree": 17,
+      "smokeDegree": 5,
+      "suites": [
+        "priority",
+        "stress"
+      ],
+      "family": "serre",
+      "sources": [
+        {
+          "url": "https://gitlab.sai.jku.at/f4ncgb/f4ncgb/-/blob/f152bb0d040d7947d4296f9d68ca849ee135629c/test_inputs/serre-e6-17.ms",
+          "revision": "f152bb0d040d7947d4296f9d68ca849ee135629c",
+          "license": "MIT",
+          "licenseFile": "fomkyr/fixtures/benchmarks/f4ncgb/LICENSE"
+        },
+        {
+          "url": "https://arxiv.org/html/2505.19304v1",
+          "location": "Section 8, Table 3"
+        }
+      ]
+    },
+    {
+      "id": "serre-ha11",
+      "inputFile": "fomkyr/fixtures/benchmarks/f4ncgb/serre-ha11-17.ms",
+      "inputSha256": "42ed0161fa8e6f69fbf4a3f5435905a782d9a7f1a1a303fa7056db444b84b72c",
+      "format": "ms",
+      "variables": [
+        "f3",
+        "f2",
+        "f1"
+      ],
+      "homogeneous": true,
+      "targetDegree": 17,
+      "smokeDegree": 5,
+      "suites": [
+        "stress"
+      ],
+      "family": "serre",
+      "sources": [
+        {
+          "url": "https://gitlab.sai.jku.at/f4ncgb/f4ncgb/-/blob/f152bb0d040d7947d4296f9d68ca849ee135629c/test_inputs/serre-ha11-17.ms",
+          "revision": "f152bb0d040d7947d4296f9d68ca849ee135629c",
+          "license": "MIT",
+          "licenseFile": "fomkyr/fixtures/benchmarks/f4ncgb/LICENSE"
+        },
+        {
+          "url": "https://arxiv.org/html/2505.19304v1",
+          "location": "Section 8, Table 3"
+        }
+      ]
+    },
+    {
+      "id": "holt_G3562h",
+      "inputFile": "fomkyr/fixtures/benchmarks/f4ncgb/holt_G3562h-17.ms",
+      "inputSha256": "4bbd0f637c7e65ad55a2329f0f98a27245410d32b8bcf46b41072f368824c84f",
+      "format": "ms",
+      "variables": [
+        "h",
+        "y",
+        "x",
+        "b",
+        "a"
+      ],
+      "homogeneous": true,
+      "targetDegree": 17,
+      "smokeDegree": 5,
+      "suites": [
+        "overnight"
+      ],
+      "family": "long-run",
+      "sources": [
+        {
+          "url": "https://gitlab.sai.jku.at/f4ncgb/f4ncgb/-/blob/f152bb0d040d7947d4296f9d68ca849ee135629c/test_inputs/holt_G3562h-17.ms",
+          "revision": "f152bb0d040d7947d4296f9d68ca849ee135629c",
+          "license": "MIT",
+          "licenseFile": "fomkyr/fixtures/benchmarks/f4ncgb/LICENSE"
+        },
+        {
+          "url": "https://arxiv.org/html/2505.19304v1",
+          "location": "Section 8, Table 3"
+        }
+      ]
+    },
+    {
+      "id": "lv2d10",
+      "inputFile": "fomkyr/fixtures/benchmarks/f4ncgb/lv2d10-100.ms",
+      "inputSha256": "1fe6c62dcfd9980ce499fbf507a60026a83036b6d0827ef1ce374434f8fae353",
+      "format": "ms",
+      "variables": [
+        "z",
+        "y",
+        "x"
+      ],
+      "homogeneous": true,
+      "targetDegree": 100,
+      "smokeDegree": 6,
+      "suites": [
+        "stress"
+      ],
+      "family": "long-words",
+      "sources": [
+        {
+          "url": "https://gitlab.sai.jku.at/f4ncgb/f4ncgb/-/blob/f152bb0d040d7947d4296f9d68ca849ee135629c/test_inputs/lv2d10-100.ms",
+          "revision": "f152bb0d040d7947d4296f9d68ca849ee135629c",
+          "license": "MIT",
+          "licenseFile": "fomkyr/fixtures/benchmarks/f4ncgb/LICENSE"
+        },
+        {
+          "url": "https://arxiv.org/html/2505.19304v1",
+          "location": "Section 8, Table 3"
+        }
+      ]
+    },
+    {
+      "id": "malle_G12h",
+      "inputFile": "fomkyr/fixtures/benchmarks/f4ncgb/malle_G12h-100.ms",
+      "inputSha256": "b797a9ffee4ab06e7421905858a3474003be52abca56059932a5b2b8265d3509",
+      "format": "ms",
+      "variables": [
+        "h",
+        "z",
+        "y",
+        "x",
+        "a2",
+        "a1"
+      ],
+      "homogeneous": false,
+      "targetDegree": 100,
+      "smokeDegree": 5,
+      "suites": [
+        "unsupported"
+      ],
+      "family": "inhomogeneous-parameters",
+      "sources": [
+        {
+          "url": "https://gitlab.sai.jku.at/f4ncgb/f4ncgb/-/blob/f152bb0d040d7947d4296f9d68ca849ee135629c/test_inputs/malle_G12h-100.ms",
+          "revision": "f152bb0d040d7947d4296f9d68ca849ee135629c",
+          "license": "MIT",
+          "licenseFile": "fomkyr/fixtures/benchmarks/f4ncgb/LICENSE"
+        },
+        {
+          "url": "https://arxiv.org/html/2505.19304v1",
+          "location": "Section 8, Table 3"
+        }
+      ],
+      "unsupportedReason": "The published MS input treats a1 and a2 as generators. Its quadratic Hecke relations contain words of lengths 2, 3, and 4. Fomkyr requires homogeneous relations with unit generator degrees; no specialization or homogenization is substituted silently."
+    },
+    {
+      "id": "sklyanin4-2-3",
+      "inputFile": "fomkyr/fixtures/benchmarks/sklyanin4-2-3.bg",
+      "inputSha256": "a76d5d8e75dfb8af8d753e6fa08bafb29d890e1c350df374cbfb15924e7178a9",
+      "format": "bg",
+      "variables": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ],
+      "homogeneous": true,
+      "targetDegree": 6,
+      "smokeDegree": 4,
+      "suites": [
+        "physics"
+      ],
+      "family": "structural-guard",
+      "hilbertOracle": "polynomial-ring-4",
+      "sources": [
+        {
+          "url": "https://macaulay2.com/doc/Macaulay2/share/doc/Macaulay2/NCAlgebra/html/_four__Dim__Sklyanin.html"
+        }
+      ],
+      "interpretation": "Four-dimensional Sklyanin with alpha=2,beta=3,gamma=-5/7. All avoid 0,+1,-1 and alpha+beta+gamma+alpha*beta*gamma=0. Third relation multiplied by 7 to clear denominators."
+    },
+    {
+      "id": "quantum-binomial-non-pbw",
+      "inputFile": "fomkyr/fixtures/benchmarks/quantum-binomial-non-pbw.bg",
+      "inputSha256": "4b23e97ad020b0c99c8d987aabd109fb54e8ad868f4831bd716b19620c0ecc1c",
+      "format": "bg",
+      "variables": [
+        "x",
+        "y",
+        "z",
+        "t"
+      ],
+      "homogeneous": true,
+      "targetDegree": 6,
+      "smokeDegree": 4,
+      "suites": [
+        "physics"
+      ],
+      "family": "structural-guard",
+      "hilbertOracle": null,
+      "sources": [
+        {
+          "url": "https://arxiv.org/html/1011.6520"
+        }
+      ],
+      "interpretation": "Example 2.10: non-PBW for all 24 generator permutations; associated map fails YBE."
+    },
+    {
+      "id": "yang-baxter",
+      "inputFile": "fomkyr/fixtures/benchmarks/yang-baxter.bg",
+      "inputSha256": "a18fa72745a8e1a42472d44ff575047ed51cb3c47f7f03c40cdff880a875a51a",
+      "format": "bg",
+      "variables": [
+        "x",
+        "y",
+        "z",
+        "t"
+      ],
+      "homogeneous": true,
+      "targetDegree": 6,
+      "smokeDegree": 4,
+      "suites": [
+        "physics"
+      ],
+      "family": "structural-guard",
+      "hilbertOracle": "polynomial-ring-4",
+      "sources": [
+        {
+          "url": "https://arxiv.org/html/1011.6520"
+        }
+      ],
+      "interpretation": "Example 2.11: YBE holds. Current order t>z>y>x requires completion; PBW order t>x>z>y is available."
+    },
+    {
+      "id": "down-up-3-minus2",
+      "inputFile": "fomkyr/fixtures/benchmarks/down-up-3-minus2.bg",
+      "inputSha256": "1cce5f3fa30150e782dba268f3681457567d6621db9496b99212a68872fb62f6",
+      "format": "bg",
+      "variables": [
+        "u",
+        "d"
+      ],
+      "homogeneous": true,
+      "targetDegree": 10,
+      "smokeDegree": 4,
+      "suites": [
+        "physics"
+      ],
+      "family": "structural-guard",
+      "hilbertOracle": "down-up",
+      "sources": [
+        {
+          "url": "https://arxiv.org/html/math/9803159"
+        }
+      ],
+      "interpretation": "Benkart-Roby homogeneous down-up algebra A(3,-2,0), relations R1/R2; PBW basis in Section 3."
+    },
+    {
+      "id": "fk6-d9",
+      "inputFile": "fomkyr/fixtures/user-form.bg",
+      "inputSha256": "60ff567b5b467315563805af402ec95fa65d67b3c83f1742e785ef522cefa955",
+      "format": "bg",
+      "variables": [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e",
+        "f",
+        "g",
+        "h",
+        "k",
+        "m",
+        "n",
+        "p",
+        "q",
+        "r",
+        "s"
+      ],
+      "homogeneous": true,
+      "targetDegree": 9,
+      "smokeDegree": 4,
+      "suites": [
+        "fk6"
+      ],
+      "family": "fomin-kirillov",
+      "referenceFile": "test/fixtures/fk6-degree-prefixes.json"
+    },
+    {
+      "id": "fk6-d10",
+      "inputFile": "fomkyr/fixtures/user-form.bg",
+      "inputSha256": "60ff567b5b467315563805af402ec95fa65d67b3c83f1742e785ef522cefa955",
+      "format": "bg",
+      "variables": [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e",
+        "f",
+        "g",
+        "h",
+        "k",
+        "m",
+        "n",
+        "p",
+        "q",
+        "r",
+        "s"
+      ],
+      "homogeneous": true,
+      "targetDegree": 10,
+      "smokeDegree": 4,
+      "suites": [
+        "fk6"
+      ],
+      "family": "fomin-kirillov",
+      "referenceFile": null
+    },
+    {
+      "id": "fk6-d11",
+      "inputFile": "fomkyr/fixtures/user-form.bg",
+      "inputSha256": "60ff567b5b467315563805af402ec95fa65d67b3c83f1742e785ef522cefa955",
+      "format": "bg",
+      "variables": [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e",
+        "f",
+        "g",
+        "h",
+        "k",
+        "m",
+        "n",
+        "p",
+        "q",
+        "r",
+        "s"
+      ],
+      "homogeneous": true,
+      "targetDegree": 11,
+      "smokeDegree": 4,
+      "suites": [
+        "fk6"
+      ],
+      "family": "fomin-kirillov",
+      "referenceFile": null
+    },
+    {
+      "id": "random-fk6-d9",
+      "inputFile": "test/fixtures/random-fk6-growing.json",
+      "inputSha256": "be9a923671a1f399400a178ce30d25683ef331bec46556d566a4d5d702eb5a34",
+      "format": "george-json",
+      "variables": [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e",
+        "f",
+        "g",
+        "h",
+        "k",
+        "m",
+        "n",
+        "p",
+        "q",
+        "r",
+        "s"
+      ],
+      "homogeneous": true,
+      "targetDegree": 9,
+      "smokeDegree": 4,
+      "suites": [
+        "fk6"
+      ],
+      "family": "scaled-fomin-kirillov"
+    },
+    {
+      "id": "random-fk6-d10",
+      "inputFile": "test/fixtures/random-fk6-growing.json",
+      "inputSha256": "be9a923671a1f399400a178ce30d25683ef331bec46556d566a4d5d702eb5a34",
+      "format": "george-json",
+      "variables": [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e",
+        "f",
+        "g",
+        "h",
+        "k",
+        "m",
+        "n",
+        "p",
+        "q",
+        "r",
+        "s"
+      ],
+      "homogeneous": true,
+      "targetDegree": 10,
+      "smokeDegree": 4,
+      "suites": [
+        "fk6"
+      ],
+      "family": "scaled-fomin-kirillov"
+    },
+    {
+      "id": "random-fk6-d11",
+      "inputFile": "test/fixtures/random-fk6-growing.json",
+      "inputSha256": "be9a923671a1f399400a178ce30d25683ef331bec46556d566a4d5d702eb5a34",
+      "format": "george-json",
+      "variables": [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e",
+        "f",
+        "g",
+        "h",
+        "k",
+        "m",
+        "n",
+        "p",
+        "q",
+        "r",
+        "s"
+      ],
+      "homogeneous": true,
+      "targetDegree": 11,
+      "smokeDegree": 4,
+      "suites": [
+        "fk6"
+      ],
+      "family": "scaled-fomin-kirillov"
+    }
+  ],
+  "deferred": [
+    {
+      "id": "bmw-a3",
+      "source": "https://gap-packages.github.io/gbnp/doc/chapA_mj.html",
+      "reason": "Original specialized six-generator presentation is inhomogeneous. Its quotient dimension 105 is not a Hilbert oracle for an unverified homogenization."
+    }
+  ]
+}

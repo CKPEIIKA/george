@@ -9,6 +9,8 @@ import {algebra} from '../test/support/algebra.mjs';
 import {oraclePolynomial} from '../fomkyr/tools/oracle-format.mjs';
 import {CheckTimings, engineHashes, validationSnapshot, writeJSON} from './release-support.mjs';
 import {OracleCache, singularIdentity} from './oracle-cache.mjs';
+import {loadCatalog,loadBenchmark,hilbertOracle} from './free-algebra-benchmarks.mjs';
+import {normalWordCounts} from '../test/support/normal-word-counts.mjs';
 
 const out=path.resolve(process.argv[2]??'local/validation/fomkyr-'+VERSION+'-published');fs.mkdirSync(out,{recursive:true});
 const timings=new CheckTimings(out),cache=new OracleCache({refresh:process.argv.includes('--refresh-oracles')});
@@ -29,6 +31,10 @@ for(const q of [2,3,4,5]) {
 }
 const sky=readInputFile('(ALGFORMINPUT)\n'+fs.readFileSync('fomkyr/fixtures/published/sklyanin-1-2-3.bg','utf8'));
 cases.push({name:'sklyanin',...sky,degree:6});
+for(const entry of loadCatalog().cases.filter(c=>c.suites.includes('physics'))){
+  const p=loadBenchmark(entry);
+  cases.push({name:entry.id,vars:p.variables,rels:p.rels,degree:entry.smokeDegree,expectedHilbert:hilbertOracle(entry,entry.smokeDegree)});
+}
 try {
  for(const c of cases) {
   if(report.cases.some(row=>row.name===c.name))continue;
@@ -48,6 +54,7 @@ try {
    const client=new BackendClient(path.join(directory,`${bits}-${execution}`),{timeoutMs:120000,workerURL:new URL('../test/support/fomkyr-worker.mjs',import.meta.url)});
    let actual;try{actual=await timings.measure(c.name+`-${bits}-${execution}`,()=>client.run(buildJob({...c,task:'gb',ring:'noncomm',order:'degleftlex',field:'0',maxdeg:String(c.degree),backend:'fomkyr',memoryMiB:512,nativeWorkers:4,monomialPruning:true,timeoutMinutes:2,fomkyrOptions:{bits:String(bits),execution,resume:false,hilbert:false}})));}finally{await client.close();}
    const basis=a.basis(actual.files['result.gb']);assert.deepEqual(basis.map(a.lead).sort(),heads);
+   if(c.expectedHilbert)assert.deepEqual(normalWordCounts(c.vars.length,heads,c.degree),c.expectedHilbert,c.name+' independent graded-dimension oracle');
    for(const p of basis)assert.equal(a.nf(p,reference).size,0);
    for(const p of reference)assert.equal(a.nf(p,basis).size,0);
    const input=c.rels.map(a.parse),ambiguities=a.certify(input,basis,c.degree);

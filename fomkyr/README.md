@@ -12,6 +12,12 @@ FOMKYR(1)                     Fomkyr Manual                     FOMKYR(1)
 subproject of [George](../README.md). George also runs this kernel through
 WebAssembly; its engine chooser marks that integration experimental.
 
+Small mathematical guards are part of routine validation. The separate
+[benchmark suites](../docs/development/BENCHMARKS.md) include pinned nilpotent,
+braid, Serre, long-word and FK6 workloads with configurable time and memory
+limits. Their inputs are under `fixtures/benchmarks/`; published runtimes are
+not Fomkyr measurements.
+
 ## SYNOPSIS
 
 Download the [standalone source bundle](https://ckpeiika.github.io/george/sources/fomkyr-source.tar.gz),

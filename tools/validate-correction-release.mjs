@@ -58,7 +58,7 @@ try {
     return verified;
    }
    assert.match(await page.locator('#basisOut .summary').textContent(),/265 elements, in degrees 2 to 4/);
-   assert.match(await page.locator('#basisOut').textContent(),/Computed up to degree 4|Computed through degree 4/);
+   assert.match(await page.locator('#runChipWrap').textContent(),/Through degree 4.*Computed through degree 4/);
    assert.doesNotMatch(await page.locator('#basisOut').textContent(),/computation did not finish|incomplete/i);
    assert.deepEqual(await page.locator('#basisOut .degree h3').allTextContents(),['Degree 2100 elements','Degree 376 elements','Degree 489 elements']);
    assert.ok(await page.locator('#basisOut .polys li').count()<265);
@@ -82,11 +82,11 @@ try {
    assert.equal(await page.locator('#basisOut .polys li').count(),265);
    assert.equal((await page.locator('#basisOut [data-math-source="a^2"]').count()),1);
    await page.evaluate(()=>window.__previewCap=null);
-   await page.locator('#maxdeg').fill('9');
-   const large=await compute();assert.equal(large.basisSize,1451);assert.equal(large.completedThroughDegree,9);
-   assert.match(await page.locator('#basisOut .summary').textContent(),/1451 elements, in degrees 2 to 9/);
-   assert.equal(large.basisByDegree.reduce((n,row)=>n+row.count,0),1451);
-   if(!large.previewTruncated)assert.equal(await page.locator('#basisOut .polys li').count(),1451);
+   await page.locator('#maxdeg').fill('5');
+   const large=await compute();assert.equal(large.basisSize,360);assert.equal(large.completedThroughDegree,5);
+   assert.match(await page.locator('#basisOut .summary').textContent(),/360 elements, in degrees 2 to 5/);
+   assert.equal(large.basisByDegree.reduce((n,row)=>n+row.count,0),360);
+   if(!large.previewTruncated)assert.equal(await page.locator('#basisOut .polys li').count(),360);
    const timers=await page.evaluate(()=>window.__timerSamples);assert.ok(timers.length);assert.ok(timers.every(s=>/^\d+\.\d s$/.test(s)),JSON.stringify(timers));
    let coefficientRules;
    if(process.argv.includes('--coefficient-case')) {
@@ -124,8 +124,8 @@ try {
     await page.locator('#fomkyr-batchPairs').fill('');
     await page.locator('#nativeWorkers').fill('4');
     for(const key of ['radixHeap','reserveInPlace'])assert.equal(await page.locator('#fomkyr-'+key).isChecked(),true);
-    await page.locator('#vars').fill(vars.join(','));await page.locator('#rels').fill(rels.join(','));await page.locator('#maxdeg').fill('9');
-    const calculated=await compute();assert.equal(calculated.basisSize,1451);assert.equal(calculated.completedThroughDegree,9);
+    await page.locator('#vars').fill(vars.join(','));await page.locator('#rels').fill(rels.join(','));await page.locator('#maxdeg').fill('5');
+    const calculated=await compute();assert.equal(calculated.basisSize,360);assert.equal(calculated.completedThroughDegree,5);
     const job=await page.evaluate(()=>window.__lastFomkyrJob);
     assert.equal(job.memoryMiB,3584);assert.equal(job.fomkyrOptions.arithmeticMode,'exact');
     assert.equal(job.fomkyrOptions.memoryPolicy,'auto');assert.equal(job.fomkyrOptions.scratchBytes,undefined);
@@ -138,7 +138,7 @@ try {
    assert.equal(await page.locator('#fomkyr-hilbertGate').isChecked(),true);
    assert.equal(await page.locator('#fomkyr-hilbertSectors').isDisabled(),false);
    await page.locator('details.advanced').evaluate(node=>node.open=true);
-   // Exercise assisted computation rather than reuse the ordinary D9 job above.
+   // Exercise assisted computation in a fresh job.
    await page.locator('#engineSettings').evaluate(node=>node.open=true);
    await page.locator('#fomkyrOptions > details').evaluateAll(nodes=>nodes.forEach(node=>node.open=true));
    await page.locator('#fomkyr-resume').uncheck();
@@ -152,7 +152,7 @@ try {
    assert.equal(verifiedGated.verificationDependsOnImportedDimensions,false);
    await page.locator('[name=field][value=p]').check();await page.locator('#modulus').fill('101');
    assert.equal(await page.locator('#fomkyr-hilbertGate').isDisabled(),true);
-   assert.deepEqual(errors,[]);report.checks.push({browser:name,independentVerifications:2,verifiedRules:[ordinaryVerified.rules,verifiedGated.rules],engineSubmenus:true,fk6PresetMemoryMiB:14304,fkGateOptIn:true,conditionalResultNotice:true,primeFieldDisablesGate:true,fullTextZip:true,truncatedTotals:true,allDegreeCounts:true,expandedPolynomials:265,fk6Degree9Rules:1451,timerOnlySeconds:true,coefficientRules,defaultWorkspace});
+   assert.deepEqual(errors,[]);report.checks.push({browser:name,independentVerifications:2,verifiedRules:[ordinaryVerified.rules,verifiedGated.rules],engineSubmenus:true,fk6PresetMemoryMiB:14304,fkGateOptIn:true,conditionalResultNotice:true,primeFieldDisablesGate:true,fullTextZip:true,truncatedTotals:true,allDegreeCounts:true,expandedPolynomials:265,fk6Degree5Rules:360,timerOnlySeconds:true,coefficientRules,defaultWorkspace});
    console.log(name,'PASS');await context.close();
   } finally {await browser.close();}
  }

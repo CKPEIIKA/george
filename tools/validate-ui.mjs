@@ -18,7 +18,10 @@ const policyOnly=process.argv.includes('--policy-only');
 const sha=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
 const browserFiles=['web/index.html','web/style.css','web/isolation-worker.js',...fs.readdirSync('web/src').filter(n=>n.endsWith('.js')).map(n=>'web/src/'+n),'web/engine/worker.js','web/engine/runner.js'];
 const report={debuggerDuringCalculations:false,mobileViewportControl:'CDP Emulation only; no Runtime, Debugger or Profiler domains',engine:JSON.parse(fs.readFileSync('web/engine/memory64/build.json','utf8')),sourceHashes:Object.fromEntries(browserFiles.map(p=>[p,sha(p)])),browser:null,mounts:[],console:[],backends:[],pruning:[],examples:[],checks:[],errors:[],externalRequests:[]};
-const data={tutorials:TUTORIALS.map(t=>({...t,form:tutorialForm(t.id)})),examples:EXAMPLES,
+const version=JSON.parse(fs.readFileSync('package.json','utf8')).version;
+// Fomkyr needs cross-origin isolation, which this server does not provide; its browser checks run separately.
+const computedTutorials=TUTORIALS.filter(t=>tutorialForm(t.id).backend!=='fomkyr');
+const data={version,tutorials:TUTORIALS.map(t=>({...t,form:tutorialForm(t.id)})),examples:EXAMPLES,
  upstream:upstream.cases.filter(c=>['sympy-katsura3','singular-gb_braid3-11','gbnp-weighted','gbnp-sl2-quotient'].includes(c.id))};
 
 // Runs in the page, dispatching the same input/change/click events as users.
@@ -86,10 +89,10 @@ async function checkUI(){
    $('[data-tutorial="monoid"]').click();await compute();ok(!$('#view-compute').hidden,'mobile computed result visible');ok($('#bettiOut').textContent.includes('Ungraded Betti numbers'),'mobile Betti result');ok(document.documentElement.scrollWidth<=innerWidth+1,'mobile result overflow');await post('done',{mode,errors,checks:['390px guide and computed monoid result have no page overflow']});return;
   }
   if(phase==='start'){
-   language('en');eq($('.brand-sub').textContent,'an interface to bergman and more…','English interface wording');eq($('.brand-version').textContent,'0.6','application version');
+   language('en');eq($('.brand-sub').textContent,'an interface to bergman and more…','English interface wording');eq($('.brand-version').textContent,data.version,'application version');
    eq($('#backend').value,'memory64','default backend');eq($('#memoryMiB').value,'16077','default allowance is 15.7 GiB');
    eq($('#timeoutMinutes').value,'0','default time limit is unlimited');
-   eq(document.title,'George 0.6','release title');ok(!$('.release-tag'),'release has no experimental badge');
+   eq(document.title,'George '+data.version,'release title');ok(!$('.release-tag'),'release has no experimental badge');
    eq(all('#backend option').map(o=>o.textContent),['C / ECL O3 + LTO (memory64)','C / ECL O3 + LTO','Lisp / ECL O3 + LTO','Lisp / ECL O2','fomkyr / C O3 + LTO (experimental)'],'explicit backend labels');
    ok(!$('#backend option[value="memory64"]').disabled,'memory64 available in this browser');
    ok(!$('#memoryMiB option[value="0"]').disabled,'uncapped heap available in memory64');
@@ -207,7 +210,7 @@ async function checkUI(){
     location.hash='#compute';set('preset','tutorial:nonhomogeneous');radio('task','gb');radio('ring',c.comm?'comm':'noncomm');radio('field','0');set('order',c.comm?'deglex':'degleftlex');set('vars',c.vars.join(', '));set('rels',c.rels.join(', '));set('maxdeg',c.maxdeg);$('details.advanced').open=true;set('weights',c.weights?.join(' ')||'');await compute();await post('upstream',{id:c.id,files:files()});
    }
    if(data.mount==='/george/'){
-    for(const item of data.tutorials){location.hash='#guide-examples';await math();$(`[data-tutorial="${item.id}"]`).click();ok(!$('#view-compute').hidden,'example opens form');eq($('#preset').value,'tutorial:'+item.id,'example preset');eq($('#vars').value,item.form.vars.join(', '),'example generators');eq($('input[name="task"]:checked').value,item.form.task,'example task');eq($('#augmentation').value,item.form.augmentation,'example augmentation');await compute();await post('example',{id:item.id,files:files(),resolutionLines:all('#resolutionOut .tensor-line').length});}
+    for(const item of data.tutorials){location.hash='#guide-examples';await math();$(`[data-tutorial="${item.id}"]`).click();ok(!$('#view-compute').hidden,'example opens form');eq($('#preset').value,'tutorial:'+item.id,'example preset');eq($('#vars').value,item.form.vars.join(', '),'example generators');eq($('input[name="task"]:checked').value,item.form.task,'example task');eq($('#augmentation').value,item.form.augmentation,'example augmentation');if(item.form.backend==='fomkyr'){eq($('#backend').value,'fomkyr','example engine');set('backend','memory64');continue;}ok($('#backend').value!=='fomkyr','Bergman example engine');await compute();await post('example',{id:item.id,files:files(),resolutionLines:all('#resolutionOut .tensor-line').length});}
     for(const file of ['engine/ecl.wasm','sources/george-source.tar.gz','sources/ecl-source.tar.gz','licenses/NOTICE.txt','.nojekyll']){const r=await fetch(new URL(file,location.href));eq(r.status,200,'download '+file);if(file.endsWith('.wasm'))ok(r.headers.get('content-type').includes('application/wasm'),'Wasm MIME');}
    }
    location.hash='#compute';set('preset','example:char2');set('maxdeg','4');next('edited');return;
@@ -258,7 +261,8 @@ async function run(mount,mode='desktop'){
     }else if(kind==='example'){
      const item=TUTORIALS.find(t=>t.id===v.id);assert.ok(item);
      if(item.example){const e=EXAMPLES.find(e=>e.id===item.example);for(const [k,text]of Object.entries(e.out))assert.equal(v.files['result.'+k],text,v.id+'/'+k);}
-     else{assert.deepEqual(JSON.parse(v.files['homology.json']).betti.slice(0,5),[1,1,0,0,0]);assert.ok(v.resolutionLines>0);}
+     else if(tutorialForm(item.id).task==='anick'){assert.deepEqual(JSON.parse(v.files['homology.json']).betti.slice(0,5),[1,1,0,0,0]);assert.ok(v.resolutionLines>0);}
+     else{const f=tutorialForm(item.id),a=algebra(f.vars,f.ring==='comm',0);a.certify(f.rels.map(a.parse),a.basis(v.files['result.gb']),Number(f.maxdeg));}
      report.examples.push({id:item.id,task:tutorialForm(item.id).task,outputs:Object.keys(v.files),hashes:Object.fromEntries(Object.entries(v.files).map(([n,s])=>[n,crypto.createHash('sha256').update(s).digest('hex')]))});console.log(item.id,'PASS');
     }else if(kind==='backends'){
      assert.equal(v.defaultBackend,'memory64');assert.deepEqual(v.rows.map(r=>r.backend),['standard','optimized','compiled','memory64']);
@@ -322,7 +326,7 @@ async function run(mount,mode='desktop'){
 try{
  if(policyOnly){report.scope='backend capability controls';await run('/','policy');}
  else{for(const mount of ['/','/george/']){console.log('Checking',mount);await run(mount);}await run('/george/','mobile');await run('/','blocked');await run('/','unsupported');
-  assert.equal(report.examples.length,8);assert.equal(report.mounts.length,2);assert.equal(report.console.length,2);assert.equal(report.backends.length,2);}
+  assert.equal(report.examples.length,computedTutorials.length);assert.equal(report.mounts.length,2);assert.equal(report.console.length,2);assert.equal(report.backends.length,2);}
  assert.deepEqual(report.errors,[]);assert.deepEqual(report.externalRequests,[]);for(const [p,h]of Object.entries(report.sourceHashes))assert.equal(sha(p),h,p+': sources changed during validation');
  fs.writeFileSync(`${out}/report.json`,JSON.stringify(report,null,2)+'\n');console.log(out,'PASS');
 }catch(e){console.error(e);process.exitCode=1;}

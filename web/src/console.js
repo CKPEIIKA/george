@@ -273,7 +273,8 @@ export function initConsole({ $, engine, storage, runCurrent }) {
     if (dismissed === src + '\u0000' + input.selectionStart) ghost = '';
     hl.innerHTML = highlight(src, { cursor: input.selectionStart, ghost }) + '\n';
     input.style.height = 'auto';
-    input.style.height = `${input.scrollHeight}px`;
+    // A hidden console measures 0; keep the natural one-row height then.
+    input.style.height = input.scrollHeight ? `${input.scrollHeight}px` : '';
     status();
   }
 
@@ -426,5 +427,7 @@ export function initConsole({ $, engine, storage, runCurrent }) {
   return {
     setEnabled(value) {enabled = value; setBusy(busy);},
     updateLanguage() { renderChips(); setBusy(busy); render(); },
+    // The prompt can only be measured while the view is visible.
+    shown() { render(); },
   };
 }

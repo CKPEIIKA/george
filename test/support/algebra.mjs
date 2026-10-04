@@ -29,7 +29,7 @@ export function algebra(vars, comm=false, modulus=0, weights=vars.map(()=>1), or
     if(!comm){const i=w.indexOf(v);return i<0?null:[w.slice(0,i),w.slice(i+v.length)];}
     let s=w;for(const ch of v){const i=s.indexOf(ch);if(i<0)return null;s=s.slice(0,i)+s.slice(i+1);}return [s,''];
   };
-  const nf=(f,basis)=>{f=new Map(f);const result=new Map();let steps=0;while(f.size){assert.ok(++steps<100000,'reduction terminates');const w=lead(f),c=f.get(w);let reduced=false;for(const g of basis){const v=lead(g),lr=quotient(w,v);if(lr){f=sub(f,scale(g,div(c,g.get(v)),...lr));reduced=true;break;}}if(!reduced){put(result,w,c);f.delete(w);}}return result;};
+  const nf=(f,basis)=>{const rules=basis.map(g=>{const v=lead(g);return {g,v,c:g.get(v)};});f=new Map(f);const result=new Map();let steps=0;while(f.size){assert.ok(++steps<100000,'reduction terminates');const w=lead(f),c=f.get(w);let reduced=false;for(const {g,v,c:lc} of rules){const lr=quotient(w,v);if(lr){f=sub(f,scale(g,div(c,lc),...lr));reduced=true;break;}}if(!reduced){put(result,w,c);f.delete(w);}}return result;};
   const monic=f=>f.size?scale(f,div(q(1),f.get(lead(f)))):f;
   const basis=text=>parseBasis(text).groups.flatMap(g=>g.polys).map(parse).filter(f=>f.size).map(monic);
   function certify(input,gb,bound=Infinity){

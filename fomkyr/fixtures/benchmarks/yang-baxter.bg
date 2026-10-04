@@ -1,0 +1,8 @@
+vars x,y,z,t;
+
+x*y-z*t,
+t*y-z*x,
+x*z-y*t,
+t*z-y*x,
+x*t-t*x,
+y*z-z*y;
