@@ -37,6 +37,7 @@ API u64 gn_hilbert_gate_stat(u32 key){
 API int gn_hilbert_gate_try(void){
  if(S.gate_closed)return 1;
  if(!S.gate_active)return 0;
+ if(S.coop_ms&&GN_LOAD(&S.reserve_lock))return 0;
  if(!S.current||S.gate_degree!=S.current||S.current!=S.completed+1||S.input_expected||S.certifying||GN_LOAD(&S.batch_running)||GN_LOAD(&S.reserve_lock)||S.nrules<S.gate_rules)return -GN_STATE;
  u64 delta=S.nrules-S.gate_rules;if(delta>S.gate_upper)return -GN_REJECTED;
  u64 predicted=S.gate_upper-delta;if(predicted<S.gate_lower)return -GN_REJECTED;if(predicted>S.gate_lower)return 0;

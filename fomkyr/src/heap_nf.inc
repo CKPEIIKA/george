@@ -55,21 +55,27 @@ static int row_add(HRow*r,Word w,i64 delta){
  if(r->radix_enabled){r->nodes[id-1].pos=1;r->heap_n++;return radix_insert(&r->radix,r->nodes,sizeof(HNode),id);}
  r->heap[r->heap_n++]=id;heap_up(r,r->heap_n-1);return 0;
 }
+typedef struct {HRow row;u64 steps;} HRowResume;
+static HRowResume saved_HRow[GN_MAX_WORKERS];
 static int heap_nf_try(Lane*l,Poly original,u32 active,u32 snapshot,u32 capacity){
+ HRow row;u64 steps=0;
+ if(l->resume_tier==1){row=saved_HRow[l-S.lanes].row;steps=saved_HRow[l-S.lanes].steps;goto resumed_heap;}
+
  Arena*a=&l->a[active^1];reset_a(a);
  u64 no=alloc_a(a,(u64)capacity*sizeof(HNode)),ho=alloc_a(a,(u64)capacity*2*sizeof(u32)),po=alloc_a(a,(u64)capacity*sizeof(u32)),oo=alloc_a(a,(u64)capacity*sizeof(u32));
  if(a->error)return HEAP_MISS;
- HRow row={PTR(HNode,no),PTR(u32,ho),PTR(u32,po),PTR(u32,oo),capacity,2*capacity-1,0,0,0,0,original.degree,l};
+ row=(HRow){PTR(HNode,no),PTR(u32,ho),PTR(u32,po),PTR(u32,oo),capacity,2*capacity-1,0,0,0,0,original.degree,l};
  row.radix_enabled=S.radix_enabled;
  if(row.radix_enabled){u64 prev=alloc_a(a,(u64)capacity*4);if(a->error)return HEAP_MISS;
-  row.radix=(RadixQueue){0};row.radix.next=row.heap;row.radix.previous=PTR(u32,prev);row.radix.last=maskw((Word){UINT64_MAX,UINT64_MAX},original.degree);
+  row.radix=(RadixQueue){0};row.radix.cache_enabled=S.radix_cache_enabled;row.radix.next=row.heap;row.radix.previous=PTR(u32,prev);row.radix.last=maskw((Word){UINT64_MAX,UINT64_MAX},original.degree);
  }
  memset(row.heads,0,(size_t)capacity*2*sizeof(u32));
  Term*input=PTR(Term,original.off);
  for(u32 i=0;i<original.n;i++){Coef c=pc(original,i);if(c&1)return HEAP_MISS;int rc=row_add(&row,input[i].w,cvalue(c));if(rc)return rc;}
- u64 steps=0;
+ resumed_heap:
+ a=&l->a[active^1];
  while(row.heap_n){
-  if((steps++&255)==0){publish_lane(l,(u64)row.heap_n+row.normal_n,0);if(cancelled())return GN_CANCELLED;}
+  if((steps++&255)==0){publish_lane(l,(u64)row.heap_n+row.normal_n,0);if(cancelled())return GN_CANCELLED;if(slice_expired(l)){saved_HRow[l-S.lanes]=(HRowResume){row,steps};l->resume_tier=1;l->resume_capacity=capacity;l->slice_yields++;return GN_YIELD;}}
   u32 id=row.radix_enabled?radix_top(&row.radix,row.nodes,sizeof(HNode)):row.heap[0];HNode*node=&row.nodes[id-1];Word word=node->w;i64 coefficient=node->c;heap_remove(&row,id);
   u32 pos=0;LocalEntry*local=l->skip_rule?NULL:local_find(word,original.degree,snapshot,&pos);
   if(local){
@@ -109,6 +115,7 @@ static int heap_nf_try(Lane*l,Poly original,u32 active,u32 snapshot,u32 capacity
 }
 static int heap_nf(Lane*l,Poly p,u32 active,u32 snapshot){
  u32 cap=128;while(cap<(u64)p.n*2&&cap<(1u<<26))cap*=2;
- for(;;){int rc=heap_nf_try(l,p,active,snapshot,cap);if(rc!=HEAP_FULL)return rc;
+ if(l->resume_tier==1)cap=l->resume_capacity;
+ for(;;){int rc=heap_nf_try(l,p,active,snapshot,cap);if(rc!=GN_YIELD)l->resume_tier=0;if(rc!=HEAP_FULL)return rc;
   if(cap>(1u<<25)||(u64)cap*2*(48+(S.radix_enabled?4:0))>l->a[active^1].end-l->a[active^1].base)return HEAP_MISS;cap*=2;}
 }

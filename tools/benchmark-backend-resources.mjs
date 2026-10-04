@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import os from 'node:os';
+import assert from 'node:assert/strict';
 import {spawn, execFileSync} from 'node:child_process';
 import {staticServer} from './serve.mjs';
 import {buildJob, readInputFile, parseBasis} from '../web/src/bergman-syntax.js';
@@ -79,6 +80,11 @@ if(workerCounts){
     workers,id:config.id+'-w'+(workers||'auto'),label:`fomkyr ${fomkyrVersion} (memory64, ${config.browser}, ${workers||'automatic'} workers)`})):config);
 }
 const batchPairs=arg('--batch-pairs',null)===null?null:Number(arg('--batch-pairs',null));
+const bergmanBrowser=arg('--bergman-browser','chromium');
+assert.ok(['chromium','firefox'].includes(bergmanBrowser));
+const bergmanProfileCapture=process.argv.includes('--bergman-profile-capture');
+configs=configs.map(c=>c.backend==='compiled'?{...c,browser:bergmanBrowser,
+  ...(c.bergmanRoot&&bergmanProfileCapture?{captureProfile:true}:{})}:c);
 if(batchPairs!==null&&(!Number.isInteger(batchPairs)||batchPairs<0||batchPairs>512))throw new Error('Choose batch size 0..512.');
 const reportFile = path.join(out, 'report.json');
 const previous = process.argv.includes('--resume') && fs.existsSync(reportFile)
@@ -122,6 +128,7 @@ report.timeLimitSeconds = timeoutSeconds;
 report.workerCounts = workerCounts??null;
 report.batchPairs = batchPairs;
 report.v8NoLiftoff = process.argv.includes('--v8-no-liftoff');
+report.profileCapture = bergmanProfileCapture;
 report.finiteCertificate=finiteCertificate;
 const save = () => fs.writeFileSync(reportFile, JSON.stringify(report, null, 2) + '\n');
 save();
@@ -227,7 +234,7 @@ async function browserJob() {
         bigRationalSuccesses:native.bigRationalSuccesses, bigRationalAttempts:native.bigRationalAttempts,
         rationalInPlaceGrowths:native.rationalInPlaceGrowths,
         previewTruncated: !!native.previewTruncated, kernelWallSeconds: native.elapsedMs / 1000} : null,
-      basis, stdout: result.stdout, lastDegree, lastProgress});
+      basis, stdout: result.stdout, lastDegree, lastProgress,instrumentation:result.instrumentation});
   } catch (error) {
     await post('end', {status: error.code === 'timeout' ? 'timeout' : error.code === 'memory-limit' ? 'oom' : 'error',
       coldWallSeconds: (performance.now() - start) / 1000, error: error.stack || String(error), code: error.code,
@@ -264,6 +271,21 @@ async function run(config, degree, trial) {
   const baselineServe=baselineServer?.listeners('request')[0];
   const serve = server.listeners('request')[0]; server.removeAllListeners('request');
   server.on('request', async (req, res) => {
+    if(config.captureProfile&&req.url==='/engine/worker.js'){
+      res.setHeader('Cross-Origin-Opener-Policy','same-origin');
+      res.setHeader('Cross-Origin-Embedder-Policy','require-corp');
+      let worker=fs.readFileSync('web/engine/worker.js','utf8');
+      const anchor='    flush();\n    postMessage({ id, result:';
+      assert.ok(worker.includes(anchor));
+      worker=worker.replace(anchor,`    result.instrumentation={format:'llvm22'};
+    for(const section of ['data','names','counters']){
+      const start=runtime.ccall('profile_'+section+'_start','number',[],[]);
+      const end=runtime.ccall('profile_'+section+'_end','number',[],[]);
+      result.instrumentation[section]={start,bytes:Array.from(runtime.HEAPU8.subarray(start,end))};
+    }
+`+anchor);
+      res.setHeader('content-type','text/javascript');res.end(worker);return;
+    }
     if(config.bergmanRoot){
       const asset={'/engine/compiled/ecl.js':'ecl.js','/engine/compiled/ecl.wasm':'ecl.wasm','/engine/ecl.data':'ecl.data'}[req.url];
       if(asset){
@@ -297,6 +319,9 @@ async function run(config, degree, trial) {
           if (!sampler) {res.statusCode = 409; res.end('The measurement has not started.'); return;}
           const measured = sampler?.stop(); sampler = null;
           row = {...row, ...value, ...measured, hostEnvironment:environment.stop()}; environment = null;
+          if(row.instrumentation){
+            row.profileFile=key+'.profile.json';fs.writeFileSync(path.join(out,row.profileFile),JSON.stringify(row.instrumentation));delete row.instrumentation;
+          }
           if (row.basis) {
             const parsed = parseBasis(row.basis);
             row.basisSize = row.native?.basisSize ?? parsed.groups.reduce((n, g) => n + g.polys.length, 0);

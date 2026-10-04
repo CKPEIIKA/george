@@ -1,4 +1,4 @@
-.TH FOMKYR 1 "October 2026" "fomkyr 0.6.6"
+.TH FOMKYR 1 "October 2026" "fomkyr 0.6.7"
 .SH NAME
 fomkyr \- fast pure C engine for exact homogeneous noncommutative Groebner bases
 .SH SYNOPSIS
@@ -48,6 +48,14 @@ Export completed-degree Hilbert coefficients.
 .B \-\-export
 Stream result.gb after completion.
 .TP
+.B \-\-human
+Print readable terminal progress and summaries, with elapsed time in seconds.
+Supported by native and optional Wasm CLI modes. JSON is the default; persisted
+metadata and the explicit --dump-fixture output remain JSON.
+.TP
+.B \-\-quiet
+Suppress progress and checkpoint messages; retain the final summary.
+.TP
 .BI \-\-hilbert-certificate " FILE"
 Replay exact independent integer-dual lower bounds and enable equality-based
 degree closure. Off by default. Requires a matching input/order/field.
@@ -62,6 +70,8 @@ Disable bound-aware batch lookahead in the optional closure mode.
 SIGUSR1 requests a safe checkpoint and continues. SIGINT and SIGTERM request
 cancellation and retain a safe frontier. SIGKILL cannot create a new checkpoint.
 Committed pairs are retained; uncommitted reductions are replayed on resume.
+For a resumable break, press Ctrl+C, wait for exit, then restart with
+--resume DIR and the desired degree bound.
 .SH EXIT STATUS
 0: requested task complete; 2: invalid input/command; 65: rejected lower-bound witness;
 66: status found no checkpoint;
@@ -79,3 +89,19 @@ latency. Active polynomial state is not serialized. Linux/x86-64 GCC/Clang execu
 was tested; native records require a little-endian host in this release.
 .SH SEE ALSO
 The distributed README.md and docs/HILBERT_CLOSURE.md.
+
+.SH SCHEDULING
+The default cooperative scheduler preserves unfinished exact reductions across
+soft time slices and commits ready rows after exact updated-basis reduction.
+.TP
+.B --scheduler cooperative|barrier
+Choose cooperative scheduling (default) or whole-batch barrier scheduling.
+.TP
+.B --quantum-ms N
+Soft worker slice target, 1 to 10000 milliseconds; default 250.
+.TP
+.B --lookahead N
+Bound pending pair descriptors, 1 to 512; default 128.
+.TP
+.B --no-radix-cache
+Disable cached exact bucket maxima.

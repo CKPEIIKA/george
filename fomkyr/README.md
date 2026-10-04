@@ -8,7 +8,7 @@ FOMKYR(1)                     Fomkyr Manual                     FOMKYR(1)
 
 ## VERSION
 
-**0.6.6**, [MIT license](LICENSE). Fomkyr is a standalone C engine and a
+**0.6.7**, [MIT license](LICENSE). Fomkyr is a standalone C engine and a
 subproject of [George](../README.md). George also runs this kernel through
 WebAssembly; its engine chooser marks that integration experimental.
 
@@ -22,15 +22,15 @@ that will perform the calculation:
 make check
 make
 ./dist/fomkyr -i fixtures/user-form.bg -d 10 -j 4 --memory 4G \
-  --workdir fk6-job --export
+  --workdir fk6-job --export --human
 ```
 
 The included input is the 15-generator, 100-relation FK6 presentation. To
 continue the saved calculation or inspect its checkpoint:
 
 ```sh
-./dist/fomkyr --resume fk6-job -d 11 -j 4 --memory 4G --export
-./dist/fomkyr --resume fk6-job --status
+./dist/fomkyr --resume fk6-job -d 11 -j 4 --memory 4G --export --human
+./dist/fomkyr --resume fk6-job --status --human
 ```
 
 A C11 compiler, make and POSIX threads are sufficient for native execution.
@@ -47,7 +47,8 @@ is exact, including arbitrary-precision coefficients during reduction.
 
 The C engine uses sparse heaps, exact rewrite caches, critical-pair criteria,
 monomial pruning and bounded workspaces. Native pthread workers share the basis;
-batches reduce in parallel and commit in a deterministic order. The native
+reductions retain their state across slices, and ready rows commit after exact
+reduction against the updated basis. The native
 executable has no Wasm memory ceiling. Four optional Wasm modules provide
 32-bit and 64-bit addressing, shared multicore and single-worker execution.
 
@@ -75,6 +76,7 @@ not globally interreduced. Some presentations have infinite Gröbner bases.
 | `--dry-run` | Show the memory plan without allocating the kernel workspace. |
 | `--fresh` | Explicitly discard the matching algebra's cached work. |
 | `--quiet` | Suppress progress and checkpoint messages. |
+| `--human` | Readable terminal progress and summaries, with elapsed time in seconds; works in native and optional Wasm CLI modes. |
 | `--help` | List all options, including optional Wasm execution and Hilbert closure. |
 
 Automatic workspace uses 4/7 of the kernel allowance for scratch and up to 1/7
@@ -85,6 +87,24 @@ SIGUSR1 requests a safe checkpoint and continues. SIGINT/SIGTERM request a
 checkpoint and stop. Mid-degree checkpoints retain committed pairs; uncommitted
 reductions replay on resume. The checkpoint interval is evaluated at safe
 boundaries, so a single long reduction can exceed it. SIGKILL cannot save work.
+
+For a resumable break, press Ctrl+C, wait for the process to exit, then restart
+with `--resume DIR` and the desired degree bound. This saves a safe frontier and
+releases memory. The browser interface currently offers Compute and Stop;
+it has no dedicated pause/resume control. A later browser calculation can reuse
+the last durable checkpoint when disk storage and resume are enabled.
+
+Terminal status is JSON by default. Add `--human` for readable output and the
+exported basis path; combine it with `--quiet` for only the final summary.
+Saved job metadata remains JSON for checkpoint compatibility. `--dump-fixture`
+always writes a JSON fixture, including when `--human` is selected.
+
+Version 0.6.7 caches radix-bucket maxima during sparse reduction. Native progress
+continues while the coordinator waits for other workers and reports active pairs,
+reduction tiers and sampled rewrites. The overlap count advances when results are
+committed or pairs are discarded by valid criteria; a long pending reduction can
+hold that count while its rewrite counters increase. Checkpoints still require
+a safe boundary after workers have finished reading the basis.
 
 ### Optional Hilbert closure
 
@@ -142,11 +162,14 @@ These are George's defaults for a new Fomkyr job:
 | --- | --- | --- |
 | Kernel allowance | 3584 MiB | Bounds kernel allocations; does not include all browser RAM. |
 | Memory policy | Automatic | Derives workspaces from the effective allowance, including after an addressing fallback. Manual mode uses saved workspace sizes. |
-| Reduction workspace | Automatic: 2048 MiB at this allowance | Shared scratch pool, divided among workers. Smaller allowances scale down. |
+| Reduction workspace | Automatic: 2048 MiB at this allowance | Shared scratch pool, divided among workers and a coordinator commit slice. Smaller allowances scale down. |
 | Shared overflow reserve | Automatic: up to 512 MiB | Rescues exceptional rational rows within the kernel allowance. |
 | Workers | Automatic, reported CPU threads minus one, within 1–32 | Compare explicit counts for the presentation; scaling depends on the workload. |
 | Execution / addressing | Automatic | Shared multicore when available; memory64 for allowances above 4095 MiB. |
-| Pairs per batch | 128; blank also means 128 | Batches reduce in parallel and commit in the original order; zero uses the single-pair scheduler. |
+| Reduction scheduling | Cooperative | Preserve unfinished exact rows across yields; commit ready rows after reduction against the current basis. Barrier mode waits for a whole batch. |
+| Worker slice / pending window | 250 ms / 128 descriptors | Soft yield target; bounded work supply. One arithmetic operation or serial commit may exceed the target. |
+| Cached radix maxima | On | Reduce exact queue scans without changing the monomial order. |
+| Pairs per batch | 128; blank also means 128 | Used by barrier scheduling; zero uses the single-pair scheduler. Cooperative scheduling uses its pending work window. |
 | Disk / checkpoint resume | On / on | Keep verified completed prefixes locally for later extension. |
 | Heap / rational / large-coefficient reduction | On | Complementary exact reduction paths with bounded fallbacks. |
 | Fast large-integer division | On | Also used by the general rational reducer. |
@@ -235,7 +258,12 @@ computations require a compatible George engine.
 ## BUILD AND CHECKS
 
 From the George root, `npm run wasm:build:fomkyr` rebuilds the production Wasm
-modules with Clang **O3/LTO**. `npm run test:fomkyr:browser` checks Chromium and
+modules with Clang **O3/LTO** and a retained browser profile when its source
+checksums and compiler version match. Set `WASM_PGO=1` to require that profile,
+`WASM_PGO=0` to disable it, and `LLVM_PROFDATA` to select the matching LLVM tool.
+The manifest records the settings actually used. Native compilation has its
+own profile procedure. See [Wasm compilation and measurements](../docs/development/PERFORMANCE.md#wasm-profile-guided-compilation).
+`npm run test:fomkyr:browser` checks Chromium and
 Firefox integration, storage, resume, Share and cancellation.
 `npm run test:fk6:prefixes` checks FK6 prefixes against saved independent references.
 
@@ -253,3 +281,21 @@ components retain their own licenses.
 [fomkyr(1)](man/fomkyr.1), [George](../README.md),
 [backend integration](../docs/development/BACKENDS.md),
 [developer release procedure](../docs/development/RELEASING.md).
+
+## Cooperative scheduling in 0.6.7
+
+The default scheduler preserves a live exact reduction across soft 250 ms slices.
+Finished rows can commit while an earlier row remains pending. Each committed row
+is re-reduced against the current basis, and every unfinished pair remains in the
+portable frontier. Checkpoints can therefore advance between reduction slices.
+
+Use `--scheduler barrier` for the previous scheduling policy, `--quantum-ms N`
+for the soft slice target, and `--lookahead N` for the bounded pending window
+(1–512 descriptors). `--no-radix-cache` disables the cached bucket maxima.
+The browser engine menu exposes the same controls.
+
+Live heaps survive ordinary yields within a process. A restart replays pending
+pairs from the last safe checkpoint. Ordinary records remain ABI 3. One expensive
+row, serial commits, indivisible arithmetic and workspace pressure can still limit
+parallel execution; full FK6 degree 14 has not been certified by this integration.
+

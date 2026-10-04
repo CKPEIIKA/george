@@ -46,6 +46,8 @@ typedef struct {
   u64 cache_data,cache_capacity,cache_used,cache_hits;
   u32 cache_epoch,cache_mask; RedCache red[RED_CACHE_N];
   Poly result;u32 f,g,k,snapshot,error,active;
+  u32 slice_enabled,resume_tier,resume_capacity,reserve_retry; double slice_end;
+  Arena reserve_saved; GN_ATOMIC(u64) slice_yields,slice_resumes;
   u64 reductions,pruned,reads,read_bytes,pairs,peak;
   u64 hash_probes,matcher_queries,matcher_characters,redcache_hits,heap_attempts,heap_successes,heap_fallbacks;
   u64 insertion_prunes,commuting_prunes,quadratic_swaps;
@@ -62,7 +64,8 @@ typedef struct __attribute__((aligned(64))) {
 } LiveLane;
 
 typedef struct {
-  u64 reserve_base,reserve_bytes;u32 reserve_growth,radix_enabled;GN_ATOMIC(u32) reserve_lock;
+  u64 reserve_base,reserve_bytes;u32 reserve_growth,radix_enabled,radix_cache_enabled;
+  u32 coop_ms,coop_lookahead;GN_ATOMIC(u32) reserve_lock;
   GN_ATOMIC(u32) batch_next,batch_running;
   u32 auto_memory,lane_slots,batch_first,batch_committed,batch_work_n;u64 memory_retries,memory_replayed_pairs;
   u32 batch_n,batch_enabled,hilbert_degree,hilbert_nodes;
@@ -120,6 +123,10 @@ static void publish_lane(Lane*l,u64 terms,u32 force){
   * import, no row serialization, and no clock call per arithmetic operation. */
  l->publications++;
  if(lane==0 && (force || !(l->publications&7u))) (void)gn_host_clock();
+}
+static int slice_expired(Lane*l){
+ if(!l->slice_enabled)return 0;
+ return gn_host_clock()>=l->slice_end;
 }
 static u32 cancelled(void){
  if(GN_LOAD(&S.cancel))return 1;
@@ -381,8 +388,27 @@ static Poly combine(Poly p,Coef sp,Poly g,Coef sg,Word left,Word right,u32 nr,Ar
  * current field: x_i^2=0 and x_i*x_j=q*x_j*x_i with q != 0. They do NOT
  * assume that all generators commute or that a matrix representation is
  * faithful. Skipping a term here is exact ideal membership, not a heuristic. */
+/* Packed words of degree <=16 occupy the low 64 bits. Keep the proved
+ * quadratic tests and their left-to-right order, with scalar nibble scans. */
+static int eager_zero_short(u64 word,u32 degree,Lane*l){
+ if(S.square_mask==((1u<<S.generators)-1)){
+  u64 mask=(UINT64_C(1)<<(4*(degree-1)))-1;
+  u64 x=(word^(word>>4))|~mask;
+  if((x-UINT64_C(0x1111111111111111))&~x&UINT64_C(0x8888888888888888)){
+   l->pruned++;l->insertion_prunes++;return 1;
+  }
+ }
+ u64 scan=word<<(4*(16-degree));u32 pending=0;
+ for(u32 j=0;j<degree;j++,scan<<=4){
+  u32 c=(u32)(scan>>60),bit=1u<<c;
+  if(pending&bit){l->pruned++;l->insertion_prunes++;l->commuting_prunes++;return 1;}
+  pending=(pending&S.commute_mask[c])|(bit&S.square_mask);
+ }
+ return 0;
+}
 static int eager_zero(Word w,u32 degree,Lane*l){
  if(!S.pruning||!S.eager_pruning||!S.square_mask||degree<2)return 0;
+ if(degree<=16&&!wlong(w))return eager_zero_short(w.lo,degree,l);
  if(!wlong(w)&&S.square_mask==((1u<<S.generators)-1)){
   Word q=shr(w,4),mask=maskw((Word){UINT64_MAX,UINT64_MAX},degree-1);
   u64 x=(w.lo^q.lo)|~mask.lo;
@@ -402,8 +428,24 @@ static int eager_zero(Word w,u32 degree,Lane*l){
  * entering the sparse heap. Each swap strictly decreases degleftlex. A local
  * coefficient overflow simply stops preconditioning; the exact reducer still
  * receives an equivalent row and may use arbitrary precision afterwards. */
+static void quadratic_precondition_short(Word*w,u32 degree,i64*c,Lane*l){
+ u64 word=w->lo;u32 at=0;
+ while(at+1<degree){
+  u32 shift=4*(degree-at-2),pair=(u32)(word>>shift)&255;
+  i64 q=S.swap_factor[pair];if(!q){at++;continue;}
+  i64 next;
+  if(S.modulus){i64 v=(*c)%(i64)S.modulus;if(v<0)v+=S.modulus;next=(i64)((u64)v*(u64)q%S.modulus);}
+  else{u64 x=*c<0?(u64)(-*c):(u64)*c,y=q<0?(u64)(-q):(u64)q;
+   if(y&&x>(u64)SMALL_MAX/y)return;next=(*c)*q;
+  }
+  u64 difference=(u64)((pair>>4)^(pair&15));
+  word^=(difference|(difference<<4))<<shift;
+  w->lo=word;*c=next;l->quadratic_swaps++;if(at)at--;
+ }
+}
 static void quadratic_precondition(Word*w,u32 degree,i64*c,Lane*l){
  if(!S.quadratic_rewrite||degree<2||wlong(*w))return;
+ if(degree<=16){quadratic_precondition_short(w,degree,c,l);return;}
  u32 at=0;
  while(at+1<degree){
   u32 a=letter(*w,degree,at),b=letter(*w,degree,at+1);i64 q=S.swap_factor[(a<<4)|b];
@@ -427,26 +469,67 @@ static void quadratic_precondition(Word*w,u32 degree,i64*c,Lane*l){
  * a busy reserve defers the task to the ordered commit barrier. Successful results
  * are wholly owned by the original output arena before releasing the lease. */
 static int reserve_nf(Lane*l,Poly p,u32 active,u32 snapshot){
- if(!S.reserve_base||S.reserve_bytes<=l->a[active^1].end-l->a[active^1].base)return HEAP_MISS;
- if(!GN_TRY_LOCK(&S.reserve_lock)){l->reserve_busy++;return GN_DEFERRED;}
- l->reserve_attempts++;
- Arena saved=l->a[active^1];l->a[active^1]=(Arena){S.reserve_base,S.reserve_base,S.reserve_base+S.reserve_bytes,0,0};
- l->rational_maxed=0;l->reduction_tier=5;
+ if(!l->reserve_retry){
+  if(!S.reserve_base||S.reserve_bytes<=l->a[active^1].end-l->a[active^1].base)return HEAP_MISS;
+  if(!GN_TRY_LOCK(&S.reserve_lock)){l->reserve_busy++;return GN_DEFERRED;}
+  l->reserve_attempts++;l->reserve_saved=l->a[active^1];l->reserve_retry=1;
+  l->a[active^1]=(Arena){S.reserve_base,S.reserve_base,S.reserve_base+S.reserve_bytes,0,0};
+  l->rational_maxed=0;
+ }
  int rc=HEAP_MISS;
- if(S.rational_enabled){u64 steps=l->reductions;rc=rational_nf(l,p,active,snapshot);l->rational_steps+=l->reductions-steps;}
- if(rc<0&&S.big_rational_enabled){l->reduction_tier=6;rc=big_rational_nf(l,p,active,snapshot);}
- l->reserve_peak=MAX(l->reserve_peak,l->a[active^1].peak);
- l->a[active^1]=saved;
+ if(l->resume_tier==4){l->reduction_tier=6;rc=big_rational_nf(l,p,active,snapshot);}
+ else if(S.rational_enabled){l->reduction_tier=5;u64 steps=l->reductions;rc=rational_nf(l,p,active,snapshot);l->rational_steps+=l->reductions-steps;}
+ if(rc<0&&S.big_rational_enabled){l->resume_tier=0;l->reduction_tier=6;rc=big_rational_nf(l,p,active,snapshot);}
+ 
+ if(rc==GN_YIELD)return rc;
+ l->resume_tier=0;l->reserve_peak=MAX(l->reserve_peak,l->a[active^1].peak);
+ l->a[active^1]=l->reserve_saved;l->reserve_retry=0;
  if(!rc)l->reserve_successes++;else if(rc<0)l->reserve_misses++;
  GN_UNLOCK(&S.reserve_lock);return rc;
 }
-static int nf(Lane*l,u32 snapshot){u32 active=l->active;Poly p=l->result;u64 steps=0;u32 scan=0,heap_tried=0;u64 capacity_mark=l->big_capacity_misses+l->big_pool_misses+l->big_arena_misses;l->rational_maxed=0;l->reduction_tier=3;
- for(;;){if(S.heap_enabled&&p.degree<=GN_INLINE_DEGREE&&!heap_tried&&p.n>=S.heap_threshold){heap_tried=1;l->heap_attempts++;u64 prior_steps=l->reductions;l->reduction_tier=1;int hr=heap_nf(l,p,active,snapshot);l->integer_steps+=l->reductions-prior_steps;if(hr>=0){if(!hr)l->heap_successes++;return hr;}l->heap_fallbacks++;if(S.rational_enabled&&!S.modulus){l->rational_attempts++;prior_steps=l->reductions;l->reduction_tier=2;hr=rational_nf(l,p,active,snapshot);l->rational_steps+=l->reductions-prior_steps;if(hr>=0){if(!hr)l->rational_successes++;return hr;}l->rational_fallbacks++;}
- if(S.big_rational_enabled&&!S.modulus){l->big_attempts++;l->reduction_tier=4;int br=big_rational_nf(l,p,active,snapshot);if(br>=0){if(!br)l->big_successes++;return br;}l->big_fallbacks++;}
- u32 capacity_full=l->rational_maxed;
- if(!S.modulus&&(l->rational_maxed||S.big_rational_enabled)){int rr=reserve_nf(l,p,active,snapshot);if(rr>=0)return rr;}
- if(S.auto_memory&&l->allow_repack&&S.workers>1&&(capacity_full||l->rational_maxed||l->big_capacity_misses+l->big_pool_misses+l->big_arena_misses>capacity_mark))return GN_REPACK;
- l->reduction_tier=3;}if(l->a[active].error)return l->a[active].error;if((steps&255)==0){publish_lane(l,p.n,0);if(cancelled())return GN_CANCELLED;}Term*t=PTR(Term,p.off);u32 idx=scan,pos=0,id=0;
+typedef struct {Poly p;u32 active,scan,tried;u64 steps;} NResume;
+static NResume nresume[GN_MAX_WORKERS];
+static int nf(Lane*l,u32 snapshot){
+ u32 active=l->active;Poly p=l->result;u64 steps=0;u32 scan=0,heap_tried=0;
+ u64 capacity_mark=l->big_capacity_misses+l->big_pool_misses+l->big_arena_misses;
+ if(l->resume_tier){heap_tried=1;l->slice_resumes++;
+  if(l->reserve_retry)goto resume_reserve;
+  if(l->resume_tier==1)goto resume_integer;
+  if(l->resume_tier==2)goto resume_rational;
+  if(l->resume_tier==4)goto resume_big;
+  if(l->resume_tier==3){NResume*sv=&nresume[l-S.lanes];p=sv->p;active=sv->active;scan=sv->scan;steps=sv->steps;heap_tried=sv->tried;l->resume_tier=0;goto general;}
+ }
+ l->rational_maxed=0;l->reduction_tier=3;
+ if(S.heap_enabled&&p.degree<=GN_INLINE_DEGREE&&p.n>=S.heap_threshold){
+start_optimized:
+  heap_tried=1;l->heap_attempts++;
+resume_integer:;
+  u64 prior_steps=l->reductions;l->reduction_tier=1;int hr=heap_nf(l,p,active,snapshot);
+  l->integer_steps+=l->reductions-prior_steps;if(hr==GN_YIELD)return hr;l->resume_tier=0;
+  if(hr>=0){if(!hr)l->heap_successes++;return hr;}l->heap_fallbacks++;
+  if(S.rational_enabled&&!S.modulus){l->rational_attempts++;
+resume_rational:;
+   u64 prev=l->reductions;l->reduction_tier=2;int rr=rational_nf(l,p,active,snapshot);l->rational_steps+=l->reductions-prev;
+   if(rr==GN_YIELD)return rr;l->resume_tier=0;if(rr>=0){if(!rr)l->rational_successes++;return rr;}l->rational_fallbacks++;
+  }
+  if(S.big_rational_enabled&&!S.modulus){l->big_attempts++;
+resume_big:;
+   l->reduction_tier=4;int br=big_rational_nf(l,p,active,snapshot);
+   if(br==GN_YIELD)return br;l->resume_tier=0;if(br>=0){if(!br)l->big_successes++;return br;}l->big_fallbacks++;
+  }
+  if(!S.modulus&&(l->rational_maxed||S.big_rational_enabled)){
+resume_reserve:;
+   int rr=reserve_nf(l,p,active,snapshot);if(rr==GN_YIELD)return rr;l->resume_tier=0;if(rr>=0)return rr;
+  }
+  if(S.auto_memory&&l->allow_repack&&S.workers>1&&(l->rational_maxed||l->big_capacity_misses+l->big_pool_misses+l->big_arena_misses>capacity_mark))return GN_REPACK;
+ }
+ l->reduction_tier=3;
+general:
+ for(;;){
+ if(!heap_tried&&S.heap_enabled&&p.degree<=GN_INLINE_DEGREE&&p.n>=S.heap_threshold){l->result=p;l->active=active;goto start_optimized;}
+if(l->a[active].error)return l->a[active].error;if((steps&255)==0){publish_lane(l,p.n,0);if(cancelled())return GN_CANCELLED;
+  if(slice_expired(l)){NResume*sv=&nresume[l-S.lanes];*sv=(NResume){p,active,scan,heap_tried,steps};l->resume_tier=3;l->slice_yields++;return GN_YIELD;}}
+Term*t=PTR(Term,p.off);u32 idx=scan,pos=0,id=0;
   for(;idx<p.n;idx++){id=divisor(t[idx].w,p.degree,snapshot,&pos,l);if(id)break;}
   if(!id){int rc=normalise(&p,&l->a[active]);l->result=p;l->active=active;return rc;}
   l->reductions++;steps++;scan=idx;Rule*rr=rule(id);
@@ -504,26 +587,30 @@ API u64 gn_heap_base(void){
  return 65536;
 #endif
 }
+static Lane coop_coordinator;
+static void layout_one(Lane*l,u64 begin,u64 bytes){
+ u64 cache_bytes=MAX(UINT64_C(2048),(bytes*S.cache_percent/100)&~UINT64_C(7));
+ u64 work=((bytes-bytes/8-(S.batch_enabled?bytes/8:0)-cache_bytes)/2)&~UINT64_C(7);
+ l->a[0]=(Arena){begin,begin,begin+work,0,0};begin+=work;
+ l->a[1]=(Arena){begin,begin,begin+work,0,0};begin+=work;
+ l->io_base=begin;l->io_size=(bytes/8)&~UINT64_C(7);begin+=l->io_size;
+ l->cache_base=begin;u32 slots=64;while(slots<65536&&(u64)slots*2*512<=cache_bytes)slots*=2;
+ l->cache_mask=slots-1;l->cache_epoch=1;l->cache_used=0;
+ memset(PTR(u8,begin),0,(size_t)slots*sizeof(Cache));
+ l->cache_data=begin+(u64)slots*sizeof(Cache);l->cache_capacity=cache_bytes-(u64)slots*sizeof(Cache);begin+=cache_bytes;
+ l->out_base=begin;l->out_size=S.batch_enabled?l->a[0].base+bytes-begin:0;
+}
 static int layout_workers(u32 workers,int preserve){
  if(!workers||workers>GN_MAX_WORKERS)return GN_INPUT;
- u64 bytes=(S.scratch_size/workers)&~UINT64_C(65535);
+ u64 bytes=(S.scratch_size/(workers+(S.coop_ms?1:0)))&~UINT64_C(65535);
  if(bytes<1024*1024)return GN_MEMORY;S.workers=workers;S.lane_slots=MAX(S.lane_slots,workers);
  for(u32 i=0;i<workers;i++){
   Lane*l=&S.lanes[i];if(!preserve){memset(l,0,sizeof(*l));memset(&S.live[i],0,sizeof(LiveLane));}
   else{l->result=(Poly){0};l->error=0;l->active=0;l->out_used=0;l->skip_rule=0;l->busy=0;l->allow_repack=0;l->reserve_owned=0;memset(l->red,0,sizeof(l->red));}
-  u64 begin=S.scratch_base+bytes*i;
-  u64 cache_bytes=MAX(UINT64_C(2048),(bytes*S.cache_percent/100)&~UINT64_C(7));
-  u64 work=((bytes-(bytes/8)-(S.batch_enabled?bytes/8:0)-cache_bytes)/2)&~UINT64_C(7);
-  l->a[0]=(Arena){begin,begin,begin+work,0,0};begin+=work;
-  l->a[1]=(Arena){begin,begin,begin+work,0,0};begin+=work;
-  l->io_base=begin;l->io_size=(bytes/8)&~UINT64_C(7);begin+=l->io_size;
-  l->cache_base=begin;u32 slots=64;
-  while(slots<65536&&(u64)slots*2*512<=cache_bytes)slots*=2;
-  l->cache_mask=slots-1;l->cache_epoch=1;
-  memset(PTR(u8,begin),0,(size_t)slots*sizeof(Cache));
-  l->cache_data=begin+(u64)slots*sizeof(Cache);l->cache_capacity=cache_bytes-(u64)slots*sizeof(Cache);begin+=cache_bytes;
-  l->out_base=begin;l->out_size=S.batch_enabled?(bytes* (i+1)+S.scratch_base-begin):0;
+  l->resume_tier=0;l->slice_enabled=0;l->reserve_retry=0;
+  layout_one(l,S.scratch_base+bytes*i,bytes);
  }
+ if(S.coop_ms){memset(&coop_coordinator,0,sizeof(coop_coordinator));layout_one(&coop_coordinator,S.scratch_base+bytes*workers,bytes);}
  return 0;
 }
 API int gn_workers(u32 workers){return layout_workers(workers,0);}
@@ -531,7 +618,7 @@ API int gn_batch_mode(u32 enabled){S.batch_enabled=!!enabled;return gn_workers(S
 API int gn_init(u32 generators,u32 degree,u32 workers,u64 budget,u64 scratch_pool,u32 hash_bits,u32 modulus,u32 spill){
  if(!generators||generators>16||degree>GN_INDEX_MAX||budget>GN_HARD_BYTES||scratch_pool>budget||scratch_pool<1024*1024||hash_bits<8||hash_bits>26||modulus==1||modulus>2147483647u)return GN_INPUT;
  if(modulus){for(u32 d=2;(u64)d*d<=modulus;d++)if(modulus%d==0)return GN_INPUT;}
- gn_lb_release();memset(&S,0,sizeof(S));S.abi=GN_ABI;S.generators=generators;S.target=degree?degree:GN_INDEX_MAX;S.pruning=1;S.heap_enabled=1;S.rational_enabled=1;S.rational_rewrites=1;S.big_rational_enabled=1;S.growing_rational=1;S.reserve_growth=1;S.radix_enabled=1;S.matcher_enabled=1;S.chain_enabled=1;S.telemetry_enabled=1;S.eager_pruning=1;S.quadratic_rewrite=1;S.cost_scheduling=1;S.matcher_limit=MIN(budget/16,UINT64_C(67108864));S.cache_percent=12;S.heap_threshold=16;S.budget=budget;S.modulus=modulus;S.spill=!!spill;S.base=gn_heap_base();S.bump=S.base;S.stack_base=alloc_p((u64)GN_MAX_WORKERS*STACK_BYTES);if(!S.stack_base)return S.error;
+ gn_lb_release();memset(&S,0,sizeof(S));S.abi=GN_ABI;S.generators=generators;S.target=degree?degree:GN_INDEX_MAX;S.pruning=1;S.heap_enabled=1;S.rational_enabled=1;S.rational_rewrites=1;S.big_rational_enabled=1;S.growing_rational=1;S.reserve_growth=1;S.radix_enabled=1;S.radix_cache_enabled=1;S.matcher_enabled=1;S.chain_enabled=1;S.telemetry_enabled=1;S.eager_pruning=1;S.quadratic_rewrite=1;S.cost_scheduling=1;S.matcher_limit=MIN(budget/16,UINT64_C(67108864));S.cache_percent=12;S.heap_threshold=16;S.budget=budget;S.modulus=modulus;S.spill=!!spill;S.base=gn_heap_base();S.bump=S.base;S.stack_base=alloc_p((u64)GN_MAX_WORKERS*STACK_BYTES);if(!S.stack_base)return S.error;
  S.scratch_base=alloc_p(scratch_pool);if(!S.scratch_base)return S.error;S.scratch_size=scratch_pool;int rc=gn_workers(workers);if(rc)return rc;
  S.hash_mask=((u32)1<<hash_bits)-1;u64 hb=((u64)S.hash_mask+1)*4;S.lm_heads=alloc_p(hb);S.prefix_heads=alloc_p(hb);if(S.error)return S.error;memset(PTR(u8,S.lm_heads),0,(size_t)hb);memset(PTR(u8,S.prefix_heads),0,(size_t)hb);
  S.table_capacity=(u32)MIN((budget/(PAGE_N*sizeof(Prefix))+2),(u64)UINT32_MAX/PAGE_N+1);u64 tb=(u64)S.table_capacity*8;S.rule_pages=alloc_p(tb);S.prefix_pages=alloc_p(tb);if(S.error)return S.error;memset(PTR(u8,S.rule_pages),0,(size_t)tb);memset(PTR(u8,S.prefix_pages),0,(size_t)tb);return 0;
@@ -879,3 +966,5 @@ API int gn_reserve_growth(u32 enabled){if(enabled>1)return GN_INPUT;if(S.current
 API int gn_radix_queue(u32 enabled){if(enabled>1)return GN_INPUT;if(S.current||S.input_expected||S.nrules)return GN_STATE;S.radix_enabled=enabled;return 0;}
 
 #include "frontier.inc"
+
+#include "cooperative.inc"

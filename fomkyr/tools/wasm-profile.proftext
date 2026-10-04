@@ -1,0 +1,4263 @@
+gn_abi
+# Func Hash:
+24
+# Num Counters:
+1
+# Counter Values:
+7
+
+gn_batch_commit
+# Func Hash:
+1043553553184910409
+# Num Counters:
+5
+# Counter Values:
+0
+0
+0
+0
+0
+
+gn_batch_fallback
+# Func Hash:
+24
+# Num Counters:
+1
+# Counter Values:
+0
+
+gn_batch_fill
+# Func Hash:
+489413635170335702
+# Num Counters:
+13
+# Counter Values:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+gn_batch_mode
+# Func Hash:
+108184
+# Num Counters:
+1
+# Counter Values:
+7
+
+gn_batch_reduce
+# Func Hash:
+784923807657477576
+# Num Counters:
+14
+# Counter Values:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+gn_batch_retry
+# Func Hash:
+925525366579262560
+# Num Counters:
+21
+# Counter Values:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+gn_batch_status
+# Func Hash:
+99163
+# Num Counters:
+2
+# Counter Values:
+0
+0
+
+gn_big_rational_heap
+# Func Hash:
+775981745480681085
+# Num Counters:
+7
+# Counter Values:
+7
+0
+0
+7
+7
+7
+7
+
+gn_cancel
+# Func Hash:
+0
+# Num Counters:
+1
+# Counter Values:
+0
+
+gn_cancel_ptr
+# Func Hash:
+24
+# Num Counters:
+1
+# Counter Values:
+13
+
+gn_candidate_check
+# Func Hash:
+957889808681041401
+# Num Counters:
+12
+# Counter Values:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+gn_canonical_rule
+# Func Hash:
+816911604254601929
+# Num Counters:
+20
+# Counter Values:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+gn_commit
+# Func Hash:
+1004898039307288278
+# Num Counters:
+7
+# Counter Values:
+3008
+0
+0
+3008
+0
+0
+3008
+
+gn_completion_bound
+# Func Hash:
+1549
+# Num Counters:
+2
+# Counter Values:
+7
+7
+
+gn_coop_commit
+# Func Hash:
+176680763949092386
+# Num Counters:
+35
+# Counter Values:
+368
+0
+368
+368
+368
+368
+0
+42956
+2549
+40407
+40407
+40508
+40407
+0
+0
+0
+1719
+42956
+2549
+788
+101
+0
+788
+788
+9974
+0
+0
+0
+0
+0
+0
+0
+788
+788
+81
+
+gn_coop_discard
+# Func Hash:
+185317260775409361
+# Num Counters:
+4
+# Counter Values:
+0
+0
+0
+0
+
+gn_coop_fill
+# Func Hash:
+101105555388522421
+# Num Counters:
+19
+# Counter Values:
+422
+0
+422
+422
+422
+422
+422
+422
+422
+422
+422
+422
+0
+0
+0
+40506
+99
+0
+368
+
+gn_coop_reduce
+# Func Hash:
+1118043938522842241
+# Num Counters:
+27
+# Counter Values:
+788
+0
+788
+788
+788
+788
+41144
+0
+101
+636
+101
+101
+0
+3008
+40407
+3008
+0
+0
+3008
+3008
+3008
+40407
+51
+40407
+40356
+788
+700
+
+gn_coop_retry
+# Func Hash:
+1149194464067017614
+# Num Counters:
+9
+# Counter Values:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+gn_coop_stat
+# Func Hash:
+922977718257924361
+# Num Counters:
+31
+# Counter Values:
+5579
+2435
+320
+313
+313
+313
+313
+313
+313
+313
+313
+313
+0
+0
+7
+2435
+487
+2435
+487
+487
+1948
+487
+487
+1461
+487
+487
+974
+487
+487
+487
+487
+
+gn_cooperative
+# Func Hash:
+643299642602791577
+# Num Counters:
+17
+# Counter Values:
+7
+0
+7
+7
+7
+7
+7
+7
+7
+7
+7
+7
+7
+7
+0
+0
+0
+
+gn_deadline
+# Func Hash:
+0
+# Num Counters:
+1
+# Counter Values:
+7
+
+gn_deep_stat
+# Func Hash:
+783701099056586088
+# Num Counters:
+9
+# Counter Values:
+830
+0
+0
+166
+166
+166
+166
+166
+0
+
+gn_exact_stat
+# Func Hash:
+268780550761452266
+# Num Counters:
+16
+# Counter Values:
+1839
+0
+0
+166
+166
+166
+166
+166
+166
+166
+166
+115
+115
+166
+115
+0
+
+gn_export_rule
+# Func Hash:
+151617109688128649
+# Num Counters:
+11
+# Counter Values:
+3002
+0
+3002
+3002
+3002
+0
+3002
+3002
+0
+0
+0
+
+gn_export_size
+# Func Hash:
+24
+# Num Counters:
+1
+# Counter Values:
+0
+
+gn_finish_degree
+# Func Hash:
+662032523141813406
+# Num Counters:
+9
+# Counter Values:
+54
+0
+54
+54
+0
+54
+54
+54
+0
+
+gn_frontier_export
+# Func Hash:
+762345685935445304
+# Num Counters:
+17
+# Counter Values:
+790
+0
+790
+790
+790
+790
+790
+790
+790
+0
+0
+0
+790
+790
+0
+31600
+45505
+
+gn_frontier_hash_bits
+# Func Hash:
+17496
+# Num Counters:
+2
+# Counter Values:
+1580
+28440
+
+gn_frontier_pending
+# Func Hash:
+1549
+# Num Counters:
+2
+# Counter Values:
+1580
+1580
+
+gn_frontier_restore
+# Func Hash:
+482968486775756141
+# Num Counters:
+110
+# Counter Values:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+gn_frontier_size
+# Func Hash:
+24
+# Num Counters:
+1
+# Counter Values:
+790
+
+gn_growing_rational
+# Func Hash:
+775981745480681085
+# Num Counters:
+7
+# Counter Values:
+7
+0
+0
+7
+7
+7
+7
+
+gn_heap_base
+# Func Hash:
+24
+# Num Counters:
+1
+# Counter Values:
+7
+
+gn_hilbert
+# Func Hash:
+24
+# Num Counters:
+1
+# Counter Values:
+0
+
+gn_hilbert_coefficient
+# Func Hash:
+856
+# Num Counters:
+2
+# Counter Values:
+0
+0
+
+gn_hilbert_gate_begin
+# Func Hash:
+1026663170024296872
+# Num Counters:
+25
+# Counter Values:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+gn_hilbert_gate_stat
+# Func Hash:
+825432589207868599
+# Num Counters:
+15
+# Counter Values:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+gn_hilbert_gate_try
+# Func Hash:
+124073760043870557
+# Num Counters:
+33
+# Counter Values:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+gn_hilbert_limb
+# Func Hash:
+184433897722446936
+# Num Counters:
+6
+# Counter Values:
+0
+0
+0
+0
+0
+0
+
+gn_hilbert_limbs
+# Func Hash:
+24
+# Num Counters:
+1
+# Counter Values:
+0
+
+gn_hilbert_release
+# Func Hash:
+171570321
+# Num Counters:
+4
+# Counter Values:
+0
+0
+0
+0
+
+gn_hilbert_upper
+# Func Hash:
+24
+# Num Counters:
+1
+# Counter Values:
+0
+
+gn_import_buffer
+# Func Hash:
+24
+# Num Counters:
+1
+# Counter Values:
+0
+
+gn_import_capacity
+# Func Hash:
+99163
+# Num Counters:
+2
+# Counter Values:
+0
+0
+
+gn_init
+# Func Hash:
+751835919531874874
+# Num Counters:
+31
+# Counter Values:
+7
+0
+7
+7
+7
+7
+7
+7
+7
+7
+7
+7
+7
+7
+7
+7
+7
+7
+7
+7
+2
+9
+0
+7
+0
+0
+0
+0
+0
+7
+0
+
+gn_input_begin
+# Func Hash:
+87536993600555087
+# Num Counters:
+14
+# Counter Values:
+407
+0
+407
+407
+407
+407
+407
+407
+407
+407
+407
+407
+0
+0
+
+gn_input_bytes
+# Func Hash:
+181776561594593810
+# Num Counters:
+20
+# Counter Values:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+gn_input_end
+# Func Hash:
+677603990040530670
+# Num Counters:
+19
+# Counter Values:
+407
+0
+407
+407
+514
+398
+615
+398
+921
+0
+514
+0
+0
+921
+0
+407
+407
+0
+0
+
+gn_input_term
+# Func Hash:
+476069819950293828
+# Num Counters:
+16
+# Counter Values:
+921
+0
+921
+921
+921
+921
+921
+921
+921
+921
+0
+0
+1858
+0
+450
+250
+
+gn_is_certifying
+# Func Hash:
+24
+# Num Counters:
+1
+# Counter Values:
+0
+
+gn_lane_stat
+# Func Hash:
+270849141007803836
+# Num Counters:
+30
+# Counter Values:
+3662
+0
+0
+166
+166
+166
+166
+166
+166
+166
+166
+166
+166
+166
+0
+0
+0
+10
+166
+166
+166
+166
+166
+166
+166
+166
+166
+166
+166
+0
+
+gn_lb_begin
+# Func Hash:
+389734801183251285
+# Num Counters:
+21
+# Counter Values:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+gn_lb_check
+# Func Hash:
+613534590210755159
+# Num Counters:
+23
+# Counter Values:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+gn_lb_entry
+# Func Hash:
+841315130038700254
+# Num Counters:
+8
+# Counter Values:
+0
+0
+0
+0
+0
+0
+0
+0
+
+gn_lb_finish
+# Func Hash:
+109516960778604360
+# Num Counters:
+14
+# Counter Values:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+gn_lb_pivot
+# Func Hash:
+603055148518057497
+# Num Counters:
+11
+# Counter Values:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+gn_lb_relation
+# Func Hash:
+136525114461642730
+# Num Counters:
+16
+# Counter Values:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+gn_lb_release
+# Func Hash:
+171570321
+# Num Counters:
+4
+# Counter Values:
+7
+0
+0
+0
+
+gn_lb_term
+# Func Hash:
+184433895574963288
+# Num Counters:
+6
+# Counter Values:
+0
+0
+0
+0
+0
+0
+
+gn_lb_vector
+# Func Hash:
+1117606526733260961
+# Num Counters:
+16
+# Counter Values:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+gn_legacy_big_division
+# Func Hash:
+775981745480681085
+# Num Counters:
+7
+# Counter Values:
+7
+0
+0
+7
+7
+7
+7
+
+gn_live_stat
+# Func Hash:
+1111707066084729854
+# Num Counters:
+18
+# Counter Values:
+1935
+0
+0
+555
+0
+0
+0
+555
+0
+0
+555
+0
+54
+54
+54
+54
+54
+0
+
+gn_local_rewrites
+# Func Hash:
+937517675912310287
+# Num Counters:
+24
+# Counter Values:
+7
+0
+7
+7
+7
+7
+7
+7
+7
+7
+7
+7
+7
+7
+7
+7
+0
+7
+7
+7
+0
+7
+7
+0
+
+gn_local_rule
+# Func Hash:
+452967945907610587
+# Num Counters:
+12
+# Counter Values:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+gn_memory_policy
+# Func Hash:
+2881767837631576
+# Num Counters:
+8
+# Counter Values:
+7
+0
+7
+7
+7
+7
+7
+7
+
+gn_memory_stat
+# Func Hash:
+229468271061896404
+# Num Counters:
+9
+# Counter Values:
+1803
+0
+115
+1343
+115
+115
+115
+0
+0
+
+gn_modulus
+# Func Hash:
+24
+# Num Counters:
+1
+# Counter Values:
+115
+
+gn_next_pair
+# Func Hash:
+739244107346292183
+# Num Counters:
+34
+# Counter Values:
+40506
+0
+40506
+40506
+45
+63282
+0
+0
+0
+6502
+62875
+56780
+0
+56780
+56780
+16373
+40889
+0
+0
+0
+112
+40877
+40777
+14
+40763
+40763
+60
+2110
+60
+40763
+2110
+296
+40703
+296
+
+gn_optimize
+# Func Hash:
+874978128684672658
+# Num Counters:
+8
+# Counter Values:
+7
+0
+7
+7
+7
+7
+7
+7
+
+gn_pin_cache
+# Func Hash:
+1100566239840921446
+# Num Counters:
+18
+# Counter Values:
+7
+0
+7
+7
+7
+7
+7
+7
+0
+7
+7
+0
+0
+7
+7
+7
+7
+0
+
+gn_progress_stat
+# Func Hash:
+1007134221965450907
+# Num Counters:
+11
+# Counter Values:
+6830
+0
+1150
+360
+1940
+360
+1150
+1150
+360
+360
+0
+
+gn_radix_cache
+# Func Hash:
+45027837969496
+# Num Counters:
+6
+# Counter Values:
+7
+0
+7
+7
+7
+7
+
+gn_radix_queue
+# Func Hash:
+775981745480681085
+# Num Counters:
+7
+# Counter Values:
+7
+0
+0
+7
+7
+7
+7
+
+gn_rational_heap
+# Func Hash:
+45027837969496
+# Num Counters:
+6
+# Counter Values:
+7
+0
+7
+7
+7
+7
+
+gn_rational_rewrites
+# Func Hash:
+163176656689719225
+# Num Counters:
+7
+# Counter Values:
+7
+0
+0
+7
+7
+7
+7
+
+gn_reduce_pair
+# Func Hash:
+11245552728
+# Num Counters:
+2
+# Counter Values:
+40407
+0
+
+gn_reserve_growth
+# Func Hash:
+775981745480681085
+# Num Counters:
+7
+# Counter Values:
+7
+0
+0
+7
+7
+7
+7
+
+gn_reserve_stat
+# Func Hash:
+629411505939661872
+# Num Counters:
+14
+# Counter Values:
+1456
+115
+0
+0
+166
+166
+166
+166
+166
+166
+115
+115
+115
+0
+
+gn_restore_rule
+# Func Hash:
+188106116973560920
+# Num Counters:
+3
+# Counter Values:
+0
+0
+0
+
+gn_restored_through
+# Func Hash:
+184434020095460440
+# Num Counters:
+7
+# Counter Values:
+0
+0
+0
+0
+0
+0
+0
+
+gn_result_count
+# Func Hash:
+99163
+# Num Counters:
+2
+# Counter Values:
+0
+0
+
+gn_rewind_degree
+# Func Hash:
+11178443864
+# Num Counters:
+2
+# Counter Values:
+0
+0
+
+gn_row_reserve
+# Func Hash:
+534092303181318478
+# Num Counters:
+15
+# Counter Values:
+7
+0
+7
+7
+7
+7
+7
+7
+2
+7
+5
+0
+5
+5
+0
+
+gn_rule_stat
+# Func Hash:
+892698658755991011
+# Num Counters:
+12
+# Counter Values:
+3002
+0
+3002
+3002
+0
+0
+0
+3002
+0
+0
+0
+0
+
+gn_stack_top
+# Func Hash:
+99163
+# Num Counters:
+2
+# Counter Values:
+3
+3
+
+gn_start_degree
+# Func Hash:
+721378870276682285
+# Num Counters:
+19
+# Counter Values:
+54
+0
+0
+54
+54
+54
+54
+0
+0
+54
+6502
+0
+0
+407
+16373
+0
+16373
+16373
+0
+
+gn_stat
+# Func Hash:
+1096315862450462758
+# Num Counters:
+53
+# Counter Values:
+12164
+0
+3914
+905
+987
+1803
+169
+115
+905
+115
+115
+115
+475
+115
+115
+0
+0
+0
+16
+0
+0
+0
+0
+115
+115
+0
+0
+115
+115
+115
+115
+115
+0
+0
+0
+0
+0
+0
+115
+115
+115
+115
+115
+115
+115
+115
+115
+115
+115
+115
+115
+115
+0
+
+gn_test_big
+# Func Hash:
+177226706539572901
+# Num Counters:
+19
+# Counter Values:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+gn_test_big_fraction
+# Func Hash:
+1005486923158469228
+# Num Counters:
+21
+# Counter Values:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+gn_test_small
+# Func Hash:
+448432471215948349
+# Num Counters:
+6
+# Counter Values:
+0
+0
+0
+0
+0
+0
+
+gn_tune
+# Func Hash:
+330734906523854152
+# Num Counters:
+12
+# Counter Values:
+7
+0
+7
+7
+7
+7
+7
+7
+7
+7
+7
+7
+
+gn_word_cache
+# Func Hash:
+333129542016349135
+# Num Counters:
+20
+# Counter Values:
+7
+0
+7
+7
+7
+7
+7
+7
+0
+0
+7
+7
+0
+0
+0
+0
+0
+0
+0
+0
+
+gn_workers
+# Func Hash:
+24
+# Num Counters:
+1
+# Counter Values:
+21
+
+kernel.c:addc
+# Func Hash:
+664564873809755651
+# Num Counters:
+17
+# Counter Values:
+522491
+0
+0
+0
+515434
+515675
+515434
+515351
+515394
+515351
+1962
+0
+3359
+9295
+70
+850
+10383
+
+kernel.c:addf
+# Func Hash:
+1549
+# Num Counters:
+2
+# Counter Values:
+629421
+172746
+
+kernel.c:alloc_a
+# Func Hash:
+105791757831704725
+# Num Counters:
+4
+# Counter Values:
+762104
+0
+0
+7648
+
+kernel.c:alloc_p
+# Func Hash:
+723306586007438127
+# Num Counters:
+8
+# Counter Values:
+66
+0
+66
+66
+66
+66
+0
+0
+
+kernel.c:append_rule
+# Func Hash:
+432812122411174145
+# Num Counters:
+39
+# Counter Values:
+3415
+413
+0
+2995
+0
+0
+0
+3002
+0
+3002
+0
+0
+0
+0
+0
+0
+0
+13042
+405
+60
+60
+60
+182
+182
+182
+182
+182
+182
+182
+182
+182
+182
+182
+90
+3002
+3002
+3002
+0
+0
+
+kernel.c:badd
+# Func Hash:
+964957279520561666
+# Num Counters:
+6
+# Counter Values:
+65816
+0
+0
+0
+31809
+0
+
+kernel.c:batch_commit_impl
+# Func Hash:
+521648670644888831
+# Num Counters:
+7
+# Counter Values:
+40407
+0
+0
+0
+0
+37399
+0
+
+kernel.c:batch_weight
+# Func Hash:
+24
+# Num Counters:
+1
+# Counter Values:
+187738
+
+kernel.c:bbytes
+# Func Hash:
+99149
+# Num Counters:
+3
+# Counter Values:
+81574
+6524
+0
+
+kernel.c:bcopy
+# Func Hash:
+24
+# Num Counters:
+1
+# Counter Values:
+103876
+
+kernel.c:bheap_down
+# Func Hash:
+618620245972499830
+# Num Counters:
+6
+# Counter Values:
+17361
+121691
+57545
+121138
+57545
+4667
+
+kernel.c:bheap_remove
+# Func Hash:
+709629501534099219
+# Num Counters:
+5
+# Counter Values:
+17399
+17
+21
+566
+21
+
+kernel.c:bheap_up
+# Func Hash:
+148684498001
+# Num Counters:
+3
+# Counter Values:
+17420
+35034
+17306
+
+kernel.c:big_rational_nf
+# Func Hash:
+612413704704592872
+# Num Counters:
+46
+# Counter Values:
+30
+13
+0
+221
+221
+221
+0
+0
+2268
+0
+30
+15771
+256
+0
+13
+0
+15758
+15758
+0
+1903
+15758
+1903
+0
+0
+0
+0
+0
+13855
+0
+0
+80947
+0
+0
+0
+0
+0
+1903
+0
+10
+0
+0
+1903
+0
+10
+0
+0
+
+kernel.c:bmake
+# Func Hash:
+990655854462876019
+# Num Counters:
+6
+# Counter Values:
+112756
+0
+0
+1641
+0
+24165
+
+kernel.c:bmul
+# Func Hash:
+840717037237442575
+# Num Counters:
+15
+# Counter Values:
+80947
+0
+0
+80947
+80947
+0
+39968
+39968
+39968
+0
+22302
+22499
+4845
+197
+4648
+
+kernel.c:brow_add
+# Func Hash:
+363675274387113005
+# Num Counters:
+22
+# Counter Values:
+83215
+0
+0
+0
+0
+0
+0
+0
+0
+83215
+0
+2
+65818
+2
+65816
+0
+0
+0
+1641
+0
+8656
+0
+
+kernel.c:brow_collect
+# Func Hash:
+462892466721653004
+# Num Counters:
+13
+# Counter Values:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+kernel.c:brow_remove
+# Func Hash:
+10257
+# Num Counters:
+2
+# Counter Values:
+15496
+0
+
+kernel.c:brow_store
+# Func Hash:
+163926876668470718
+# Num Counters:
+5
+# Counter Values:
+81574
+0
+0
+0
+0
+
+kernel.c:c_bigoff
+# Func Hash:
+24
+# Num Counters:
+1
+# Counter Values:
+299081
+
+kernel.c:cabs
+# Func Hash:
+99163
+# Num Counters:
+2
+# Counter Values:
+1015975
+275675
+
+kernel.c:cabs64
+# Func Hash:
+99163
+# Num Counters:
+2
+# Counter Values:
+2503578
+1076203
+
+kernel.c:cancelled
+# Func Hash:
+594815245540342283
+# Num Counters:
+5
+# Counter Values:
+108068
+0
+0
+108068
+0
+
+kernel.c:checksum
+# Func Hash:
+1160280
+# Num Counters:
+2
+# Counter Values:
+12014
+2852824
+
+kernel.c:cl
+# Func Hash:
+2895578287932251
+# Num Counters:
+4
+# Counter Values:
+265241
+82878
+82154
+180958
+
+kernel.c:clonec
+# Func Hash:
+11178443864
+# Num Counters:
+2
+# Counter Values:
+4600655
+4583055
+
+kernel.c:clonew
+# Func Hash:
+612920948360901974
+# Num Counters:
+3
+# Counter Values:
+3369174
+3369174
+0
+
+kernel.c:cn
+# Func Hash:
+706929328973
+# Num Counters:
+4
+# Counter Values:
+366485
+185646
+11429
+169410
+
+kernel.c:cneg
+# Func Hash:
+1549
+# Num Counters:
+2
+# Counter Values:
+2176885
+5702
+
+kernel.c:combine
+# Func Hash:
+466652010664545198
+# Num Counters:
+13
+# Counter Values:
+531852
+0
+0
+4891832
+672559
+531852
+2698421
+140707
+2193411
+3369174
+893237
+0
+4262515
+
+kernel.c:compactc
+# Func Hash:
+46700237209058100
+# Num Counters:
+4
+# Counter Values:
+280280
+0
+278407
+0
+
+kernel.c:context
+# Func Hash:
+956795897135478645
+# Num Counters:
+6
+# Counter Values:
+8176186
+8176186
+0
+0
+0
+0
+
+kernel.c:coop_clear_lane
+# Func Hash:
+11043906705
+# Num Counters:
+3
+# Counter Values:
+0
+0
+0
+
+kernel.c:coop_order
+# Func Hash:
+56276946179308462
+# Num Counters:
+20
+# Counter Values:
+422
+42956
+42855
+101
+101
+148
+422
+148
+978
+17486
+17429
+16508
+122885
+37660
+17486
+114043
+93869
+52974
+61816
+107
+
+kernel.c:copy_poly
+# Func Hash:
+2930361983153240
+# Num Counters:
+3
+# Counter Values:
+43415
+0
+198590
+
+kernel.c:count_add
+# Func Hash:
+74257933
+# Num Counters:
+3
+# Counter Values:
+0
+0
+0
+
+kernel.c:csign
+# Func Hash:
+25991370445
+# Num Counters:
+5
+# Counter Values:
+3279461
+44663
+22345
+1493326
+1741472
+
+kernel.c:csmall
+# Func Hash:
+24
+# Num Counters:
+1
+# Counter Values:
+12178643
+
+kernel.c:cvalue
+# Func Hash:
+24
+# Num Counters:
+1
+# Counter Values:
+11522762
+
+kernel.c:divisor
+# Func Hash:
+41517544270873943
+# Num Counters:
+37
+# Counter Values:
+1004412
+0
+0
+0
+0
+0
+1004412
+0
+0
+0
+17043
+18196
+987661
+18196
+3748
+1153
+14448
+14448
+0
+987355
+987355
+986448
+986448
+986448
+987369
+986448
+260634
+904405
+0
+62876
+0
+0
+0
+63803
+7621
+987369
+987369
+
+kernel.c:divmodc
+# Func Hash:
+2895582297949272
+# Num Counters:
+3
+# Counter Values:
+272234
+0
+0
+
+kernel.c:eager_zero
+# Func Hash:
+655895004630208602
+# Num Counters:
+20
+# Counter Values:
+5672336
+157562
+5514774
+5514774
+5672336
+5514774
+5672336
+5672336
+5514774
+5514774
+5514774
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+kernel.c:eager_zero_short
+# Func Hash:
+899526146539881114
+# Num Counters:
+5
+# Counter Values:
+5514774
+5514774
+458096
+38467196
+190731
+
+kernel.c:exact_rule
+# Func Hash:
+1108222052195560688
+# Num Counters:
+7
+# Counter Values:
+66805
+7729
+7621
+7641
+7621
+7721
+7641
+
+kernel.c:exactdiv
+# Func Hash:
+1023677937296902707
+# Num Counters:
+5
+# Counter Values:
+614555
+0
+0
+351070
+49819
+
+kernel.c:fpow
+# Func Hash:
+2320045144
+# Num Counters:
+3
+# Counter Values:
+138552
+484932
+277104
+
+kernel.c:fr32
+# Func Hash:
+1160280
+# Num Counters:
+2
+# Counter Values:
+0
+0
+
+kernel.c:fr64
+# Func Hash:
+1160280
+# Num Counters:
+2
+# Counter Values:
+0
+0
+
+kernel.c:frontier_hash
+# Func Hash:
+19461813417048
+# Num Counters:
+5
+# Counter Values:
+790
+980880
+6320
+961920
+6320
+
+kernel.c:fw32
+# Func Hash:
+18129
+# Num Counters:
+2
+# Counter Values:
+182020
+728080
+
+kernel.c:fw64
+# Func Hash:
+18129
+# Num Counters:
+2
+# Counter Values:
+32390
+259120
+
+kernel.c:gate_upper
+# Func Hash:
+1125269826776364207
+# Num Counters:
+4
+# Counter Values:
+0
+0
+0
+0
+
+kernel.c:gcd_slot
+# Func Hash:
+11178443864
+# Num Counters:
+2
+# Counter Values:
+24841
+16539
+
+kernel.c:gcdc
+# Func Hash:
+132567693287585113
+# Num Counters:
+24
+# Counter Values:
+313136
+0
+89298
+276686
+223838
+0
+0
+215792
+216262
+215792
+626562
+7502
+0
+15548
+15548
+15548
+0
+0
+0
+6799
+7269
+6799
+40534
+0
+
+kernel.c:hash
+# Func Hash:
+2930361983153240
+# Num Counters:
+3
+# Counter Values:
+128637
+128637
+0
+
+kernel.c:heap_down
+# Func Hash:
+618620245972499830
+# Num Counters:
+6
+# Counter Values:
+0
+0
+0
+0
+0
+0
+
+kernel.c:heap_nf
+# Func Hash:
+376929666412971449
+# Num Counters:
+12
+# Counter Values:
+18089
+131
+131
+131
+87
+19496
+19409
+18089
+0
+1407
+1407
+1407
+
+kernel.c:heap_nf_try
+# Func Hash:
+436589352663670421
+# Num Counters:
+42
+# Counter Values:
+19496
+87
+0
+19409
+0
+386274
+4
+0
+19492
+2106042
+22669
+0
+87
+2105955
+0
+1937391
+26336
+4363607
+2092376
+1684313
+145237
+0
+4218370
+0
+975
+37333
+0
+131231
+0
+0
+57
+770251
+0
+8555
+372740
+374124
+0
+761696
+0
+432
+0
+36720
+
+kernel.c:heap_remove
+# Func Hash:
+60409117664270954
+# Num Counters:
+6
+# Counter Values:
+3351039
+3351039
+0
+0
+0
+0
+
+kernel.c:heap_up
+# Func Hash:
+148684498001
+# Num Counters:
+3
+# Counter Values:
+0
+0
+0
+
+kernel.c:hilbert_impl
+# Func Hash:
+389009000997945708
+# Num Counters:
+57
+# Counter Values:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+kernel.c:layout_one
+# Func Hash:
+3783215742309453
+# Num Counters:
+7
+# Counter Values:
+47
+0
+27
+470
+470
+470
+27
+
+kernel.c:layout_workers
+# Func Hash:
+766301561716704100
+# Num Counters:
+10
+# Counter Values:
+28
+0
+28
+28
+7
+0
+0
+40
+40
+7
+
+kernel.c:lb_add
+# Func Hash:
+119450007864408
+# Num Counters:
+4
+# Counter Values:
+0
+0
+0
+0
+
+kernel.c:lb_product
+# Func Hash:
+1101542828929191993
+# Num Counters:
+4
+# Counter Values:
+0
+0
+0
+0
+
+kernel.c:legacy_divmodc
+# Func Hash:
+681718070243916525
+# Num Counters:
+26
+# Counter Values:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+kernel.c:letter
+# Func Hash:
+1549
+# Num Counters:
+2
+# Counter Values:
+5267875
+0
+
+kernel.c:limb_divmodc
+# Func Hash:
+389623824611636053
+# Num Counters:
+39
+# Counter Values:
+272234
+0
+260535
+261005
+260535
+260535
+494
+0
+6
+4
+10627
+2918
+0
+2918
+29512
+8051
+2918
+28
+0
+28
+1722
+2240
+1090
+0
+0
+0
+0
+0
+0
+22
+1112
+22
+2996
+0
+0
+126
+28
+536
+1609
+
+kernel.c:load_rule
+# Func Hash:
+196785262238960663
+# Num Counters:
+17
+# Counter Values:
+915634
+915634
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+kernel.c:local_build
+# Func Hash:
+121814580079750681
+# Num Counters:
+46
+# Counter Values:
+54
+47
+35
+7
+54
+35
+54
+54
+0
+1069
+1069
+1069
+458752
+0
+1792
+0
+1190304
+256074
+256074
+15384
+0
+32
+155098
+245625
+245626
+245625
+0
+122748
+122748
+0
+54187
+310335
+310979
+310335
+155122
+31760
+49360
+1
+155213
+1
+1041
+0
+188154
+35692
+218046
+35692
+
+kernel.c:local_find
+# Func Hash:
+238338019941462533
+# Num Counters:
+15
+# Counter Values:
+2134567
+29501
+2105066
+2105066
+2105066
+2105066
+2105066
+2105066
+2134439
+2105066
+5954279
+1937391
+1937391
+0
+0
+
+kernel.c:local_sum
+# Func Hash:
+185010847805501804
+# Num Counters:
+14
+# Counter Values:
+364521
+0
+498637
+15570
+7778
+0
+0
+7792
+3874
+0
+3918
+0
+14
+1040
+
+kernel.c:magcmp
+# Func Hash:
+281021740536553933
+# Num Counters:
+6
+# Counter Values:
+81296
+12515
+11947
+69099
+36896
+25546
+
+kernel.c:makec
+# Func Hash:
+332776649846218828
+# Num Counters:
+11
+# Counter Values:
+36876
+9859
+46653
+9859
+82
+9292
+9286
+1822
+145
+0
+16630
+
+kernel.c:maskw
+# Func Hash:
+469867051721154920
+# Num Counters:
+5
+# Counter Values:
+4251387
+0
+0
+4251387
+0
+
+kernel.c:matcher_build
+# Func Hash:
+366065173285630805
+# Num Counters:
+46
+# Counter Values:
+54
+9
+54
+45
+54
+54
+0
+0
+13
+38
+13
+6077
+0
+22
+51
+51
+51
+0
+0
+22
+22
+22
+22
+22
+22
+0
+6077
+0
+0
+0
+4052
+22426
+8121
+0
+327
+313
+8121
+32
+32
+0
+0
+0
+0
+0
+117682
+7808
+
+kernel.c:matcher_find
+# Func Hash:
+685343114092928747
+# Num Counters:
+6
+# Counter Values:
+986448
+4861427
+938863
+948875
+938863
+621771
+
+kernel.c:matcher_interior
+# Func Hash:
+623390611080114654
+# Num Counters:
+9
+# Counter Values:
+40703
+0
+40703
+40703
+40703
+40703
+178762
+104088
+296
+
+kernel.c:mix
+# Func Hash:
+24
+# Num Counters:
+1
+# Counter Values:
+18067850
+
+kernel.c:mulc
+# Func Hash:
+632102119045816044
+# Num Counters:
+19
+# Counter Values:
+4399275
+0
+0
+4399275
+4399275
+3144019
+664251
+587062
+587180
+587062
+582289
+0
+19893
+0
+0
+0
+0
+0
+21507
+
+kernel.c:mulf
+# Func Hash:
+1549
+# Num Counters:
+2
+# Counter Values:
+5521253
+1348615
+
+kernel.c:negf
+# Func Hash:
+99149
+# Num Counters:
+3
+# Counter Values:
+531820
+140326
+140326
+
+kernel.c:nf
+# Func Hash:
+383352760594768195
+# Num Counters:
+70
+# Counter Values:
+43923
+101
+0
+87
+0
+13
+1
+2602
+43822
+2602
+43822
+43822
+18002
+18089
+87
+17941
+17941
+61
+61
+61
+61
+0
+44
+44
+17
+17
+17
+30
+13
+17
+17
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+41221
+624320
+15400
+624320
+15400
+624320
+624320
+624320
+624320
+0
+41221
+0
+1
+604558
+583099
+25820
+91654
+583099
+91654
+0
+491413
+0
+0
+0
+
+kernel.c:normalise
+# Func Hash:
+833350048715286354
+# Num Counters:
+16
+# Counter Values:
+576081
+48320
+138552
+1013211
+6772
+6772
+6772
+389560
+6772
+23
+389186
+389186
+1827
+1099
+158928
+1373171
+
+kernel.c:order_batch
+# Func Hash:
+899299817363963519
+# Num Counters:
+16
+# Counter Values:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+kernel.c:part
+# Func Hash:
+305880332909799416
+# Num Counters:
+5
+# Counter Values:
+5407537
+1205394
+4202143
+0
+0
+
+kernel.c:pc
+# Func Hash:
+24
+# Num Counters:
+1
+# Counter Values:
+10537685
+
+kernel.c:prefix
+# Func Hash:
+24
+# Num Counters:
+1
+# Counter Values:
+71105
+
+kernel.c:prefix_count
+# Func Hash:
+1090472805131418712
+# Num Counters:
+9
+# Counter Values:
+29415
+17174
+17056
+17056
+17056
+17070
+17056
+17174
+17070
+
+kernel.c:prefix_hash
+# Func Hash:
+24
+# Num Counters:
+1
+# Counter Values:
+58830
+
+kernel.c:publish_lane
+# Func Hash:
+736491949370974166
+# Num Counters:
+6
+# Counter Values:
+152056
+0
+13859
+110924
+110924
+97065
+
+kernel.c:pw
+# Func Hash:
+24
+# Num Counters:
+1
+# Counter Values:
+6687616
+
+kernel.c:quadratic_precondition
+# Func Hash:
+1034032103163536525
+# Num Counters:
+17
+# Counter Values:
+4871301
+0
+4871301
+4871301
+4871301
+4871301
+4871301
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+kernel.c:quadratic_precondition_short
+# Func Hash:
+349681863564884908
+# Num Counters:
+11
+# Counter Values:
+4871301
+36018090
+34189036
+51042
+1302
+884278
+0
+0
+1778012
+0
+1559416
+
+kernel.c:rabs
+# Func Hash:
+99163
+# Num Counters:
+2
+# Counter Values:
+464752
+172259
+
+kernel.c:radd
+# Func Hash:
+654300221046232729
+# Num Counters:
+24
+# Counter Values:
+47379
+0
+0
+27105
+0
+27105
+13562
+0
+13543
+0
+2638
+7
+20268
+20267
+0
+20267
+10161
+0
+10106
+0
+0
+0
+20267
+0
+
+kernel.c:radix_bucket
+# Func Hash:
+99149
+# Num Counters:
+3
+# Counter Values:
+16254728
+0
+12017110
+
+kernel.c:radix_erase
+# Func Hash:
+401082494277138076
+# Num Counters:
+5
+# Counter Values:
+3366531
+2784573
+543667
+505333
+2676859
+
+kernel.c:radix_insert
+# Func Hash:
+11211998296
+# Num Counters:
+2
+# Counter Values:
+3589506
+0
+
+kernel.c:radix_link
+# Func Hash:
+182965921738382056
+# Num Counters:
+7
+# Counter Values:
+12888197
+12888197
+4802985
+2081037
+7943421
+2081037
+8085212
+
+kernel.c:radix_top
+# Func Hash:
+171194914283185536
+# Num Counters:
+15
+# Counter Values:
+2118809
+0
+0
+2118809
+0
+0
+2011205
+2118809
+2011205
+107604
+2118809
+2011205
+392699
+121080
+9298691
+
+kernel.c:radix_word
+# Func Hash:
+24
+# Num Counters:
+1
+# Counter Values:
+34653078
+
+kernel.c:rational_nf
+# Func Hash:
+705482965933200948
+# Num Counters:
+5
+# Counter Values:
+61
+0
+0
+0
+0
+
+kernel.c:rational_nf_inner
+# Func Hash:
+2872793575258272
+# Num Counters:
+14
+# Counter Values:
+61
+50
+50
+50
+0
+0
+61
+61
+61
+0
+0
+0
+0
+0
+
+kernel.c:rational_nf_try
+# Func Hash:
+658692946034620306
+# Num Counters:
+45
+# Counter Values:
+61
+0
+61
+865
+926
+865
+926
+0
+61
+0
+4627
+4
+0
+57
+12854
+90
+0
+0
+12854
+0
+12854
+12854
+0
+0
+0
+0
+0
+1859
+0
+10995
+0
+0
+0
+10995
+10995
+64376
+0
+0
+6
+7
+0
+1760
+0
+1760
+0
+
+kernel.c:record_bytes
+# Func Hash:
+733013794353270886
+# Num Counters:
+4
+# Counter Values:
+15022
+149961
+834
+0
+
+kernel.c:reduce_pair_impl
+# Func Hash:
+154842514062966942
+# Num Counters:
+10
+# Counter Values:
+40407
+0
+0
+0
+0
+9992
+9992
+9992
+0
+0
+
+kernel.c:reserve_nf
+# Func Hash:
+116292387313571806
+# Num Counters:
+16
+# Counter Values:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+kernel.c:reserve_nf
+# Func Hash:
+166968448136790357
+# Num Counters:
+15
+# Counter Values:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+kernel.c:reserve_slots
+# Func Hash:
+306594318643668713
+# Num Counters:
+14
+# Counter Values:
+3002
+0
+3002
+3002
+0
+3002
+3002
+0
+7
+0
+3002
+3008
+17
+0
+
+kernel.c:reset_a
+# Func Hash:
+0
+# Num Counters:
+1
+# Counter Values:
+699793
+
+kernel.c:reset_degree_progress
+# Func Hash:
+0
+# Num Counters:
+1
+# Counter Values:
+54
+
+kernel.c:resolved
+# Func Hash:
+1549
+# Num Counters:
+2
+# Counter Values:
+10537685
+2858
+
+kernel.c:rgcd
+# Func Hash:
+184504599225574488
+# Num Counters:
+5
+# Counter Values:
+222558
+76264
+212144
+146294
+398314
+
+kernel.c:rheap_down
+# Func Hash:
+618620245972499830
+# Num Counters:
+6
+# Counter Values:
+0
+0
+0
+0
+0
+0
+
+kernel.c:rheap_remove
+# Func Hash:
+60409117664270954
+# Num Counters:
+6
+# Counter Values:
+15492
+15492
+0
+0
+0
+0
+
+kernel.c:rheap_up
+# Func Hash:
+148684498001
+# Num Counters:
+3
+# Counter Values:
+0
+0
+0
+
+kernel.c:rload
+# Func Hash:
+172590168
+# Num Counters:
+2
+# Counter Values:
+79998
+4
+
+kernel.c:rmul
+# Func Hash:
+986620627481003848
+# Num Counters:
+16
+# Counter Values:
+64376
+0
+64376
+64376
+0
+42962
+42962
+42962
+17789
+17939
+14223
+150
+6
+46581
+46581
+23319
+
+kernel.c:rmulint
+# Func Hash:
+702701732952
+# Num Counters:
+4
+# Counter Values:
+40542
+7
+40542
+7
+
+kernel.c:row_add
+# Func Hash:
+180183016606702798
+# Num Counters:
+28
+# Counter Values:
+5520128
+0
+0
+0
+0
+0
+5520128
+648827
+735677
+2037679
+735677
+1302002
+0
+56167
+12
+0
+1245835
+621806
+0
+624029
+0
+56918
+120491
+4041
+0
+2521418
+1407
+3567892
+
+kernel.c:row_hash
+# Func Hash:
+24
+# Num Counters:
+1
+# Counter Values:
+8185007
+
+kernel.c:row_remove
+# Func Hash:
+10257
+# Num Counters:
+2
+# Counter Values:
+3313706
+158402
+
+kernel.c:rrow_add
+# Func Hash:
+158839072942553568
+# Num Counters:
+19
+# Counter Values:
+68993
+0
+0
+0
+0
+0
+68993
+0
+12198
+59577
+12198
+47379
+0
+7
+44734
+8275
+27
+0
+21614
+
+kernel.c:rrow_grow
+# Func Hash:
+939371929073353644
+# Num Counters:
+21
+# Counter Values:
+27
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+27
+7296
+7296
+
+kernel.c:rrow_grow
+# Func Hash:
+999128849836918151
+# Num Counters:
+22
+# Counter Values:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+kernel.c:rrow_hash
+# Func Hash:
+24
+# Num Counters:
+1
+# Counter Values:
+188660
+
+kernel.c:rrow_remove
+# Func Hash:
+10257
+# Num Counters:
+2
+# Counter Values:
+13633
+1549
+
+kernel.c:rule
+# Func Hash:
+24
+# Num Counters:
+1
+# Counter Values:
+6781133
+
+kernel.c:shl
+# Func Hash:
+846244584701619549
+# Num Counters:
+4
+# Counter Values:
+16352372
+1773654
+0
+0
+
+kernel.c:shortcat
+# Func Hash:
+24
+# Num Counters:
+1
+# Counter Values:
+16352372
+
+kernel.c:shr
+# Func Hash:
+846244584701619549
+# Num Counters:
+4
+# Counter Values:
+15424297
+3307181
+0
+0
+
+kernel.c:slice_expired
+# Func Hash:
+715420407326
+# Num Counters:
+2
+# Counter Values:
+64236
+3438
+
+kernel.c:try_lock
+# Func Hash:
+24
+# Num Counters:
+1
+# Counter Values:
+0
+
+kernel.c:validate_record
+# Func Hash:
+776636585654897632
+# Num Counters:
+41
+# Counter Values:
+3002
+0
+0
+3002
+3002
+3002
+3002
+3002
+3002
+3002
+3002
+3002
+3002
+0
+28853
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+28853
+28853
+0
+25851
+0
+204086
+0
+154
+0
+154
+154
+0
+154
+154
+0
+
+kernel.c:wcmp
+# Func Hash:
+46156915468399210
+# Num Counters:
+17
+# Counter Values:
+14788235
+14788235
+14788235
+14788235
+0
+0
+14158814
+3483487
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+kernel.c:weq
+# Func Hash:
+884760805836224637
+# Num Counters:
+10
+# Counter Values:
+3246483
+3246483
+3246483
+3246483
+1528607
+1528607
+0
+0
+0
+0
+
+kernel.c:wlong
+# Func Hash:
+99994
+# Num Counters:
+1
+# Counter Values:
+69341696
+
+kernel.c:wresolved
+# Func Hash:
+2696280
+# Num Counters:
+2
+# Counter Values:
+6687616
+0
+
+kernel.c:write_record
+# Func Hash:
+449343380542106006
+# Num Counters:
+8
+# Counter Values:
+9012
+0
+9012
+9012
+89407
+0
+494
+0
+
+memcpy
+# Func Hash:
+1160280
+# Num Counters:
+2
+# Counter Values:
+222665
+6079244
+
+memmove
+# Func Hash:
+723239868508144321
+# Num Counters:
+4
+# Counter Values:
+101829
+93948
+11948984
+152156
+
+memset
+# Func Hash:
+1160280
+# Num Counters:
+2
+# Counter Values:
+30104
+264332624
+

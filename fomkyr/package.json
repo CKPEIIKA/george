@@ -1,6 +1,6 @@
 {
   "name": "fomkyr",
-  "version": "0.6.6",
+  "version": "0.6.7",
   "description": "Fast pure C engine for exact homogeneous noncommutative Groebner bases",
   "private": true,
   "type": "module",

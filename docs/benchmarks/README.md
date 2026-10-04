@@ -5,6 +5,12 @@
 [SVG](fomkyr-0.6.6-native-browser.svg) · [PDF](fomkyr-0.6.6-native-browser.pdf) ·
 [PNG](fomkyr-0.6.6-native-browser.png) · [Protocol and measurements](fomkyr-0.6.6-native-browser.json)
 
+Later compiler comparisons are recorded in the
+[Fomkyr Wasm PGO measurements](fomkyr-wasm-pgo.json) and
+[Bergman PGO experiment](bergman-wasm-pgo.json). Those paired comparisons keep
+the native executable and mathematical sources fixed; the figures below retain
+their original builds and measurements.
+
 FK6 over ℚ uses its original 15-generator order and 100 quadratic relations.
 Native C, Chromium and Firefox use four workers, a 4 GiB kernel allowance,
 automatic workspace, monomial pruning, 128-pair batches and ordinary exact

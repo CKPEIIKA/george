@@ -12,6 +12,7 @@ self.onmessage=async ({data:m})=>{
       postMessage({id:m.id,result:{ready:true}});
     } else if(m.command==='stack') {setStack(e,lane,bits);postMessage({id:m.id,result:0});}
     else if(m.command==='batch') {const rc=e.gn_batch_reduce(lane);postMessage({id:m.id,result:rc});}
+    else if(m.command==='cooperative') {const rc=e.gn_coop_reduce(lane);postMessage({id:m.id,result:rc});}
     else if(m.command==='reduce') {const rc=e.gn_reduce_pair(lane);postMessage({id:m.id,result:rc});}
     else if(m.command==='close') {handle?.close();handle=null;postMessage({id:m.id,result:0});}
     else throw new Error('Unknown lane command');

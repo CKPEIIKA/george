@@ -14,8 +14,10 @@ Fomkyr accepts homogeneous noncommutative presentations with 1–16 generators,
 unit weights, degree/left lexicographic order, and rational or prime-field
 coefficients. Unsupported controls are disabled. Exact Hilbert counting is optional.
 
-Fomkyr 0.6.3 kernel binaries are unchanged upstream binaries. The source
-inventory and original archive digest are in
+The source inventory records the imported archive and local adaptations.
+The current kernel uses scalar scans for packed words through degree 16;
+longer words retain the general path. The original archive digest and file
+hashes are in
 [the source inventory](../../fomkyr/SOURCE.json).
 The stable [Fomkyr subproject](../../fomkyr/README.md) contains the current
 C sources, fixtures, tests and MIT license. Core updates go in `fomkyr/`;

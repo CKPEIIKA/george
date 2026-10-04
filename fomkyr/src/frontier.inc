@@ -18,7 +18,7 @@ API u32 gn_frontier_hash_bits(void){u32 b=0;for(u32 m=S.hash_mask;m;m>>=1)b++;re
 API u32 gn_frontier_pending(void){return S.batch_enabled?S.batch_n-S.batch_committed:0;}
 API u64 gn_frontier_export(void){
  frontier_bytes=0;
- if(!S.current||S.input_expected||S.certifying||GN_LOAD(&S.batch_running)||GN_LOAD(&S.reserve_lock))return 0;
+ if(!S.current||S.input_expected||S.certifying||GN_LOAD(&S.batch_running)||(GN_LOAD(&S.reserve_lock)&&!S.coop_ms))return 0;
  u32 pending=gn_frontier_pending();
  if(pending>BATCH_MAX||S.degree_scheduled-S.degree_committed!=pending)return 0;
  u32 bytes=FH*8+pending*16;Lane*l=&S.lanes[0];if(bytes>l->io_size)return 0;
@@ -37,7 +37,7 @@ API u64 gn_frontier_export(void){
  fw64(p+24,frontier_hash(p,bytes));frontier_bytes=bytes;return l->io_base;
 }
 API int gn_frontier_restore(u32 bytes){
- if(S.current||S.input_expected||S.certifying||GN_LOAD(&S.batch_running)||GN_LOAD(&S.reserve_lock))return GN_STATE;
+ if(S.current||S.input_expected||S.certifying||GN_LOAD(&S.batch_running)||(GN_LOAD(&S.reserve_lock)&&!S.coop_ms))return GN_STATE;
  Lane*l=&S.lanes[0];if(bytes<FH*8||bytes>l->io_size)return GN_CORRUPT;
  const u8*p=PTR(u8,l->io_base);u64 v[FH];for(u32 i=0;i<FH;i++)v[i]=fr64(p+i*8);
  if(v[0]!=FRONTIER_MAGIC||v[1]!=FRONTIER_VERSION||v[2]!=bytes||v[3]!=frontier_hash(p,bytes))return GN_CORRUPT;

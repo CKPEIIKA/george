@@ -1,0 +1,298 @@
+{
+  "case": "FK6",
+  "degree": 10,
+  "workers": 4,
+  "memoryMiB": 3584,
+  "timeoutSeconds": 120,
+  "ordinaryExactCompletion": true,
+  "resume": false,
+  "hilbert": false,
+  "fullExport": true,
+  "nativeReference": {
+    "sha256": "12be1540a77d57d09ae3c14834712f65b4abf75353d42013ef49dc5b280582df",
+    "samplesSeconds": [
+      3.4670431209999997,
+      3.5774555090000004,
+      3.836210183,
+      3.6006355670000003,
+      3.3275356949999995,
+      3.2539555420000004
+    ],
+    "medianSeconds": 3.522249315,
+    "sourceSha256": "0528f77738ca85fd9535d6702b2660e050106f0321fdf6c6a404963d462ad1ac",
+    "unchanged": true
+  },
+  "wasm": [
+    {
+      "browser": "chromium",
+      "bits": 32,
+      "pairs": [
+        {
+          "baselineSeconds": 6.303739999949932,
+          "pgoSeconds": 5.641895000040531,
+          "baselineCpuSeconds": 22.5,
+          "pgoCpuSeconds": 20.01,
+          "baselinePssMiB": 544.7353515625,
+          "pgoPssMiB": 542.71484375
+        },
+        {
+          "baselineSeconds": 5.817229999959469,
+          "pgoSeconds": 5.058144999980927,
+          "baselineCpuSeconds": 20.85,
+          "pgoCpuSeconds": 17.73,
+          "baselinePssMiB": 546.9248046875,
+          "pgoPssMiB": 550.333984375
+        }
+      ],
+      "excludedPairs": 1,
+      "medianBaselineSeconds": 6.060484999954701,
+      "medianPgoSeconds": 5.350020000010729,
+      "medianPairedSaving": 0.11774075731020861,
+      "baselineNativeRatio": 1.7206291940054508,
+      "pgoNativeRatio": 1.518921439554806
+    },
+    {
+      "browser": "chromium",
+      "bits": 64,
+      "pairs": [
+        {
+          "baselineSeconds": 7.217839999973774,
+          "pgoSeconds": 6.435100000023842,
+          "baselineCpuSeconds": 26.04,
+          "pgoCpuSeconds": 23.17,
+          "baselinePssMiB": 541.18359375,
+          "pgoPssMiB": 542.8271484375
+        }
+      ],
+      "excludedPairs": 2,
+      "medianBaselineSeconds": 7.217839999973774,
+      "medianPgoSeconds": 6.435100000023842,
+      "medianPairedSaving": 0.10844518581082097,
+      "baselineNativeRatio": 2.0492132596166814,
+      "pgoNativeRatio": 1.8269859469115524
+    },
+    {
+      "browser": "firefox",
+      "bits": 32,
+      "pairs": [
+        {
+          "baselineSeconds": 8.73934,
+          "pgoSeconds": 8.04046,
+          "baselineCpuSeconds": 22.84,
+          "pgoCpuSeconds": 20.22,
+          "baselinePssMiB": 515.73046875,
+          "pgoPssMiB": 508.294921875
+        },
+        {
+          "baselineSeconds": 8.32234,
+          "pgoSeconds": 7.93006,
+          "baselineCpuSeconds": 20.97,
+          "pgoCpuSeconds": 19.74,
+          "baselinePssMiB": 507.353515625,
+          "pgoPssMiB": 503.0888671875
+        }
+      ],
+      "excludedPairs": 1,
+      "medianBaselineSeconds": 8.530840000000001,
+      "medianPgoSeconds": 7.98526,
+      "medianPairedSaving": 0.06355260356589199,
+      "baselineNativeRatio": 2.4219864175060537,
+      "pgoNativeRatio": 2.267091078985702
+    },
+    {
+      "browser": "firefox",
+      "bits": 64,
+      "pairs": [
+        {
+          "baselineSeconds": 9.022260000000001,
+          "pgoSeconds": 8.27644,
+          "baselineCpuSeconds": 23.95,
+          "pgoCpuSeconds": 21.23,
+          "baselinePssMiB": 512.8115234375,
+          "pgoPssMiB": 503.7529296875
+        },
+        {
+          "baselineSeconds": 9.25372,
+          "pgoSeconds": 8.302959999999999,
+          "baselineCpuSeconds": 24.83,
+          "pgoCpuSeconds": 21.33,
+          "baselinePssMiB": 500.65234375,
+          "pgoPssMiB": 515.3203125
+        }
+      ],
+      "excludedPairs": 1,
+      "medianBaselineSeconds": 9.13799,
+      "medianPgoSeconds": 8.2897,
+      "medianPairedSaving": 0.09270398874590202,
+      "baselineNativeRatio": 2.5943620632090325,
+      "pgoNativeRatio": 2.3535244835444025
+    }
+  ],
+  "method": "Fresh browser profiles and fresh algebra. Compiler changes only; frozen native executable. Builds and validations serialized outside measurements. Alternate old/new order. Native brackets each round. Retain pairs with stable matching power controls; raw conditions stay local. Timings include initialization, checkpoints and full text export. Small sample sizes and runtime variation limit generalization.",
+  "profile": {
+    "kind": "frontend",
+    "compilerMajor": 23,
+    "profileSha256": "f091c5cc2c23e91182272c27e4826e523e9b026ea35f588a2902afc6610dd2c9",
+    "sourceHashes": {
+      "src/big_rational_nf.inc": "b1930fff641110d826f2bbb6eee27169a22ae54329ad2648199ec89c064e1045",
+      "src/frontier.inc": "18bdd0d520b4bf76646bef1cdd642d5ad49fba49def494acead49300ec311e79",
+      "src/heap_nf.inc": "f67eaae69c696b9851d3cd6ab7aee8c1d3493d5d72a7b88304e2c9b2de9599fb",
+      "src/hilbert.inc": "7ed1f6214e4f89965010dc0c47fdc2f3a1bd6cc6d3455115855e45a1ea75c7c9",
+      "src/hilbert_gate.inc": "35ba7b9b4aca700a192a91eabe80f5f9d59bcc0552e1a9303bb0fad94e3d678a",
+      "src/kernel.c": "0528f77738ca85fd9535d6702b2660e050106f0321fdf6c6a404963d462ad1ac",
+      "src/kernel.h": "d42b2f1e10941c8766ff3e09892708822494fa1fda47b477819e045093b48a15",
+      "src/limb_division.inc": "21e0ce64037a12722ed2452aa47095f605755b5ab9fb19d7fb11bb09c52f673d",
+      "src/local_rewrites.inc": "23c0956afbff9860f7c35ccb6606576ba5247c885aef2151ac532d8d5ed64a6c",
+      "src/lower_bound.inc": "8a3834002775ad7e04054a7e9092fe102eb479bb93878daf7760d3c79001a5fc",
+      "src/matcher.inc": "55bba38d1299c5ba77078eb482602d9eab0f9259048f5cef903bc5f982cb2ccc",
+      "src/radix_queue.inc": "7d704a66d5cf1e6199db767450701bffbc7c61bea2f9ca7c07e1ed900bef7049",
+      "src/rational_heap_nf.inc": "44b7d9163d6ccbbcc75018b674dbf7962d044c9efa97cfcfb1dcc8780595bbe4"
+    },
+    "compatibleTargets": [
+      "wasm32-shared",
+      "wasm32-single",
+      "wasm64-shared",
+      "wasm64-single"
+    ],
+    "training": [
+      {
+        "fixtureSha256": "fc262ce4250ffbdaf366243b4aac1765caa97c2832313be013f82373ef6f0419",
+        "degree": 9,
+        "workers": 4,
+        "shared": true,
+        "modulus": 0,
+        "basisCount": 1451,
+        "basisSha256": "0196d55f48b1fbcda2d40e5de4cbcd42d8fb5f9b4369f12992d2df79d98d723c"
+      },
+      {
+        "fixtureSha256": "fc262ce4250ffbdaf366243b4aac1765caa97c2832313be013f82373ef6f0419",
+        "degree": 9,
+        "workers": 1,
+        "shared": false,
+        "modulus": 0,
+        "basisCount": 1451,
+        "basisSha256": "0196d55f48b1fbcda2d40e5de4cbcd42d8fb5f9b4369f12992d2df79d98d723c"
+      },
+      {
+        "fixtureSha256": "5b95ba927ec275bcb9707550b38b5fe45c20940f8968fcbcfbb8d1fa3999166f",
+        "degree": 14,
+        "workers": 1,
+        "shared": true,
+        "modulus": 0,
+        "basisCount": 21,
+        "basisSha256": "4f8fa5c27fb6f931b1d13c94370c64d8fb2fb7d3dab7112868fcb172a7d67804"
+      },
+      {
+        "fixtureSha256": "1acb02977d05e94c43224c4ec8dd26f44ec247a7ee4d6bcc8e1ec7b00963a552",
+        "degree": 7,
+        "workers": 1,
+        "shared": true,
+        "modulus": 0,
+        "basisCount": 3,
+        "basisSha256": "542b175969a81d1159bf0a6c57b363f90c5e90707dac0624c508437c6c34c2ce"
+      },
+      {
+        "fixtureSha256": "6c61fdc255941e18af9d3ee3bd2bd31ee7ce365f1f84425432fbdd9a7e685544",
+        "degree": 5,
+        "workers": 1,
+        "shared": true,
+        "modulus": 0,
+        "basisCount": 4,
+        "basisSha256": "779536dae51f4470c6b679477cce6cdaff33c4f9a46a58cfffba6c86ce7f6d67"
+      },
+      {
+        "fixtureSha256": "fc262ce4250ffbdaf366243b4aac1765caa97c2832313be013f82373ef6f0419",
+        "degree": 6,
+        "workers": 1,
+        "shared": true,
+        "modulus": 2,
+        "basisCount": 497,
+        "basisSha256": "aa20af609d8f7724025b5528a198a1e88e2ea2d07e2e451a56a28bd869607894"
+      },
+      {
+        "fixtureSha256": "fc262ce4250ffbdaf366243b4aac1765caa97c2832313be013f82373ef6f0419",
+        "degree": 6,
+        "workers": 1,
+        "shared": true,
+        "modulus": 101,
+        "basisCount": 497,
+        "basisSha256": "8ab84690cb59d9f3fd41b05d14b61ec3fd2f2c6510181210142ab699e8a108b9"
+      }
+    ],
+    "method": "Real Chromium Wasm branch counters. One algebra per job, no resume. Shared FK6 training uses atomic updates across four lanes; all other training runs use one lane. Single mode supplies its distinct function hashes. No native profile or host-specific measurements are included."
+  },
+  "basisCount": 2155,
+  "basisSha256": "f9c6229bf50b4e3aea70c2e9bc966fa089b832626c35bfe5718c29be603d75e1",
+  "baselineWasmHashes": {
+    "32": "8dac7aebcac44c61e7cfd971dbb5a16e95103b657b59eaeec593c6e1d597dfb5",
+    "64": "6fe2d40b61599f613b5f2ce6311b6e3b33c4fba1a8295061cc042eeb8f54aeae"
+  },
+  "currentWasmHashes": {
+    "32": "035c20658e084054e63e3d10cb5aad816abf602dbe296166704b1d627dd4b5d6",
+    "64": "bde9744855f0464209c540f58fe02b63c483e1732e458c88d2edfe132e090f61"
+  },
+  "rejectedCandidates": [
+    "Multivalue ABI",
+    "Larger inlining thresholds",
+    "Fixed-shift quadratic cursor",
+    "Explicit short-word loop unrolling",
+    "Unit coefficient specializations",
+    "IR PGO did not outperform frontend PGO consistently across both browsers"
+  ],
+  "batchPairs": 128,
+  "createdAt": "2026-10-03T21:52:04.961Z",
+  "outputAudit": {
+    "passed": true,
+    "runs": 30,
+    "nativeRuns": 6,
+    "browserRuns": 24,
+    "basisCount": 2155,
+    "basisSha256": "f9c6229bf50b4e3aea70c2e9bc966fa089b832626c35bfe5718c29be603d75e1"
+  },
+  "validation": {
+    "matrix": {
+      "cases": 95,
+      "fomkyrRuns": 380,
+      "singularCases": 95,
+      "oracleCacheHits": 190,
+      "oracleCalculations": 0,
+      "ambiguities": 105376,
+      "state": "complete",
+      "reportSha256": "be60c60ba7d566a9365ecf6a2e2a6604b2b6a26a4ce14126a41f50c2abf72a30"
+    },
+    "fk6": {
+      "degreeBounds": 9,
+      "fomkyrRuns": 36,
+      "singularPassed": 8,
+      "singularCensored": 1,
+      "state": "complete",
+      "reportSha256": "c19f98e0af57244d610758985cdea0dee908cad570d602687aada61929033215",
+      "singularReused": true
+    },
+    "browser": {
+      "contexts": 8,
+      "state": "complete",
+      "reportSha256": "ed496dd735007bf74e3361511636c6cd30c38a95acbe2c83daa531beda419c3f",
+      "browsers": [
+        "chromium",
+        "firefox"
+      ],
+      "sharedAndSingle": true,
+      "longWords": true,
+      "resume": true
+    },
+    "unit": {
+      "passed": 154,
+      "failed": 0,
+      "logSha256": "a90a12f05322d58bda7b8770b8dde82fcb134d2279d30da03d2d888c3eefdce3"
+    },
+    "degree10Limitation": "Exact equality of all six native and twenty-four browser bases supplies consistency evidence; this is not an independent degree-10 Groebner certificate."
+  },
+  "productionHashes": {
+    "32": "035c20658e084054e63e3d10cb5aad816abf602dbe296166704b1d627dd4b5d6",
+    "64": "bde9744855f0464209c540f58fe02b63c483e1732e458c88d2edfe132e090f61",
+    "32-single": "ff07c0ea6a613b67c3a7b4eb0abd47eb1f9e09be8190a6c57909a33d28358d4b",
+    "64-single": "17db71d0d79750a84765f73bfd3c07ce2b45640f91df88add3650b37d484e728"
+  },
+  "productionManifestSha256": "d4b4c0ce7e53fb8c9f2d2bd680d0af68e18a2925e6114c568b5de74f3294a105"
+}

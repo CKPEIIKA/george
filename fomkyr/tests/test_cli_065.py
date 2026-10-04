@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Actual POSIX CLI, cross-native/WASM recovery and crash/lock tests."""
 from pathlib import Path
-import subprocess,json,os,signal,time,shutil,hashlib
+import subprocess,json,os,signal,time,shutil,hashlib,sys
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"tools"))
+from canonical_audit import records,canonicalize
 R=Path(__file__).resolve().parents[1];exe=R/'dist/fomkyr';out=R/'results/0.6.5/cli-tests';out.mkdir(parents=True,exist_ok=True)
 f=R/'fixtures/published/affine-q-serre-q3.json';rows=[]
 def cps(job):
@@ -13,7 +15,7 @@ def cps(job):
   except (ValueError,KeyError):pass
  return sorted(result,key=lambda c:(c['completedThroughDegree'],bool(c.get('partial')),c.get('sequence',0)),reverse=True)
 def command(job,wasm=False,extra=()):
- return [str(exe)]+(['--wasm']if wasm else[])+['-i',str(f),'-d','20','-j','4','--memory','512M','--workdir',str(job),'--batch-pairs','8','--quiet']+list(extra)
+ return [str(exe)]+(['--wasm']if wasm else[])+['-i',str(f),'-d','20','-j','4','--memory','512M','--workdir',str(job),'--batch-pairs','8','--lookahead','8','--quantum-ms','1','--quiet']+list(extra)
 def run(job,wasm=False,extra=(),expect=(0,)):
  q=subprocess.run(command(job,wasm,extra),cwd=R,capture_output=True,text=True,timeout=60)
  (out/(job.name+('-wasm'if wasm else'-native')+'.log')).write_text(q.stdout+'\nSTDERR\n'+q.stderr)
@@ -38,7 +40,8 @@ def interrupt(name,wasm=False,kill=False,after=15):
  rows.append({'name':name,'interruptedRuntime':'wasm'if wasm else'native','signal':'SIGKILL'if kill else'SIGTERM','checkpointDegree':saved['currentDegree'],'retainedCommittedPairs':saved['retainedCommittedPairs'],'pendingPairs':saved['pendingPairs'],'exclusiveLock':True})
  return job,saved
 cold=out/'cold';shutil.rmtree(cold,ignore_errors=True);ref=run(cold);assert ref['completedThroughDegree']==20
-refbytes=next(cold.glob('fomkyr/*/basis.gnb')).read_bytes()
+def canonical(job):return canonicalize(records(next(job.glob('fomkyr/*/basis.gnb')),20,2))[0]
+refcanonical=canonical(cold)
 for name,wasm,kill in [('native-to-wasm',False,False),('wasm-to-native',True,False),('killed-native-to-wasm',False,True),('killed-wasm-to-native',True,True)]:
  job,cp=interrupt(name,wasm,kill)
  # A lower-bound read must not discard a newer partial checkpoint or basis tail.
@@ -48,8 +51,8 @@ for name,wasm,kill in [('native-to-wasm',False,False),('wasm-to-native',True,Fal
  assert cps(job)[0]['sequence']==seq
  result=run(job,not wasm,['--workers','2','--checkpoint-seconds','30'])
  assert result['completedThroughDegree']==20
- assert next(job.glob('fomkyr/*/basis.gnb')).read_bytes()==refbytes,name
- rows[-1].update(completedThroughDegree=20,byteEqualToCold=True,lowerRequestPreservesPartial=True)
+ assert canonical(job)==refcanonical,name
+ rows[-1].update(completedThroughDegree=20,canonicalEqualToCold=True,lowerRequestPreservesPartial=True)
  print(rows[-1],flush=True)
 # Corrupted latest metadata is not accepted; the older slot is replayed.
 job,cp=interrupt('corrupt-latest',False,True)
@@ -57,8 +60,8 @@ Path(cp['_file']).write_text('{"broken":true}')
 # Extra bytes can be remnants of a killed record append, never certified input.
 with next(job.glob('fomkyr/*/basis.gnb')).open('ab')as h:h.write(b'uncertified crash suffix')
 r=run(job,True);assert r['completedThroughDegree']==20
-assert next(job.glob('fomkyr/*/basis.gnb')).read_bytes()==refbytes
-rows[-1].update(corruptLatestRejected=True,tornSuffixDiscarded=True,byteEqualToCold=True)
+assert canonical(job)==refcanonical
+rows[-1].update(corruptLatestRejected=True,tornSuffixDiscarded=True,canonicalEqualToCold=True)
 # Explicit 64-GiB native ceiling is not clamped to the WASM application cap.
 bigjob=out/'large-native-address-space';shutil.rmtree(bigjob,ignore_errors=True)
 p=subprocess.run([str(exe),'-i',str(f),'-d7','-j4','--memory','64G','--workdir',str(bigjob),'--quiet'],cwd=R,capture_output=True,text=True,timeout=30)

@@ -8,11 +8,12 @@ static int wcmp(Word a,Word b){return a.hi!=b.hi?(a.hi>b.hi?1:-1):a.lo!=b.lo?(a.
 #include "../src/radix_queue.inc"
 typedef struct{Word w;int active;}Node;
 static u64 state=132433522;static u64 rng(void){state^=state<<13;state^=state>>7;state^=state<<17;return state;}
-int main(void){
+int main(int argc,char**argv){
+ (void)argv;
  enum{N=257};Node nodes[N];u32 prev[N],next[N];u64 inserts=0,erases=0,pops=0;u32 cases=0;
  const u32 widths[]={12,52,64,80,124};
  for(u32 width=0;width<5;width++)for(u32 trial=0;trial<8;trial++){
-  memset(nodes,0,sizeof(nodes));RadixQueue q={0};q.previous=prev;q.next=next;__uint128_t mask=(((__uint128_t)1)<<widths[width])-1;
+  memset(nodes,0,sizeof(nodes));RadixQueue q={0};q.cache_enabled=argc>1;q.previous=prev;q.next=next;__uint128_t mask=(((__uint128_t)1)<<widths[width])-1;
   q.last=(Word){(u64)mask,(u64)(mask>>64)};u32 live=0;
   for(u32 step=0;step<10000;step++){
    u32 action=(u32)(rng()%10);

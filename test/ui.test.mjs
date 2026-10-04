@@ -71,9 +71,11 @@ test('guided examples build valid deterministic production jobs', () => {
   assert.equal(fk6.backend, 'fomkyr');
   assert.equal(fk6.memoryMiB, 3584);
   assert.equal(fk6.nativeWorkers, 0);
+  assert.equal(fk6.maxdeg, '11');
+  assert.equal(job.fomkyrOptions.workers, undefined);
   assert.equal(fk6.monomialPruning, true);
   assert.equal(job.fomkyrOptions.arithmeticMode, 'exact');
-  assert.equal(job.fomkyrOptions.bits, '64');
+  assert.equal(job.fomkyrOptions.bits, 'auto');
   assert.equal(job.fomkyrOptions.memoryPolicy, 'auto');
   assert.equal(job.fomkyrOptions.batchPairs, 128);
   for (const option of ['radixHeap', 'reserveInPlace', 'wordMatcher', 'chainCriterion',

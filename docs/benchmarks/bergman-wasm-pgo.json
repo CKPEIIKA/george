@@ -1,0 +1,114 @@
+{
+  "case": "FK6",
+  "degree": 7,
+  "workers": 1,
+  "memoryMiB": 3584,
+  "timeoutSeconds": 120,
+  "method": "Fresh browsers and algebra, alternating baseline and candidate. No debugger or profiler attached. Same AOT C source, ECL runtime and adapter; frontend PGO training covers compiled Bergman functions on Chromium FK6 degree 6. Three matched pairs per browser, stable matching power controls. Cold wall includes startup, computation and output. CPU is process-tree core-seconds; PSS is sampled every 0.25 seconds and includes browser baseline. These local observations do not establish other-workload performance. Raw host conditions stay local.",
+  "baselineWasm": {
+    "bytes": 6536140,
+    "sha256": "8bd7c0b8be173025c741e9cb90718de0210be7eb6a0537725b06bd702f8d687d"
+  },
+  "pgoWasm": {
+    "bytes": 6348322,
+    "sha256": "f5bef03b85fa28f44595cdab8fa613fe3b318fec7eb0ddc7af8f8a83309f8f03"
+  },
+  "training": {
+    "compilerMajor": 22,
+    "degree": 6,
+    "browser": "chromium",
+    "profileSha256": "1bb8c5f4c749ac786e4362c5bbda15ad2cc0fae0e9f80e5098acf3c264318bba"
+  },
+  "output": {
+    "runs": 12,
+    "basisCount": 695,
+    "exactSavedBasisSha256": "eb1b77810dc15ad376f7039bb1063566bd187da4243783ce14b8814604a9aa23",
+    "passed": true
+  },
+  "browsers": [
+    {
+      "browser": "chromium",
+      "pairs": [
+        {
+          "baselineSeconds": 9.990960000038147,
+          "pgoSeconds": 10.338575000047683,
+          "baselineJobSeconds": 9.224820000052452,
+          "pgoJobSeconds": 9.551710000038147,
+          "baselineCpuSeconds": 11.3,
+          "pgoCpuSeconds": 11.75,
+          "baselinePssMiB": 582.2666015625,
+          "pgoPssMiB": 577.6552734375
+        },
+        {
+          "baselineSeconds": 10.035995000004768,
+          "pgoSeconds": 10.131360000014306,
+          "baselineJobSeconds": 9.253959999978543,
+          "pgoJobSeconds": 9.45292000001669,
+          "baselineCpuSeconds": 11.36,
+          "pgoCpuSeconds": 11.52,
+          "baselinePssMiB": 576.1826171875,
+          "pgoPssMiB": 581.9443359375
+        },
+        {
+          "baselineSeconds": 9.966490000009538,
+          "pgoSeconds": 10.279149999976157,
+          "baselineJobSeconds": 9.189850000023842,
+          "pgoJobSeconds": 9.563479999959469,
+          "baselineCpuSeconds": 11.27,
+          "pgoCpuSeconds": 11.71,
+          "baselinePssMiB": 576.5908203125,
+          "pgoPssMiB": 581.0830078125
+        }
+      ],
+      "medianBaselineSeconds": 9.990960000038147,
+      "medianPgoSeconds": 10.279149999976157,
+      "medianPairedSaving": -0.0313711246352848,
+      "medianPairedJobSaving": -0.035435921783171676
+    },
+    {
+      "browser": "firefox",
+      "pairs": [
+        {
+          "baselineSeconds": 10.013480000000001,
+          "pgoSeconds": 9.145220000000002,
+          "baselineJobSeconds": 9.145220000000002,
+          "pgoJobSeconds": 8.30686,
+          "baselineCpuSeconds": 11.36,
+          "pgoCpuSeconds": 10.44,
+          "baselinePssMiB": 568.5986328125,
+          "pgoPssMiB": 587.791015625
+        },
+        {
+          "baselineSeconds": 9.97322,
+          "pgoSeconds": 9.07782,
+          "baselineJobSeconds": 9.13646,
+          "pgoJobSeconds": 8.2552,
+          "baselineCpuSeconds": 11.37,
+          "pgoCpuSeconds": 10.37,
+          "baselinePssMiB": 564.6240234375,
+          "pgoPssMiB": 584.859375
+        },
+        {
+          "baselineSeconds": 9.89136,
+          "pgoSeconds": 9.112639999999999,
+          "baselineJobSeconds": 9.082799999999999,
+          "pgoJobSeconds": 8.30434,
+          "baselineCpuSeconds": 11.32,
+          "pgoCpuSeconds": 10.52,
+          "baselinePssMiB": 577.341796875,
+          "pgoPssMiB": 572.4072265625
+        }
+      ],
+      "medianBaselineSeconds": 9.97322,
+      "medianPgoSeconds": 9.112639999999999,
+      "medianPairedSaving": 0.08670911611148169,
+      "medianPairedJobSaving": 0.09167193353467729
+    }
+  ],
+  "decision": "Keep the existing production Bergman build: this candidate improves Firefox but slows Chromium on the measured case. Broader training and workload coverage are needed before adoption.",
+  "otherExperiment": {
+    "candidate": "Inline threshold 1000",
+    "status": "Build abandoned; not benchmarked",
+    "intermediateWasmBytes": 8639039
+  }
+}

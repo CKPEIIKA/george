@@ -96,8 +96,10 @@ try {
     await page.locator('#preset').selectOption('tutorial:fk6');
     assert.equal(await page.locator('#backend').inputValue(),'fomkyr');
     assert.equal(await page.locator('#memoryMiB').inputValue(),'3584');
-    assert.equal(await page.locator('#nativeWorkers').inputValue(),'0');
-    assert.equal(await page.locator('#fomkyr-bits').inputValue(),'64');
+    assert.equal(await page.locator('#nativeWorkers').inputValue(),'');
+    assert.equal(await page.locator('#nativeWorkers').getAttribute('placeholder'),'Automatic');
+    assert.equal(await page.locator('#maxdeg').inputValue(),'11');
+    assert.equal(await page.locator('#fomkyr-bits').inputValue(),'auto');
     assert.equal(await page.locator('#monomialPruning').isChecked(),true);
     await page.locator('#engineSettings').evaluate(node=>node.open=true);
     await page.locator('#memoryMiB').selectOption('3584');

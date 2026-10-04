@@ -32,7 +32,7 @@ Gröbner bases in free associative and commutative algebras over ℚ, 𝔽₂ an
 𝔽ₚ, Hilbert and Poincaré–Betti series, Anick resolutions, Betti numbers of
 algebras and modules, and Hochschild homology. Arithmetic is exact.
 
-**Fomkyr 0.6.6** is the independent [fast pure C engine](fomkyr/README.md) for
+**Fomkyr 0.6.7** is the independent [fast pure C engine](fomkyr/README.md) for
 homogeneous noncommutative Gröbner bases and exact Hilbert coefficients. Its
 standalone executable uses pthread workers and durable checkpoints. George runs
 the same C kernel through WebAssembly. Native builds use O3 and LTO, with optional
@@ -42,7 +42,7 @@ local instruction-set tuning.
 
 ![Fomkyr 0.6.6: FK6 time and physical RAM](docs/benchmarks/fomkyr-0.6.6-native-browser.svg)
 
-With four workers, a 4 GiB allowance and 128-pair batches, FK6 degree 10 took a
+In the retained Fomkyr 0.6.6 comparison, with four workers, a 4 GiB allowance and 128-pair batches, FK6 degree 10 took a
 median **10.95 s** in native C with O3/LTO/PGO, **28.61 s** in Chromium and
 **34.54 s** in Firefox. These are fresh ordinary exact calculations with full
 text export. Degrees 8–10 have three trials; bands show the time ranges.
@@ -245,7 +245,7 @@ and results are compared with a native SBCL build, Bergman 2 and Singular
 
 ## VERSION
 
-George **0.6.5** includes fomkyr **0.6.6**, configurable multicore execution,
+George **0.6.7** includes fomkyr **0.6.7**, configurable multicore execution,
 disk checkpoints and full result downloads. Unsupported tasks and settings
 are disabled for this backend. Live allocated Wasm memory appears beside
 the computation status, alongside degree progress and elapsed seconds.
@@ -262,6 +262,12 @@ New fomkyr jobs use batches of 128 pairs. Automatic memory reserves 4/7 of
 the effective allowance for scratch and up to 1/7 for exceptional rational rows;
 manual mode accepts explicit workspace sizes. Workspace capacities appear
 under **Engine**, and live memory help uses the actual run's values.
+
+Fomkyr 0.6.7 preserves unfinished exact reductions across cooperative slices
+and commits ready rows after reduction against the updated basis. Checkpoints
+can advance while a long row remains pending. The engine menu includes the
+legacy barrier scheduler, slice duration, pending work window and radix cache.
+Native progress reporting remains active while waiting for workers.
 
 George 0.5 added the **C / ECL O3 + LTO (memory64)** engine, allowances up to
 16 GiB and a **No heap cap** setting. It also adds optional monomial pruning

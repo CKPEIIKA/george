@@ -26,6 +26,7 @@ export function forwardFomkyrProgress(event){
  if(general.length)activity.textContent+=` ${general.length} lane(s) using the exact arbitrary-precision fallback.`;
  const sparse=(a.lanes??[]).filter(l=>l.tier==='sparse-big-rational');
  if(sparse.length)activity.textContent+=` ${sparse.length} lane(s) in the sparse arbitrary-precision rational tier.`;
+ const c=event.cooperative;if(c?.quantumMs){const yields=c.lanes.reduce((a,l)=>a+l.yields,0),resumes=c.lanes.reduce((a,l)=>a+l.resumes,0);activity.textContent+=` ${c.lanes.filter(l=>l.parkedTask).length} retained live rows at this safe boundary. Cooperative workers: ${yields} state-preserving yields, ${resumes} resumes; ${c.nonprefixCommits} commits bypassed an earlier unfinished row. ${c.pending} descriptors remain queued. Capacity replay count: ${c.capacityReplayPairs}.`; }
  const eta=event.eta.currentDegreeSeconds;
  estimate.textContent=eta?`Current-degree estimate: ${seconds(eta[0])}–${seconds(eta[1])}. ${event.eta.reason}`:`Remaining time: unknown. ${event.eta.reason}`;
  if(event.checkpoint?.partial)estimate.textContent+=` Saved unfinished degree ${event.checkpoint.currentDegree}: ${event.checkpoint.retainedCommittedPairs??0} committed pairs retained.`;

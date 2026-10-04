@@ -79,7 +79,12 @@ static int brow_add(BRow*r,Word w,BCoef delta){
  else{if(r->used==r->capacity){r->lane->big_capacity_misses++;return HEAP_MISS;}id=++r->used;}
  r->nodes[id-1]=(BNode){w,owned,r->heads[h],r->heap_n+1};r->heads[h]=id;r->heap[r->heap_n++]=id;bheap_up(r,r->heap_n-1);return 0;
 }
+typedef struct {BRow row;u64 steps;} BRowResume;
+static BRowResume saved_BRow[GN_MAX_WORKERS];
 static int big_rational_nf(Lane*l,Poly original,u32 active,u32 snapshot){
+ BRow r;u64 steps=0;
+ if(l->resume_tier==4){r=saved_BRow[l-S.lanes].row;steps=saved_BRow[l-S.lanes].steps;goto resumed_heap;}
+
  /* An already exhausted larger compact table cannot fit this smaller table.
   * Do not replay a deterministically identical support path just to fail. */
  if(l->rational_maxed){l->big_capacity_misses++;return HEAP_MISS;}
@@ -90,16 +95,16 @@ static int big_rational_nf(Lane*l,Poly original,u32 active,u32 snapshot){
  if(cap<original.n){l->big_capacity_misses++;return HEAP_MISS;}
  u64 no=alloc_a(a,(u64)cap*sizeof(BNode)),ho=alloc_a(a,(u64)cap*2*4),po=alloc_a(a,(u64)cap*4),oo=alloc_a(a,(u64)cap*4);
  if(a->error)return HEAP_MISS;
- BRow r={0};r.nodes=PTR(BNode,no);r.heads=PTR(u32,ho);r.heap=PTR(u32,po);r.normal=PTR(u32,oo);r.capacity=cap;r.mask=cap*2-1;r.degree=original.degree;r.lane=l;r.pivot=(BCoef){0,2};
+ r=(BRow){0};r.nodes=PTR(BNode,no);r.heads=PTR(u32,ho);r.heap=PTR(u32,po);r.normal=PTR(u32,oo);r.capacity=cap;r.mask=cap*2-1;r.degree=original.degree;r.lane=l;r.pivot=(BCoef){0,2};
  memset(r.heads,0,(size_t)cap*8);
  u64 remain=a->end-a->pos,partbytes=(remain/4)&~UINT64_C(7),begin=a->pos;
  r.pool[0]=(Arena){begin,begin,begin+partbytes,0,0};begin+=partbytes;
  r.pool[1]=(Arena){begin,begin,begin+partbytes,0,0};begin+=partbytes;
  r.temp=(Arena){begin,begin,a->end,0,0};
  for(u32 i=0;i<original.n;i++){reset_a(&r.temp);BCoef c={clonec(&r.temp,pc(original,i)),2};int rc=brow_add(&r,pw(original,i),c);if(rc)return rc;}
- u64 steps=0;
+ resumed_heap:
  while(r.heap_n){
-  if((steps++&63)==0){publish_lane(l,(u64)r.heap_n+r.normal_n,0);if(cancelled())return GN_CANCELLED;}
+  if((steps++&63)==0){publish_lane(l,(u64)r.heap_n+r.normal_n,0);if(cancelled())return GN_CANCELLED;if(slice_expired(l)){saved_BRow[l-S.lanes]=(BRowResume){r,steps};l->resume_tier=4;l->slice_yields++;return GN_YIELD;}}
   u32 id=r.heap[0];Word w=r.nodes[id-1].w;r.pivot=r.nodes[id-1].c;bheap_remove(&r,id);
   u32 pos=0;LocalEntry*local=(!S.rational_rewrites||l->skip_rule)?NULL:local_find(w,original.degree,snapshot,&pos);
   u32 rid=local?0:divisor(w,original.degree,snapshot,&pos,l);

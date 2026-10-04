@@ -1,5 +1,7 @@
 from pathlib import Path
-import subprocess,json,hashlib,random,os,shutil
+import subprocess,json,hashlib,random,os,shutil,sys,io
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"tools"))
+from canonical_audit import records,canonicalize,canonical_digest
 R=Path(__file__).resolve().parents[1];out=R/'results/0.6.5/platform';out.mkdir(exist_ok=True);rows=[]
 def command(args,timeout=90):
  p=subprocess.run(args,cwd=R,capture_output=True,text=True,timeout=timeout)
@@ -22,9 +24,9 @@ for cmd in [['gcc','-std=c11','-O3','-flto','-ffreestanding','-fno-builtin','-c'
 job=out/'gcc-job';shutil.rmtree(job,ignore_errors=True)
 p=command([str(out/'fomkyr-gcc'),'-i','fixtures/published/affine-q-serre-q2.json','-d20','--memory','512M','--workdir',str(job),'--hilbert','--quiet']);result=json.loads(p.stdout)
 assert result['complete']and result['basisSize']==46
-reference=next((R/'results/0.6.5/native-q2').glob('fomkyr/*/basis.gnb')).read_bytes()
-assert next(job.glob('fomkyr/*/basis.gnb')).read_bytes()==reference
-rows.append({'test':'standalone-GCC-native','passed':True,'canonicalDataActuallyByteEqual':True,'result':result})
+canonical,_=canonicalize(records(next(job.glob('fomkyr/*/basis.gnb')),20,2));stream=io.BytesIO();canonical_digest(canonical,['a','b'],0,20,stream)
+assert stream.getvalue()==(R/'reference/q-serre-q2-degree20/canonical.jsonl').read_bytes()
+rows.append({'test':'standalone-GCC-native','passed':True,'exactCanonicalReferenceEqual':True,'result':result})
 # GCC worker1 finite field and free algebra; stdin and signal exit codes tested separately.
 for prime in [2,101]:
  job=out/f'field-{prime}';shutil.rmtree(job,ignore_errors=True)

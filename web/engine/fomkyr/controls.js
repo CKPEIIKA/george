@@ -4,7 +4,7 @@ import {requestPersistentStorage,listCachedRuns,deleteCachedRun} from './storage
 import {browserCapabilities} from './capabilities.js';
 import {requestIsolation} from './isolation.js';
 const KEY='fomkyr-options-v3'; // keep existing user tuning on upgrade
-const defaults={hilbertClosureMode:'off',hilbertEvidenceText:'',hilbertClosureBatching:true,arithmeticMode:'exact',memoryPolicy:'auto',modularMinPrimes:2,modularMaxPrimes:8,workers:0,execution:'auto',bits:'auto',spill:true,hilbert:true,resume:'auto',ioMode:'auto',monomialPruning:true,heapReduction:true,rationalHeap:true,bigRationalHeap:true,fastBigDivision:true,growingRationalHeap:true,radixHeap:true,reserveInPlace:true,rowReserveMiB:null,compiledRewrites:true,rewriteDegree:4,rewriteSupport:8,rewriteMiB:8,sharedCacheMiB:null,cachePercent:12,heapThreshold:16,batchPairs:null,hashBits:18,scratchMiB:null,hilbertMiB:256,wordMatcher:true,chainCriterion:true,eagerPruning:true,quadraticRewrite:true,costScheduling:true,wordCacheEntries:256,progress:true,progressIntervalMs:1000,midDegreeCheckpoints:true,checkpointIntervalMs:30000,referenceProgress:true};
+const defaults={scheduler:'cooperative',quantumMs:250,lookahead:128,radixMaxCache:true,hilbertClosureMode:'off',hilbertEvidenceText:'',hilbertClosureBatching:true,arithmeticMode:'exact',memoryPolicy:'auto',modularMinPrimes:2,modularMaxPrimes:8,workers:0,execution:'auto',bits:'auto',spill:true,hilbert:true,resume:'auto',ioMode:'auto',monomialPruning:true,heapReduction:true,rationalHeap:true,bigRationalHeap:true,fastBigDivision:true,growingRationalHeap:true,radixHeap:true,reserveInPlace:true,rowReserveMiB:null,compiledRewrites:true,rewriteDegree:4,rewriteSupport:8,rewriteMiB:8,sharedCacheMiB:null,cachePercent:12,heapThreshold:16,batchPairs:null,hashBits:18,scratchMiB:null,hilbertMiB:256,wordMatcher:true,chainCriterion:true,eagerPruning:true,quadraticRewrite:true,costScheduling:true,wordCacheEntries:256,progress:true,progressIntervalMs:1000,midDegreeCheckpoints:true,checkpointIntervalMs:30000,referenceProgress:true};
 let state={...defaults};
 try{const saved=JSON.parse(globalThis.localStorage?.getItem(KEY)||'{}');for(const key of Object.keys(defaults))if(Object.hasOwn(saved,key))state[key]=saved[key];}catch{}
 // Public George controls retain only the measured direct mode. The explicit
@@ -59,6 +59,10 @@ export function installFomkyrControls(){
   const pruneOriginal=document.getElementById('monomialPruning');
   if(!pruneOriginal)check('monomialPruning','Prune consequences of monomial zero relations');
   const details=document.createElement('details');const summary=document.createElement('summary');summary.textContent='Advanced tuning';details.append(summary);box.append(details);
+  choice('scheduler','Long-reduction scheduling',[['cooperative','Cooperative: preserve and resume active rows'],['barrier','Legacy: wait for the complete batch']],details);
+  number('quantumMs','Worker quantum, milliseconds (soft safe-point target)',1,10000,details);
+  number('lookahead','Bounded pending work window (pairs)',1,512,details);
+  check('radixMaxCache','Cache exact maxima of radix buckets',details);
   check('compiledRewrites','Compile exact short-context rewrites (bounded expansion; exact fallback)',details);
   number('rewriteDegree','Compiled local word length (not the calculation degree)',2,4,details);
   number('rewriteSupport','Maximum terms per compiled rewrite',1,64,details);
@@ -75,7 +79,7 @@ export function installFomkyrControls(){
   check('chainCriterion','Skip overlaps certified by lower-degree chains',details);
   check('eagerPruning','Discard proved square/commutation zeros before heap insertion',details);
   check('quadraticRewrite','Pre-rewrite known monic quadratic binomials',details);
-  check('costScheduling','Dispatch larger input pairs first; keep exact commit order',details);
+  check('costScheduling','Dispatch larger input pairs first; exact re-reduction before every commit',details);
   number('wordCacheEntries','Exact word-cache entries per lane (power of two; 256 = small cache)',256,1048576,details);
   check('progress','Live overlap-count progress and conservative timing estimates',details);
   number('progressIntervalMs','Progress update interval, milliseconds',250,60000,details);
@@ -91,7 +95,7 @@ export function installFomkyrControls(){
   const saveMemory=memoryChoice.onchange;memoryChoice.onchange=()=>{saveMemory();refreshMemory();};refreshMemory();
   number('hilbertMiB','Additional Hilbert workspace, MiB',0,14304,details);
   choice('ioMode','Parallel file I/O',[['auto','Automatic: probe concurrent handles, otherwise broker'],['broker','Portable: one exclusive OPFS owner'],['direct','Prefer direct concurrent handles; broker if unsupported']],details);
-  const note=document.createElement('p');note.textContent='Leave George’s maximal degree blank for completion without a user degree bound. Automatic memory uses George’s total budget, grows crowded rows and reduces concurrency at a safe batch barrier when necessary. It never discovers or claims the amount of free system RAM. Mid-degree saves retain committed results and pending pair descriptors; unfinished active polynomials are replayed. The interval is checked at safe frontiers, not a guaranteed wall-clock save deadline. Homogeneous relations, unit weights, Q or a prime field and degleftlex are supported. Reversing the generator order, timeout and memory controls remain in the main form. Low-terms quick/safe are equivalent for homogeneous input. Rabbit, resolutions and weighted orders are not implemented. Save unsaved input before enabling isolation, which may reload this page.';box.append(note);
+  const note=document.createElement('p');note.textContent='Leave George’s maximal degree blank for completion without a user degree bound. Cooperative scheduling preserves live reduction states between worker quanta and commits finished rows without waiting for an earlier long row. Quanta are soft: a single arithmetic operation and serial commit may take longer. It does not parallelize one polynomial or guarantee full CPU use when no independent work remains. Automatic memory uses George’s total budget, grows crowded rows and reduces concurrency at a safe batch barrier when necessary. It never discovers or claims the amount of free system RAM. Mid-degree saves retain committed results and pending pair descriptors; unfinished active polynomials are replayed. The interval is checked at safe frontiers, not a guaranteed wall-clock save deadline. Homogeneous relations, unit weights, Q or a prime field and degleftlex are supported. Reversing the generator order, timeout and memory controls remain in the main form. Low-terms quick/safe are equivalent for homogeneous input. Rabbit, resolutions and weighted orders are not implemented. Save unsaved input before enabling isolation, which may reload this page.';box.append(note);
   const pruneNote=document.createElement('p');pruneNote.textContent='For fomkyr, “monomial pruning” means exact zero-word shortcuts, not Bergman’s Lisp monomial-storage garbage collection. Both settings produce the same algebra; disabling shortcuts is useful for cross-checks.';box.append(pruneNote);
   const status=document.createElement('pre');status.id='fomkyr-runtime-status';status.style.whiteSpace='pre-wrap';
   function button(text,fn){const b=document.createElement('button');b.type='button';b.textContent=text;b.onclick=async()=>{try{await fn();}catch(e){status.textContent=e.message;}};box.append(b);return b;}

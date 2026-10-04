@@ -96,23 +96,29 @@ static int rrow_add(RRow*r,Word w,RCoef delta){
  if(r->radix_enabled){r->nodes[id-1].pos=1;r->heap_n++;return radix_insert(&r->radix,r->nodes,sizeof(RNode),id);}
  r->heap[r->heap_n++]=id;rheap_up(r,r->heap_n-1);return 0;
 }
+typedef struct {RRow row;u64 steps;} RRowResume;
+static RRowResume saved_RRow[GN_MAX_WORKERS];
 static int rational_nf_try(Lane*l,Poly original,u32 active,u32 snapshot,u32 capacity){
+ RRow row;u64 steps=0;
+ if(l->resume_tier==2){row=saved_RRow[l-S.lanes].row;steps=saved_RRow[l-S.lanes].steps;goto resumed_heap;}
+
  Arena*a=&l->a[active^1];reset_a(a);
  u32 reserved=capacity;
  if(S.growing_rational)while(reserved<(1u<<26)&&(u64)reserved*2*(sizeof(RNode)+16+(S.radix_enabled?4:0))<=a->end-a->base)reserved*=2;
  u64 no=alloc_a(a,(u64)reserved*sizeof(RNode)),ho=alloc_a(a,(u64)reserved*2*sizeof(u32)),po=alloc_a(a,(u64)reserved*sizeof(u32)),oo=alloc_a(a,(u64)reserved*sizeof(u32));
  if(a->error){l->rational_space_misses++;return HEAP_MISS;}
- RRow row={PTR(RNode,no),PTR(u32,ho),PTR(u32,po),PTR(u32,oo),capacity,2*capacity-1,0,0,0,0,original.degree,l,reserved};
+ row=(RRow){PTR(RNode,no),PTR(u32,ho),PTR(u32,po),PTR(u32,oo),capacity,2*capacity-1,0,0,0,0,original.degree,l,reserved};
  row.radix_enabled=S.radix_enabled;
  if(row.radix_enabled){u64 prev=alloc_a(a,(u64)reserved*4);if(a->error)return HEAP_MISS;
-  row.radix=(RadixQueue){0};row.radix.next=row.heap;row.radix.previous=PTR(u32,prev);row.radix.last=maskw((Word){UINT64_MAX,UINT64_MAX},original.degree);
+  row.radix=(RadixQueue){0};row.radix.cache_enabled=S.radix_cache_enabled;row.radix.next=row.heap;row.radix.previous=PTR(u32,prev);row.radix.last=maskw((Word){UINT64_MAX,UINT64_MAX},original.degree);
  }
  memset(row.heads,0,(size_t)capacity*2*sizeof(u32));
  Term*input=PTR(Term,original.off);
  for(u32 i=0;i<original.n;i++){RCoef c;if(!rload(pc(original,i),&c)){l->rational_coefficient_misses++;return HEAP_MISS;}int rc=rrow_add(&row,input[i].w,c);if(rc)return rc;}
- u64 steps=0;
+ resumed_heap:
+ a=&l->a[active^1];
  while(row.heap_n){
-  if((steps++&255)==0){publish_lane(l,(u64)row.heap_n+row.normal_n,0);if(cancelled())return GN_CANCELLED;}
+  if((steps++&255)==0){publish_lane(l,(u64)row.heap_n+row.normal_n,0);if(cancelled())return GN_CANCELLED;if(slice_expired(l)){saved_RRow[l-S.lanes]=(RRowResume){row,steps};l->resume_tier=2;l->resume_capacity=capacity;l->slice_yields++;return GN_YIELD;}}
   u32 id=row.radix_enabled?radix_top(&row.radix,row.nodes,sizeof(RNode)):row.heap[0];RNode*node=&row.nodes[id-1];Word word=node->w;RCoef coefficient=node->c;rheap_remove(&row,id);
   u32 pos=0;LocalEntry*local=(!S.rational_rewrites||l->skip_rule)?NULL:local_find(word,original.degree,snapshot,&pos);
   if(local){
@@ -147,7 +153,8 @@ static int rational_nf_try(Lane*l,Poly original,u32 active,u32 snapshot,u32 capa
 static int rational_nf_inner(Lane*l,Poly p,u32 active,u32 snapshot){
  u32 cap=128;while(cap<(u64)p.n*2&&cap<(1u<<26))cap*=2;
  if(S.modulus)return HEAP_MISS;
- for(;;){int rc=rational_nf_try(l,p,active,snapshot,cap);if(rc!=HEAP_FULL)return rc;
+ if(l->resume_tier==2)cap=l->resume_capacity;
+ for(;;){int rc=rational_nf_try(l,p,active,snapshot,cap);if(rc!=GN_YIELD)l->resume_tier=0;if(rc!=HEAP_FULL)return rc;
   /* Growing mode already used its maximum reserved capacity. Replaying with
    * a larger initial mask cannot add space and would repeat identical work. */
   if(S.growing_rational){l->rational_maxed=1;return HEAP_MISS;}l->rational_table_retries++;
@@ -158,6 +165,7 @@ static int rational_nf_inner(Lane*l,Poly p,u32 active,u32 snapshot){
  * untouched until the entire exact NF succeeds, including after a promotion. */
 static int rational_nf(Lane*l,Poly p,u32 active,u32 snapshot){
  int rc=rational_nf_inner(l,p,active,snapshot);
+ if(rc==GN_YIELD)return rc;
  if(l->reserve_owned){
   if(!rc)l->reserve_successes++;else if(rc<0)l->reserve_misses++;
   l->reserve_owned=0;GN_UNLOCK(&S.reserve_lock);

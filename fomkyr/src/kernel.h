@@ -19,7 +19,7 @@ typedef uint64_t u64; typedef int64_t i64; typedef uint32_t u32; typedef uint8_t
 /* Native offsets follow the host address range, not a browser cap. */
 #define GN_HARD_BYTES ((u64)PTRDIFF_MAX & ~UINT64_C(65535))
 #endif
-enum { GN_OK=0, GN_MEMORY=1, GN_SCRATCH=2, GN_INPUT=3, GN_IO=4, GN_CANCELLED=5, GN_CORRUPT=6, GN_STATE=7, GN_BATCH_FULL=8, GN_LIMIT=9, GN_REJECTED=10, GN_DEFERRED=11, GN_REPACK=12 };
+enum { GN_OK=0, GN_MEMORY=1, GN_SCRATCH=2, GN_INPUT=3, GN_IO=4, GN_CANCELLED=5, GN_CORRUPT=6, GN_STATE=7, GN_BATCH_FULL=8, GN_LIMIT=9, GN_REJECTED=10, GN_DEFERRED=11, GN_REPACK=12, GN_YIELD=13 };
 #ifdef __wasm__
 #define API __attribute__((visibility("default")))
 #define HOST(name) __attribute__((import_module("host"),import_name(name)))
@@ -83,6 +83,17 @@ API int gn_start_degree(u32 degree);
 API int gn_next_pair(u32 lane); /* 1=pair, 0=end, negative=error */
 API int gn_reduce_pair(u32 lane);
 API int gn_commit(u32 lane);
+/* Cooperative exact row scheduling. Configure before input: 0 = legacy barrier.
+ * Quanta are soft millisecond budgets at exact rewrite boundaries, not timeouts.
+ * A yielded row retains all arithmetic/heap state in its original lane arenas. */
+API int gn_cooperative(u32 quantum_ms,u32 lookahead);
+API int gn_coop_fill(u32 limit);
+API int gn_coop_reduce(u32 lane);
+API int gn_coop_commit(void);
+API int gn_coop_retry(u32 workers);
+API void gn_coop_discard(void);
+API u64 gn_coop_stat(u32 key);
+API int gn_radix_cache(u32 enabled);
 API int gn_batch_mode(u32 enabled);
 API int gn_batch_fill(u32 limit);
 API int gn_batch_reduce(u32 lane);

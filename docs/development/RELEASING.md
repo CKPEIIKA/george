@@ -12,7 +12,7 @@ npm run release:check
 
 The command checks application/core versions and source hashes in `fomkyr/` first, then runs unit
 tests, exact arithmetic, reserve and automatic memory checks, the 95-case mathematical matrix,
-five coefficient-heavy comparisons, FK6 degrees 1–9, native CLI/frontier/Hilbert authority checks, and Chromium/Firefox
+five coefficient-heavy comparisons, FK6 degrees 1–9, native CLI/frontier/Hilbert authority and cooperative yield/recovery checks, and Chromium/Firefox
 interface (including full text ZIP export) and Pages-style hosting checks. It also checks checkpoint upgrades
 when a previous engine exists under `local/baselines/`, or when supplied with
 `--previous-root <engine-directory>`.
@@ -39,6 +39,14 @@ inputs and the protocol match. The coordinator and the standalone interface
 test runner are excluded from algebra dependencies; changes to the interface
 runner still require a new browser check. Reuse retains the original report,
 its digest and recorded duration. Unit tests run for each new snapshot.
+
+Changes to the standalone native CLI runner and its exclusive recovery deadlines invalidate its own phase. Generated source inventory is checked separately before every run; mathematical phases still hash the actual core sources and production binaries. The
+arithmetic, matrix, FK6, browser and upgrade phases exclude that runner from
+their input contract because they neither import nor execute it. Older
+conservative contracts are accepted only after their exact digest and the
+remaining checked inputs are verified. Multi-job CLI recovery scripts have
+a 600-second aggregate limit; their individual calculations remain capped
+at 30–60 seconds.
 
 Complete Bergman and Singular reference bases are cached by their input scripts
 and actual oracle build identities. The key excludes the candidate Fomkyr build.

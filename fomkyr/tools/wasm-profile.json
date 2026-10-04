@@ -1,0 +1,93 @@
+{
+  "kind": "frontend",
+  "compilerMajor": 23,
+  "profileSha256": "ecff7b7f63a0244d9c80ee426fde95a338707c7e4562288b010a9536008d95a9",
+  "sourceHashes": {
+    "src/big_rational_nf.inc": "aaf132d17f46bea9873555867b2568752ee9c8604ba34ed21a52f751799271db",
+    "src/cooperative.inc": "e9d5ea8c3dae35eb99958a38bd142609fcc2152926bc98ea53425ba14f9fc93b",
+    "src/frontier.inc": "cb51356d611339029e424612d9ad4c84314eacc8a343b84478cf1e8c400e28d0",
+    "src/heap_nf.inc": "e31c44a95e6770e994032f5cdeb2d5ba0251d52a56f7065fc6d771f33c27f9ea",
+    "src/hilbert.inc": "7ed1f6214e4f89965010dc0c47fdc2f3a1bd6cc6d3455115855e45a1ea75c7c9",
+    "src/hilbert_gate.inc": "065333f32698f7c2f2921ba119cd323e23e1772210a634c35ff24dc259d9d25a",
+    "src/kernel.c": "64394b0750c99fb5c617b2f0a686d4830f1b50d4a74e5caf2348cfbc24f43e7e",
+    "src/kernel.h": "3ea57ae9045d3a2b2958355a34f5fee3213752c5245a6ccafac1c304b082fb4c",
+    "src/limb_division.inc": "21e0ce64037a12722ed2452aa47095f605755b5ab9fb19d7fb11bb09c52f673d",
+    "src/local_rewrites.inc": "23c0956afbff9860f7c35ccb6606576ba5247c885aef2151ac532d8d5ed64a6c",
+    "src/lower_bound.inc": "8a3834002775ad7e04054a7e9092fe102eb479bb93878daf7760d3c79001a5fc",
+    "src/matcher.inc": "55bba38d1299c5ba77078eb482602d9eab0f9259048f5cef903bc5f982cb2ccc",
+    "src/radix_queue.inc": "c4f8827260c7e3aef28cbb7e3ae90315c731261bb2fc3e572710371798f836db",
+    "src/rational_heap_nf.inc": "f6b3e749f171280d6bc87c6e4da8ab0df8d6c73ccea49b47d08300f2b252ef54"
+  },
+  "compatibleTargets": [
+    "wasm32-shared",
+    "wasm32-single",
+    "wasm64-shared",
+    "wasm64-single"
+  ],
+  "training": [
+    {
+      "fixtureSha256": "fc262ce4250ffbdaf366243b4aac1765caa97c2832313be013f82373ef6f0419",
+      "degree": 8,
+      "workers": 4,
+      "shared": true,
+      "modulus": 0,
+      "basisCount": 990,
+      "basisSha256": "bfc417466d6b3be97ba052e485f397056522c8c060ba5a805aa573da30404bee"
+    },
+    {
+      "fixtureSha256": "fc262ce4250ffbdaf366243b4aac1765caa97c2832313be013f82373ef6f0419",
+      "degree": 8,
+      "workers": 1,
+      "shared": false,
+      "modulus": 0,
+      "basisCount": 990,
+      "basisSha256": "bfc417466d6b3be97ba052e485f397056522c8c060ba5a805aa573da30404bee"
+    },
+    {
+      "fixtureSha256": "5b95ba927ec275bcb9707550b38b5fe45c20940f8968fcbcfbb8d1fa3999166f",
+      "degree": 14,
+      "workers": 1,
+      "shared": true,
+      "modulus": 0,
+      "basisCount": 21,
+      "basisSha256": "4f8fa5c27fb6f931b1d13c94370c64d8fb2fb7d3dab7112868fcb172a7d67804"
+    },
+    {
+      "fixtureSha256": "1acb02977d05e94c43224c4ec8dd26f44ec247a7ee4d6bcc8e1ec7b00963a552",
+      "degree": 7,
+      "workers": 1,
+      "shared": true,
+      "modulus": 0,
+      "basisCount": 3,
+      "basisSha256": "542b175969a81d1159bf0a6c57b363f90c5e90707dac0624c508437c6c34c2ce"
+    },
+    {
+      "fixtureSha256": "6c61fdc255941e18af9d3ee3bd2bd31ee7ce365f1f84425432fbdd9a7e685544",
+      "degree": 5,
+      "workers": 1,
+      "shared": true,
+      "modulus": 0,
+      "basisCount": 4,
+      "basisSha256": "779536dae51f4470c6b679477cce6cdaff33c4f9a46a58cfffba6c86ce7f6d67"
+    },
+    {
+      "fixtureSha256": "fc262ce4250ffbdaf366243b4aac1765caa97c2832313be013f82373ef6f0419",
+      "degree": 6,
+      "workers": 1,
+      "shared": true,
+      "modulus": 2,
+      "basisCount": 497,
+      "basisSha256": "aa20af609d8f7724025b5528a198a1e88e2ea2d07e2e451a56a28bd869607894"
+    },
+    {
+      "fixtureSha256": "fc262ce4250ffbdaf366243b4aac1765caa97c2832313be013f82373ef6f0419",
+      "degree": 6,
+      "workers": 1,
+      "shared": true,
+      "modulus": 101,
+      "basisCount": 497,
+      "basisSha256": "8ab84690cb59d9f3fd41b05d14b61ec3fd2f2c6510181210142ab699e8a108b9"
+    }
+  ],
+  "method": "Real Chromium Wasm branch counters. One algebra per job, no resume. Shared FK6 training uses atomic updates across four lanes; all other training runs use one lane. Single mode supplies its distinct function hashes. No native profile or host-specific measurements are included."
+}

@@ -67,15 +67,20 @@ const git=args=>execFileSync('git',args,{encoding:'utf8',maxBuffer:16*1024*1024}
 // other sources remain in this deliberately conservative dependency contract.
 // Retain the original report and its hashes when borrowing a completed phase.
 const initialRunnerHash='5b8c1faf9d665b003e2323c8137e2ea41b4c2086f9411d8a74944783360e6d2b';
-function phaseInputs(hashes,name){
+const independentOfNativeRunner=new Set(['exact','matrix','published','fk6-prefixes','browser','static-chromium','static-firefox','upgrade']);
+const nativeOnlyInputs=new Set(['fomkyr/SOURCE.json',
+  'fomkyr/tests/test_cooperative_pressure_067.mjs','fomkyr/tests/test_cooperative_reserve_067.mjs']);
+function phaseInputs(hashes,name,legacy=false){
   return Object.fromEntries(Object.entries(hashes).filter(([file])=>
-    file!=='tools/release.mjs' && (name==='browser'||file!=='tools/validate-correction-release.mjs')));
+    file!=='tools/release.mjs' && (name==='browser'||file!=='tools/validate-correction-release.mjs')
+    && (legacy===true||!independentOfNativeRunner.has(name)||file!=='tools/validate-fomkyr-native.mjs')
+    && (legacy||!independentOfNativeRunner.has(name)||!nativeOnlyInputs.has(file))));
 }
-function phaseContract(name,command,args,env){
-  return digest(stableJSON({schema:1,name,inputs:phaseInputs(sourceHashes,name),protocol,
+function phaseContract(name,command,args,env,hashes=sourceHashes,legacy=false){
+  return digest(stableJSON({schema:1,name,inputs:phaseInputs(hashes,name,legacy),protocol,
     command,args:args.map(value=>String(value).replaceAll(out,'<release-directory>')),env}));
 }
-function borrowPhase(name,contract,evidence,validate){
+function borrowPhase(name,contract,evidence,validate,legacyContract){
   if(!evidence||!fs.existsSync('local/releases')||fs.existsSync(path.dirname(evidence)))return null;
   for(const entry of fs.readdirSync('local/releases',{withFileTypes:true}).filter(row=>row.isDirectory()).reverse()){
     const directory=path.resolve('local/releases',entry.name),file=path.join(directory,'report.json');
@@ -85,8 +90,15 @@ function borrowPhase(name,contract,evidence,validate){
     const row=previous.phases?.find(row=>row.name===name&&row.state==='passed');
     if(!row)continue;
     if(row.contract!==contract){
-      if(row.contract||previous.sourceHashes?.['tools/release.mjs']!==initialRunnerHash
-        ||stableJSON(phaseInputs(previous.sourceHashes,name))!==stableJSON(phaseInputs(sourceHashes,name)))continue;
+      // Accept the former conservative contract only when its exact digest
+      // matches and the newly scoped inputs match. The native runner is not
+      // imported or executed by these phases; native-cli still checks it.
+      const compatibleLegacy=independentOfNativeRunner.has(name)&&previous.sourceHashes
+        &&(row.contract===legacyContract(previous.sourceHashes)||row.contract===legacyContract(previous.sourceHashes,'native-runner-only'))
+        &&stableJSON(phaseInputs(previous.sourceHashes,name))===stableJSON(phaseInputs(sourceHashes,name));
+      const compatibleInitial=!row.contract&&previous.sourceHashes?.['tools/release.mjs']===initialRunnerHash
+        &&stableJSON(phaseInputs(previous.sourceHashes,name))===stableJSON(phaseInputs(sourceHashes,name));
+      if(!compatibleLegacy&&!compatibleInitial)continue;
     }
     const priorEvidence=path.join(directory,path.relative(out,evidence));
     assert.equal(fileHash(priorEvidence),row.evidenceSha256,'Cached phase evidence changed: '+priorEvidence);
@@ -128,7 +140,8 @@ async function phase(name,command,args,{evidence,validate,timeoutSeconds=900,env
     console.log(name+' reused ('+passed.elapsedSeconds.toFixed(1)+' s recorded)');return;
   }
   if(reuse){
-    const borrowed=borrowPhase(name,contract,evidence,validate);
+    const borrowed=borrowPhase(name,contract,evidence,validate,
+      (hashes,legacy=true)=>phaseContract(name,command,args,env,hashes,legacy));
     if(borrowed){report.phases.push(borrowed);save();console.log(name+' reused: checked inputs unchanged ('+borrowed.reusedElapsedSeconds.toFixed(1)+' s recorded)');return;}
   }
   const row={name,contract,attempt:report.phases.filter(row=>row.name===name).length+1,startedAt:new Date().toISOString(),state:'running'};
@@ -157,7 +170,7 @@ async function phase(name,command,args,{evidence,validate,timeoutSeconds=900,env
 }
 
 function retainedPrefixes(){
-  const explicit=arg('--singular-report',null);if(explicit)return path.resolve(explicit);
+  const explicit=arg('--singular-report',null);if(explicit)return path.relative(repository,fs.realpathSync(explicit));
   const candidates=[];
   const visit=(directory,depth)=>{
     if(!fs.existsSync(directory))return;
@@ -215,7 +228,7 @@ if(preparation){
       const native=path.join(out,'native-cli');
       await phase('native-cli',process.execPath,['tools/validate-fomkyr-native.mjs','--out',native,'--resume'],{
         evidence:path.join(native,'report.json'),timeoutSeconds:900,
-        validate:r=>assert.equal(r.tests.filter(test=>test.passed).length,10)});
+        validate:r=>assert.ok(r.tests.length>=22&&r.tests.every(test=>test.passed))});
     }
     const browser=path.join(out,'browser');
     await phase('browser',process.execPath,['tools/validate-correction-release.mjs',browser,'--defaults-case','--coefficient-case'],{

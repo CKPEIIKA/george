@@ -1,7 +1,7 @@
 {
-  "version": "0.6.6",
-  "archiveSha256": "547e5d8b1fb44b6ee8b1aa8675a16ce82305b39c18169ce9a56e8eea82f09120",
-  "kernelChanged": false,
+  "version": "0.6.7",
+  "archiveSha256": "dece50f8f227e1691c490041725480acb6a8daddde697ae8f08569e9ec78450a",
+  "kernelChanged": true,
   "curatedImport": true,
   "retainedBuildAndTestFiles": {
     "LICENSE": {
@@ -11,32 +11,28 @@
     "Makefile": {
       "bytes": 2356,
       "sha256": "e035442e0829cc474426ccbdd147be028a7711a2ff08d9d49f4d8aeb0d60594f",
-      "originalSha256": "deacccac6af57709d067091b488f323cd11d58b64b3c4c9ce9ae58e477cd6bac"
+      "originalSha256": "9b2889b06a89582afd28e8e1f05fe9675c2e177ca0769a1e6a085112c7c85955"
     },
     "README.md": {
-      "bytes": 13865,
-      "sha256": "12eefe49c4194bdd34a2773ca7b537962556b3975207d987919f3bc9d0c29acb",
-      "originalSha256": "34772103f034236ae67f3b6d51fa07822489ca56661d20a9580f77359bb97d87"
+      "bytes": 17122,
+      "sha256": "92a43c739c2504034a97865ddf8a4004041c62ae3fb64b7822899e21dff96a06",
+      "originalSha256": "7841f7a6ed3494cd8857d55f68b6fc471d3baf82c3d5fbce62a17f27820259a5"
     },
     "dist/fomkyr32-single.wasm": {
-      "bytes": 125138,
-      "sha256": "3b6416d40a2b9f83042f15cadc14fc60160190d45ecd49d79ccfd0e200c3bfb3",
-      "originalSha256": "dfc9e8e5dd64e954a553d2ae02381ddd20cfe7988535261cd5dcf6e1af4cdb92"
+      "bytes": 145956,
+      "sha256": "0b46ab7e9cb0cb444071d91d6bc22e1f34fe4cc6d3aa5ef51f76ffb745f6bf9c"
     },
     "dist/fomkyr32.wasm": {
-      "bytes": 125131,
-      "sha256": "acdfdf7be0e6248849d0f329c91260e87fa217cbbc6f6a27e546040569e6618f",
-      "originalSha256": "d40887f6f6a46c148765af5d67d9c788bfb880f96cd90f7c9bc91f32f824ef3b"
+      "bytes": 146111,
+      "sha256": "d8e65d33cefee601d5eac2a7b0f117f8a584fa74fddb4b5587edad3d1cbb4921"
     },
     "dist/fomkyr64-single.wasm": {
-      "bytes": 133536,
-      "sha256": "4e8dfc5850406106a2f0f551d895c267da506e7ecdc41b6cb70d8a9480e4a073",
-      "originalSha256": "9c2e8890f2a1069152fc25dad6289b8d1540ff3d3e8587b702953bba10cba536"
+      "bytes": 165605,
+      "sha256": "a52ff2c195e09d5b0ddd844c30e4656c39991a97d2e337b0b9cb7f36eddd1ed6"
     },
     "dist/fomkyr64.wasm": {
-      "bytes": 133372,
-      "sha256": "5cadac3c6a744253de15b4dd2bd3d5b9c04e8bbf8e9f4a3fa381db57b2877a42",
-      "originalSha256": "ce8a35340c405ab98cc497d3cc440eebce8a708918b9035a031785c06b42e7aa"
+      "bytes": 165601,
+      "sha256": "740b311f11a39e013a22dbf80c702c84892ab17062c3270e708418fd35f783d2"
     },
     "docs/HILBERT_CLOSURE.md": {
       "bytes": 11367,
@@ -49,6 +45,26 @@
     "fixtures/commutative.json": {
       "bytes": 490,
       "sha256": "2dccd496da668501e4b6818ac54c7fc24dc663bfcf599b0cb1f0d34fcf7535dc"
+    },
+    "fixtures/compatibility/checkpoint-v0.3.json": {
+      "bytes": 153,
+      "sha256": "3eaea838045c0fee62c9e19aeeb26002df89b3161858efcd90ea7526d5f6e406"
+    },
+    "fixtures/compatibility/d10-optimized-w4-p0-r0.gnb.gz": {
+      "bytes": 368356,
+      "sha256": "bc87c9e750e2e6e2c83e62537aef9fe2b5b0f72fee88a7bd775aca76e1e348a6"
+    },
+    "fixtures/compatibility/d10-optimized-w4-p1-r0.gnb.gz": {
+      "bytes": 368356,
+      "sha256": "bc87c9e750e2e6e2c83e62537aef9fe2b5b0f72fee88a7bd775aca76e1e348a6"
+    },
+    "fixtures/compatibility/d9-baseline-w4-p1-r0.gnb.gz": {
+      "bytes": 140068,
+      "sha256": "f9434dfa7d4397e6ff9d38d60b513e03af2de951ee98a20796382b1b70b8203f"
+    },
+    "fixtures/compatibility/manifest.json": {
+      "bytes": 1062,
+      "sha256": "a6d4b5d88ef0d79f05c705f9238a90f061b8360cadb8ecd0dc22025fb37e3d6e"
     },
     "fixtures/exterior.json": {
       "bytes": 1587,
@@ -235,14 +251,14 @@
       "sha256": "60ff567b5b467315563805af402ec95fa65d67b3c83f1742e785ef522cefa955"
     },
     "man/fomkyr.1": {
-      "bytes": 3360,
-      "sha256": "150056561cb85a179eb8588c894aab12be74bdf83939e1aa15fc015db23bc993",
-      "originalSha256": "7ab777df3611482db12be8dbc5bc2738a6423858f159871213d52c8c3bbc0647"
+      "bytes": 4303,
+      "sha256": "b8943934f69f9703612b6763b3bfd0b3d461723abfb407e3b0d9132ba21e51bc",
+      "originalSha256": "f0b3ab605a8df77ef81d8a76addfbd9ec374f1ea05c2a9d786ec6cfce5d89bb2"
     },
     "native/cli.c": {
-      "bytes": 32476,
-      "sha256": "2a112e33f5b7723630e5c86469e0e7e3283635afbe743185c632e20e906ed89c",
-      "originalSha256": "365110e1871b3e8f0944519db8c83547844bdd0ac211c7ff4ea9a1f506f1af4f"
+      "bytes": 37853,
+      "sha256": "e213a8d872e1febad43b61b1bb89a3eb3c6ab9e930da93b56c9c418ec44a641b",
+      "originalSha256": "9e15e0b851b88326eff06ff6054e5fd84a33432cc6506024f9a2d70d124f3156"
     },
     "native/fixture.c": {
       "bytes": 6732,
@@ -253,8 +269,9 @@
       "sha256": "cab157c2135dcfdcca0a0fb0813cec726055466381816ed65a4c5646d28ef7bd"
     },
     "native/hilbert_closure.h": {
-      "bytes": 6416,
-      "sha256": "dd367fe283bfe1c2e30acece4d025f708bcb5d65c2cfc7c9271cc745fb4aa8ef"
+      "bytes": 6417,
+      "sha256": "68fdcec890b111bd0fddda49bf350a03fcb8921c835e1195ad50bcee3b9448ac",
+      "originalSha256": "dd367fe283bfe1c2e30acece4d025f708bcb5d65c2cfc7c9271cc745fb4aa8ef"
     },
     "native/hilbert_reference.h": {
       "bytes": 1500,
@@ -267,6 +284,14 @@
     "native/host.h": {
       "bytes": 443,
       "sha256": "8d0b40a88e6af200ba1d8a42a470508cee247f3796db08ebfb34f031889fac81"
+    },
+    "native/human-output.mjs": {
+      "bytes": 3558,
+      "sha256": "28dfdb4d675a7fb29751b1706c8105dba27733491307d972d59a33aa1d30e866"
+    },
+    "native/human.h": {
+      "bytes": 6931,
+      "sha256": "559d9d43321fe844e9cc5451573f0a121d92846b413bf0ae006a488796639d29"
     },
     "native/node-host.mjs": {
       "bytes": 3671,
@@ -285,45 +310,51 @@
       "sha256": "367133c491bb2e81fb00d2ab18fffa5b00c01b061547b3425944d40ce57f2be8"
     },
     "native/wasm-cli.mjs": {
-      "bytes": 6976,
-      "sha256": "78bb73e2fa1ca77780d8df733e1a55b3aa7b6a41b6aa5e0dd540513503776b38"
+      "bytes": 7597,
+      "sha256": "3b1df0db5769e06f2b2da925b482908733c8cf93b0323af9d621b2334261c0ce",
+      "originalSha256": "1a3ada978322e44cca4bae813141245dd2b077180a692c2c5343ae80684bd7b6"
     },
     "package.json": {
       "bytes": 381,
-      "sha256": "46b1685a451eac7c8cdc4b53708d1ae397c94e62a0236b8ca426340c2e5a3f59",
-      "originalSha256": "1cc8c9d7fec1e20057808aa82f8204bf31ab6e4c4913dabecb90e9c931ff7bf4"
+      "sha256": "0fabc56011964e045e8774008430f3ff332fe2f94d8720a94334ba20d9ac8587",
+      "originalSha256": "73c400c457d563de7f3fd8b3b745ca585e4311a3eb54482e473c0712fb6fe36d"
     },
     "reference/q-serre-q2-degree20/canonical.jsonl": {
       "bytes": 1431977,
       "sha256": "df8c3e5e9db066ca8cc9abcec56564da99193c763cef1893ab6c8dbc7d73c373"
     },
     "src/big_rational_nf.inc": {
-      "bytes": 9267,
-      "sha256": "b1930fff641110d826f2bbb6eee27169a22ae54329ad2648199ec89c064e1045"
+      "bytes": 9608,
+      "sha256": "aaf132d17f46bea9873555867b2568752ee9c8604ba34ed21a52f751799271db"
+    },
+    "src/cooperative.inc": {
+      "bytes": 9022,
+      "sha256": "e9d5ea8c3dae35eb99958a38bd142609fcc2152926bc98ea53425ba14f9fc93b"
     },
     "src/frontier.inc": {
-      "bytes": 5312,
-      "sha256": "18bdd0d520b4bf76646bef1cdd642d5ad49fba49def494acead49300ec311e79"
+      "bytes": 5340,
+      "sha256": "cb51356d611339029e424612d9ad4c84314eacc8a343b84478cf1e8c400e28d0"
     },
     "src/heap_nf.inc": {
-      "bytes": 7089,
-      "sha256": "f67eaae69c696b9851d3cd6ab7aee8c1d3493d5d72a7b88304e2c9b2de9599fb"
+      "bytes": 7609,
+      "sha256": "e31c44a95e6770e994032f5cdeb2d5ba0251d52a56f7065fc6d771f33c27f9ea"
     },
     "src/hilbert.inc": {
       "bytes": 4222,
       "sha256": "7ed1f6214e4f89965010dc0c47fdc2f3a1bd6cc6d3455115855e45a1ea75c7c9"
     },
     "src/hilbert_gate.inc": {
-      "bytes": 3524,
-      "sha256": "35ba7b9b4aca700a192a91eabe80f5f9d59bcc0552e1a9303bb0fad94e3d678a"
+      "bytes": 3574,
+      "sha256": "065333f32698f7c2f2921ba119cd323e23e1772210a634c35ff24dc259d9d25a"
     },
     "src/kernel.c": {
-      "bytes": 64575,
-      "sha256": "8519584998e21741024ae505db9fef5bbe9cadc0bc69d1bfce2d4cfffed59d29"
+      "bytes": 67972,
+      "sha256": "64394b0750c99fb5c617b2f0a686d4830f1b50d4a74e5caf2348cfbc24f43e7e",
+      "originalSha256": "9afb25514e0cb94f5dfadad4457890982dd6f0138efa66f07c61034eda89ac21"
     },
     "src/kernel.h": {
-      "bytes": 6598,
-      "sha256": "d42b2f1e10941c8766ff3e09892708822494fa1fda47b477819e045093b48a15"
+      "bytes": 7144,
+      "sha256": "3ea57ae9045d3a2b2958355a34f5fee3213752c5245a6ccafac1c304b082fb4c"
     },
     "src/limb_division.inc": {
       "bytes": 2193,
@@ -342,12 +373,12 @@
       "sha256": "55bba38d1299c5ba77078eb482602d9eab0f9259048f5cef903bc5f982cb2ccc"
     },
     "src/radix_queue.inc": {
-      "bytes": 1935,
-      "sha256": "7d704a66d5cf1e6199db767450701bffbc7c61bea2f9ca7c07e1ed900bef7049"
+      "bytes": 2319,
+      "sha256": "c4f8827260c7e3aef28cbb7e3ae90315c731261bb2fc3e572710371798f836db"
     },
     "src/rational_heap_nf.inc": {
-      "bytes": 11108,
-      "sha256": "44b7d9163d6ccbbcc75018b674dbf7962d044c9efa97cfcfb1dcc8780595bbe4"
+      "bytes": 11656,
+      "sha256": "f6b3e749f171280d6bc87c6e4da8ab0df8d6c73ccea49b47d08300f2b252ef54"
     },
     "tests/_mod_trial.mjs": {
       "bytes": 1143,
@@ -421,6 +452,14 @@
       "bytes": 1572,
       "sha256": "32afac562e3897819f95cd4a2c7cfb6d04d5477daaa881d6ee5da1b8503b931b"
     },
+    "tests/check_cooperative_q2_067.py": {
+      "bytes": 787,
+      "sha256": "50e4e0683bab3989ccc50143fbad4b7b8a3276ae6e162db1994e1425625f324a"
+    },
+    "tests/cooperative_engine.py": {
+      "bytes": 2428,
+      "sha256": "c6bc46dc5a8209a9bfa994ec86cb014264488b4420c0a57203503318580d8dd8"
+    },
     "tests/deep_trial.mjs": {
       "bytes": 2942,
       "sha256": "82556c06bef0f023bc80eea78843f5b4620db48cf670166deb1a019c9e2ab719"
@@ -469,6 +508,10 @@
       "bytes": 1473,
       "sha256": "363f3a7ccb46ed2cbe0177785be0c939ee7153eae35b4651c3e7ca7ddbc6d79b"
     },
+    "tests/probe_pair.c": {
+      "bytes": 1128,
+      "sha256": "1ddc619cb84331e5debe08a7a154a7b4806c225fca4a160445b0fa6f8290ccd1"
+    },
     "tests/published/audit_one.py": {
       "bytes": 7753,
       "sha256": "b7e3dce230fdebe353ca7cc460eaa9dc78bb56c60bae464fe1770be80f4bf84d"
@@ -490,8 +533,8 @@
       "sha256": "f9210527a87bf44e59a9e1f427f512509eac8b69c5ab43cf954643fa15f45883"
     },
     "tests/radix_property_063.c": {
-      "bytes": 2625,
-      "sha256": "c7163a65f3030e1d106641f9c0e7ea0affd9734b44de45bf9e8506bf025f2cd7"
+      "bytes": 2676,
+      "sha256": "21425f083f9506e6ba424c32ee8c3e3103468acacd5f28d479e9585c9ff21907"
     },
     "tests/reserve_probe_063.mjs": {
       "bytes": 1204,
@@ -566,8 +609,8 @@
       "sha256": "f7b575f1aae0e3701cf8a000edd7026389b5b689ee0b608770207db6b7e18890"
     },
     "tests/test_cli_065.py": {
-      "bytes": 5739,
-      "sha256": "50ade233c11c4ba34af41c94cf9fbb9463abd0487b0ff4cf778ed80f5cf8ef80"
+      "bytes": 5908,
+      "sha256": "2af28958bd29c2f102a7b3a93c7090a34b28d4d75bc26ccf82cd508545ea5e0c"
     },
     "tests/test_cli_edges_065.py": {
       "bytes": 2890,
@@ -584,6 +627,24 @@
     "tests/test_compiled_wasm.mjs": {
       "bytes": 4215,
       "sha256": "aeacf063121b0831ac994db259b43176e26b56410ff9124ea33d03f93e2fe821"
+    },
+    "tests/test_cooperative_067.py": {
+      "bytes": 1541,
+      "sha256": "915dab093594235019b8a2d82b307c0344bd825099e01788e49d740b88847740"
+    },
+    "tests/test_cooperative_pressure_067.mjs": {
+      "bytes": 2589,
+      "sha256": "24389c9e1eb851ea318b4d3e66169cb7af4e7a87aab97ac12cfe8d7f2d7392bc",
+      "originalSha256": "facae625f54c312164a4137bc4dd11840ee4ecf6a7e28eb3be8eb5fdf27f64b4"
+    },
+    "tests/test_cooperative_reserve_067.mjs": {
+      "bytes": 2643,
+      "sha256": "45c51db51de71798cc3d1349b3103fc6ea23ad4a922c4fe23608509c8e10dfb7"
+    },
+    "tests/test_cooperative_wasm_067.mjs": {
+      "bytes": 2748,
+      "sha256": "59b64b7ac98b2400386b2659141d91b1f6342320f86fa6f1a374734e6f06d434",
+      "originalSha256": "5e3305eebdf14632919fbe1c7ea0d0bee28a5eee8e47688389d6c4f8844a6564"
     },
     "tests/test_deep_polish_wasm.mjs": {
       "bytes": 2487,
@@ -606,8 +667,8 @@
       "sha256": "00a9ad9e4d8e938860ffed3db8e050788428a31aca01b4d968160be104c1c9dc"
     },
     "tests/test_frontier_wasm.mjs": {
-      "bytes": 2165,
-      "sha256": "58f7971f57e5d1dbc8beb676c15a850db2b7b5b35291eaa8c071ef049c81ed08"
+      "bytes": 2562,
+      "sha256": "b2a694e10448238fd51e8198a0cc927e212d29ca14935010a1e0accfb3f090e0"
     },
     "tests/test_hilbert_authority_edges.py": {
       "bytes": 2259,
@@ -624,6 +685,10 @@
     "tests/test_hilbert_closure_wasm.mjs": {
       "bytes": 4948,
       "sha256": "58732ef07911aeb286b45fc5db422080afe289c859d3858270749fc7c6129fe4"
+    },
+    "tests/test_human_cli.py": {
+      "bytes": 1917,
+      "sha256": "e561987a050863166b55889fc31e7409cb43540a6910b5ded4a924df1074730b"
     },
     "tests/test_installer.py": {
       "bytes": 2399,
@@ -658,8 +723,12 @@
       "sha256": "951221aeb1f929d62127646d560a2acc8e3cd039e60d01b5707ec06486e94193"
     },
     "tests/test_native_platform_065.py": {
-      "bytes": 2736,
-      "sha256": "054a2c5a21cfa48178010457cc0ed2c5b67af85ab68dd4a3c35b81ee0ab74490"
+      "bytes": 2959,
+      "sha256": "287a1d7ba3dc36bf7bcf551d1310675a8017a1dc03a860c4abad22fe8db77606"
+    },
+    "tests/test_native_pool_progress.c": {
+      "bytes": 2637,
+      "sha256": "eb04db03e3220c4e801ac461223b7b5f8b0eb129c72871a238c70c938eb9ef43"
     },
     "tests/test_optimizer_edges.py": {
       "bytes": 3059,
@@ -668,6 +737,10 @@
     "tests/test_oracle_format.mjs": {
       "bytes": 515,
       "sha256": "e79c9bbf84e535afc75883ba0e1837d2b6852170e1611ca544ba685dd3f26093"
+    },
+    "tests/test_packed_words.c": {
+      "bytes": 3975,
+      "sha256": "69c7eac2e0741b55c945d91ae4e1c1c1875adf348b66d40c50157b4f1a4ef288"
     },
     "tests/test_physics_matrix.py": {
       "bytes": 2389,
@@ -685,6 +758,14 @@
       "bytes": 6210,
       "sha256": "e1a4d5eecc3eafbc0bc39502dbee6b446a714ea16993406e6ec20b0913c80082",
       "originalSha256": "8bd31839f2ee7e8d5a10a8145e868f7cbad22c169589a2c8cba0521228d5e46c"
+    },
+    "tests/test_radix_cached.c": {
+      "bytes": 3459,
+      "sha256": "b7ecffe2f41e57294bccc084ef6a5f995914f71f57c2439d0d6fc351386ec100"
+    },
+    "tests/test_radix_cached_wasm.mjs": {
+      "bytes": 1361,
+      "sha256": "3e9c3e26f6f0d955505d70c7d02fdbabc2e84eaf14569b0cb6d1f0f725ca56cb"
     },
     "tests/test_rational_arithmetic.py": {
       "bytes": 1354,
@@ -734,13 +815,22 @@
       "bytes": 3086,
       "sha256": "62510cc3754b40e2d6658da29410a3a6cb2ad2478975f74a4ed35bff7849a33a"
     },
+    "tools/build-native-pgo.sh": {
+      "bytes": 1399,
+      "sha256": "0e4b46d737683c60e12ab2546681d4e72a4e509b1fccdea9bc7c660c803a1b48"
+    },
     "tools/build.sh": {
-      "bytes": 1323,
-      "sha256": "6807b6c97fea790f3f60dfdaa92a0894e28a154b1d9dedbc01e9da302d887f66"
+      "bytes": 1809,
+      "sha256": "705da31b52017d8250354fa8844d17a8ef6c01986b2430efecce0e939a7bb0ce",
+      "originalSha256": "6807b6c97fea790f3f60dfdaa92a0894e28a154b1d9dedbc01e9da302d887f66"
     },
     "tools/canonical_audit.py": {
       "bytes": 9744,
       "sha256": "34a6b42369be83d44d58ff751dbefb23bbbc20136036c121b8270c4ca197c30c"
+    },
+    "tools/check-host.sh": {
+      "bytes": 3611,
+      "sha256": "9e1ab0beb3e8616328e4d36484b84cfa223a42d30bb3754411aa582f066871a0"
     },
     "tools/check_george_oracles.mjs": {
       "bytes": 9014,
@@ -765,6 +855,14 @@
     "tools/oracle-format.mjs": {
       "bytes": 1533,
       "sha256": "8cd79e7cec63e6fd057fa4d55d825df173138aa6bd1e34cef6126b47030cfd57"
+    },
+    "tools/prepare-wasm-profile.py": {
+      "bytes": 2391,
+      "sha256": "44ff0eed72f97b0877d7693c55e5e044dafcce7ff6a67a87a6345d6d2ad3c599"
+    },
+    "tools/probe-pair.py": {
+      "bytes": 9019,
+      "sha256": "a34d2283e35222a494c3d5bf066c73e65ac056a9929f19e5151a6ef592517c2d"
     },
     "tools/run_auto.py": {
       "bytes": 2158,
@@ -806,6 +904,10 @@
       "bytes": 537,
       "sha256": "c238d16328477531fd029f9a0c1d3359ee66b4b9b335529fcead158a21cfe638"
     },
+    "tools/verify_067.sh": {
+      "bytes": 904,
+      "sha256": "918014b161e68e246af508cb0fe51b3b368a4f26c2e43e79e9c786015ce9c284"
+    },
     "tools/verify_direct.sh": {
       "bytes": 983,
       "sha256": "6a221b333fc5bbd6c154adef7a63985f9fa7ba807fbcc7351520bef0466605a1"
@@ -818,14 +920,22 @@
       "bytes": 1241,
       "sha256": "fcf31aa4032eb8ba1be0dc81afebcb193738a7302789334c94b7f19ac3337009"
     },
+    "tools/wasm-profile.json": {
+      "bytes": 3986,
+      "sha256": "08fe09caf3f3d002f1d04f56362de8e3d682073d70be94b4e25b9e33dfaba9c4"
+    },
+    "tools/wasm-profile.proftext": {
+      "bytes": 28521,
+      "sha256": "ecff7b7f63a0244d9c80ee426fde95a338707c7e4562288b010a9536008d95a9"
+    },
     "web/backend-capabilities.js": {
       "bytes": 595,
       "sha256": "a2b5b4518f3ff684e2e7a6837e60f654a8d0f94dbe08cfbd72344acebf859214"
     },
     "web/build-info.js": {
-      "bytes": 387,
-      "sha256": "2c3ae9d506ba24ab6b0368dfd533172ad3fa4a40c529c3e94d53db406e806e11",
-      "originalSha256": "9a2b8c5947ca5da5dc4898fc58347710574193ef6600fb7cf144de21c4d451a7"
+      "bytes": 605,
+      "sha256": "797e5e8cf4c9a4f429f09d30cd8a8adbde508701b888c8b294c69d54518182e7",
+      "originalSha256": "4dff06889c0ec815a91935709c3b4c4badc9f6820fa74a1605eaeeb4f79f561f"
     },
     "web/candidate-verifier.js": {
       "bytes": 3942,
@@ -836,8 +946,8 @@
       "sha256": "526e19b4f53f89c32135917d036d3f7ed7740197300bae9345cd5669fe0c9ccc"
     },
     "web/controls.js": {
-      "bytes": 16297,
-      "sha256": "76b7c7eb540025281726b87981b227f5477af90379f8695c7aaacea683eb0fc4"
+      "bytes": 17124,
+      "sha256": "a0f1029ce413db917db540ad036d5a4b9ecaf8227c94828b649bae2ccf04c5cc"
     },
     "web/demo-worker.js": {
       "bytes": 613,
@@ -848,32 +958,33 @@
       "sha256": "4805cdd611774acdff74583661be3723774eaeca60b926bccdbfcb8c012ba3aa"
     },
     "web/engine.js": {
-      "bytes": 41495,
-      "sha256": "2fef29328c34c73d4467a5750b4c528cfaf783ba7369b8913f9996643e4781da"
+      "bytes": 45785,
+      "sha256": "1eb7502b773e3eb9a9b0181c1c211d638bf8a7d6f27b3b6602672ff1ce09f01f",
+      "originalSha256": "0682df3af0de46cd2ce5ea38036b7c397a6a7d908cb979ecd7bf0ab344f69900"
     },
     "web/fomkyr-isolation-worker.js": {
       "bytes": 1158,
       "sha256": "41bf71ff70c5e98858ace8dc2a9168911bf38f591307e2254f7314eb30ac49dc"
     },
     "web/fomkyr32-single.wasm": {
-      "bytes": 125138,
-      "sha256": "3b6416d40a2b9f83042f15cadc14fc60160190d45ecd49d79ccfd0e200c3bfb3",
-      "originalSha256": "dfc9e8e5dd64e954a553d2ae02381ddd20cfe7988535261cd5dcf6e1af4cdb92"
+      "bytes": 145956,
+      "sha256": "0b46ab7e9cb0cb444071d91d6bc22e1f34fe4cc6d3aa5ef51f76ffb745f6bf9c",
+      "originalSha256": "dba21ab296138ae6952f322abef1c51c0850d2a48e7bad459809b96d12abb373"
     },
     "web/fomkyr32.wasm": {
-      "bytes": 125131,
-      "sha256": "acdfdf7be0e6248849d0f329c91260e87fa217cbbc6f6a27e546040569e6618f",
-      "originalSha256": "d40887f6f6a46c148765af5d67d9c788bfb880f96cd90f7c9bc91f32f824ef3b"
+      "bytes": 146111,
+      "sha256": "d8e65d33cefee601d5eac2a7b0f117f8a584fa74fddb4b5587edad3d1cbb4921",
+      "originalSha256": "0c160ca72cf56bfdf4833d3377d53220f866148cda04b14cd87267e53c95cb5b"
     },
     "web/fomkyr64-single.wasm": {
-      "bytes": 133536,
-      "sha256": "4e8dfc5850406106a2f0f551d895c267da506e7ecdc41b6cb70d8a9480e4a073",
-      "originalSha256": "9c2e8890f2a1069152fc25dad6289b8d1540ff3d3e8587b702953bba10cba536"
+      "bytes": 165605,
+      "sha256": "a52ff2c195e09d5b0ddd844c30e4656c39991a97d2e337b0b9cb7f36eddd1ed6",
+      "originalSha256": "d8ee0eeb29025da2f727996ff7f32fcd79865bef48df152ea976fed0d9740469"
     },
     "web/fomkyr64.wasm": {
-      "bytes": 133372,
-      "sha256": "5cadac3c6a744253de15b4dd2bd3d5b9c04e8bbf8e9f4a3fa381db57b2877a42",
-      "originalSha256": "ce8a35340c405ab98cc497d3cc440eebce8a708918b9035a031785c06b42e7aa"
+      "bytes": 165601,
+      "sha256": "740b311f11a39e013a22dbf80c702c84892ab17062c3270e708418fd35f783d2",
+      "originalSha256": "c62f36a490f074d6887691a3f8379194ef46cf3dfdb48a0d4938dd62aa1a7d56"
     },
     "web/form-options.js": {
       "bytes": 1409,
@@ -881,7 +992,8 @@
     },
     "web/george-entry.js": {
       "bytes": 3795,
-      "sha256": "e40851588cc2b77ef7d0b225944c313a64c96db867464ec832c17e8612562598"
+      "sha256": "e40851588cc2b77ef7d0b225944c313a64c96db867464ec832c17e8612562598",
+      "originalSha256": "90c87e349a47e5fab398cd22829d51801514b0058b98ac6f0fabd57b35e07ba8"
     },
     "web/george-worker.js": {
       "bytes": 344,
@@ -920,8 +1032,8 @@
       "sha256": "cb31beb366a2b398df4e5be246a03f8ddc20256c9299d1be06161275e33fb0dc"
     },
     "web/lane.js": {
-      "bytes": 1109,
-      "sha256": "a506839398c3569fec0590b95c1e50416680c5c161a638808da6634e65b7db75"
+      "bytes": 1216,
+      "sha256": "a8373c2d8fa54ee9390d51825f072e08f56adf235731d116fb03f2f867d733ca"
     },
     "web/memory-policy.js": {
       "bytes": 1958,
@@ -936,8 +1048,8 @@
       "sha256": "c620c5bf208ed576cd2731bc6e51f01ff81727d4f9b8ea2ccdc957ef0b98cfcd"
     },
     "web/progress-view.js": {
-      "bytes": 3726,
-      "sha256": "52555f6ac57bb86103e36a3a31dd827c378410bdc03fd594bf90cf4a373a2fdc"
+      "bytes": 4207,
+      "sha256": "dd4d98726362ff4743ec6c88f7a61e9888264b9585434d039da738a951bdfed6"
     },
     "web/progress.js": {
       "bytes": 7778,
@@ -957,15 +1069,7 @@
     },
     "web/storage.js": {
       "bytes": 5844,
-      "sha256": "8d275a324c66cec680b7b6958ccc14d0e80e9310610e5f5ed0cd09811938e5c0"
-    },
-    "tools/build-native-pgo.sh": {
-      "bytes": 1399,
-      "sha256": "0e4b46d737683c60e12ab2546681d4e72a4e509b1fccdea9bc7c660c803a1b48"
-    },
-    "tools/check-host.sh": {
-      "bytes": 3611,
-      "sha256": "9e1ab0beb3e8616328e4d36484b84cfa223a42d30bb3754411aa582f066871a0"
+      "sha256": "d0b9186356188af9b5ed304c5c8563008cd539c7fcc5633282b64d617d230511"
     }
   },
   "compatibilityFixtures": {
@@ -1000,10 +1104,37 @@
     "man/fomkyr.1": "Standalone engine description and retained evidence manual link.",
     "package.json": "Minimal subproject scripts, including native build.",
     "docs/HILBERT_CLOSURE.md": "Public mathematical/evidence contract; omit unpublished proposal references and unavailable GUI claims.",
-    "web/*.wasm": "Rebuilt from unchanged C sources with the local Clang O3/LTO toolchain.",
+    "web/*.wasm": "Rebuilt from the retained C sources with Clang O3/LTO and the recorded browser profile.",
     "tools/build-native-pgo.sh": "Optional reproducible GCC profile-guided native build; training profiles and products are ignored.",
     "web/george-entry.js": "Report the runtime VERSION for standalone worker initialization.",
-    "native/cli.c": "Optional Node/Wasm launcher supplies the experimental memory64 flag only when the installed Node advertises it.",
-    "tools/check-host.sh": "Local POSIX/compiler compatibility probe and optimized profile selection; no host configuration is distributed."
-  }
+    "native/cli.c": "Optional Node/Wasm launcher supplies the experimental memory64 flag only when Node advertises it. --human selects readable terminal reports while default JSON, persisted records and exit codes retain their contracts. Coordinator emits timed heartbeats while joining workers. Progress reports ordered commits, active pairs, reduction tiers and sampled rewrites from atomic lane counters.",
+    "tools/check-host.sh": "Local POSIX/compiler compatibility probe and optimized profile selection; no host configuration is distributed.",
+    "native/human.h": "Native terminal report formatter for progress, memory plans, checkpoint status and results; elapsed time uses seconds.",
+    "native/human-output.mjs": "Readable reports for the optional Node/Wasm CLI; persisted metadata remains unchanged.",
+    "native/wasm-cli.mjs": "--human formats terminal events, status and results and prints exported file paths; default JSON output is preserved.",
+    "native/hilbert_closure.h": "Hilbert closure events use the selected terminal report formatter; mathematical closure logic is unchanged.",
+    "src/kernel.c": "Exact scalar nibble scans for packed words of degree <=16 in monomial zero tests and oriented quadratic preconditioning. General packed/byte-word paths, field arithmetic, overflow decisions and record ABI are retained. Port these changes during future core imports.",
+    "tests/test_packed_words.c": "Compare optimized pruning and quadratic preconditioning against retained general algorithms for 102500 deterministic cases, degrees 0..40, five fields, coefficient/overflow boundaries, disabled controls and byte-word fallback.",
+    "tools/build.sh": "Wasm-only frontend PGO from real browser branch counts. Check profile source/compiler compatibility and every function hash; use O3 + LTO when PGO is disabled or unavailable. Native C compiler flags are unchanged.",
+    "tools/prepare-wasm-profile.py": "Prepare and checksum the portable text profile with a matching llvm-profdata; required mode fails if unavailable, automatic mode falls back to O3 + LTO.",
+    "tools/wasm-profile.proftext": "Portable browser execution counts for FK6, a q-Serre presentation, homogenized Weyl, large coefficients and prime fields. Includes shared and single function hashes; no host measurements.",
+    "tools/wasm-profile.json": "Kernel source checksums, compiler compatibility and mathematical training inputs/results for the portable Wasm profile.",
+    "src/radix_queue.inc": "Actual upstream 0.6.7 cached queue, including the ablation switch. Earlier local stall-lab queue replacement is superseded.",
+    "tests/test_radix_cached.c": "Production queue checked against independent linear maximum search for 1600000 deterministic operations, eight key widths up to 128 bits, cancellation and backing-array relocation, alternating cache enabled and disabled.",
+    "tests/test_radix_cached_wasm.mjs": "Repeat production queue property checks for all four Wasm addressing/shared-memory variants.",
+    "tests/test_native_pool_progress.c": "Occupied-worker reproduction and structured/readable heartbeat assertions without a high-degree calculation.",
+    "tests/test_human_cli.py": "Native/Wasm readable terminal output, JSON records, read-only status and full result paths.",
+    "tests/probe_pair.c": "Test-only isolated composition using an immutable saved prefix; no commit or degree completion.",
+    "tools/probe-pair.py": "Bounded, read-only saved-job pair diagnostic with an external process deadline. Results are not a higher-degree completion certificate.",
+    "tests/test_cooperative_wasm_067.mjs": "Retain actual state-preserving yield tests in all four Wasm variants, cross-runtime partial resume and independent degree-20 canonical reference; each calculation has a 120-second deadline.",
+    "tests/test_cooperative_pressure_067.mjs": "Require observed 4-to-2-to-1 capacity adaptation, cancel at that quiescent boundary, resume the retained exact frontier with larger automatic workspace and independently certify completion/Hilbert coefficients.",
+    "tests/test_cooperative_reserve_067.mjs": "Retain live reserve-lease yields, two partial checkpoints, cancellation and unshared memory64 resume through degree 18. Independently certify through degree 17 within the two-minute oracle cap; do not claim an independent degree-18 certificate."
+  },
+  "upstreamFeatures": [
+    "State-preserving cooperative exact reductions",
+    "Ready-row commits with exact updated-basis reduction",
+    "Bounded pending work window",
+    "Safe slice checkpoints",
+    "Exact cached radix maxima"
+  ]
 }

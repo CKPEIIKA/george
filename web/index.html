@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>George 0.6.5</title>
+<title>George 0.6.7</title>
 <meta name="description" content="George computes Gröbner bases, Hilbert series, Anick resolutions and Betti numbers for noncommutative and commutative algebras, using bergman and fomkyr in your browser.">
 <meta name="theme-color" content="#eef2f3" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#111a27" media="(prefers-color-scheme: dark)">
@@ -18,7 +18,7 @@
   <div class="brand">
     <a class="brand-home" href="#compute" aria-label="George">
     <svg class="logo" viewBox="0 0 28 28" aria-hidden="true"><path class="logo-face" d="M14 3 25 14 14 25 3 14Z"/><path class="logo-edge" d="M14 3 25 14 14 25 3 14Z"/><circle cx="14" cy="3.6" r="2"/><circle cx="24.4" cy="14" r="2"/><circle cx="14" cy="24.4" r="2"/><circle cx="3.6" cy="14" r="2"/></svg>
-    <span class="brand-name">George <small class="brand-version">0.6.5</small></span>
+    <span class="brand-name">George <small class="brand-version">0.6.7</small></span>
     </a>
     <span class="brand-sub"><span data-i18n="brand.subPrefix">an interface to bergman and </span><a href="#guide-fomkyr" data-i18n="brand.more">more…</a></span>
   </div>
@@ -159,8 +159,8 @@
 
       </label>
       <label for="nativeWorkers" class="field" id="nativeWorkersField" hidden>
-        <span class="label-row"><span class="label" data-i18n="native.workers">Worker count</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="nativeWorkersHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="nativeWorkersHint" data-i18n="native.workersHint">0 uses the browser's reported CPU thread count minus one, within 1–32. Set 1–32 explicitly to use a chosen count. The scratch memory budget is shared between workers. Compare counts for your presentation; speed depends on the workload. Single-worker execution uses one.</span></span></span>
-        <input id="nativeWorkers" type="number" min="0" max="32" step="1" value="0" aria-describedby="nativeWorkersHint">
+        <span class="label-row"><span class="label" data-i18n="native.workers">Worker count</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="nativeWorkersHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="nativeWorkersHint" data-i18n="native.workersHint">Blank or 0 uses the browser's reported CPU thread count minus one, within 1–32. Set 1–32 explicitly to use a chosen count. The scratch memory budget is shared between workers. Compare counts for your presentation; speed depends on the workload. Single-worker execution uses one.</span></span></span>
+        <input id="nativeWorkers" type="number" min="0" max="32" step="1" placeholder="Automatic" data-i18n-attr="placeholder:native.workersAuto" aria-describedby="nativeWorkersHint">
 
       </label>
       <fieldset id="fomkyrOptions" class="fomkyr-options" hidden><legend data-i18n="fomkyr.settings">fomkyr settings</legend></fieldset>

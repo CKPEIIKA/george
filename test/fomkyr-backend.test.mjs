@@ -12,6 +12,7 @@ import {createShareLink, readShareLink} from '../web/src/share.js';
 import {fomkyrSamples, FOMKYR_LHS_DIMENSIONS} from './support/fomkyr-lhs.mjs';
 import {publicationAssets} from '../tools/publication-assets.mjs';
 import {automaticWorkers,computeWorkers} from '../web/engine/fomkyr/worker-count.js';
+import {WASM_COMPILER} from '../web/engine/fomkyr/build-info.js';
 
 const form = {task:'gb', backend:'fomkyr', ring:'noncomm', order:'degleftlex', field:'0',
   vars:['a','b'], rels:['a^2','b^2','b*a-a*b'], maxdeg:'4', maxserdeg:'4',
@@ -26,7 +27,21 @@ test('automatic workers scale with available CPU threads up to the engine limit'
 test('fomkyr ships all shared/unshared variants with exact asset hashes', () => {
   assert.match(getBackend('fomkyr').worker, /fomkyr\/george-worker\.js$/);
   const manifest = JSON.parse(fs.readFileSync('web/engine/fomkyr/build.json'));
-  assert.equal(manifest.version,VERSION); assert.equal(manifest.provenance.kernelChanged,false);
+  assert.equal(manifest.version,VERSION);
+  const inventory=JSON.parse(fs.readFileSync('fomkyr/SOURCE.json'));
+  const kernel=inventory.retainedBuildAndTestFiles['src/kernel.c'];
+  assert.equal(crypto.createHash('sha256').update(fs.readFileSync('fomkyr/src/kernel.c')).digest('hex'),kernel.sha256);
+  assert.equal(inventory.kernelChanged,kernel.sha256!==(kernel.originalSha256??kernel.sha256));
+  assert.equal(manifest.provenance.kernelChanged,inventory.kernelChanged);
+  assert.equal(manifest.compiler.pgo,WASM_COMPILER.pgo);
+  if(WASM_COMPILER.pgo){
+    const profile=JSON.parse(fs.readFileSync('fomkyr/tools/wasm-profile.json'));
+    assert.equal(manifest.compiler.profileSha256,profile.profileSha256);
+    assert.equal(crypto.createHash('sha256').update(fs.readFileSync('fomkyr/tools/wasm-profile.proftext')).digest('hex'),profile.profileSha256);
+    for(const [name,expected] of Object.entries(profile.sourceHashes))
+      assert.equal(crypto.createHash('sha256').update(fs.readFileSync('fomkyr/'+name)).digest('hex'),expected,name);
+    assert.deepEqual(profile.compatibleTargets,manifest.variants);
+  }
   for (const [name, record] of Object.entries(manifest.files)) {
     const bytes = fs.readFileSync('web/engine/fomkyr/' + name);
     assert.equal(bytes.length,record.bytes); assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'),record.sha256,name);
@@ -72,6 +87,8 @@ test('new fomkyr jobs default to pruning, disk, resume and heap with optional co
   assert.equal(options.rewriteBudgetBytes,undefined);assert.equal(options.sharedReducerCacheBytes,undefined);
   assert.equal(options.wordCacheEntries,256);assert.equal(options.progressIntervalMs,1000);assert.equal(options.matcherBudgetBytes,undefined);
   assert.equal(job.memoryMiB,3584);assert.equal(options.arithmeticMode,'exact');
+  assert.equal(options.scheduler,'cooperative');assert.equal(options.quantumMs,250);
+  assert.equal(options.lookahead,128);assert.equal(options.radixMaxCache,true);
   assert.equal(options.workers,undefined);assert.equal(options.batchPairs,128);assert.equal(options.memoryPolicy,'auto');assert.equal(options.scratchBytes,undefined);
   assert.equal(planMemory(job.memoryMiB*1048576,3,options).ordinaryScratchBytes,2048*1048576);
   assert.equal(buildJob({...form,fomkyrOptions:{batchPairs:null}}).fomkyrOptions.batchPairs,128);

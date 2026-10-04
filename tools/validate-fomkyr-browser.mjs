@@ -43,6 +43,7 @@ try {
         await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
         const url = `http://127.0.0.1:${server.address().port}${mount}`;
         const context = await browser.newContext({serviceWorkers:isolated?'allow':'block',acceptDownloads:true});
+        context.setDefaultTimeout(5000);
         if (!isolated) await context.addInitScript(()=>Object.defineProperty(navigator,'serviceWorker',{value:undefined}));
         await context.addInitScript(()=>{
           window.__fomkyrPhases=[];
@@ -82,13 +83,22 @@ try {
           assert.equal(await page.locator('#monomialPruning').isChecked(),true);
           for(const option of ['spill','resume','heapReduction','wordMatcher','chainCriterion','eagerPruning','quadraticRewrite','costScheduling','progress','rationalHeap','rationalRewrites','compiledRewrites'])assert.equal(await page.locator('#fomkyr-'+option).isChecked(),true);
           assert.equal(await page.locator('#fomkyr-hilbert').isChecked(),false);
-          assert.equal(await page.locator('#nativeWorkers').inputValue(),'0');
-          assert.equal(await page.locator('#fomkyr-batchPairs').inputValue(),'');
+          assert.equal(await page.locator('#nativeWorkers').inputValue(),'');
+          assert.equal(await page.locator('#fomkyr-batchPairs').inputValue(),'128');
+          assert.equal(await page.locator('#fomkyr-scratchMiB').inputValue(),'');
+          await page.locator('#nativeWorkers').fill('4');
+          await page.locator('#preset').selectOption('tutorial:fk6');
+          assert.equal(await page.locator('#nativeWorkers').inputValue(),'');
+          assert.equal(await page.locator('#nativeWorkers').getAttribute('placeholder'),'Automatic');
+          assert.equal(await page.locator('#maxdeg').inputValue(),'11');
+          assert.equal(await page.locator('#fomkyr-bits').inputValue(),'auto');
+          assert.equal(await page.locator('#fomkyr-batchPairs').inputValue(),'128');
           assert.equal(await page.locator('#fomkyr-scratchMiB').inputValue(),'');
           await page.locator('#vars').fill('a,b');
           await page.locator('#rels').fill('a^2,b^2,b*a-a*b');
           await page.locator('#memoryMiB').selectOption('512');await page.locator('#maxdeg').fill('4');
           const automatic=await run(page);
+          assert.equal(automatic.bits,32);
           const expected=isolated?await page.evaluate(()=>Math.min(32,Math.max(1,navigator.hardwareConcurrency-1))):1;
           assert.equal(automatic.workers,expected);
           assert.deepEqual(await page.locator('#basisOut .polys').evaluateAll(nodes=>nodes.map(node=>[Number(node.dataset.termCount),node.children.length])),[[1,2],[2,1]]);
@@ -144,9 +154,11 @@ try {
           const second = await run(page);
           console.log(name,'64-bit resume finished');
           assert.equal(second.bits,64);assert.equal(second.resumedFromDegree,4);assert.equal(second.workers,isolated?4:1);
-          await page.locator('#fomkyr-spill').uncheck();
+          await page.locator('#fomkyr-sharedCacheMiB').fill('1');
           await page.locator('#fomkyr-resume').uncheck();
-          await page.locator('#weights').fill('1 1');await page.locator('#lowterms').selectOption('safe');
+          await page.locator('#fomkyr-spill').uncheck();
+          await page.locator('#weights').fill('1 1');
+          assert.equal(await page.locator('#lowterms').isDisabled(),true);
           await page.locator('#monomialPruning').uncheck();
           await page.locator('#maxdeg').fill('');
           const unlimited = await run(page);
@@ -154,12 +166,11 @@ try {
           assert.equal(unlimited.storage,'memory');assert.equal(unlimited.unrestrictedBasisComplete,true);
           assert.equal(unlimited.monomialPruning,false);assert.equal(unlimited.target,null);
           assert.match(await page.locator('#basisOut').textContent(),/A finite complete Gröbner basis was proved/);
-          await page.locator('#fomkyr-compiledRewrites').uncheck();
-          await page.locator('#fomkyr-rationalHeap').uncheck();
           await page.locator('#fomkyr-rewriteDegree').fill('3');
           await page.locator('#fomkyr-rewriteSupport').fill('1');
           await page.locator('#fomkyr-rewriteMiB').fill('0');
-          await page.locator('#fomkyr-sharedCacheMiB').fill('1');
+          await page.locator('#fomkyr-compiledRewrites').uncheck();
+          await page.locator('#fomkyr-rationalHeap').uncheck();
           await page.locator('#share').click();await page.locator('#sharePanel').waitFor({state:'visible'});
           const share = await page.locator('#shareLink').inputValue();
           const restored = await context.newPage();
@@ -173,13 +184,14 @@ try {
           for(const [key,value] of [['rewriteDegree','3'],['rewriteSupport','1'],['rewriteMiB','0'],['sharedCacheMiB','1']])assert.equal(await restored.locator('#fomkyr-'+key).inputValue(),value);
           await restored.close();
           await page.locator('#fomkyr-compiledRewrites').check();await page.locator('#fomkyr-rationalHeap').check();
+          await page.locator('#fomkyr-rewriteMiB').fill('');
           await page.locator('#fomkyr-rewriteDegree').fill('4');await page.locator('#fomkyr-rewriteSupport').fill('8');
-          await page.locator('#fomkyr-rewriteMiB').fill('');await page.locator('#fomkyr-sharedCacheMiB').fill('');
           // Long words cross the former fixed limits using the full UI parser.
           await page.locator('#weights').fill('');await page.locator('#rels').fill('y^33-x^33');
           await page.locator('#maxdeg').fill('34');await page.locator('#maxserdeg').fill('34');
           const long = await run(page);assert.equal(long.basisSize,2);assert.equal(long.hilbert.certifiedThroughDegree,34);
           console.log(name,'long words finished');
+          await page.locator('#maxserdeg').fill('');
           await page.locator('#fomkyr-hilbert').uncheck();
           // Cancellation releases the engine before the next fresh run.
           const fixture = JSON.parse(fs.readFileSync('test/fixtures/fomin-kirillov-user.json'));
@@ -196,8 +208,10 @@ try {
             await page.locator('#relPreviewPanel').screenshot({path:path.join(out,name+'-large-relations-mobile.png')});
             await page.setViewportSize({width:1280,height:720});
           }
-          await page.locator('#maxdeg').fill('');await page.locator('#maxserdeg').fill('');
-          await page.locator('#fomkyr-spill').check();await page.locator('#fomkyr-resume').check();
+          await page.locator('#maxdeg').fill('');
+          await page.locator('#fomkyr-spill').check();
+          await page.locator('#fomkyr-sharedCacheMiB').fill('');
+          await page.locator('#fomkyr-resume').check();
           await page.locator('#go').click();
           await page.waitForFunction(()=>/\d/.test(document.getElementById('degreeValue').textContent),null,{timeout:30000});
           assert.ok(await page.locator('#memoryValue').textContent());

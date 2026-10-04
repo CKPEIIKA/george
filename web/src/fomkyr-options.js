@@ -4,6 +4,7 @@ import {defaultMemoryMiB} from './backends.js';
 import {planMemory} from '../engine/fomkyr/memory-policy.js';
 import {formatMemorySize} from './memory-monitor.js';
 export const FOMKYR_DEFAULTS = Object.freeze({
+  scheduler: 'cooperative', quantumMs: 250, lookahead: 128, radixMaxCache: true,
   execution: 'auto', bits: 'auto', memoryPolicy: 'auto', spill: true, resume: 'auto', hilbert: false,
   heapReduction: true, cachePercent: 12, heapThreshold: 16, batchPairs: 128,
   hashBits: 18, scratchMiB: null, hilbertMiB: 256, ioMode: 'auto',
@@ -16,6 +17,8 @@ export const FOMKYR_DEFAULTS = Object.freeze({
   rewriteMiB: null, sharedCacheMiB: null,
 });
 export const FOMKYR_FIELDS = Object.freeze([
+  ['scheduler', 'select', ['cooperative', 'barrier']],
+  ['quantumMs', 'number', 1, 10000], ['lookahead', 'number', 1, 512], ['radixMaxCache', 'checkbox'],
   ['execution', 'select', ['auto', 'single', 'multicore']],
   ['bits', 'select', ['auto', '32', '64']],
   ['memoryPolicy', 'select', ['auto', 'manual']],
@@ -59,6 +62,9 @@ export function fomkyrControlAvailability(form) {
   const rewrites = heap && o.compiledRewrites && o.rewriteMiB !== 0;
   const reserve = rational && heap && (o.rationalHeap || o.bigRationalHeap);
   return Object.fromEntries(FOMKYR_FIELDS.map(([key]) => [key, enabled && ({
+    quantumMs: o.scheduler === 'cooperative' && o.batchPairs !== 0,
+    lookahead: o.scheduler === 'cooperative' && o.batchPairs !== 0,
+    radixMaxCache: heap && o.radixHeap,
     resume: o.spill, ioMode: o.spill && o.execution !== 'single' && Number(form.nativeWorkers) !== 1,
     sharedCacheMiB: o.spill, progressIntervalSeconds: o.progress,
     hilbertMiB: o.hilbert, heapThreshold: heap, radixHeap: heap,

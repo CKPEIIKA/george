@@ -2,3 +2,5 @@ web/engine/ecl.data binary
 web/engine/ecl.wasm binary
 web/engine/*/ecl.data binary
 web/engine/*/ecl.wasm binary
+# LLVM text profiles separate records with blank lines, including the last one.
+fomkyr/tools/wasm-profile.proftext whitespace=-blank-at-eof

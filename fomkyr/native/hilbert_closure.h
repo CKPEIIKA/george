@@ -55,5 +55,5 @@ static int closure_try(void){
  int rc=gn_hilbert_gate_try();if(rc<0)return -rc;if(!rc)return 0;
  Buffer b={0};buf_printf(&b,"{\"degree\":%" PRIu64 ",\"dimension\":\"%" PRIu64 "\",\"basisSize\":%" PRIu64 ",\"individuallyCommittedPairs\":%" PRIu64 ",\"overlapsBypassed\":%" PRIu64 ",\"notYetEnumerated\":%" PRIu64 ",\"scheduledNotCommitted\":%" PRIu64 "}",gn_stat(3),gn_hilbert_gate_stat(2),gn_stat(0),gn_progress_stat(2),gn_hilbert_gate_stat(5),gn_hilbert_gate_stat(8),gn_hilbert_gate_stat(9));
  if(hc.events.n)buf_add(&hc.events,",");buf_n(&hc.events,b.s,b.n);hc.closures++;hc.total_skipped+=gn_hilbert_gate_stat(5);
- fprintf(stderr,"{\"event\":\"hilbert-degree-closure\",\"evidence\":\"%s\",\"details\":%s}\n",hc.assumed?"external-assumption":"replayed-integer-duals",b.s);buf_free(&b);return 0;
+ log_json(stderr,"{\"event\":\"hilbert-degree-closure\",\"evidence\":\"%s\",\"details\":%s}\n",hc.assumed?"external-assumption":"replayed-integer-duals",b.s);buf_free(&b);return 0;
 }

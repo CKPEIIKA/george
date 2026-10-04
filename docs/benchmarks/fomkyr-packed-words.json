@@ -1,0 +1,365 @@
+{
+  "schema": 1,
+  "coreVersion": "0.6.6",
+  "adaptation": "Scalar scans for packed words of length at most 16",
+  "case": {
+    "name": "FK6",
+    "generators": 15,
+    "relations": 100,
+    "field": "Q",
+    "degree": 10,
+    "basisSize": 2155,
+    "fixtureSha256": "fc262ce4250ffbdaf366243b4aac1765caa97c2832313be013f82373ef6f0419",
+    "canonicalBasisSha256": "f9c6229bf50b4e3aea70c2e9bc966fa089b832626c35bfe5718c29be603d75e1"
+  },
+  "kernel": {
+    "beforeSha256": "8519584998e21741024ae505db9fef5bbe9cadc0bc69d1bfce2d4cfffed59d29",
+    "afterSha256": "0528f77738ca85fd9535d6702b2660e050106f0321fdf6c6a404963d462ad1ac",
+    "wasmVariants": {
+      "fomkyr32-single.wasm": "bb61ea9c7761fb6a3f1459d1c7ee33d81a48cf1b71f91cc26a77c13a111b215f",
+      "fomkyr32.wasm": "8dac7aebcac44c61e7cfd971dbb5a16e95103b657b59eaeec593c6e1d597dfb5",
+      "fomkyr64-single.wasm": "a7178ba0ad163ca390490475c234779ba905ad9b765398020d231f65f51df10d",
+      "fomkyr64.wasm": "6fe2d40b61599f613b5f2ce6311b6e3b33c4fba1a8295061cc042eeb8f54aeae"
+    }
+  },
+  "protocol": {
+    "workers": 4,
+    "memoryMiB": 3584,
+    "batchPairs": 128,
+    "resume": false,
+    "hilbert": false,
+    "fullTextExport": true,
+    "checkpoints": true,
+    "timeoutSeconds": 120,
+    "wall": "Cold computation including input/kernel initialization, checkpoints and text export; browser process startup excluded.",
+    "cpu": "Native: GNU time process CPU. Browsers: process-tree CPU during the job, including runtime work.",
+    "conditions": "Runs execute serially. Included trials have matching, stable recorded power settings. Raw host diagnostics remain local.",
+    "nativeCompiler": "GCC 16.2.0, O3 + LTO + PGO and host instruction tuning",
+    "wasmCompiler": "Clang 23.1.1, O3 + LTO; execution by the browser; no debugger during timing"
+  },
+  "coreChange": [
+    {
+      "engine": "Native C, O3 + LTO + PGO",
+      "before": {
+        "trials": 3,
+        "medianSeconds": 11.833051,
+        "rangeSeconds": [
+          11.192033,
+          13.541265
+        ],
+        "medianCpuSeconds": 43.25,
+        "samples": [
+          {
+            "trial": 0,
+            "seconds": 13.541265,
+            "cpuSeconds": 47.01
+          },
+          {
+            "trial": 1,
+            "seconds": 11.833051,
+            "cpuSeconds": 43.25
+          },
+          {
+            "trial": 2,
+            "seconds": 11.192033,
+            "cpuSeconds": 41.55
+          }
+        ]
+      },
+      "after": {
+        "trials": 3,
+        "medianSeconds": 9.40861,
+        "rangeSeconds": [
+          9.103467,
+          9.620558
+        ],
+        "medianCpuSeconds": 34.17,
+        "samples": [
+          {
+            "trial": 0,
+            "seconds": 9.620558,
+            "cpuSeconds": 34.17
+          },
+          {
+            "trial": 1,
+            "seconds": 9.103467,
+            "cpuSeconds": 33.06
+          },
+          {
+            "trial": 2,
+            "seconds": 9.40861,
+            "cpuSeconds": 34.18
+          }
+        ]
+      },
+      "elapsedReductionPercent": 20.49,
+      "cpuReductionPercent": 20.99
+    },
+    {
+      "engine": "Chromium, Wasm64",
+      "before": {
+        "trials": 2,
+        "medianSeconds": 24.162248,
+        "rangeSeconds": [
+          23.92394,
+          24.400555
+        ],
+        "medianCpuSeconds": 91.155,
+        "samples": [
+          {
+            "trial": 0,
+            "seconds": 23.92394,
+            "cpuSeconds": 90.31
+          },
+          {
+            "trial": 1,
+            "seconds": 24.400555,
+            "cpuSeconds": 92
+          }
+        ]
+      },
+      "after": {
+        "trials": 2,
+        "medianSeconds": 18.878677,
+        "rangeSeconds": [
+          18.02614,
+          19.731215
+        ],
+        "medianCpuSeconds": 70.01,
+        "samples": [
+          {
+            "trial": 0,
+            "seconds": 18.02614,
+            "cpuSeconds": 66.96
+          },
+          {
+            "trial": 1,
+            "seconds": 19.731215,
+            "cpuSeconds": 73.06
+          }
+        ]
+      },
+      "elapsedReductionPercent": 21.87,
+      "cpuReductionPercent": 23.2
+    },
+    {
+      "engine": "Firefox, Wasm64",
+      "before": {
+        "trials": 2,
+        "medianSeconds": 29.36591,
+        "rangeSeconds": [
+          28.0446,
+          30.68722
+        ],
+        "medianCpuSeconds": 92.93,
+        "samples": [
+          {
+            "trial": 0,
+            "seconds": 28.0446,
+            "cpuSeconds": 90.02
+          },
+          {
+            "trial": 1,
+            "seconds": 30.68722,
+            "cpuSeconds": 95.84
+          }
+        ]
+      },
+      "after": {
+        "trials": 2,
+        "medianSeconds": 23.20192,
+        "rangeSeconds": [
+          22.65102,
+          23.75282
+        ],
+        "medianCpuSeconds": 69.975,
+        "samples": [
+          {
+            "trial": 0,
+            "seconds": 22.65102,
+            "cpuSeconds": 69.35
+          },
+          {
+            "trial": 1,
+            "seconds": 23.75282,
+            "cpuSeconds": 70.6
+          }
+        ]
+      },
+      "elapsedReductionPercent": 20.99,
+      "cpuReductionPercent": 24.7
+    }
+  ],
+  "addressingComparison": [
+    {
+      "browser": "chromium",
+      "wasm64": {
+        "trials": 2,
+        "medianSeconds": 19.709632,
+        "rangeSeconds": [
+          19.09769,
+          20.321575
+        ],
+        "medianCpuSeconds": 72.675,
+        "samples": [
+          {
+            "trial": 0,
+            "seconds": 19.09769,
+            "cpuSeconds": 70.79
+          },
+          {
+            "trial": 1,
+            "seconds": 20.321575,
+            "cpuSeconds": 74.56
+          }
+        ]
+      },
+      "wasm32": {
+        "trials": 2,
+        "medianSeconds": 18.144998,
+        "rangeSeconds": [
+          17.43156,
+          18.858435
+        ],
+        "medianCpuSeconds": 64.965,
+        "samples": [
+          {
+            "trial": 0,
+            "seconds": 18.858435,
+            "cpuSeconds": 66.58
+          },
+          {
+            "trial": 1,
+            "seconds": 17.43156,
+            "cpuSeconds": 63.35
+          }
+        ]
+      },
+      "elapsedReductionPercent": 7.94,
+      "cpuReductionPercent": 10.61
+    },
+    {
+      "browser": "firefox",
+      "wasm64": {
+        "trials": 2,
+        "medianSeconds": 27.86007,
+        "rangeSeconds": [
+          24.14036,
+          31.57978
+        ],
+        "medianCpuSeconds": 78.61,
+        "samples": [
+          {
+            "trial": 0,
+            "seconds": 31.57978,
+            "cpuSeconds": 83.64
+          },
+          {
+            "trial": 1,
+            "seconds": 24.14036,
+            "cpuSeconds": 73.58
+          }
+        ]
+      },
+      "wasm32": {
+        "trials": 2,
+        "medianSeconds": 22.99366,
+        "rangeSeconds": [
+          20.75752,
+          25.2298
+        ],
+        "medianCpuSeconds": 64.67,
+        "samples": [
+          {
+            "trial": 0,
+            "seconds": 25.2298,
+            "cpuSeconds": 68.9
+          },
+          {
+            "trial": 1,
+            "seconds": 20.75752,
+            "cpuSeconds": 60.44
+          }
+        ]
+      },
+      "elapsedReductionPercent": 17.47,
+      "cpuReductionPercent": 17.73
+    }
+  ],
+  "profile": {
+    "scope": "Separate baseline Chromium Wasm64 profiling run; timings from it are excluded.",
+    "method": "PC range attribution from V8 logs. Sampling run is separate from timing. Does not attribute native runtime work or inlined C callees.",
+    "wasmSelfTicks": 75807,
+    "hotFunctions": [
+      {
+        "function": "row_add",
+        "selfPercent": 39.57
+      },
+      {
+        "function": "eager_zero",
+        "selfPercent": 17.29
+      },
+      {
+        "function": "radix_top",
+        "selfPercent": 13.84
+      },
+      {
+        "function": "nf",
+        "selfPercent": 12.28
+      },
+      {
+        "function": "local_find",
+        "selfPercent": 5.01
+      }
+    ]
+  },
+  "validation": {
+    "unitTests": 154,
+    "packedWordProperties": {
+      "cases": 102500,
+      "degrees": [
+        0,
+        40
+      ],
+      "fields": [
+        0,
+        2,
+        3,
+        101,
+        2147483647
+      ],
+      "undefinedBehaviorSanitizer": true
+    },
+    "oracleMatrix": {
+      "cases": 95,
+      "wasmVariants": 4,
+      "savedReferencesReused": 190,
+      "newOracleRuns": 0
+    },
+    "fk6DegreeBounds": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "fk6VariantRuns": 36,
+    "nativeChecks": 12,
+    "browserContexts": 8,
+    "degree10OutputParity": {
+      "runs": 34,
+      "polynomialsPerRun": 2155,
+      "passed": true
+    }
+  },
+  "interpretation": [
+    "The core adaptation improves both native and browser execution. The median browser/native elapsed time ratios remain approximately 2.0 in Chromium and 2.5 in Firefox for Wasm64.",
+    "The separate addressing comparison shows lower CPU use for Wasm32 at this allowance. Automatic addressing can use it here and selects Wasm64 above the Wasm32 limit.",
+    "Degree-10 output comparisons establish parity with the saved core. Independent oracle checks cover the documented lower degree bounds and matrix cases.",
+    "These small trial sets and differing compiler pipelines do not isolate a universal Wasm penalty or predict higher-degree performance."
+  ]
+}

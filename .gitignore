@@ -19,6 +19,8 @@
 /fomkyr/dist/*.gcno
 /fomkyr/dist/*.profraw
 /fomkyr/dist/*.profdata
+/fomkyr/dist/wasm-compiler.json
+/fomkyr/dist/radix-properties/
 /fomkyr/fomkyr-job/
 /fomkyr/.cache/
 node_modules/
