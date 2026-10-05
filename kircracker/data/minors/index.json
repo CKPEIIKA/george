@@ -1,0 +1,101 @@
+{
+  "degrees": [
+    {
+      "degree": 0,
+      "path": "d00/catalog.json",
+      "sha256": "c4827acf3a3994f3d0251a53c686b91feac9ae65f75b1929f1de1032f7eda2a1"
+    },
+    {
+      "degree": 1,
+      "path": "d01/catalog.json",
+      "sha256": "aa87f2d7e92c29b442e0564e56baf5ba25923527e3947cf77fee0b9fba114059"
+    },
+    {
+      "degree": 2,
+      "path": "d02/catalog.json",
+      "sha256": "5055d699e758717e23fb05ef51748eccb4162ceb4c20ad38b3bccada9c11c4cf"
+    },
+    {
+      "degree": 3,
+      "path": "d03/catalog.json",
+      "sha256": "3ae4b206f4fb4a6b0f60c6255ad1a975e6b15da57917d1c9535b97e14c381380"
+    },
+    {
+      "degree": 4,
+      "path": "d04/catalog.json",
+      "sha256": "3bda5a6229985e11170a26a3762e9c9d39d3b6c46a47a834d70b68a09823d214"
+    },
+    {
+      "degree": 5,
+      "path": "d05/catalog.json",
+      "sha256": "2d92a6ed055443cd06f7cacde90c55ba693cb7d20c167db5b1b0475a0af15ff0"
+    },
+    {
+      "degree": 6,
+      "path": "d06/catalog.json",
+      "sha256": "5bf8ab1a2d4dd8467c3aac0a978731348d9e8e8b14f16bf2393b0c189f0dd22a"
+    },
+    {
+      "degree": 7,
+      "path": "d07/catalog.json",
+      "sha256": "34ca09622001acc2bd96176c6e7bcf19045282d1064547b2a304189fe6b7290f"
+    },
+    {
+      "degree": 8,
+      "path": "d08/catalog.json",
+      "sha256": "fe48e989ab6f6b5827846d31d51c0d4a9970bd69d90e1f891fa3e050546cdbf6"
+    },
+    {
+      "degree": 9,
+      "path": "d09/catalog.json",
+      "sha256": "6d88d7a3ccf84271f74724d25ada7c825c68664221c6ddd5348469ae15ace879"
+    },
+    {
+      "degree": 10,
+      "path": "d10/catalog.json",
+      "sha256": "cde7e0a8df0551208f824b6dd371bbb971f9f62a7864a870fa29c527d41191bc"
+    },
+    {
+      "degree": 11,
+      "path": "d11/catalog.json",
+      "sha256": "a447f08b7206daf3419fc43d4325215b5682286740516c858e3dea50a2e69b80"
+    },
+    {
+      "degree": 12,
+      "path": "d12/catalog.json",
+      "sha256": "69d409d812242a138dbe2bf08254415b7dc73503d1aa5d7b9d43e9000de92161"
+    },
+    {
+      "degree": 13,
+      "path": "d13/catalog.json",
+      "sha256": "70d810d7a2d40360d28c5d896d8422cc72e038d08c695a97d8c0660776e29c3d"
+    },
+    {
+      "degree": 14,
+      "path": "d14/catalog.json",
+      "sha256": "0026eb4b7d823989626559ed4e1acb8efa78a016c5589f6ba2d78b487adcdf74"
+    },
+    {
+      "degree": 15,
+      "path": "d15/catalog.json",
+      "sha256": "171c926c579f3488247318d24e09f53798464434618720f7d3eb98e3c9be2f18"
+    },
+    {
+      "degree": 16,
+      "path": "d16/catalog.json",
+      "sha256": "6aeaff0cad8b40e402c3e445f95dc6180586bd04f79793f54ecf57f25b0c3432"
+    },
+    {
+      "degree": 17,
+      "path": "d17/catalog.json",
+      "sha256": "871a8159146ec393aea7dffb348573b95fad1304110c4385e458c514551b00c8"
+    },
+    {
+      "degree": 18,
+      "path": "d18/catalog.json",
+      "sha256": "1268e46a4715ab1c68fd19e50fbe727f635fb3baa78afbe64078fd65174711c0"
+    }
+  ],
+  "format": "minor-series-v1",
+  "throughDegree": 18
+}

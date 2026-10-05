@@ -50,6 +50,9 @@ typedef struct {
   u64 cache_data,cache_capacity,cache_used,cache_hits;
   u32 cache_epoch,cache_mask; RedCache red[RED_CACHE_N];
   Poly result;u32 f,g,k,snapshot,error,active;
+  /* Provenance of a COMPLETE worker normal form, never a parked partial row. */
+  u32 normal_valid,normal_snapshot,normal_degree,delta_floor;
+  u64 delta_queries,delta_hits,delta_probes;
   u32 slice_enabled,resume_tier,resume_capacity,reserve_retry,resume_slot,no_reserve,reserve_waiting; double slice_end;
   Arena reserve_saved; GN_ATOMIC(u64) slice_yields,slice_resumes;
   u64 reductions,pruned,reads,read_bytes,pairs,peak;
@@ -58,6 +61,7 @@ typedef struct {
   u64 reserve_attempts,reserve_successes,reserve_busy,reserve_misses,reserve_peak,reserve_promotions;u32 reserve_owned,reserve_slot;
   u32 allow_repack;u32 rational_maxed,rational_full_capacity;u64 rational_table_growths;u64 big_attempts,big_successes,big_fallbacks,big_steps,big_compactions,big_pool_misses,big_capacity_misses,big_arena_misses;
   u64 big_growths,big_peak_terms,big_capacity,big_reserved,big_coefficient_live,big_coefficient_bytes,big_reserve_waits,general_fallbacks;
+  u64 big_pool_high_water,big_arithmetic_high_water,big_collected_live_high_water;
   u64 rational_attempts,rational_successes,rational_fallbacks,integer_steps,rational_steps,local_hits,pinned_hits;u64 rational_local_hits,rational_space_misses,rational_coefficient_misses,rational_arithmetic_misses,rational_table_retries;u32 publications,busy,skip_rule,reduction_tier;
 } Lane;
 typedef struct {u32 f,g,k,snapshot,rc,bytes;u64 output;} BatchTask;
@@ -67,6 +71,7 @@ typedef struct __attribute__((aligned(64))) {
  GN_ATOMIC(u32) busy,sequence;
  GN_ATOMIC(u64) tier,exact_fallbacks,left_rule,right_rule,overlap;
  GN_ATOMIC(u64) big_growths,big_peak_terms,big_capacity,big_reserved,big_coefficient_live,big_coefficient_bytes,big_capacity_misses,big_pool_misses,big_arena_misses,big_fallbacks,big_reserve_waits;
+ GN_ATOMIC(u64) big_pool_high_water,big_arithmetic_high_water,big_collected_live_high_water;
 } LiveLane;
 
 typedef struct {
@@ -87,11 +92,13 @@ typedef struct {
   u64 hilbert_offset,hilbert_end,hilbert_base;
   u32 hilbert_limbs,pruning,heap_enabled,cache_percent,heap_threshold,rational_enabled,rational_rewrites;
   u32 legacy_big_division,big_rational_enabled,growing_rational,big_row_max_terms;
+  u32 delta_commit;
+  GN_ATOMIC(u64) commit_metrics[16];
   double deadline;
   BatchTask tasks[BATCH_MAX];
   u32 batch_order[BATCH_MAX],batch_sort[BATCH_MAX],cost_scheduling;
   u64 word_cache_base,word_cache_bytes;u32 word_cache_entries,word_cache_lanes;
-  u32 abi,generators,target,workers,modulus,spill,error,completed,current,certifying;
+  u32 abi,generators,target,workers,modulus,spill,error,completed,current,certifying,canonical_snapshot;
   u64 pin_base,pin_capacity,pin_used;
   u64 local_base,local_capacity,local_used;u32 local_degree,local_built,local_limit,local_snapshot,local_entries,local_declined;
   u32 nrules,nprefix,hash_mask,table_capacity,degree_snapshot;
@@ -174,6 +181,7 @@ static void publish_lane(Lane*l,u64 terms,u32 force){
  GN_STORE(&v->big_coefficient_live,l->big_coefficient_live);GN_STORE(&v->big_coefficient_bytes,l->big_coefficient_bytes);
  GN_STORE(&v->big_capacity_misses,l->big_capacity_misses);GN_STORE(&v->big_pool_misses,l->big_pool_misses);
  GN_STORE(&v->big_arena_misses,l->big_arena_misses);GN_STORE(&v->big_fallbacks,l->general_fallbacks);GN_STORE(&v->big_reserve_waits,l->big_reserve_waits);
+ GN_STORE(&v->big_pool_high_water,l->big_pool_high_water);GN_STORE(&v->big_arithmetic_high_water,l->big_arithmetic_high_water);GN_STORE(&v->big_collected_live_high_water,l->big_collected_live_high_water);
  GN_FETCH_ADD(&v->sequence,1);
  /* The existing clock import can notify the UI while this Wasm call is still
   * running. Only the coordinator invokes its reporting callback. No new ABI
@@ -389,6 +397,12 @@ static Poly load_rule(u32 id,Lane*l){
 static u32 exact_rule(Word w,u32 degree,u32 snapshot){u32 id=PTR(u32,S.lm_heads)[hash(w,degree)];while(id){Rule*r=rule(id);if(id<=snapshot&&r->degree==degree&&weq(r->lm,w))return id;id=r->next;}return 0;}
 #include "matcher.inc"
 static u32 divisor(Word w,u32 degree,u32 snapshot,u32*pos,Lane*l){
+ if(l->delta_floor){
+  /* Completed source row and newly appended same-degree tails are normal
+   * against the immutable old snapshot. Only whole-word equality can act. */
+  l->delta_queries++;*pos=0;u32 id=exact_rule(w,degree,snapshot);
+  if(id>=l->delta_floor){l->delta_hits++;return id;}return 0;
+ }
  /* Canonical export protects only its own leading word. Before enabling this,
   * canonical export checks that no other leading word divides it. All tails
   * are smaller, hence cannot contain that protected leading word. */
@@ -465,7 +479,7 @@ static int eager_zero_short(u64 word,u32 degree,Lane*l){
  return 0;
 }
 static int eager_zero(Word w,u32 degree,Lane*l){
- if(!S.pruning||!S.eager_pruning||!S.square_mask||degree<2)return 0;
+ if(l->delta_floor||!S.pruning||!S.eager_pruning||!S.square_mask||degree<2)return 0;
  if(degree<=16&&!wlong(w))return eager_zero_short(w.lo,degree,l);
  if(!wlong(w)&&S.square_mask==((1u<<S.generators)-1)){
   Word q=shr(w,4),mask=maskw((Word){UINT64_MAX,UINT64_MAX},degree-1);
@@ -502,7 +516,7 @@ static void quadratic_precondition_short(Word*w,u32 degree,i64*c,Lane*l){
  }
 }
 static void quadratic_precondition(Word*w,u32 degree,i64*c,Lane*l){
- if(!S.quadratic_rewrite||degree<2||wlong(*w))return;
+ if(l->delta_floor||!S.quadratic_rewrite||degree<2||wlong(*w))return;
  if(degree<=16){quadratic_precondition_short(w,degree,c,l);return;}
  u32 at=0;
  while(at+1<degree){
@@ -611,6 +625,7 @@ static int fg_append_check(Poly p,int restoring);
 static int fg_append_done(Poly p,int restoring);
 static int fg_sector_ids(u32 f,u32 g,u32 k);
 static int fg_sector_pair(Lane*l);
+#include "delta_commit.inc"
 static int append_rule(Poly p,u64 existing_disk,int restoring){
  if(!p.n){S.commit_zero++;return 0;}Word leading=pw(p,0);if(S.nrules&&p.degree<rule(S.nrules)->degree)return GN_STATE;
  if(exact_rule(leading,p.degree,S.nrules))return GN_STATE;
@@ -744,7 +759,7 @@ API u64 gn_live_stat(u32 lane,u32 key){
  case 14:return GN_LOAD(&v->big_capacity);case 15:return GN_LOAD(&v->big_reserved);case 16:return GN_LOAD(&v->big_peak_terms);
  case 17:return GN_LOAD(&v->big_coefficient_live);case 18:return GN_LOAD(&v->big_coefficient_bytes);case 19:return GN_LOAD(&v->big_growths);
  case 20:return GN_LOAD(&v->big_capacity_misses);case 21:return GN_LOAD(&v->big_pool_misses);case 22:return GN_LOAD(&v->big_arena_misses);
- case 23:return GN_LOAD(&v->big_fallbacks);case 24:return GN_LOAD(&v->big_reserve_waits);default:return 0;}
+ case 23:return GN_LOAD(&v->big_fallbacks);case 24:return GN_LOAD(&v->big_reserve_waits);case 25:return GN_LOAD(&v->big_pool_high_water);case 26:return GN_LOAD(&v->big_arithmetic_high_water);case 27:return GN_LOAD(&v->big_collected_live_high_water);default:return 0;}
 }
 API u64 gn_progress_stat(u32 key){
  switch(key){case 0:return S.degree_total;case 1:return S.degree_seen;
@@ -828,7 +843,7 @@ API int gn_next_pair(u32 lane){if(lane>=S.workers||!S.current)return -GN_STATE;i
  }
  S.iter_done=1;return 0;
 }
-static int reduce_pair_impl(u32 lane){if(lane>=S.workers)return GN_INPUT;Lane*l=&S.lanes[lane];l->error=0;reset_a(&l->a[0]);reset_a(&l->a[1]);l->active=0;l->result=(Poly){0};l->pairs++;
+static int reduce_pair_impl(u32 lane){if(lane>=S.workers)return GN_INPUT;Lane*l=&S.lanes[lane];l->normal_valid=0;l->delta_floor=0;l->error=0;reset_a(&l->a[0]);reset_a(&l->a[1]);l->active=0;l->result=(Poly){0};l->pairs++;
  if(fg_sector_pair(l))return 0;
  Rule*f=rule(l->f),*g=rule(l->g);u32 nr=g->degree-l->k;Word suffix=part(g->lm,g->degree,l->k,nr),left=part(f->lm,f->degree,0,f->degree-l->k);Poly fp=load_rule(l->f,l);if(l->error)return l->error;
  Poly p=copy_poly(fp,&l->a[0],(Word){0,0},suffix,nr,S.current);if(l->a[0].error)return l->a[0].error;Poly gp=load_rule(l->g,l);if(l->error)return l->error;Coef a=pc(gp,0),b=pc(p,0);Arena*ar=&l->a[1];Coef z=S.modulus?2:gcdc(ar,a,b);Coef sp=S.modulus?a:exactdiv(ar,a,z),sg=negf(S.modulus?b:exactdiv(ar,b,z));if(ar->error)return ar->error;
@@ -836,9 +851,9 @@ static int reduce_pair_impl(u32 lane){if(lane>=S.workers)return GN_INPUT;Lane*l=
 }
 API int gn_reduce_pair(u32 lane){
  if(lane>=S.workers)return GN_INPUT;Lane*l=&S.lanes[lane];l->busy=1;publish_lane(l,0,0);
- int rc=reduce_pair_impl(lane);l->busy=0;publish_lane(l,l->result.n,0);return rc;
+ int rc=reduce_pair_impl(lane);if(!rc){l->normal_valid=1;l->normal_snapshot=l->snapshot;l->normal_degree=S.current;}l->busy=0;publish_lane(l,l->result.n,0);return rc;
 }
-API int gn_commit(u32 lane){if(lane>=S.workers)return GN_INPUT;Lane*l=&S.lanes[lane];if(l->error)return l->error;l->busy=2;publish_lane(l,l->result.n,0);int rc=nf(l,S.nrules);if(!rc){/* The coordinator I/O buffer must not overwrite a row in lane 0. */rc=S.certifying?(l->result.n?GN_REJECTED:0):append_rule(l->result,0,0);}l->error=rc;l->busy=0;if(!rc)S.degree_committed++;publish_lane(l,l->result.n,0);return rc;}
+API int gn_commit(u32 lane){if(lane>=S.workers)return GN_INPUT;Lane*l=&S.lanes[lane];if(l->error)return l->error;l->busy=2;publish_lane(l,l->result.n,0);int rc=commit_nf(l,S.nrules);if(!rc){double append_start=gn_host_clock();/* The coordinator I/O buffer must not overwrite a row in lane 0. */rc=S.certifying?(l->result.n?GN_REJECTED:0):append_rule(l->result,0,0);commit_elapsed(13,append_start);l->normal_valid=0;}l->error=rc;l->busy=0;if(!rc)S.degree_committed++;publish_lane(l,l->result.n,0);return rc;}
 /* An epoch has an immutable basis. Workers dynamically claim pair descriptors.
  * Only the coordinator writes descriptors, commits rows or grows memory, and only
  * outside parallel epochs. Outputs live outside the reduction arenas. */
@@ -899,9 +914,12 @@ static int batch_commit_impl(u32 task){
  }
  if(t->rc)return (int)t->rc;if(!t->bytes){S.commit_zero++;S.degree_committed++;return 0;}
  Lane*l=&S.lanes[0];reset_a(&l->a[0]);reset_a(&l->a[1]);l->active=0;l->error=0;
+ l->snapshot=t->snapshot;l->normal_valid=1;l->normal_snapshot=t->snapshot;l->normal_degree=S.current;l->delta_floor=0;l->resume_tier=0;
+ double copy_start=gn_host_clock();
  Record*h=PTR(Record,t->output);
  Poly stored={t->output+sizeof(Record),h->n,h->degree,t->output};
  l->result=copy_poly(stored,&l->a[0],(Word){0,0},(Word){0,0},0,h->degree);
+ GN_FETCH_ADD(&S.commit_metrics[11],t->bytes);commit_elapsed(12,copy_start);
  if(l->a[0].error)return l->a[0].error;
  return gn_commit(0);
 }
@@ -948,19 +966,64 @@ API int gn_candidate_check(void){
  S.certifying=1;S.completed=0;return 0;
 }
 API u32 gn_is_certifying(void){return S.certifying;}
-API u64 gn_canonical_rule(u32 id){
- if(S.current||S.input_expected||S.certifying||!id||id>S.nrules)return 0;
- Lane*l=&S.lanes[0];l->skip_rule=0;l->error=0;
- int mrc=matcher_build();if(mrc){l->error=mrc;return 0;}
- u32 pos=0;if(divisor(rule(id)->lm,rule(id)->degree,S.nrules,&pos,l)!=id){l->error=GN_REJECTED;return 0;}
+/* Coordinator prepares the immutable index once; independent lanes may then
+ * normalize rows concurrently. Neither rule records nor checkpoints are edited.
+ * The serialized result lives in that lane's I/O buffer until its next call. */
+API int gn_normalize_prepare(void){
+ if(S.current||S.input_expected||S.certifying||GN_LOAD(&S.batch_running)||reserve_pool_busy())return GN_STATE;
+ int rc=matcher_build();if(!rc)S.canonical_snapshot=S.nrules;return rc;
+}
+API u64 gn_normalize_rule(u32 lane,u32 id){
+ if(lane>=S.workers)return 0;
+ Lane*l=&S.lanes[lane];l->error=0;
+ if(S.current||S.input_expected||S.certifying||S.canonical_snapshot!=S.nrules||!id||id>S.nrules){l->error=GN_STATE;return 0;}
+ l->skip_rule=0;l->slice_enabled=0;l->resume_tier=0;l->allow_repack=0;
+ l->delta_floor=0;l->normal_valid=0;
+ l->busy=1;l->f=id;l->g=0;l->k=0;
+ int rc=0;
+ if(cancelled()){rc=GN_CANCELLED;goto done;}
+ u32 pos=0;if(divisor(rule(id)->lm,rule(id)->degree,S.nrules,&pos,l)!=id){rc=GN_REJECTED;goto done;}
  reset_a(&l->a[0]);reset_a(&l->a[1]);l->active=0;
- Poly input=load_rule(id,l);if(l->error)return 0;
+ Poly input=load_rule(id,l);if(l->error){rc=l->error;goto done;}
+ /* Already normal tails (including all monomial rules) need no arithmetic,
+  * polynomial copy or heap construction. This is common in large FK bases. */
+ u32 j=1;
+ for(;j<input.n;j++){
+  if(!(j&255)&&cancelled()){rc=GN_CANCELLED;goto done;}
+  if(divisor(pw(input,j),input.degree,S.nrules,&pos,l))break;
+ }
+ if(j==input.n){if(input.origin!=l->io_base)rc=write_record(input,l->io_base,l->io_size);goto done;}
  l->result=copy_poly(input,&l->a[0],(Word){0,0},(Word){0,0},0,input.degree);
- if(l->a[0].error){l->error=l->a[0].error;return 0;}
- l->skip_rule=id;int rc=nf(l,S.nrules);l->skip_rule=0;
+ if(l->a[0].error){rc=l->a[0].error;goto done;}
+ l->skip_rule=id;rc=nf(l,S.nrules);l->skip_rule=0;
  if(!rc&&(!l->result.n||!weq(pw(l->result,0),rule(id)->lm)))rc=GN_REJECTED;
  if(!rc)rc=write_record(l->result,l->io_base,l->io_size);
- l->error=rc;return rc?0:l->io_base;
+done:
+ l->skip_rule=0;l->busy=0;l->error=rc;publish_lane(l,0,1);return rc?0:l->io_base;
+}
+API u32 gn_normalize_status(u32 lane){return lane<S.workers?S.lanes[lane].error:GN_STATE;}
+API u64 gn_canonical_rule(u32 id){
+ int rc=gn_normalize_prepare();if(rc){S.lanes[0].error=rc;return 0;}
+ return gn_normalize_rule(0,id);
+}
+/* Ephemeral exact numerator/denominator pair for native text formatting.
+ * Exported row remains intact in I/O; arithmetic uses an otherwise idle arena.
+ * Hosts must consume the pair before normalizing/formatting the next term. */
+API u64 gn_monic_coefficient(u32 lane,u32 index){
+ if(lane>=S.workers)return 0;
+ Lane*l=&S.lanes[lane];Record*h=PTR(Record,l->io_base);l->error=0;
+ if(l->busy||h->magic!=MAGIC||index>=h->n){l->error=GN_STATE;return 0;}
+ reset_a(&l->a[0]);Arena*a=&l->a[0];
+ u64 off=alloc_a(a,2*sizeof(Coef));if(!off){l->error=a->error;return 0;}
+ Poly p={l->io_base+sizeof(Record),h->n,h->degree,l->io_base};
+ Coef c=pc(p,index),lead=pc(p,0);
+ if(!index){PTR(Coef,off)[0]=PTR(Coef,off)[1]=csmall(1);return off;}
+ if(S.modulus||lead==csmall(1)){PTR(Coef,off)[0]=c;PTR(Coef,off)[1]=csmall(1);return off;}
+ Coef g=gcdc(a,c,lead);
+ Coef num=S.modulus?c:exactdiv(a,c,g),den=S.modulus?csmall(1):exactdiv(a,lead,g);
+ if(csign(den)<0){num=cneg(num);den=cneg(den);}
+ PTR(Coef,off)[0]=num;PTR(Coef,off)[1]=den;
+ l->error=a->error;return a->error?0:off;
 }
 #include "hilbert.inc"
 #include "hilbert_gate.inc"
@@ -1027,7 +1090,7 @@ API int gn_test_big(u32 op,u32 na,u32 nb,int sa,int sb){
 
 API int gn_big_rational_heap(u32 enabled){if(enabled>1)return GN_INPUT;if(S.nrules||S.current||S.input_expected)return GN_STATE;S.big_rational_enabled=enabled;return 0;}
 API int gn_big_row_limit(u32 terms){if(terms&&(terms<128||terms>(1u<<30)||(terms&(terms-1))))return GN_INPUT;if(S.nrules||S.current||S.input_expected)return GN_STATE;S.big_row_max_terms=terms;return 0;}
-API u64 gn_exact_stat(u32 lane,u32 key){if(lane>=S.lane_slots)return 0;Lane*l=&S.lanes[lane];switch(key){case 0:return l->big_attempts;case 1:return l->big_successes;case 2:return l->big_fallbacks;case 3:return l->big_steps;case 4:return l->big_compactions;case 5:return l->big_pool_misses;case 6:return l->big_capacity_misses;case 7:return l->big_arena_misses;case 8:return S.big_rational_enabled;case 9:return S.legacy_big_division;case 10:return l->rational_table_growths;case 11:return S.growing_rational;case 12:return l->big_growths;case 13:return l->big_peak_terms;case 14:return l->big_capacity;case 15:return l->big_reserved;case 16:return l->big_coefficient_live;case 17:return l->big_coefficient_bytes;case 18:return S.big_row_max_terms;case 19:return l->big_reserve_waits;case 20:return l->general_fallbacks;default:return 0;}}
+API u64 gn_exact_stat(u32 lane,u32 key){if(lane>=S.lane_slots)return 0;Lane*l=&S.lanes[lane];switch(key){case 0:return l->big_attempts;case 1:return l->big_successes;case 2:return l->big_fallbacks;case 3:return l->big_steps;case 4:return l->big_compactions;case 5:return l->big_pool_misses;case 6:return l->big_capacity_misses;case 7:return l->big_arena_misses;case 8:return S.big_rational_enabled;case 9:return S.legacy_big_division;case 10:return l->rational_table_growths;case 11:return S.growing_rational;case 12:return l->big_growths;case 13:return l->big_peak_terms;case 14:return l->big_capacity;case 15:return l->big_reserved;case 16:return l->big_coefficient_live;case 17:return l->big_coefficient_bytes;case 18:return S.big_row_max_terms;case 19:return l->big_reserve_waits;case 20:return l->general_fallbacks;case 21:return l->big_pool_high_water;case 22:return l->big_arithmetic_high_water;case 23:return l->big_collected_live_high_water;default:return 0;}}
 
 API int gn_growing_rational(u32 enabled){if(enabled>1)return GN_INPUT;if(S.nrules||S.current||S.input_expected)return GN_STATE;S.growing_rational=enabled;return 0;}
 
@@ -1076,7 +1139,7 @@ API int gn_radix_queue(u32 enabled){if(enabled>1)return GN_INPUT;if(S.current||S
 #include "cooperative.inc"
 
 API int gn_pair_plan_config(u32 order,u32 min_degree,u64 bytes){
- if(order>2||!min_degree||min_degree>GN_INDEX_MAX||S.current||S.input_expected||S.nrules)return GN_INPUT;
+ if(order>3||!min_degree||min_degree>GN_INDEX_MAX||S.current||S.input_expected||S.nrules)return GN_INPUT;
  P.requested=order;P.min_degree=min_degree;P.budget=MIN(bytes,S.budget/8);return 0;
 }
 API int gn_pair_plan_adopt(void){
@@ -1095,3 +1158,9 @@ API int gn_pair_plan_adopt(void){
  S.iter_f=1;S.iter_k=1;S.iter_node=S.iter_ready=0;S.iter_done=P.count==0;P.adoptions++;return 1;
 }
 API u64 gn_pair_plan_stat(u32 key){switch(key){case 0:return P.active;case 1:return P.mode;case 2:return P.count;case 3:return P.cursor;case 4:return P.total;case 5:return P.anchor_seen;case 6:return P.anchor_n;case 7:return P.allocated;case 8:return P.builds;case 9:return P.declines;case 10:return P.adoptions;case 11:return P.build_us;default:return 0;}}
+
+API int gn_delta_commit(u32 enabled){if(enabled>1||S.nrules||S.current||S.input_expected||GN_LOAD(&S.batch_running))return GN_STATE;S.delta_commit=enabled;return 0;}
+API u64 gn_commit_stat(u32 key){if(key==0)return S.delta_commit;return key<16?GN_LOAD(&S.commit_metrics[key]):0;}
+
+/* Supported ordering modes as a bitset; host ABI guard for mode 3. */
+API u32 gn_pair_plan_modes(void){return 15;}

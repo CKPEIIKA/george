@@ -3,9 +3,11 @@ import {automaticWorkers} from '../engine/fomkyr/worker-count.js';
 import {defaultMemoryMiB} from './backends.js';
 import {planMemory} from '../engine/fomkyr/memory-policy.js';
 import {formatMemorySize} from './memory-monitor.js';
+import {parseDimensionEvidence} from './dimension-evidence.js';
 export const FOMKYR_DEFAULTS = Object.freeze({
-  pairOrder: 'legacy', planMinDegree: 12, pairPlanMiB: 64,
+  pairOrder: 'legacy', planMinDegree: 12, pairPlanMiB: 64, commitReduction: 'full',
   hilbertGate: false, hilbertSectors: true, gateMiB: 128,
+  dimensionEvidence: 'off', dimensionText: '',
   scheduler: 'cooperative', quantumMs: 250, lookahead: 128, maxLookahead: 512, elasticWindow: true, sectorPriority: true, radixMaxCache: true, helperRows: true, largeRowWorkspaces: 0,
   execution: 'auto', bits: 'auto', memoryPolicy: 'auto', autoWorkerMiB: 0, spill: true, resume: 'auto', hilbert: false,
   heapReduction: true, cachePercent: 12, heapThreshold: 16, batchPairs: 128,
@@ -19,9 +21,11 @@ export const FOMKYR_DEFAULTS = Object.freeze({
   rewriteMiB: null, sharedCacheMiB: null,
 });
 export const FOMKYR_FIELDS = Object.freeze([
-  ['pairOrder', 'select', ['legacy', 'overlap', 'sparse']],
+  ['pairOrder', 'select', ['legacy', 'overlap', 'sparse', 'word']],
+  ['commitReduction', 'select', ['full', 'delta']],
   ['planMinDegree', 'number', 1, 4294967294], ['pairPlanMiB', 'number', 0, 14304],
   ['hilbertGate', 'checkbox'], ['hilbertSectors', 'checkbox'], ['gateMiB', 'number', 0, 14304],
+  ['dimensionEvidence', 'select', ['off', 'assume', 'certificate']], ['dimensionText', 'textarea'],
   ['scheduler', 'select', ['cooperative', 'barrier']],
   ['quantumMs', 'number', 1, 10000], ['lookahead', 'number', 1, 512], ['radixMaxCache', 'checkbox'],
   ['helperRows', 'checkbox'], ['largeRowWorkspaces', 'number', 0, 33],
@@ -49,10 +53,10 @@ export const FOMKYR_GROUPS=Object.freeze({
   execution:['execution','bits','memoryPolicy'],
   scheduling:['pairOrder','planMinDegree','pairPlanMiB','scheduler','quantumMs','lookahead','maxLookahead','elasticWindow','sectorPriority','helperRows','batchPairs','costScheduling','autoWorkerMiB'],
   memory:['largeRowWorkspaces','scratchMiB','rowReserveMiB','reserveInPlace','bigRowMaxTerms','cachePercent','sharedCacheMiB','hashBits'],
-  reduction:['heapReduction','heapThreshold','rationalHeap','bigRationalHeap','growingRationalHeap','fastBigDivision','radixHeap','radixMaxCache','eagerPruning','quadraticRewrite'],
+  reduction:['commitReduction','heapReduction','heapThreshold','rationalHeap','bigRationalHeap','growingRationalHeap','fastBigDivision','radixHeap','radixMaxCache','eagerPruning','quadraticRewrite'],
   caches:['wordMatcher','chainCriterion','wordCacheEntries','matcherMiB','compiledRewrites','rationalRewrites','rewriteDegree','rewriteSupport','rewriteMiB'],
   storage:['spill','resume','ioMode','progress','progressIntervalSeconds'],
-  mathematics:['hilbert','hilbertGate','hilbertSectors','gateMiB','hilbertMiB'],
+  mathematics:['hilbert','hilbertMiB','dimensionEvidence','dimensionText','hilbertGate','hilbertSectors','gateMiB'],
 });
 export function validateFomkyrOptions(options = {}) {
   if (!options || typeof options !== 'object' || Array.isArray(options)) throw new Error('Invalid Fomkyr options.');
@@ -61,6 +65,7 @@ export function validateFomkyrOptions(options = {}) {
   for (const [key, type, min, max] of FOMKYR_FIELDS) {
     const value = values[key];
     const valid = type === 'select' ? min.includes(value)
+      : type === 'textarea' ? typeof value === 'string' && value.length <= 64 * 1048576
       : type === 'checkbox' ? (key === 'resume' ? value === 'auto' || value === false : typeof value === 'boolean')
       : value === null && (FOMKYR_DEFAULTS[key] === null || key === 'batchPairs') || (key === 'progressIntervalSeconds' ? Number.isFinite(value) : Number.isInteger(value)) && value >= min && value <= max;
     if (!valid) throw new Error('Invalid Fomkyr option: ' + key);
@@ -82,6 +87,7 @@ export function fomkyrControlAvailability(form) {
   const reserve = rational && heap && (o.rationalHeap || o.bigRationalHeap);
   return Object.fromEntries(FOMKYR_FIELDS.map(([key]) => [key, enabled && ({
     planMinDegree: o.pairOrder !== 'legacy', pairPlanMiB: o.pairOrder !== 'legacy',
+    dimensionText: o.dimensionEvidence !== 'off',
     hilbertGate: rational, hilbertSectors: rational && o.hilbertGate, gateMiB: rational && o.hilbertGate,
     quantumMs: o.scheduler === 'cooperative' && o.batchPairs !== 0,
     lookahead: o.scheduler === 'cooperative' && o.batchPairs !== 0,
@@ -117,6 +123,8 @@ export function updateFomkyrControlAvailability(form, root = document, translate
   for (const [key, enabled] of Object.entries(availability)) {
     const input = root.getElementById(key === 'nativeWorkers' ? key : 'fomkyr-' + key);
     input.disabled = !enabled;
+    const load = root.getElementById('fomkyr-' + key + '-load');
+    if (load) load.disabled = !enabled;
     input.closest('label')?.classList.toggle('backend-disabled', !enabled);
   }
   const summary = root.getElementById('fomkyr-autoMemorySummary');
@@ -140,7 +148,13 @@ export function updateFomkyrControlAvailability(form, root = document, translate
 }
 export function fomkyrEngineOptions(form) {
   const options = validateFomkyrOptions(form.fomkyrOptions);
-  const {pairPlanMiB, gateMiB, scratchMiB, hilbertMiB, matcherMiB, rewriteMiB, sharedCacheMiB, rowReserveMiB, progressIntervalSeconds, ...engine} = options;
+  const {pairPlanMiB, gateMiB, scratchMiB, hilbertMiB, matcherMiB, rewriteMiB, sharedCacheMiB, rowReserveMiB, progressIntervalSeconds, dimensionEvidence, dimensionText, ...engine} = options;
+  // The worker binds plain dimensions to the presentation's identity.
+  if (dimensionEvidence !== 'off') {
+    // Both authorities close degrees through the same kernel gate.
+    if (options.hilbertGate) throw new Error('Use either the imported FK6 dimension profile or other dimension evidence, not both.');
+    engine.hilbertDimensions = parseDimensionEvidence(dimensionText, dimensionEvidence);
+  }
   const memoryMiB=Number(form.memoryMiB??defaultMemoryMiB('fomkyr'));
   const availability = fomkyrControlAvailability({...form, backend: 'fomkyr', fomkyrOptions: options});
   engine.pairPlanBytes=pairPlanMiB*1048576;
@@ -218,16 +232,34 @@ export function installFomkyrControls(root, t) {
     const hint = root.createElement('span'); hint.className = 'help-pop'; hint.id = 'fomkyr-' + key + '-hint';
     hint.dataset.i18n = 'fomkyr.' + key + 'Hint'; hint.textContent = t(hint.dataset.i18n);
     help.append(button, hint); title.append(text, help);
-    const input = root.createElement(type === 'select' ? 'select' : 'input'); input.id = 'fomkyr-' + key;
+    const input = root.createElement(type === 'select' ? 'select' : type === 'textarea' ? 'textarea' : 'input'); input.id = 'fomkyr-' + key;
     input.setAttribute('aria-describedby', hint.id);
     if (type === 'select') for (const value of min) {
       const option = root.createElement('option'); option.value = value;
       option.dataset.i18n = 'fomkyr.choice.' + value; option.textContent = t(option.dataset.i18n); input.append(option);
     }
+    else if (type === 'textarea') {input.className = 'code'; input.rows = 4; input.spellcheck = false; input.dataset.i18nAttr = 'placeholder:fomkyr.dimensionTextPlaceholder'; input.placeholder = t('fomkyr.dimensionTextPlaceholder');}
     else {input.type = type; if (type === 'number') {input.min = min; input.max = max; input.step = key === 'progressIntervalSeconds' ? 0.25 : 1;}}
     if (type === 'checkbox') {label.className = 'check'; label.append(input, title);}
     else label.append(title, input);
     container.append(label);
+    if (type === 'textarea') {
+      // A file fills the text box; the text box is what is saved and shared.
+      const file = root.createElement('input'); file.type = 'file'; file.id = 'fomkyr-' + key + '-file'; file.hidden = true;
+      file.accept = '.json,.csv,.txt,application/json,text/csv,text/plain';
+      const load = root.createElement('button'); load.type = 'button'; load.className = 'quiet small'; load.id = 'fomkyr-' + key + '-load';
+      load.dataset.i18n = 'fomkyr.dimensionLoad'; load.textContent = t(load.dataset.i18n);
+      load.addEventListener('click', () => file.click());
+      file.addEventListener('change', async () => {
+        const chosen = file.files?.[0]; file.value = '';
+        if (!chosen) return;
+        if (chosen.size > 64 * 1048576) { input.setCustomValidity(t('err.dimLarge')); input.reportValidity(); return; }
+        input.setCustomValidity('');
+        input.value = await chosen.text();
+        input.dispatchEvent(new Event('input', {bubbles: true}));
+      });
+      label.append(load, file);
+    }
     if (key === 'memoryPolicy') {
       const summary = root.createElement('p'); summary.className = 'hint';
       summary.id = 'fomkyr-autoMemorySummary'; summary.hidden = true;

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>George 0.7.1</title>
+<title>George 0.7.2</title>
 <meta name="description" content="George computes Gröbner bases, Hilbert series, Anick resolutions and Betti numbers for noncommutative and commutative algebras, using bergman and fomkyr in your browser.">
 <meta name="theme-color" content="#eef2f3" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#111a27" media="(prefers-color-scheme: dark)">
@@ -29,7 +29,7 @@
         <circle class="logo-ripple" cx="14" cy="24.4" r="2" opacity="0"><animate attributeName="r" values="2;2;6.5;6.5" keyTimes="0;0.6;0.9;1" dur="2.4s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0;1;0;0" keyTimes="0;0.59;0.6;0.9;1" dur="2.4s" repeatCount="indefinite"/></circle>
       </g>
     </svg>
-    <span class="brand-name">George <small class="brand-version">0.7.1</small></span>
+    <span class="brand-name">George <small class="brand-version">0.7.2</small></span>
     </a>
     <span class="brand-sub"><span data-i18n="brand.subPrefix">an interface to bergman and </span><a href="#guide-fomkyr" data-i18n="brand.more">more…</a></span>
   </div>
@@ -81,12 +81,25 @@
     </div>
 
     <div class="field task-field">
-      <label class="label" for="taskSelect" data-i18n="legend.compute">Compute</label>
+      <span class="label-row"><label class="label" for="taskSelect" data-i18n="legend.compute">Compute</label><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="taskDescription" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="taskDescription"></span></span></span>
       <select id="taskSelect" aria-describedby="taskDescription"></select>
-      <p class="hint" id="taskDescription"></p>
-      <p class="tasks-unavailable" id="tasksUnavailable" hidden><span id="tasksUnavailableText"></span><button type="button" class="quiet small" id="useBergman" data-i18n="tasks.useBergman">Use Bergman</button></p>
+      <p class="tasks-unavailable" id="tasksUnavailable" hidden><span id="tasksUnavailableText"></span><button type="button" class="link-button" id="useBergman" data-i18n="tasks.useBergman">Use Bergman</button></p>
       <!-- The radio group stays the form's model; the select above drives it. -->
       <div id="taskList" class="task-list" hidden></div>
+      <label for="backend" class="field engine-field">
+        <span class="label-row"><span class="label" data-i18n="backend.label">Computation engine</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="backendHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="backendHint" data-i18n="backend.hint">The engine selection is saved with your settings and share link.</span></span></span>
+        <select id="backend">
+          <optgroup label="bergman">
+            <option value="memory64" selected data-i18n="backend.memory64">C / ECL O3 + LTO (memory64)</option>
+            <option value="compiled" data-i18n="backend.compiled">C / ECL O3 + LTO</option>
+            <option value="optimized" data-i18n="backend.optimized">Lisp / ECL O3 + LTO</option>
+            <option value="standard" data-i18n="backend.standard">Lisp / ECL O2</option>
+          </optgroup>
+          <optgroup label="fomkyr">
+            <option value="fomkyr" data-i18n="backend.fomkyr">fomkyr / C O3 + LTO (experimental)</option>
+          </optgroup>
+        </select>
+      </label>
     </div>
 
     <fieldset class="block">
@@ -168,17 +181,6 @@
 
     <details id="engineSettings" class="block engine-settings">
       <summary data-i18n="engine.settings">Engine</summary>
-      <label for="backend" class="field">
-        <span class="label-row"><span class="label" data-i18n="backend.label">Computation engine</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="backendHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="backendHint" data-i18n="backend.hint">The engine selection is saved with your settings and share link.</span></span></span>
-        <select id="backend">
-          <option value="memory64" selected data-i18n="backend.memory64">C / ECL O3 + LTO (memory64)</option>
-          <option value="compiled" data-i18n="backend.compiled">C / ECL O3 + LTO</option>
-          <option value="optimized" data-i18n="backend.optimized">Lisp / ECL O3 + LTO</option>
-          <option value="standard" data-i18n="backend.standard">Lisp / ECL O2</option>
-          <option value="fomkyr" data-i18n="backend.fomkyr">fomkyr / C O3 + LTO (experimental)</option>
-        </select>
-
-      </label>
       <label for="nativeWorkers" class="field" id="nativeWorkersField" hidden>
         <span class="label-row"><span class="label" data-i18n="native.workers">Worker count</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="nativeWorkersHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="nativeWorkersHint" data-i18n="native.workersHint">Blank or 0 uses the browser's reported CPU thread count minus one, within 1–32. Set 1–32 explicitly to use a chosen count. The scratch memory budget is shared between workers. Compare counts for your presentation; speed depends on the workload. Single-worker execution uses one.</span></span></span>
         <input id="nativeWorkers" type="number" min="0" max="32" step="1" placeholder="Automatic" data-i18n-attr="placeholder:native.workersAuto" aria-describedby="nativeWorkersHint">
@@ -331,7 +333,8 @@
 
     <div class="tabpanel" data-panel="basis" role="tabpanel">
       <div class="empty" id="basisEmpty">
-        <p data-i18n="empty.start">Enter generators and relations, or pick one of bergman’s test examples under “Start from”, then compute.</p>
+        <p class="empty-start" data-i18n="empty.start">Enter generators and relations, or pick one of bergman’s test examples under “Start from”, then compute.</p>
+        <p class="empty-running" data-i18n="empty.running">The results appear here when the computation finishes.</p>
       </div>
       <div id="basisOut"></div>
     </div>
@@ -346,7 +349,9 @@
           <span data-i18n="results.zip">Download text results as ZIP</span>
         </button>
         <p class="hint zip-status" id="resultsZipStatus" role="status" aria-live="polite" hidden></p>
+        <p class="hint zip-hint" data-i18n-html="results.zipHint">The ZIP holds the engine output and <code>result-normalized.txt</code>, the reduced monic basis.</p>
       </div>
+      <div class="verification-out" id="verificationOut"></div>
       <div id="filesOut"></div>
     </div>
     <div class="tabpanel" data-panel="log" role="tabpanel" hidden>
@@ -358,7 +363,14 @@
 
 <!-- ============================================================ console -->
 <section class="view view-console" id="view-console" aria-labelledby="consoleTitle" hidden>
-  <div class="sheet console-sheet">
+  <div class="sheet fk-dash" id="fomkyrDashboard" hidden>
+    <div class="console-head">
+      <h1 data-i18n="dash.title">fomkyr dashboard</h1>
+      <p class="hint" data-i18n="dash.hint">Live progress of the current fomkyr computation. The Lisp console belongs to the Bergman engines.</p>
+    </div>
+    <div id="fomkyrDashboardBody" aria-live="off"></div>
+  </div>
+  <div class="sheet console-sheet" id="lispConsole">
     <div class="console-head">
       <h1 id="consoleTitle" data-i18n="console.title">Console</h1>
       <p class="hint" data-i18n-html="console.hint">Evaluate Lisp forms such as <code>(noncommify)</code> or <code>(setmaxdeg 5)</code>. Use the presentation form for algebraic input, or run a command with explicit input and output files.</p>

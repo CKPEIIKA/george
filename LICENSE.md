@@ -68,11 +68,19 @@ and does not link ECL or Bergman. `tools/build-native-backend.sh` rebuilds it.
 
 ### fomkyr
 
-fomkyr 0.6.3 is MIT licensed. Its unchanged C sources, build scripts, mathematical
-tests and notice are retained in `vendor/fomkyr-0.6.3/`. Its original archive digest
-and retained-file inventory are in `SOURCE.json`. Runtime binaries and their
+fomkyr 0.7.2 is MIT licensed. Its C sources, build scripts, mathematical
+tests and notice are retained in `fomkyr/`. Upstream archive digests, local changes
+and the retained-file inventory are recorded in `fomkyr/SOURCE.json`. Runtime binaries and their
 notice are in `web/engine/fomkyr/`. Generated benchmark stores and reports are
 not part of the corresponding source.
+
+### Kircracker
+
+The standalone `kircracker/` subproject is MIT licensed, with its original notice
+in `kircracker/LICENSE`. Its source provenance and retained proof inputs are
+recorded in `kircracker/SOURCE.json` and `kircracker/proof/CONTENTS.json`.
+Kircracker is separate from the browser engines. Its optional exact verifier
+links the system GMP library under GMP's own license.
 
 ### Bergman / ECL
 

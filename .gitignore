@@ -57,3 +57,10 @@ __pycache__/
 
 # Optional independent Fomkyr audit executable.
 /fomkyr/dist/packed-basis-audit
+
+# Standalone Kircracker builds, proof replay and computation workspaces.
+/kircracker/bin/
+/kircracker/evidence/
+/kircracker/results-local/
+/kircracker/kircracker-work/
+/kircracker/.cache/

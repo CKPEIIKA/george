@@ -3,9 +3,27 @@
 const median=a=>{const s=[...a].sort((x,y)=>x-y);return s.length?s[Math.floor(s.length/2)]:null;};
 const fraction=(a,b)=>b>0n?Number(a*1000000n/b)/1000000:null;
 const safeBig=v=>typeof v==='bigint'?v:BigInt(v??0);
+// Current-degree throughput is measured over several windows that all end NOW,
+// so a long reduction without finished overlaps lowers the rate instead of
+// hiding the estimate. Long windows dominate the central value; the range
+// covers every window. The degree history is thinned, never truncated, so the
+// whole-degree window stays available for degrees that take hours.
+const WINDOWS_MS=[120e3,600e3,1800e3,7200e3,Infinity],LONG_MS=600e3,MIN_SPAN_MS=2000,MIN_EVENTS=8n;
+const LOG_STEP_MS=1000,LOG_CAP=4096,SMOOTH_MS=120e3,STALL_MS=30e3;
+const span=ms=>ms>=3600e3?`${(ms/3600e3).toFixed(1)} h`:ms>=60e3?`${Math.round(ms/60e3)} min`:`${Math.round(ms/1000)} s`;
 export class ProgressTracker {
   constructor({target=null,now=()=>performance.now()}={}){this.target=target;this.now=now;this.history=[];this.degree=0;this.phase='initializing';this.started=now();this.clearSamples();}
-  clearSamples(){this.samples=[];this.lastAdvance=null;this.lastCounter=0n;this.lastLive=0n;this.liveTime=null;this.replay=0;}
+  clearSamples(){this.log=[];this.smooth=null;this.lastAdvance=null;this.lastCounter=0n;this.lastLive=0n;this.liveTime=null;this.replay=0;}
+  windowRates(now,resolved){
+    const rates=[],seen=new Set();
+    for(const window of WINDOWS_MS){
+      const point=this.log.find(x=>x.t>=now-window)??this.log[0];
+      if(!point||seen.has(point))continue;seen.add(point);
+      const elapsed=now-point.t,done=resolved-point.resolved;
+      if(elapsed>=MIN_SPAN_MS&&done>=MIN_EVENTS)rates.push({window,elapsed,perMs:Number(done)/elapsed});
+    }
+    return rates;
+  }
   begin(degree,completed){this.degree=degree;this.completed=completed;this.degreeStart=this.now();this.clearSamples();this.phase='input';}
   setPhase(phase){this.phase=phase;}
   finish(degree,stats){
@@ -32,7 +50,7 @@ export class ProgressTracker {
   forecastForSample(eta,now){
     const historical=this.forecast();
     if(!historical.conditionalNextDegrees)return historical;
-    const stalled=/heterogeneous|long unresolved/.test(eta.reason??'');
+    const stalled=!!eta.stalled||/heterogeneous|long unresolved/.test(eta.reason??'');
     const exceeded=this.degreeStart!=null && now-this.degreeStart>historical.conditionalNextDegrees.centralSeconds*1000;
     if(stalled||exceeded)return {targetSeconds:null,recentDegreeGrowth:historical.recentDegreeGrowth,
       reason:stalled?'Historical projection withdrawn: current overlap timings are not predictive.':'Historical projection withdrawn: the current degree has exceeded the projected duration.'};
@@ -45,27 +63,36 @@ export class ProgressTracker {
     const total=safeBig(raw.total),resolved=safeBig(raw.committed)+safeBig(raw.monomialSkipped)+safeBig(raw.chainSkipped),live=safeBig(raw.reductions);
     if(raw.replay!==this.replay){this.clearSamples();this.replay=raw.replay;}
     if(resolved<this.lastCounter){this.clearSamples();this.replay=raw.replay;}
-    if(this.lastAdvance===null){this.lastAdvance=now;this.lastCounter=resolved;}
-    else if((this.phase==='reducing'||this.phase==='committing')&&resolved>this.lastCounter){
-      const dt=now-this.lastAdvance,dn=Number(resolved-this.lastCounter);
-      if(dt>=100&&dn>0){this.samples.push({msPerCandidate:dt/dn,dt});if(this.samples.length>12)this.samples.shift();this.lastAdvance=now;this.lastCounter=resolved;}
+    if(this.lastAdvance===null||resolved>this.lastCounter){this.lastAdvance=now;this.lastCounter=resolved;}
+    const counting=this.phase==='reducing'||this.phase==='committing';
+    if(counting&&(!this.log.length||now-this.log.at(-1).t>=LOG_STEP_MS)){
+      this.log.push({t:now,resolved});
+      // Halve the resolution of a long degree; its first point is always kept.
+      if(this.log.length>LOG_CAP)this.log=this.log.filter((_,i)=>i%2===0);
     }
     let reductionRate=null;
     if(this.liveTime!==null&&live>=this.lastLive&&now>this.liveTime)reductionRate=Number(live-this.lastLive)*1000/(now-this.liveTime);
     this.lastLive=live;this.liveTime=now;
     const remaining=total>resolved?total-resolved:0n,staleMs=now-this.lastAdvance;
     let eta={currentDegreeSeconds:null,label:'Heuristic current-degree estimate, not a statistical confidence interval.',reason:'Collecting timing samples.'};
-    if(this.phase!=='reducing'&&this.phase!=='committing')eta.reason='Current phase is not overlap reduction.';
+    if(!counting)eta.reason='Current phase is not overlap reduction.';
     else if(!raw.totalKnown)eta.reason='Exact overlap total is unavailable.';
-    else if(!remaining)eta={...eta,currentDegreeSeconds:[0,0],reason:'Overlap work resolved; checkpoint/output work may remain.'};
-    else if(this.samples.length>=3&&now-this.degreeStart>=2000){
-      const rates=this.samples.map(x=>x.msPerCandidate),dt=median(this.samples.map(x=>x.dt));
-      if(Math.max(...rates)>8*Math.min(...rates))eta.reason='Observed overlap costs are too heterogeneous for an informative time estimate.';
-      else if(staleMs>Math.max(3000,dt*3))eta.reason='A long unresolved batch is active; previous throughput is no longer predictive.';
-      else if(Number.isSafeInteger(Number(remaining))){
-        const n=Number(remaining),lo=Math.min(...rates)*0.5*n/1000,hi=Math.max(...rates)*2*n/1000;
-        eta={...eta,currentDegreeSeconds:[lo,hi],centralSeconds:median(rates)*n/1000,reason:'Recent resolved-overlap throughput; heterogeneous pairs may exceed this range.'};
-      }else eta.reason='Remaining count exceeds the safe floating-point forecasting range.';
+    else if(!remaining)eta={...eta,currentDegreeSeconds:[0,0],centralSeconds:0,reason:'Overlap work resolved; checkpoint/output work may remain.'};
+    else if(!Number.isSafeInteger(Number(remaining)))eta.reason='Remaining count exceeds the safe floating-point forecasting range.';
+    else {
+      const rates=this.windowRates(now,resolved);
+      if(rates.length){
+        const long=rates.filter(r=>r.window>=LONG_MS),central=median((long.length?long:rates).map(r=>r.perMs));
+        // Smooth the central rate in log space so the estimate does not jump with each batch.
+        const a=this.smooth?1-Math.exp(-(now-this.smooth.t)/SMOOTH_MS):1;
+        this.smooth={t:now,log:this.smooth?this.smooth.log+a*(Math.log(central)-this.smooth.log):Math.log(central)};
+        const n=Number(remaining),perMs=rates.map(r=>r.perMs),mid=n/Math.exp(this.smooth.log)/1000;
+        const observed=Math.max(...rates.map(r=>r.elapsed)),stalled=staleMs>=Math.max(STALL_MS,3*LOG_STEP_MS);
+        eta={...eta,currentDegreeSeconds:[Math.min(mid,n/Math.max(...perMs)/1000),Math.max(mid,n/Math.min(...perMs)/1000)],centralSeconds:mid,
+          observedSeconds:observed/1000,windows:rates.length,stalled,
+          reason:stalled?`No overlap has finished for ${span(staleMs)} while a long reduction runs; the estimate includes this pause.`
+            :`Throughput over up to ${span(observed)} of this degree; heterogeneous pairs can still exceed the range.`};
+      }
     }
     return {engine:'fomkyr',phase:this.phase,target:this.target,currentDegree:this.degree,completedThroughDegree:this.completed??0,
       elapsedMs:now-this.started,degreeElapsedMs:this.degreeStart==null?0:now-this.degreeStart,

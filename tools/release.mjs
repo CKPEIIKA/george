@@ -145,6 +145,11 @@ function preflight(){
     assert.equal(fileHash('fomkyr/'+name),record.sha256,'Core source changed: '+name);
   for(const [name,record] of Object.entries(inventory.compatibilityFixtures ?? {}))
     assert.equal(fileHash('fomkyr/'+name),record.sha256,'Compatibility fixture changed: '+name);
+  if(fs.existsSync('kircracker/SOURCE.json')){
+    const standalone=JSON.parse(fs.readFileSync('kircracker/SOURCE.json'));
+    for(const [name,record] of Object.entries(standalone.retainedFiles))
+      assert.equal(fileHash('kircracker/'+name),record.sha256,'Kircracker source changed: '+name);
+  }
 }
 
 async function phase(name,command,args,{evidence,validate,timeoutSeconds=900,env={},reuse=true}={}){
@@ -225,6 +230,7 @@ if(preparation){
   report.state='running';save();
   try{
     await phase('units',process.execPath,['--test','--experimental-test-isolation=none',...fs.readdirSync('test').filter(n=>n.endsWith('.test.mjs')).sort().map(n=>'test/'+n)],{timeoutSeconds:120});
+    if(fs.existsSync('kircracker/Makefile'))await phase('kircracker','make',['-C','kircracker','test'],{timeoutSeconds:120,env:{KIR_QUICK_TESTS:'1'}});
     const growth=path.join(out,'row-growth');
     await phase('row-growth',process.execPath,['tools/validate-fomkyr-row-growth.mjs',growth],{evidence:path.join(growth,'report.json'),timeoutSeconds:180,validate:r=>{assert.equal(r.passed,true);assert.equal(r.rows.length,5);}});
     const matrix=path.join(out,'matrix'),exact=path.join(out,'exact');

@@ -48,7 +48,7 @@ export class FomkyrEngine {
     if(this.options.progress===false||!this.tracker||!this.e||this.publishingProgress)return false;
     const now=performance.now();if(!force&&now-(this.lastProgressSent??-Infinity)<this.progressInterval)return false;
     this.publishingProgress=true;this.lastProgressSent=now;
-    try{this.lastProgress=this.tracker.sample(readProgressCounters(this.e));this.lastProgress.hilbertReference=referenceSnapshot(this.e,this.hilbertReference);this.lastProgress.hilbertClosure=hilbertGap(this.e,this.hilbertClosure);this.lastProgress.conditionalOnExternalDimensions=this.hilbertClosure?.assumed??false;this.lastProgress.hilbertClosureEvent=this.hilbertClosure?.events.find(x=>x.degree===this.lastProgress.currentDegree)??null;this.lastProgress.cooperative=this.cooperativeStats();this.lastProgress.fkGate=this.fkGate?.snapshot();this.lastProgress.conditionalOnImportedFkDimensions=!!this.fkGate?.enabled;this.lastProgress.checkpoint=this.lastCheckpoint?{partial:!!this.lastCheckpoint.partial,currentDegree:this.lastCheckpoint.currentDegree,completedThroughDegree:this.lastCheckpoint.completedThroughDegree,retainedCommittedPairs:this.lastCheckpoint.retainedCommittedPairs,updatedAt:this.lastCheckpoint.updatedAt}:null;this.emit('progress',this.lastProgress);}
+    try{this.lastProgress=this.tracker.sample(readProgressCounters(this.e));this.lastProgress.hilbertReference=referenceSnapshot(this.e,this.hilbertReference);this.lastProgress.hilbertClosure=hilbertGap(this.e,this.hilbertClosure);this.lastProgress.conditionalOnExternalDimensions=this.hilbertClosure?.assumed??false;this.lastProgress.hilbertClosureEvent=this.hilbertClosure?.events.find(x=>x.degree===this.lastProgress.currentDegree)??null;this.lastProgress.cooperative=this.cooperativeStats();this.lastProgress.normalization=this.normalizationProgress??null;this.lastProgress.fkGate=this.fkGate?.snapshot();this.lastProgress.conditionalOnImportedFkDimensions=!!this.fkGate?.enabled;this.lastProgress.checkpoint=this.lastCheckpoint?{partial:!!this.lastCheckpoint.partial,currentDegree:this.lastCheckpoint.currentDegree,completedThroughDegree:this.lastCheckpoint.completedThroughDegree,retainedCommittedPairs:this.lastCheckpoint.retainedCommittedPairs,updatedAt:this.lastCheckpoint.updatedAt}:null;this.emit('progress',this.lastProgress);}
     catch(error){this.progressError=String(error.message??error);}finally{this.publishingProgress=false;}
     return true;
   }
@@ -73,7 +73,7 @@ export class FomkyrEngine {
         this.module=await loadKernel(bits,o.wasmURL,!this.shared);
         this.host=hostFor(this.memory,bits,this.budget,null,Infinity,true);
         this.e=(await WebAssembly.instantiate(this.module,this.host.imports)).exports;
-        if(this.e.gn_abi()!==3||typeof this.e.gn_optimize!=='function'||typeof this.e.gn_word_cache!=='function'||typeof this.e.gn_progress_stat!=='function'||typeof this.e.gn_candidate_check!=='function'||typeof this.e.gn_local_rewrites!=='function'||typeof this.e.gn_pin_cache!=='function'||typeof this.e.gn_rational_rewrites!=='function'||typeof this.e.gn_modulus!=='function'||typeof this.e.gn_big_rational_heap!=='function'||typeof this.e.gn_legacy_big_division!=='function'||typeof this.e.gn_growing_rational!=='function'||typeof this.e.gn_row_reserve!=='function'||typeof this.e.gn_reserve_growth!=='function'||typeof this.e.gn_radix_queue!=='function'||typeof this.e.gn_memory_policy!=='function'||typeof this.e.gn_batch_retry!=='function'||typeof this.e.gn_frontier_export!=='function'||typeof this.e.gn_hilbert_gate_begin!=='function'||typeof this.e.gn_pair_plan_config!=='function'||typeof this.e.gn_pair_plan_adopt!=='function')throw new Error('Kernel/host API mismatch. Deploy matching fomkyr JS and WASM together.');
+        if(this.e.gn_abi()!==3||typeof this.e.gn_optimize!=='function'||typeof this.e.gn_word_cache!=='function'||typeof this.e.gn_progress_stat!=='function'||typeof this.e.gn_candidate_check!=='function'||typeof this.e.gn_local_rewrites!=='function'||typeof this.e.gn_pin_cache!=='function'||typeof this.e.gn_rational_rewrites!=='function'||typeof this.e.gn_modulus!=='function'||typeof this.e.gn_big_rational_heap!=='function'||typeof this.e.gn_legacy_big_division!=='function'||typeof this.e.gn_growing_rational!=='function'||typeof this.e.gn_row_reserve!=='function'||typeof this.e.gn_reserve_growth!=='function'||typeof this.e.gn_radix_queue!=='function'||typeof this.e.gn_memory_policy!=='function'||typeof this.e.gn_batch_retry!=='function'||typeof this.e.gn_frontier_export!=='function'||typeof this.e.gn_hilbert_gate_begin!=='function'||typeof this.e.gn_pair_plan_config!=='function'||typeof this.e.gn_pair_plan_adopt!=='function'||typeof this.e.gn_normalize_prepare!=='function'||typeof this.e.gn_normalize_rule!=='function'||typeof this.e.gn_normalize_status!=='function')throw new Error('Kernel/host API mismatch. Deploy matching fomkyr JS and WASM together.');
         break;
       }catch(error){
         if(bits!==64||o.strictCapabilities||o.wasmURL)throw error;
@@ -158,11 +158,14 @@ export class FomkyrEngine {
   async resetKernel(fixture,target,modulus){
     checked(this.e.gn_init(fixture.variables.length,target??0,this.workers,BigInt(this.budget),BigInt(this.scratch),(this.restoreHashBits??this.options.hashBits??18),modulus,this.spill?1:0));
     checked(this.e.gn_memory_policy(this.autoMemory?1:0));
-    const pairMode={legacy:0,overlap:1,sparse:2}[this.options.pairOrder??'legacy'];
+    const pairMode={legacy:0,overlap:1,sparse:2,word:3}[this.options.pairOrder??'legacy'];
     const pairMin=this.options.planMinDegree??12,pairBytes=this.options.pairPlanBytes??Math.min(64*MiB,this.budget/8);
     if(pairMode===undefined||!Number.isInteger(pairMin)||pairMin<1||pairMin>0xfffffffe||!Number.isSafeInteger(pairBytes)||pairBytes<0)throw new Error('Invalid global pair order/minimum degree/budget');
     checked(this.e.gn_pair_plan_config(pairMode,pairMin,BigInt(pairBytes)));
 
+    const commitMode=this.options.commitReduction??'full';if(!['full','delta'].includes(commitMode))throw new Error('commitReduction must be full or delta');
+    if(typeof this.e.gn_delta_commit!=='function')throw new Error('Updated pre-F4 host requires matching WASM modules');
+    checked(this.e.gn_delta_commit(commitMode==='delta'?1:0));
     checked(this.e.gn_rational_heap(this.options.rationalHeap!==false?1:0));
     checked(this.e.gn_big_rational_heap(this.options.bigRationalHeap!==false?1:0));
     const bigRowMaxTerms=this.options.bigRowMaxTerms??0;
@@ -262,7 +265,7 @@ export class FomkyrEngine {
     const bytes=new Uint8Array(this.memory.buffer,Number(ptr),this.e.gn_frontier_size());
     const text=new Uint8Array(bytes.length*2);for(let i=0;i<bytes.length;i++){text[2*i]=hexDigits[bytes[i]>>>4];text[2*i+1]=hexDigits[bytes[i]&15];}const frontier=hexDecoder.decode(text);
     this.safePoint={abi:this.fkGate?.enabled?5:this.hilbertClosure?4:3,...hilbertMetadata(this.hilbertClosure),...this.fkGate?.metadata(),version:VERSION,identity:this.identityHash,basisSize:Number(this.e.gn_stat(0)),terms:Number(this.e.gn_stat(1)),completedThroughDegree:Number(this.e.gn_stat(2)),currentDegree:Number(this.e.gn_stat(3)),diskBytes:Number(this.e.gn_stat(6)),partial:true,
-      ...(this.e.gn_pair_plan_stat(0)?{frontierABI:2,minimumReader:'0.7.1',pairPlanOrder:Number(this.e.gn_pair_plan_stat(1))}:{}),
+      ...(this.e.gn_pair_plan_stat(0)?{frontierABI:Number(this.e.gn_pair_plan_stat(1))===3?3:2,minimumReader:Number(this.e.gn_pair_plan_stat(1))===3?'0.7.2':'0.7.1',pairPlanOrder:Number(this.e.gn_pair_plan_stat(1))}:{}),
       frontier,hilbertReference:referenceSnapshot(this.e,this.hilbertReference),hashBits:this.e.gn_frontier_hash_bits(),retainedCommittedPairs:Number(this.e.gn_progress_stat(2)),
       resolvedOverlaps:Number(this.e.gn_progress_stat(2)+this.e.gn_progress_stat(4)+this.e.gn_progress_stat(5)),
       totalOverlaps:Number(this.e.gn_progress_stat(0)),pendingPairs:this.e.gn_frontier_pending(),
@@ -411,7 +414,7 @@ export class FomkyrEngine {
   }
   async compute(fixture,target=20,modulus=0){
     if(this.active||this.closed)throw new Error('Engine is busy or closed');
-    this.active=true;const start=performance.now();this.sessionStart=start;let timer,progressTimer;
+    this.active=true;this.normalizationProgress=null;const start=performance.now();this.sessionStart=start;let timer,progressTimer;
     this.safePoint=null;this.hilbertReference=null;this.checkpointSequence=0;this.checkpointInterval=Number(this.options.checkpointIntervalMs??30000);
     if(!Number.isFinite(this.checkpointInterval)||this.checkpointInterval<0){this.active=false;throw new Error('checkpointIntervalMs must be nonnegative');}
     this.lastDurableAt=start;
@@ -445,7 +448,7 @@ export class FomkyrEngine {
           this.priorElapsedMs=cp.cumulativeElapsedMs??0;restoreError=null;break;
         }
         catch(error){
-          if(cp.partial&&cp.frontier?.slice(16,32)==='0200000000000000'&&['MEMORY_BUDGET','SCRATCH_BUDGET','REPRESENTATION_LIMIT'].includes(error.code)){
+          if(cp.partial&&['0200000000000000','0300000000000000'].includes(cp.frontier?.slice(16,32))&&['MEMORY_BUDGET','SCRATCH_BUDGET','REPRESENTATION_LIMIT'].includes(error.code)){
             error.message='Planned checkpoint needs a larger memory/plan allowance; saved work is retained. '+error.message;throw error;
           }
           restoreError=error;await this.resetKernel(fixture,kernelTarget,modulus);this.emit('warning',{message:`Rejected checkpoint degree ${cp.completedThroughDegree}: ${error.message}`});
@@ -524,6 +527,7 @@ export class FomkyrEngine {
       if(hilbert&&this.hilbertClosure){Object.assign(hilbert,hilbertMetadata(this.hilbertClosure));if(this.hilbertClosure.assumed)hilbert.validity='Conditional on explicitly assumed external dimensions. No independent replay proof of those dimensions is claimed.';}
       const result={...stats(this.e),...hilbertMetadata(this.hilbertClosure),...this.fkGate?.metadata(),engine:'fomkyr',version:VERSION,memoryPlan:this.memoryPlan,storage:this.spill?'opfs':'memory',complete:true,unrestrictedBasisComplete:globallyComplete(),reduced:false,target,modulus,order:'degleftlex',runKey:this.runKey,identity,bits:this.bits,shared:this.shared,ioMode:this.ioMode,executionMode:`wasm${this.bits}-${this.shared?'shared':'single'}`,fallbacks:this.fallbacks??[],requestedBudgetBytes:this.requestedBudget,hostMailboxBytes:this.brokerClients.length*(IO_HEADER+IO_CHUNK),linearMemoryBytes:this.memory.buffer.byteLength,resumedFromDegree:restored,cacheHit:target!==null&&restored>=target,hilbert:hilbert?{...hilbert,...hilbertMetadata(this.hilbertClosure),...this.fkGate?.metadata()}:hilbert,scheduler:{...this.scheduler},cooperative:this.cooperativeStats(),lanePairs:Array.from({length:this.workers},(_,i)=>Number(this.e.gn_lane_stat(i,6))),elapsedMs:performance.now()-start};
       if(this.options.exportText!==false){this.setPhase('export');Object.assign(result,await this.exportText(fixture.variables));}
+      result.elapsedMs=performance.now()-start;
       result.degreeTimings=[...this.tracker.history];result.progressError=this.progressError??null;
       if(this.directory){
         if(hilbert)await writeJSON(this.directory,'hilbert.json',{...hilbert,...hilbertMetadata(this.hilbertClosure),...this.fkGate?.metadata()});
@@ -543,8 +547,21 @@ export class FomkyrEngine {
     const bytes=enc.encode(text),h=await(await this.directory.getFileHandle(name,{create:true})).createSyncAccessHandle();
     try{h.truncate(0);if(h.write(bytes,{at:0})!==bytes.length)throw new Error('Short text write');h.flush();}finally{h.close();}
   }
-  async exportText(variables) {
+  async exportText(variables,{tailReduced=false}={}) {
     const e=this.e;let preview='',previewTruncated=false,used=0,currentDegree=0,textOffset=0;
+    const normalized=this.options.normalizeOutput!==false,total=Number(e.gn_stat(0)),begin=performance.now();let exportedTerms=0;
+    const requested=this.options.normalizationWorkers??0;
+    if(!Number.isInteger(requested)||requested<0||requested>32)throw new Error('normalizationWorkers must be 0 (automatic) or 1..32');
+    const normalizationWorkers=Math.min(this.workers,requested||(Number(e.gn_stat(1))<65536?1:this.workers));
+    if(normalized&&!tailReduced)checked(e.gn_normalize_prepare());
+    // Sort only the compact leading-word index. Polynomial records stay in
+    // their bounded lane buffers or on disk throughout normalization/export.
+    const order=Array.from({length:total},(_,i)=>i+1);
+    if(normalized){
+      const heads=order.map(id=>{const degree=Number(e.gn_rule_stat(id,2)),lo=e.gn_rule_stat(id,0),hi=e.gn_rule_stat(id,1);return {id,degree,lo,hi,word:degree>31?new Uint8Array(this.memory.buffer,Number(lo),degree):null};});
+      heads.sort((a,b)=>{if(a.degree!==b.degree)return a.degree-b.degree;if(a.word){for(let i=0;i<a.degree;i++)if(a.word[i]!==b.word[i])return b.word[i]-a.word[i];return 0;}return a.hi!==b.hi?a.hi>b.hi?-1:1:a.lo>b.lo?-1:a.lo<b.lo?1:0;});
+      for(let i=0;i<total;i++)order[i]=heads[i].id;
+    }
     const cap=Math.min(Number(this.options.previewBytes??1024*1024),1024*1024);
     const degreeCounts=new Map();
     let handle=null;
@@ -554,23 +571,41 @@ export class FomkyrEngine {
     const flush=()=>{if(handle&&buffer){const b=enc.encode(buffer);let done=0;while(done<b.length){const n=handle.write(b.subarray(done),{at:textOffset+done});if(!n)throw new Error('Short export write');done+=n;}textOffset+=b.length;}buffer='';};
     const emit=(text,allowPreview=true)=>{if(handle){buffer+=text;if(buffer.length>=32768)flush();}if(allowPreview&&!previewTruncated){if(used+text.length>cap){previewTruncated=true;}else{preview+=text;used+=text.length;}}};
     try {
-      emit(`% fomkyr; completed through degree ${Number(e.gn_stat(2))}; not a claim of a finite complete GB\n`);
+      emit(`% fomkyr; completed through degree ${Number(e.gn_stat(2))}; reduced:${normalized}; normalization:${normalized?'monic-tail-reduced':'primitive-integer'}; not a claim of a finite complete GB\n`);
       if(this.hilbertClosure)emit(`% Hilbert evidence ${this.hilbertClosure.key}; ${this.hilbertClosure.assumed?'CONDITIONAL ON EXTERNAL DIMENSIONS':'exact integer-dual witnesses replayed'}\n`);
       if(this.fkGate?.enabled)emit(`% FK Gate ${FK_GATE_PROFILE_ID}; CONDITIONAL ON IMPORTED FK DIMENSIONS; proof not replayed here\n`);
-      for(let id=1;id<=Number(e.gn_stat(0));id++) {
+      // Each lane owns one row; no full-basis JS map or additional polynomial
+      // queue is needed. Join all readers before surfacing errors/cancellation.
+      for(let first=1;first<=total;){
+        const parallel=normalized&&!tailReduced,active=parallel?Math.min(normalizationWorkers,total-first+1):1;
+        const remote=Array.from({length:active-1},(_,i)=>this.rpc(this.pool[i+1],{command:'normalize',rule:order[first+i]}));
+        let local,localError;
+        try{const offset=parallel?e.gn_normalize_rule(0,order[first-1]):e.gn_export_rule(order[first-1]);local={offset,status:parallel?e.gn_normalize_status(0):offset?0:2};}catch(error){localError=error;}
+        const joined=await Promise.allSettled(remote);
+        if(localError)throw localError;
+        const rows=[local,...joined.map(r=>{if(r.status==='rejected')throw r.reason;return r.value;})];
+        for(let lane=0;lane<active;lane++){
+        const id=order[first+lane-1];
         const degree=Number(e.gn_rule_stat(id,2));
         degreeCounts.set(degree,(degreeCounts.get(degree)??0)+1);
         if(degree!==currentDegree){emit(`\n% ${degree}\n`);currentDegree=degree;}
-        const off=e.gn_export_rule(id);if(!off)throw new Error('Export row exceeds I/O workspace or is corrupted');
+        let {offset:off,status}=rows[lane];
+        // A simultaneous large-row reserve lease can defer another lane.
+        // Retry it after joining; lane 0's previous row has been consumed.
+        if(!off&&status===11){off=e.gn_normalize_rule(0,id);status=e.gn_normalize_status(0);}
+        checked(status);if(!off)throw new Error('Export row exceeds I/O workspace or is corrupted');
+        exportedTerms+=new DataView(this.memory.buffer,Number(off),32).getUint32(8,true);
         const before=preview.length;let started=!previewTruncated;
-        for(const term of recordTerms(this.memory,off,variables))emit(term);
+        for(const term of recordTerms(this.memory,off,variables,{monic:normalized}))emit(term);
         emit(',\n');
         if(started&&previewTruncated)preview=preview.slice(0,before); // Never expose half a polynomial.
+        }
+        first+=active;this.normalizationProgress={completedRows:first-1,totalRows:total,elapsedSeconds:(performance.now()-begin)/1000};this.publishProgress();if((first&63)<active)await this.yieldControl();
       }
       const previewByteLength=enc.encode(preview).length;
       if(previewTruncated)preview+='\n% PREVIEW TRUNCATED. Full result.gb is in OPFS; no Done marker here.\n';
       emit('Done\n',!previewTruncated);flush();handle?.flush();
-      return {preview,previewTruncated,previewByteLength,basisByDegree:Array.from(degreeCounts,([degree,count])=>({degree,count})).sort((a,b)=>a.degree-b.degree),textBytes:textOffset,fullBasisPath:this.directory?`fomkyr/${this.runKey}/result.gb`:null};
+      return {preview,previewTruncated,previewByteLength,basisByDegree:Array.from(degreeCounts,([degree,count])=>({degree,count})).sort((a,b)=>a.degree-b.degree),textBytes:textOffset,fullBasisPath:this.directory?`fomkyr/${this.runKey}/result.gb`:null,reduced:normalized,tailReduced:normalized||tailReduced,normalization:normalized?'monic-tail-reduced':'primitive-integer',normalizationSeconds:(performance.now()-begin)/1000,normalizationWorkers:normalized&&!tailReduced?normalizationWorkers:1,exportedTerms};
     } finally {handle?.close();}
   }
   async closeStorage(){

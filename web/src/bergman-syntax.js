@@ -25,7 +25,7 @@ export function tokenize(src) {
       let j = i; while (j < src.length && /[A-Za-z0-9_]/.test(src[j])) j++;
       toks.push({ t: 'id', v: src.slice(i, j), at: i }); i = j; continue;
     }
-    if ('+-*^().[]{},='.includes(c)) { toks.push({ t: 'op', v: c, at: i }); i++; continue; }
+    if ('+-*^().[]{},=/'.includes(c)) { toks.push({ t: 'op', v: c, at: i }); i++; continue; }
     if (c === '−') { toks.push({ t: 'op', v: '-', at: i }); i++; continue; }
     throw new SyntaxError(`Unexpected character “${c}”`);
   }

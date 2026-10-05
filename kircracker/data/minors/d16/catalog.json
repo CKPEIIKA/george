@@ -1,0 +1,398 @@
+{
+  "blocks": [
+    {
+      "contribution": 627,
+      "coveredGrades": 1,
+      "file": "block-00.kcb",
+      "grade": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "rank": 627,
+      "sha256": "df28da8ebc35b94337ede4ebb0e72972e4fb26aa9b12719fe4851a2b40304f7d"
+    },
+    {
+      "contribution": 2440,
+      "coveredGrades": 4,
+      "file": "block-01.kcb",
+      "grade": [
+        1,
+        2,
+        3,
+        5,
+        6,
+        4
+      ],
+      "rank": 610,
+      "sha256": "17502e20ca33ff36c689e92c00f94b365211f61f3f86cf7d46e2a5d2981c2d1c"
+    },
+    {
+      "contribution": 2308,
+      "coveredGrades": 4,
+      "file": "block-02.kcb",
+      "grade": [
+        1,
+        2,
+        3,
+        6,
+        4,
+        5
+      ],
+      "rank": 577,
+      "sha256": "b7366b8ca9f5189fd8edca9cf3bef1e1df83a334d686492c2411742113de5a76"
+    },
+    {
+      "contribution": 3582,
+      "coveredGrades": 6,
+      "file": "block-03.kcb",
+      "grade": [
+        1,
+        2,
+        4,
+        3,
+        6,
+        5
+      ],
+      "rank": 597,
+      "sha256": "7a583e5eb4adf93c5621f442f14347dfce61a27504475db9ce1636b22fa8ee1d"
+    },
+    {
+      "contribution": 6576,
+      "coveredGrades": 12,
+      "file": "block-04.kcb",
+      "grade": [
+        1,
+        2,
+        4,
+        5,
+        3,
+        6
+      ],
+      "rank": 548,
+      "sha256": "64c14a63bc025a82def68badbd5910c7575c00d755ffd48764ae6db8179d0a00"
+    },
+    {
+      "contribution": 6576,
+      "coveredGrades": 12,
+      "file": "block-05.kcb",
+      "grade": [
+        1,
+        2,
+        4,
+        6,
+        5,
+        3
+      ],
+      "rank": 548,
+      "sha256": "f1ceb8cba8da953f8a71f878a0f795ef6cb4ebcb1d4bd029dffe78c44f7efb08"
+    },
+    {
+      "contribution": 6360,
+      "coveredGrades": 12,
+      "file": "block-06.kcb",
+      "grade": [
+        1,
+        2,
+        5,
+        6,
+        3,
+        4
+      ],
+      "rank": 530,
+      "sha256": "68577bdddc91157f4ed5e7f203c1a7b965fd665265398229fcdfd90c0df39b8f"
+    },
+    {
+      "contribution": 7308,
+      "coveredGrades": 12,
+      "file": "block-07.kcb",
+      "grade": [
+        1,
+        3,
+        2,
+        5,
+        4,
+        6
+      ],
+      "rank": 609,
+      "sha256": "b0a4a5452a011525fb7a4a3419c4c93f0a72062a57f05bdc9558d0359b068cec"
+    },
+    {
+      "contribution": 7308,
+      "coveredGrades": 12,
+      "file": "block-08.kcb",
+      "grade": [
+        1,
+        3,
+        2,
+        6,
+        5,
+        4
+      ],
+      "rank": 609,
+      "sha256": "3f5b4c5411b4de25df5abeca203e289302f0e6ad013250a4370dc7ca2e4dab7a"
+    },
+    {
+      "contribution": 4920,
+      "coveredGrades": 8,
+      "file": "block-09.kcb",
+      "grade": [
+        1,
+        3,
+        4,
+        2,
+        5,
+        6
+      ],
+      "rank": 615,
+      "sha256": "31bc688b501d0281df27fcf6ea7d61f070f8f7f2ea82aba4bb512301fbc3b7cb"
+    },
+    {
+      "contribution": 13320,
+      "coveredGrades": 24,
+      "file": "block-10.kcb",
+      "grade": [
+        1,
+        3,
+        4,
+        5,
+        6,
+        2
+      ],
+      "rank": 555,
+      "sha256": "7fa078ee091e59703f8ee3c64d67cf1c22db951c472fb3232e59179cd62017b9"
+    },
+    {
+      "contribution": 12840,
+      "coveredGrades": 24,
+      "file": "block-11.kcb",
+      "grade": [
+        1,
+        3,
+        4,
+        6,
+        2,
+        5
+      ],
+      "rank": 535,
+      "sha256": "561be8cfccb54cdd79af3d6145c104942292fe87801f715bdc236d8d1412716d"
+    },
+    {
+      "contribution": 14496,
+      "coveredGrades": 24,
+      "file": "block-12.kcb",
+      "grade": [
+        1,
+        3,
+        5,
+        6,
+        4,
+        2
+      ],
+      "rank": 604,
+      "sha256": "67281548733a314a5a49926122054094d7c17ec5479cabf3eb04441f7601f358"
+    },
+    {
+      "contribution": 14736,
+      "coveredGrades": 24,
+      "file": "block-13.kcb",
+      "grade": [
+        1,
+        3,
+        6,
+        5,
+        2,
+        4
+      ],
+      "rank": 614,
+      "sha256": "b2df717f47452c25f52bfdf4c225f0384ddc342ab3ab9d6fb3ac12531f9205cb"
+    },
+    {
+      "contribution": 1749,
+      "coveredGrades": 3,
+      "file": "block-14.kcb",
+      "grade": [
+        2,
+        1,
+        4,
+        3,
+        5,
+        6
+      ],
+      "rank": 583,
+      "sha256": "963902fe7c2335e77e6a87c2285e5174d883d59a13f462455c906978f6f5aee7"
+    },
+    {
+      "contribution": 6948,
+      "coveredGrades": 12,
+      "file": "block-15.kcb",
+      "grade": [
+        2,
+        1,
+        4,
+        5,
+        6,
+        3
+      ],
+      "rank": 579,
+      "sha256": "414aed6a88fdc6923ef89cf82631cef245230e0c5fef52ebd96c5da3e1a59174"
+    },
+    {
+      "contribution": 6684,
+      "coveredGrades": 12,
+      "file": "block-16.kcb",
+      "grade": [
+        2,
+        1,
+        4,
+        6,
+        3,
+        5
+      ],
+      "rank": 557,
+      "sha256": "21de306d58628dbfcea1bcfc4fc97dbf1274b8f0df23ac2f90e7510feeaf4926"
+    },
+    {
+      "contribution": 6384,
+      "coveredGrades": 12,
+      "file": "block-17.kcb",
+      "grade": [
+        2,
+        1,
+        5,
+        6,
+        4,
+        3
+      ],
+      "rank": 532,
+      "sha256": "1fa2a36ca76744193b8784f05f6fe39a9aae54192b3f04238baceb7562c23de1"
+    },
+    {
+      "contribution": 5040,
+      "coveredGrades": 8,
+      "file": "block-18.kcb",
+      "grade": [
+        2,
+        3,
+        1,
+        5,
+        6,
+        4
+      ],
+      "rank": 630,
+      "sha256": "c42b07827fb71c9dc7b5d93011939a32bf9bc902f2d3f4f7c99fe8461b11121d"
+    },
+    {
+      "contribution": 4456,
+      "coveredGrades": 8,
+      "file": "block-19.kcb",
+      "grade": [
+        2,
+        3,
+        1,
+        6,
+        4,
+        5
+      ],
+      "rank": 557,
+      "sha256": "7783b45f0e99e95a8f8f18b7f15293630535c27f6affbb76076320b446ecf570"
+    },
+    {
+      "contribution": 3138,
+      "coveredGrades": 6,
+      "file": "block-20.kcb",
+      "grade": [
+        2,
+        3,
+        4,
+        1,
+        6,
+        5
+      ],
+      "rank": 523,
+      "sha256": "df89b53607100c7466e7015c929bd79f67a53528c50c0013373112ba2cf47aa5"
+    },
+    {
+      "contribution": 14208,
+      "coveredGrades": 24,
+      "file": "block-21.kcb",
+      "grade": [
+        2,
+        3,
+        4,
+        5,
+        1,
+        6
+      ],
+      "rank": 592,
+      "sha256": "483f8b2585130afcf3836830b07ae8554311cb1268756d44af146631727b7864"
+    },
+    {
+      "contribution": 14208,
+      "coveredGrades": 24,
+      "file": "block-22.kcb",
+      "grade": [
+        2,
+        3,
+        4,
+        6,
+        5,
+        1
+      ],
+      "rank": 592,
+      "sha256": "406a27addc8a866279fed24a7a44360f711956de3e47033c904a834a413c5f82"
+    },
+    {
+      "contribution": 13704,
+      "coveredGrades": 24,
+      "file": "block-23.kcb",
+      "grade": [
+        2,
+        3,
+        5,
+        6,
+        1,
+        4
+      ],
+      "rank": 571,
+      "sha256": "e523ffd60c672b5c995a76d34362ca56ded4135b2dfb8efaa5fd99689d1df541"
+    },
+    {
+      "contribution": 13704,
+      "coveredGrades": 24,
+      "file": "block-24.kcb",
+      "grade": [
+        2,
+        3,
+        6,
+        5,
+        4,
+        1
+      ],
+      "rank": 571,
+      "sha256": "531fb1480f8de0f28e1656149d7f0feeaf34d33c767c6a7dea6b666ae729c689"
+    },
+    {
+      "contribution": 13656,
+      "coveredGrades": 24,
+      "file": "block-25.kcb",
+      "grade": [
+        2,
+        5,
+        4,
+        6,
+        1,
+        3
+      ],
+      "rank": 569,
+      "sha256": "453db112b46414b1ec9d72fd3549a85bebfa560120b5e196ce29507dc37bbe0d"
+    }
+  ],
+  "degree": 16,
+  "prime": 1000003,
+  "rankLowerBound": 207276,
+  "storedMatrices": false
+}

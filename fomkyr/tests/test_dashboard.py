@@ -111,4 +111,43 @@ assert abs(mid - 11) < 1e-9
 for width, height in ((140, 50), (80, 24), (60, 10), (30, 4)):
     text = module.render(dict(fake, updatedUnixSeconds=time.time()), {'rss': 1}, {}, tracker, width, height, module.Style(True))
     assert all(module.visible(line) <= width for line in text.splitlines()) and len(text.splitlines()) <= height
+# A degree longer than the fine sample window keeps its whole-degree rate.
+long = module.Tracker()
+fake = dict(state='running', pid=1, targetDegree=14, cumulativeElapsedSeconds=0,
+            progress=dict(degree=12, resolvedOverlaps=0, totalOverlaps=100000))
+for tick in range(0, 4 * 3600):
+    fake['progress']['resolvedOverlaps'] = tick
+    long.update(tick, fake, {'rss': 1}, 100)
+now = 4 * 3600 - 1
+assert long.observed(now) >= 4 * 3600 - 20 and len(long.samples) == 7200
+low, mid, high = long.degree_eta(now, 100000 - now)
+assert abs(mid - (100000 - now)) < 1 and low <= mid <= high
+# A long reduction without finished overlaps raises the estimate instead of hiding it.
+for tick in range(now + 1, now + 601):
+    long.update(tick, fake, {'rss': 1}, 100)
+stalled = long.degree_eta(now + 600, 100000 - now)
+assert stalled and stalled[1] > mid and stalled[2] > high
+# One burst barely moves the smoothed central estimate.
+fake['progress']['resolvedOverlaps'] = now + 2000
+long.update(now + 601, fake, {'rss': 1}, 100)
+burst = long.degree_eta(now + 601, 100000 - now - 2000)
+assert abs(burst[1] - stalled[1]) < 0.1 * stalled[1]
+# d shows and hides the details block; the end of a run gets its own summary screen.
+running = dict(fake, updatedUnixSeconds=time.time(), budgetBytes=1 << 30, allocatedBytes=1 << 28)
+plain = module.render(running, {'rss': 1}, {}, long, 140, 50, module.Style(False), details=False)
+shown = module.render(running, {'rss': 1}, {}, long, 140, 50, module.Style(False), details=True)
+assert 'Large reserves:' not in plain and 'Large reserves:' in shown and 'details on' in shown and 'details off' in plain
+finished = dict(running, state='complete', completedThroughDegree=14, basisSize=1234, cumulativeElapsedSeconds=3725)
+long.degree, long.degree_start, long.degree_start_known = 14, 3000, True
+long.finish(finished)
+assert abs(long.degree_times[14] - 725) < 1e-9
+screen = module.render(finished, None, {}, long, 100, 40, module.Style(False))
+assert 'Calculation finished!' in screen and 'Reached degree 14 of 14 in 01:02:05' in screen and '1,234 rules' in screen
+assert 'Time per degree' in screen and 'Large reserves:' not in screen
+assert 'Large reserves:' in module.render(finished, None, {}, long, 100, 40, module.Style(False), details=True)
+stopped = module.render(dict(finished, state='stopped'), None, {}, None, 100, 40, module.Style(False))
+assert 'Calculation stopped.' in stopped and 'resuming continues' in stopped
+for width, height in ((140, 50), (80, 24), (60, 10), (30, 4)):
+    text = module.render(finished, None, {}, long, width, height, module.Style(True))
+    assert all(module.visible(line) <= width for line in text.splitlines()) and len(text.splitlines()) <= height
 print('Workspace parity, three-reserve admission, native telemetry and dashboard passed')

@@ -8,7 +8,7 @@ FOMKYR(1)                     Fomkyr Manual                     FOMKYR(1)
 
 ## VERSION
 
-**0.7.1**, [MIT license](LICENSE). Fomkyr is a standalone C engine and a
+**0.7.2**, [MIT license](LICENSE). Fomkyr is a standalone C engine and a
 subproject of [George](../README.md). George also runs this kernel through
 WebAssembly; its engine chooser marks that integration experimental.
 
@@ -45,6 +45,13 @@ Node.js and Python are used by optional Wasm tools and test utilities.
 
 ## WHOLE-DEGREE PAIR PLANNING
 
+Version 0.7.2 adds `--pair-order word`, which processes critical pairs by their
+actual ambiguity word in ascending degree/left lexicographic order. It also adds
+`--commit-reduction delta`: eligible worker results reduce against rules committed
+since their immutable snapshot. Ineligible cases use full exact reduction.
+The defaults remain `legacy` order and `full` commit reduction; timings depend on
+the presentation. See [0.7.2 changes](docs/RELEASE_072.md).
+
 Version 0.7.1 adds an optional shared plan of the remaining critical pairs in a
 degree. `--pair-order overlap` prioritizes longer common factors, then smaller
 input polynomials. `--pair-order sparse` prioritizes smaller inputs first.
@@ -61,6 +68,8 @@ its FK6 example selects overlap order. Imported FK dimensions require separate
 explicit authorization with `--fk-gate` or the mathematical settings.
 
 Planned partial checkpoints use frontier version 2 and require a 0.7.1 reader.
+Word-ordered checkpoints use frontier version 3 and require 0.7.2. An active saved
+plan keeps its recorded order when resumed with a different requested order.
 Committed work is retained when adopting a legacy checkpoint. Keep a backup
 before changing versions. See [planning and resume](docs/PAIR_PLANNING_071.md).
 `make audit-tools` builds the independent scanner used by
@@ -90,8 +99,11 @@ executable has no Wasm memory ceiling. Four optional Wasm modules provide
 32-bit and 64-bit addressing, shared multicore and single-worker execution.
 
 An inclusive degree bound certifies the reported completed prefix. Unrestricted
-completion requires exhausting all critical pairs. Earlier polynomial tails are
-not globally interreduced. Some presentations have infinite Gröbner bases.
+completion requires exhausting all critical pairs. Text export is monic and
+tail-reduced by default, using the same exact C reducer. Small exports use one
+lane; larger exports use available workers. Rows have a deterministic order. Packed
+checkpoint records retain their primitive integer form. Some presentations
+have infinite Gröbner bases.
 
 ## NATIVE OPTIONS
 
@@ -105,12 +117,14 @@ not globally interreduced. Some presentations have infinite Gröbner bases.
 | `--resume DIR` | Resume with saved input and field. |
 | `--checkpoint-seconds N` | Save at safe boundaries; default 30. Zero saves at every available boundary. |
 | `--time-limit N` | Request cancellation after N seconds following initialization; zero is unlimited. |
-| `--pair-order MODE` | `legacy` (default), `overlap`, or `sparse`; optional whole-degree priority. |
+| `--pair-order MODE` | `legacy` (default), `overlap`, `sparse`, or `word`; optional whole-degree priority. |
+| `--commit-reduction MODE` | `full` (default) or `delta`; exact reduction at ordered commit. |
 | `--plan-min-degree N` | First degree using the selected nonlegacy order; default 12. |
 | `--pair-plan-memory SIZE` | Shared planning allowance; default 64 MiB, bounded by total memory. |
 | `--batch-pairs N` | 1–512 pairs per batch; default 128. |
 | `--field N` | Zero for ℚ, otherwise a supported prime characteristic. |
-| `--export` | Stream the complete text basis to `result.gb`. |
+| `--export` | Stream the monic, tail-reduced text basis to `result.gb`. |
+| `--raw-export` | With `--export`, keep primitive integer rows and their original tails. |
 | `--hilbert` | Export exact Hilbert coefficients through the completed degree. |
 | `--status` | Read the newest valid checkpoint without computing. |
 | `--dry-run` | Show the memory plan without allocating the kernel workspace. |
@@ -314,6 +328,7 @@ the external proof package is not included or replayed here. See
 Optional Hilbert coefficients appear in **Series** and CSV/JSON downloads.
 
 Ordinary basis records remain ABI 3. Unplanned partial frontiers require 0.6.5 or later; planned frontier v2 requires 0.7.1 or later.
+Word-plan frontier v3 requires 0.7.2 or later.
 Assisted metadata uses ABI 4 and requires 0.6.6 and the same evidence on resume.
 Avoid opening assisted or newer partial jobs with older engines. Native and Wasm
 can exchange compatible record/checkpoint files; the browser UI currently keeps

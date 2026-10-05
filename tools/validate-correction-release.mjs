@@ -50,8 +50,9 @@ try {
    }
    const small=await compute();assert.equal(small.previewTruncated,true);assert.equal(small.basisSize,265);assert.equal(small.completedThroughDegree,4);
    async function verificationDownload(label) {
+    await page.locator('[data-tab="files"]').click();
     const next=page.waitForEvent('download');await page.locator('#downloadVerificationBundle').click();
-    const downloaded=await next,file=path.join(output,name+'-'+label+'-verification.zip');await downloaded.saveAs(file);
+    const downloaded=await next,file=path.join(output,name+'-'+label+'-verification.zip');await downloaded.saveAs(file);await page.locator('[data-tab="basis"]').click();
     const verified=JSON.parse(execFileSync('python3',['fomkyr/tools/verify-computation.py',file],{encoding:'utf8',timeout:120000,maxBuffer:1048576}));
     assert.equal(verified.independentGroebnerCertificate,true);assert.equal(verified.completedThroughDegree,4);
     await page.waitForFunction(()=>!document.getElementById('downloadVerificationBundle').disabled);

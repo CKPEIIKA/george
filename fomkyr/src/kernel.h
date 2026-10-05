@@ -49,6 +49,7 @@ API int gn_memory_policy(u32 enabled);
 API int gn_batch_retry(u32 workers,u32 first);
 API u64 gn_memory_stat(u32 key);
 API u64 gn_reserve_stat(u32 lane,u32 key);
+API u32 gn_pair_plan_modes(void);
 API int gn_pair_plan_config(u32 order,u32 min_degree,u64 bytes);
 API int gn_pair_plan_adopt(void); /* 1 adopted, 0 ordinary/already active, <0 error */
 API u64 gn_pair_plan_stat(u32 key);
@@ -77,6 +78,7 @@ API int gn_big_rational_heap(u32 enabled);
 API int gn_big_row_limit(u32 max_terms);
 API int gn_growing_rational(u32 enabled);
 API int gn_legacy_big_division(u32 enabled);
+/* gn_exact_stat 21/22/23: session lane pool/temporary/collected-live high water. */
 API u64 gn_exact_stat(u32 lane,u32 key);
 API int gn_rational_rewrites(u32 enabled); /* same exact cached identities in rational NF */
 API u32 gn_modulus(void);
@@ -91,6 +93,13 @@ API int gn_start_degree(u32 degree);
 API int gn_next_pair(u32 lane); /* 1=pair, 0=end, negative=error */
 API int gn_reduce_pair(u32 lane);
 API int gn_commit(u32 lane);
+/* Optional homogeneous delta-only commit; never applies to input/canonical work. */
+API int gn_delta_commit(u32 enabled);
+/* Coordinator statistics: 0 enabled, 1 invocations, 2 eligible, 3 same snapshot,
+ * 4 no new leader present, 5 conservative, 6 equality probes, 7 hits, 8 binary
+ * search probes, 9 rewrites, 10 NF us, 11 copied record bytes, 12 copy us,
+ * 13 append us, 14 yields, 15 invalid/unavailable normal-form contract. */
+API u64 gn_commit_stat(u32 key);
 /* Cooperative exact row scheduling. Configure before input: 0 = legacy barrier.
  * Quanta are soft millisecond budgets at exact rewrite boundaries, not timeouts.
  * A yielded row retains all arithmetic/heap state in its original lane arenas. */
@@ -169,6 +178,10 @@ API u64 gn_rule_stat(u32 id,u32 key);
 API int gn_candidate_check(void); /* validate LM antichain; enable reject-only verification */
 API u32 gn_is_certifying(void);
 API u64 gn_canonical_rule(u32 id); /* full reduced representative for CRT; no basis mutation */
+API int gn_normalize_prepare(void); /* coordinator-only, once per immutable basis */
+API u64 gn_normalize_rule(u32 lane,u32 id); /* independent per-lane reduced record */
+API u32 gn_normalize_status(u32 lane);
+API u64 gn_monic_coefficient(u32 lane,u32 index); /* ephemeral absolute Coef[2] */
 API u64 gn_export_rule(u32 id); /* serialized record in coordinator I/O workspace */
 API u32 gn_export_size(void);
 API u64 gn_import_buffer(void);

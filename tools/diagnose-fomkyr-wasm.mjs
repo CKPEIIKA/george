@@ -7,7 +7,8 @@ import {spawn} from 'node:child_process';
 import {staticServer} from './serve.mjs';
 import {Sampler} from './linux-resource-sampler.mjs';
 import {EnvironmentMonitor} from './benchmark-environment.mjs';
-import {parseBasis,parseRelation} from '../web/src/bergman-syntax.js';
+import {parseBasis} from '../web/src/bergman-syntax.js';
+import {parseOutputRelation as parseRelation} from '../web/src/output-polynomial.js';
 
 const arg=(name,fallback)=>{const i=process.argv.indexOf(name);return i<0?fallback:process.argv[i+1];};
 const out=path.resolve(arg('--out','local/benchmarks/fomkyr-wasm-diagnostics'));
@@ -107,7 +108,7 @@ async function run(config,trial) {
           fs.writeFileSync(path.join(root,'result.gb'),row.basis);
           const parsed=parseBasis(row.basis);assert.ok(parsed.done,'Complete result required');
           const canonical=parsed.groups.flatMap(g=>g.polys).map(p=>parseRelation(p,fixture.variables)
-            .map(t=>({coefficient:String(BigInt(t.coef)*BigInt(t.sign)),word:t.factors.flatMap(f=>Array(f.e).fill(f.v))}))).sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b)));
+            .map(t=>({coefficient:String(BigInt(t.coef)*BigInt(t.sign))+(t.coefDen&&t.coefDen!=='1'?'/'+t.coefDen:''),word:t.factors.flatMap(f=>Array(f.e).fill(f.v))}))).sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b)));
           row.basisHash=hash(JSON.stringify(canonical));row.basisCount=canonical.length;delete row.basis;
           expectedBasisHash??=row.basisHash;assert.equal(row.basisHash,expectedBasisHash,'Changed polynomial basis');
           assert.equal(row.result.resumedFromDegree,0,'Timed algebra must be fresh');assert.equal(row.result.workers,workers);

@@ -88,7 +88,7 @@ export function stats(e) {
     for(const [k,name] of names.entries()){s[name]=0;for(let i=0;i<laneSlots;i++)s[name]+=Number(e.gn_exact_stat(i,k));}
     s.rationalInPlaceGrowths=0;for(let i=0;i<laneSlots;i++)s.rationalInPlaceGrowths+=Number(e.gn_exact_stat(i,10));
     s.bigRowMaxTerms=Number(e.gn_exact_stat(0,18));
-    s.bigRows=Array.from({length:laneSlots},(_,i)=>({growths:Number(e.gn_exact_stat(i,12)),peakTerms:Number(e.gn_exact_stat(i,13)),lastCapacity:Number(e.gn_exact_stat(i,14)),reservedCapacity:Number(e.gn_exact_stat(i,15)),coefficientPoolUsedBytes:Number(e.gn_exact_stat(i,16)),coefficientPoolBytes:Number(e.gn_exact_stat(i,17)),capacityMisses:Number(e.gn_exact_stat(i,6)),coefficientPoolMisses:Number(e.gn_exact_stat(i,5)),arithmeticWorkspaceMisses:Number(e.gn_exact_stat(i,7)),generalFallbacks:Number(e.gn_exact_stat(i,20)),reserveWaits:Number(e.gn_exact_stat(i,19))}));
+    s.bigRows=Array.from({length:laneSlots},(_,i)=>({growths:Number(e.gn_exact_stat(i,12)),peakTerms:Number(e.gn_exact_stat(i,13)),lastCapacity:Number(e.gn_exact_stat(i,14)),reservedCapacity:Number(e.gn_exact_stat(i,15)),coefficientPoolHighWaterBytes:Number(e.gn_exact_stat(i,21)),arithmeticTempHighWaterBytes:Number(e.gn_exact_stat(i,22)),collectedLiveHighWaterBytes:Number(e.gn_exact_stat(i,23)),coefficientPoolUsedBytes:Number(e.gn_exact_stat(i,16)),coefficientPoolBytes:Number(e.gn_exact_stat(i,17)),capacityMisses:Number(e.gn_exact_stat(i,6)),coefficientPoolMisses:Number(e.gn_exact_stat(i,5)),arithmeticWorkspaceMisses:Number(e.gn_exact_stat(i,7)),generalFallbacks:Number(e.gn_exact_stat(i,20)),reserveWaits:Number(e.gn_exact_stat(i,19))}));
     s.bigRationalEnabled=!!e.gn_exact_stat(0,8);s.fastBigDivision=!e.gn_exact_stat(0,9);s.growingRationalHeap=!!e.gn_exact_stat(0,11);
   }
   if(e.gn_reserve_stat){s.rowReserveBytes=Number(e.gn_reserve_stat(0,0));
@@ -96,6 +96,7 @@ export function stats(e) {
     s.reserveInPlace=!!e.gn_reserve_stat(0,7);s.radixHeap=!!e.gn_reserve_stat(0,8);s.reserveLeased=!!e.gn_reserve_stat(0,9);s.reservePeakBytes=0;for(let lane=0;lane<laneSlots;lane++)s.reservePeakBytes=Math.max(s.reservePeakBytes,Number(e.gn_reserve_stat(lane,5)));
   }
   if(e.gn_pair_plan_stat){const g=k=>Number(e.gn_pair_plan_stat(k));s.pairPlan={active:!!g(0),order:g(1),candidates:g(2),next:g(3),totalRawOverlaps:g(4),adoptedSeen:g(5),adoptedPending:g(6),allocatedBytes:g(7),builds:g(8),declines:g(9),adoptions:g(10),buildMicroseconds:g(11)};}
+  if(e.gn_commit_stat){const names=['enabled','calls','eligible','unchangedSnapshot','noMatchingNewLeader','fullFallbackCalls','equalWordProbes','equalWordHits','newLeaderBinarySearchProbes','rewrites','normalFormMicroseconds','copiedRecordBytes','copyMicroseconds','appendMicroseconds','yields','contractFallbacks'];s.commit=Object.fromEntries(names.map((k,i)=>[k,Number(e.gn_commit_stat(i))]));}
   return s;
 }
 export function setStack(e, lane, bits) {
@@ -107,23 +108,32 @@ export function wordCode(word) {
   for (const x of word) v = (v<<4n)|BigInt(x);
   return [BigInt.asUintN(64,v), v>>64n];
 }
-export function *recordTerms(memory, offset, variables) {
+export function *recordTerms(memory, offset, variables, {monic=false}={}) {
   const o=Number(offset), h=new DataView(memory.buffer,o,32);
   const n=h.getUint32(8,true), d=h.getUint32(12,true), bytes=h.getUint32(4,true);
   const view=new DataView(memory.buffer,o,bytes);
+  function coefficient(at){
+    let c=view.getBigUint64(at,true);
+    if(!(c&1n))return BigInt.asIntN(64,c)>>1n;
+    const p=Number(c&~7n),limbs=view.getUint32(p,true),negative=!!(c&2n);
+    // Hexadecimal parsing is linear in the limb count. Repeated BigInt shifts
+    // copy the growing integer at each step and are costly on large rows.
+    const hex=new Array(limbs);for(let j=0;j<limbs;j++)hex[limbs-1-j]=view.getUint32(p+8+4*j,true).toString(16).padStart(8,'0');
+    c=BigInt('0x'+hex.join(''));return negative?-c:c;
+  }
+  const leading=monic?coefficient(48):1n;
+  if(!leading)throw new Error('Cannot normalize a zero leading coefficient');
+  const abs=x=>x<0n?-x:x;
+  function gcd(a,b){while(b){[a,b]=[b,a%b];}return a;}
   for(let i=0;i<n;i++) {
     const t=32+24*i;
     let w=view.getBigUint64(t,true)|(view.getBigUint64(t+8,true)<<64n), c=view.getBigUint64(t+16,true);
     const wordLo=view.getBigUint64(t,true),wordHi=view.getBigUint64(t+8,true);
     const long=!!(wordHi&(1n<<63n));
-    if(c&1n) {
-      const at=Number(c&~7n), limbs=view.getUint32(at,true), negative=!!(c&2n);
-      if(limbs>4096)throw new Error('Text export refused a coefficient above 131072 bits; exact binary basis and checkpoint remain available.');
-      c=0n;for(let j=limbs-1;j>=0;j--)c=(c<<32n)|BigInt(view.getUint32(at+8+4*j,true));
-      if(negative)c=-c;
-    } else c=BigInt.asIntN(64,c)>>1n;
+    c=monic&&!i?1n:coefficient(t+16);let denominator=1n;
+    if(monic&&i&&leading!==1n){const g=gcd(abs(c),abs(leading));c/=g;denominator=leading/g;if(denominator<0n){c=-c;denominator=-denominator;}}
     const sign=c<0n?'-':i?'+':'';if(c<0n)c=-c;
-    yield `${sign}${c===1n?'':`${c}*`}`;
+    yield `${sign}${denominator!==1n?`${c}/${denominator}*`:c===1n?'':`${c}*`}`;
     // Stream bounded word fragments. Long runs become x^n; no O(degree) names
     // array or giant joined string exists during text export.
     const at=Number(wordLo);let buffer='',previous=-1,count=0,first=true;

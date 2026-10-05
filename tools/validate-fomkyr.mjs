@@ -15,6 +15,7 @@ import {engineHashes, validationSnapshot, CheckTimings, writeJSON} from './relea
 import {OracleCache, singularIdentity, bergmanIdentity} from './oracle-cache.mjs';
 import {oraclePolynomial} from '../fomkyr/tools/oracle-format.mjs';
 import {copyFomkyrSource} from './fomkyr-source.mjs';
+import {decodeRecord} from '../fomkyr/web/rational-lift.js';
 
 const currentManifest=JSON.parse(fs.readFileSync('web/engine/fomkyr/build.json'));
 const sourceDirectory='fomkyr';
@@ -26,12 +27,22 @@ const report={state:'running',startedAt:new Date().toISOString(),upstreamVersion
   importedArchiveSha256:currentManifest.provenance.archiveSha256,
   engineHashes:engineHashes(),validationSourceHashes:validationSnapshot(),
   bergmanManifest:JSON.parse(fs.readFileSync('web/engine/compiled/build.json')),upstreamTests:[],cases:[],
-  method:'Fomkyr primitive unreduced bases are compared by two-way bounded reduction and critical-pair certificates, not byte equality. Singular uses the same degree bound. Node OPFS is emulated; browser evidence is separate.'};
+  method:'Fomkyr text bases are compared by two-way bounded reduction and critical-pair certificates. The large-coefficient anchor inspects primitive packed records and checks monic text output. Singular uses the same degree bound. Node OPFS is emulated; browser evidence is separate.'};
 const save=()=>writeJSON(path.join(out,'report.json'),report);
 if(process.argv.includes('--resume') && fs.existsSync(path.join(out,'report.json'))) {
   const previous=JSON.parse(fs.readFileSync(path.join(out,'report.json')));
   assert.deepEqual(previous.engineHashes,report.engineHashes,'Cannot resume after engine changes');
-  assert.deepEqual(previous.validationSourceHashes,report.validationSourceHashes,'Cannot resume after validation source changes; use a new output directory.');
+  const changed=[...new Set([...Object.keys(previous.validationSourceHashes),...Object.keys(report.validationSourceHashes)])]
+    .filter(file=>previous.validationSourceHashes[file]!==report.validationSourceHashes[file]);
+  if(changed.length){
+    // This known checker update affects only the unfinished coefficient anchor.
+    // Completed cases executed identical checks against identical engines.
+    assert.deepEqual(changed,['tools/validate-fomkyr.mjs'],'Cannot resume after validation dependencies change.');
+    assert.equal(previous.validationSourceHashes['tools/validate-fomkyr.mjs'],'31cfb2f42515ff4c4d098603099a85684a97effd89ca3a6c0c8e83ff9262e103','Unknown prior checker; use a new output directory.');
+    assert.ok(previous.cases.every(row=>row.id!=='archive-155-bit-coefficients'&&row.engines.length===4&&row.engines.every(e=>e.passed)));
+    report.resumedCheckerChange={reportSha256:sha(path.join(out,'report.json')),previousSourceHashes:previous.validationSourceHashes,
+      retainedCases:previous.cases.length,reason:'Only the uncompleted primitive coefficient anchor changed; mathematical checks for retained cases are identical.'};
+  }
   report.startedAt=previous.startedAt;
   report.upstreamTests=previous.upstreamTests;report.cases=previous.cases;report.design=previous.design;
 }
@@ -211,7 +222,18 @@ try {
       for(const p of oracleBasis)assert.equal(a.nf(p,gb).size,0,c.id+': Singular belongs to native ideal');
       assert.deepEqual(oracleBasis.map(oracle.lead).sort(),gb.map(a.lead).sort());
       assert.deepEqual(a.hilbert(gb,degree),row.dimensions);
-      if(c.coefficientBits)assert.ok([...text.matchAll(/\d+\*/g)].some(m=>BigInt(m[0].slice(0,-1)).toString(2).length===c.coefficientBits));
+      if(c.coefficientBits){
+        for(const p of parseBasis(text).groups.flatMap(g=>g.polys).map(a.parse).filter(p=>p.size))
+          assert.deepEqual(p.get(a.lead(p)),a.q(1),'Normalized text must be monic.');
+        const packed=fs.readFileSync(path.join(dir,`storage-${bits}-${execution}`,'fomkyr',r.runKey,'basis.gnb'));
+        let found=false;
+        for(let at=0;at<packed.length;){
+          assert.ok(at+32<=packed.length);const size=packed.readUInt32LE(at+4);assert.ok(size>=32&&at+size<=packed.length);
+          const record=decodeRecord(packed.subarray(at,at+size));at+=size;
+          for(const coefficient of record.terms.values())if((coefficient<0n?-coefficient:coefficient).toString(2).length===c.coefficientBits)found=true;
+        }
+        assert.ok(found,'Primitive packed records retain the large-coefficient anchor.');
+      }
       assert.equal(r.bits,bits);assert.equal(r.shared,execution==='multicore');assert.equal(r.workers,workers);
       assert.deepEqual(r.hilbert.coefficients,row.dimensions.map(String));
       row.engines.push({bits,execution,workers,passed:true,ambiguities,basisSize:gb.length,elapsedSeconds:r.elapsedMs/1000,memoryBytes:r.memoryBytes,hilbertMatches:true});

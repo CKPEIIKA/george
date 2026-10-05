@@ -52,12 +52,18 @@ static void brow_remove(BRow*r,u32 id){
  BNode*n=&r->nodes[id-1];u32 h=rrow_hash(n->w,r->mask),*link=&r->heads[h];while(*link!=id)link=&r->nodes[*link-1].next;*link=n->next;n->pos=UINT32_MAX;n->next=r->free_head;r->free_head=id;
 }
 static u64 bbytes(BCoef c){return(c.n&1?A8(8+(u64)cn(c.n)*4):0)+(c.d&1?A8(8+(u64)cn(c.d)*4):0);}
+/* Arena peaks are maintained by alloc_a; unlike the current bump extent they
+ * survive reset_a. Copy peaks before a promotion replaces the arena descriptors. */
+static void brow_pressure(BRow*r){
+ Lane*l=r->lane;l->big_pool_high_water=MAX(l->big_pool_high_water,MAX(r->pool[0].peak,r->pool[1].peak));
+ l->big_arithmetic_high_water=MAX(l->big_arithmetic_high_water,r->temp.peak);
+}
 static int brow_collect(BRow*r){
  Arena*out=&r->pool[r->pool_active^1];reset_a(out);u64 need=bbytes(r->pivot);
  for(u32 i=0;i<r->used;i++)if(r->nodes[i].pos!=UINT32_MAX){u64 n=bbytes(r->nodes[i].c);if(n>out->end-out->base||need>out->end-out->base-n)return HEAP_MISS;need+=n;}
  if(need>out->end-out->base)return HEAP_MISS;
  for(u32 i=0;i<r->used;i++){if((i&1023)==0&&cancelled())return GN_CANCELLED;if(r->nodes[i].pos!=UINT32_MAX)r->nodes[i].c=bcopy(out,r->nodes[i].c);}
- r->pivot=bcopy(out,r->pivot);if(out->error)return HEAP_MISS;r->pool_active^=1;r->lane->big_compactions++;return 0;
+ r->pivot=bcopy(out,r->pivot);if(out->error)return HEAP_MISS;r->lane->big_collected_live_high_water=MAX(r->lane->big_collected_live_high_water,need);r->pool_active^=1;r->lane->big_compactions++;return 0;
 }
 /* The source is always in operation scratch or stable input/cache memory, never
  * a borrowed semispace root. Collection may relocate the pivot and live nodes. */
@@ -95,13 +101,13 @@ static int brow_layout(BRow*r,Lane*l,Arena*a,u32 reserved,u32 capacity,u32 degre
  r->temp=(Arena){begin,begin,a->end,0,0};return 0;
 }
 static void brow_report(BRow*r){
- Lane*l=r->lane;if(l->reserve_owned||l->reserve_retry)l->reduction_tier=6;l->big_capacity=r->capacity;l->big_reserved=r->reserved;
+ brow_pressure(r);Lane*l=r->lane;if(l->reserve_owned||l->reserve_retry)l->reduction_tier=6;l->big_capacity=r->capacity;l->big_reserved=r->reserved;
  l->big_peak_terms=MAX(l->big_peak_terms,(u64)r->heap_n+r->normal_n);
  l->big_coefficient_live=r->pool[r->pool_active].pos-r->pool[r->pool_active].base;
  l->big_coefficient_bytes=r->pool[r->pool_active].end-r->pool[r->pool_active].base;
 }
 static int brow_promote(BRow*r){
- Lane*l=r->lane;
+ brow_pressure(r);Lane*l=r->lane;
   if(l->no_reserve)return GN_DEFERRED;
   u32 available=brow_budget_capacity(S.reserve_bytes);
   if(!S.reserve_growth||!S.reserve_base||l->reserve_owned||l->reserve_retry||available<r->capacity||S.reserve_bytes<=r->workspace_bytes)return HEAP_MISS;
@@ -188,7 +194,7 @@ static int big_rational_nf_inner(Lane*l,Poly original,u32 active,u32 snapshot){
   if(!r.pending_kind){
    if((steps++&63)==0){brow_report(&r);publish_lane(l,(u64)r.heap_n+r.normal_n,0);if(cancelled())return GN_CANCELLED;if(slice_expired(l))goto yield_row;}
    u32 id=bheap_top(&r);Word w=r.nodes[id-1].w;r.pivot=r.nodes[id-1].c;bheap_remove(&r,id);
-   u32 pos=0;LocalEntry*local=(!S.rational_rewrites||l->skip_rule)?NULL:local_find(w,original.degree,snapshot,&pos);
+   u32 pos=0;LocalEntry*local=(l->delta_floor||!S.rational_rewrites||l->skip_rule)?NULL:local_find(w,original.degree,snapshot,&pos);
    u32 rid=local?0:divisor(w,original.degree,snapshot,&pos,l);
    if(!local&&!rid){r.normal[r.normal_n++]=id;r.pivot=(BCoef){0,2};continue;}
    brow_remove(&r,id);l->reductions++;l->big_steps++;

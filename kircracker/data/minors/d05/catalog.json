@@ -1,0 +1,68 @@
+{
+  "blocks": [
+    {
+      "contribution": 6,
+      "coveredGrades": 6,
+      "file": "block-00.kcb",
+      "grade": [
+        1,
+        2,
+        4,
+        3,
+        5,
+        6
+      ],
+      "rank": 1,
+      "sha256": "6f165ebb81cffe28ea4390d41bf709bbd7151647a0481182913ffaabc8225b52"
+    },
+    {
+      "contribution": 24,
+      "coveredGrades": 12,
+      "file": "block-01.kcb",
+      "grade": [
+        1,
+        3,
+        2,
+        6,
+        4,
+        5
+      ],
+      "rank": 2,
+      "sha256": "13e819307ffac9a5e944092622fda3f1b040aa32d99068bfa34a6246ba548b5b"
+    },
+    {
+      "contribution": 16,
+      "coveredGrades": 8,
+      "file": "block-02.kcb",
+      "grade": [
+        1,
+        3,
+        4,
+        2,
+        6,
+        5
+      ],
+      "rank": 2,
+      "sha256": "5689e2f2549761371ef5b6e2771d97e3b958f01c1b8bdbc71d296a6ffdf3bf45"
+    },
+    {
+      "contribution": 24,
+      "coveredGrades": 24,
+      "file": "block-03.kcb",
+      "grade": [
+        2,
+        3,
+        4,
+        6,
+        1,
+        5
+      ],
+      "rank": 1,
+      "sha256": "357e5de04901cad5b419315863512f7e83eb32a09b0b38f7032cea5a4d0a81ac"
+    }
+  ],
+  "degree": 5,
+  "prime": 1000003,
+  "rankLowerBound": 70,
+  "storedMatrices": false
+}

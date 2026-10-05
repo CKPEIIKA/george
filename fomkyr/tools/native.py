@@ -62,7 +62,7 @@ def decode_record(data: bytes) -> dict[tuple[int,...],int]:
 
 class Engine:
     def __init__(self, fixture: dict, target=7, workers=1, budget=256<<20, scratch=64<<20,
-                 modulus=0, disk: str|None=None, hash_bits=16, resume: dict|None=None, optimize: int=63, matcher_budget: int|None=None, word_cache_entries: int=256,rational_heap: bool=True, compiled_rewrites: bool=True, rewrite_degree: int=4, rewrite_support: int=8, rewrite_budget: int|None=None, shared_cache: int|None=None, rational_rewrites: bool=True,big_rational: bool=True,fast_big_division: bool=True,growing_rational: bool=True,row_reserve: int|None=None,reserve_in_place: bool=True,radix_heap: bool=True,pair_order: int=0,pair_min_degree: int=12,pair_plan_bytes: int=64<<20):
+                 modulus=0, disk: str|None=None, hash_bits=16, resume: dict|None=None, optimize: int=63, matcher_budget: int|None=None, word_cache_entries: int=256,rational_heap: bool=True, compiled_rewrites: bool=True, rewrite_degree: int=4, rewrite_support: int=8, rewrite_budget: int|None=None, shared_cache: int|None=None, rational_rewrites: bool=True,big_rational: bool=True,fast_big_division: bool=True,growing_rational: bool=True,row_reserve: int|None=None,reserve_in_place: bool=True,radix_heap: bool=True,pair_order: int=0,pair_min_degree: int=12,pair_plan_bytes: int=64<<20,delta_commit: bool=False):
         self.fixture=fixture; self.target=target; self.workers=workers; self.disk=disk
         self.lib=C.CDLL(os.environ.get('FOMKYR_NATIVE_LIBRARY', str(ROOT/'dist/libfomkyr.so')))
         api={
@@ -111,6 +111,10 @@ class Engine:
             self.lib.gn_pair_plan_adopt.argtypes=[];self.lib.gn_pair_plan_adopt.restype=C.c_int
             self.lib.gn_pair_plan_stat.argtypes=[U32];self.lib.gn_pair_plan_stat.restype=U64
             check(self.lib.gn_pair_plan_config(pair_order,pair_min_degree,pair_plan_bytes))
+        if hasattr(self.lib,'gn_delta_commit'):
+            self.lib.gn_delta_commit.argtypes=[U32];self.lib.gn_delta_commit.restype=C.c_int
+            self.lib.gn_commit_stat.argtypes=[U32];self.lib.gn_commit_stat.restype=U64
+            check(self.lib.gn_delta_commit(int(delta_commit)))
         self.report=[]
         if resume:
             if not disk: raise ValueError('resume requires binary record file')
@@ -136,6 +140,9 @@ class Engine:
         s['chainPairsPruned']=int(self.lib.gn_stat(29));s['matcherAllocatedBytes']=int(self.lib.gn_stat(26))
         for name,key in [('hashProbes',8),('matcherQueries',9),('insertionPrunes',15),('quadraticSwaps',17),('heapFallbacks',14)]:
             s[name]=sum(int(self.lib.gn_lane_stat(i,key)) for i in range(self.workers))
+        if hasattr(self.lib,'gn_commit_stat'):
+            names=['enabled','calls','eligible','unchangedSnapshot','noMatchingNewLeader','fullFallbackCalls','equalWordProbes','equalWordHits','newLeaderBinarySearchProbes','rewrites','normalFormMicroseconds','copiedRecordBytes','copyMicroseconds','appendMicroseconds','yields','contractFallbacks']
+            s['commit']={name:int(self.lib.gn_commit_stat(i)) for i,name in enumerate(names)}
         return s
     def load(self,rel):
         check(self.lib.gn_input_begin(rel['degree'],len(rel['terms'])))

@@ -3,11 +3,13 @@
 import argparse
 from collections import deque
 import json
+import math
 import os
 from pathlib import Path
 import re
 import select
 import shutil
+import subprocess
 import sys
 import time
 
@@ -187,6 +189,13 @@ def spark(values, width, style, color='cyan', top=None):
     return ' ' * (width - len(cells)) + style(cells, color)
 
 
+# Current-degree throughput windows (seconds); None is the whole observed degree.
+# All end now, so a long reduction lowers the rate rather than hiding the ETA.
+WINDOWS = (120, 600, 1800, 7200, None)
+LONG_WINDOW, MIN_SPAN, MIN_EVENTS = 600, 5, 8
+LOG_STEP, LOG_CAP, SMOOTH = 10, 20000, 120
+
+
 class Tracker:
     """Rolling history that turns raw telemetry into rates and ETAs."""
 
@@ -194,13 +203,15 @@ class Tracker:
         self.reset()
 
     def reset(self):
-        self.samples = deque(maxlen=3600)
+        self.samples = deque(maxlen=7200)
         self.degree_times = {}
         self.degree = None
         self.degree_start = None
         self.degree_start_known = False
         self.last_move = None
         self.last_resolved = None
+        self.degree_log = []
+        self.smooth = None
 
     def update(self, now, status, sample, cpu):
         progress = status.get('progress') or {}
@@ -215,10 +226,16 @@ class Tracker:
             # A degree seen from its start (or entered while watching) has a known duration.
             self.degree_start_known = previous_degree is not None or not resolved
             self.last_resolved = None
+            self.degree_log, self.smooth = [], None
         if resolved != self.last_resolved:
             self.last_resolved, self.last_move = resolved, now
         if self.last_move is None:
             self.last_move = now
+        # A coarse log of the whole degree outlives the fine sample window.
+        if resolved is not None and (not self.degree_log or now - self.degree_log[-1][0] >= LOG_STEP):
+            self.degree_log.append((now, resolved))
+            if len(self.degree_log) > LOG_CAP:
+                self.degree_log = self.degree_log[::2]
         gate = status.get('fkGate') or {}
         self.samples.append(dict(
             t=now, degree=degree, resolved=resolved, total=progress.get('totalOverlaps'),
@@ -227,23 +244,71 @@ class Tracker:
             alloc=status.get('allocatedBytes'), closed=gate.get('closedSectors'),
             deficit=gate.get('deficit')))
 
+    def finish(self, status):
+        """Record the final degree's duration once the solver reports the end."""
+        if self.degree is not None and self.degree_start_known and self.degree not in self.degree_times:
+            self.degree_times[self.degree] = max(0.0, status.get('cumulativeElapsedSeconds', 0) - self.degree_start)
+
     def current(self):
         return [s for s in self.samples if s['degree'] == self.degree]
 
-    def rate(self, now, window):
-        points = [s for s in self.current() if now - s['t'] <= window and s['resolved'] is not None]
-        if len(points) < 2 or points[-1]['t'] <= points[0]['t']:
+    def points(self):
+        fine = [(s['t'], s['resolved']) for s in self.current() if s['resolved'] is not None]
+        start = fine[0][0] if fine else float('inf')
+        return [p for p in self.degree_log if p[0] < start] + fine
+
+    def window(self, now, window):
+        """(elapsed seconds, finished overlaps) since the window start, up to now."""
+        points = self.points()
+        if not points:
             return None
-        return max(0, points[-1]['resolved'] - points[0]['resolved']) / (points[-1]['t'] - points[0]['t'])
+        since = now - window if window else -float('inf')
+        first = next((p for p in points if p[0] >= since), points[0])
+        return now - first[0], max(0, points[-1][1] - first[1])
+
+    def rate(self, now, window):
+        found = self.window(now, window)
+        if not found or found[0] <= 0 or found[1] <= 0:
+            return None
+        return found[1] / found[0]
+
+    def window_rates(self, now):
+        rates, seen = [], set()
+        for window in WINDOWS:
+            found = self.window(now, window)
+            if not found or found in seen:
+                continue
+            seen.add(found)
+            elapsed, done = found
+            if elapsed >= MIN_SPAN and done >= MIN_EVENTS:
+                rates.append((window, elapsed, done / elapsed))
+        return rates
 
     def degree_eta(self, now, remaining):
-        """(low, mid, high) seconds for the current degree, or None."""
-        rates = [r for r in (self.rate(now, 20), self.rate(now, 300), self.rate(now, 1e9)) if r]
+        """(low, mid, high) seconds for the current degree, or None.
+
+        The central rate is the median over long windows (or all when the
+        degree is young), smoothed in log space; the range covers all windows."""
+        rates = self.window_rates(now)
         if not rates or remaining is None:
             return None
-        guesses = [remaining / r for r in rates]
-        mid = remaining / (self.rate(now, 300) or rates[0])
-        return min(guesses), mid, max(guesses)
+        long = [r for window, _, r in rates if window is None or window >= LONG_WINDOW]
+        values = sorted(long or [r for _, _, r in rates])
+        central = values[len(values) // 2]
+        if self.smooth is None:
+            self.smooth = (now, math.log(central))
+        else:
+            t, value = self.smooth
+            a = 1 - math.exp(-max(0, now - t) / SMOOTH)
+            self.smooth = (now, value + a * (math.log(central) - value))
+        mid = remaining / math.exp(self.smooth[1])
+        every = [r for _, _, r in rates]
+        return min(mid, remaining / max(every)), mid, max(mid, remaining / min(every))
+
+    def observed(self, now):
+        """Longest throughput window behind the current ETA, in seconds."""
+        rates = self.window_rates(now)
+        return max(elapsed for _, elapsed, _ in rates) if rates else None
 
     def series(self, key, now, seconds=1e9):
         return [s[key] for s in self.samples if now - s['t'] <= seconds]
@@ -332,6 +397,7 @@ def analyse(status, process, memory, tracker, now):
                 eta=None, overall=None, elapsed_in_degree=None, overall_fraction=None)
     if tracker and status.get('state') == 'running' and process is not None:
         info['eta'] = tracker.degree_eta(now, remaining)
+        info['observed'] = tracker.observed(now)
         if tracker.degree_start_known and tracker.degree == degree:
             info['elapsed_in_degree'] = max(0.0, status.get('cumulativeElapsedSeconds', 0)
                                             - tracker.degree_start)
@@ -391,6 +457,8 @@ def progress_block(status, info, style, width, now_wall):
             line += '  ' + style(f'ETA ~{eta(mid)}', 'bold', 'cyan')
             if high > low * 1.2:
                 line += style(f' ({eta(low)}–{eta(high)})', 'gray')
+            if info.get('observed'):
+                line += style(f" · {eta(info['observed'])} observed", 'gray')
         lines.append(line)
     elif info['progress'] == {}:
         lines.append(style('Degree progress appears once the solver starts reducing.', 'gray'))
@@ -556,9 +624,49 @@ def fit(blocks, rows, width):
     return [line for order in sorted(chosen) for line in chosen[order]]
 
 
+def finish_screen(status, tracker, style, width, height, details):
+    """The summary shown once the solver has finished or stopped."""
+    ok = status.get('state') == 'complete'
+    done, target = status.get('completedThroughDegree'), status.get('targetDegree') or None
+    elapsed = status.get('cumulativeElapsedSeconds', 0)
+    reached = f'degree {done} of {target}' if target else f'degree {done}'
+    if ok:
+        glyphs, colors = ('*+.' if ASCII else '✦✧·'), ('yellow', 'cyan', 'green', 'blue')
+        confetti = ' '.join(style(glyphs[i % len(glyphs)], colors[i % len(colors)]) for i in range(max(4, min(36, width // 2 - 1))))
+        lines = [style.chip('COMPLETE', 'green') + style('  FOMKYR', 'bold') + '  ' + style('Calculation finished!', 'bold', 'green'),
+                 confetti,
+                 style('✔ ' if not ASCII else '+ ', 'green') + style(f'Reached {reached}', 'bold') + f' in {duration(elapsed)}']
+    else:
+        lines = [style.chip('STOPPED', 'yellow') + style('  FOMKYR', 'bold') + '  ' + style('Calculation stopped.', 'bold', 'yellow'),
+                 style('─' * width if not ASCII else '-' * width, 'gray'),
+                 f'Completed {reached} in {duration(elapsed)}; resuming continues from the last checkpoint.']
+    budget = status.get('budgetBytes')
+    peaks = [s['alloc'] for s in (tracker.samples if tracker else []) if s.get('alloc') is not None] + [status.get('allocatedBytes') or 0]
+    lines += ['',
+              f"  Basis       {status.get('basisSize', 0):,} rules   disk {size(status.get('diskBytes'))}"
+              f"   checkpoints {status.get('checkpointSequence', 0)}",
+              f'  Workspace   peak {size(max(peaks))}' + (f' of {size(budget)}' if budget else '')
+              + f"   workers {status.get('workers', '?')}"]
+    times = dict(tracker.degree_times) if tracker else {}
+    if times:
+        slowest = max(times, key=times.get)
+        lines.append(f'  Watched     {len(times)} degree(s); slowest d{slowest} {eta(times[slowest])}')
+        top, wbar = max(times.values()) or 1, max(8, min(40, width - 24))
+        lines += [''] + [style('Time per degree', 'bold')] + [
+            f'  d{k:<3}' + bar(times[k] / top, wbar, 'green' if ok else 'blue', style) + f' {eta(times[k])}'
+            for k in sorted(times)[-max(1, height - len(lines) - 8):]]
+    if details:
+        lines += [''] + details_block(status, {}, style)
+    footer = style(f"q quit  d details {'on' if details else 'off'}", 'gray')
+    lines = lines[:max(1, height - 2)] + ['', footer]
+    return '\n'.join(clip(line, width) for line in lines[:max(1, height - 1)])
+
+
 def render(status, process, memory, tracker=None, width=100, height=40, style=None,
            cpu=None, threads=(), now=None, details=False, wall=None):
     style = style or Style(False)
+    if status.get('state') in ('complete', 'stopped') and process is None:
+        return finish_screen(status, tracker, style, width, height, details)
     now = time.monotonic() if now is None else now
     wall = time.time() if wall is None else wall
     info = analyse(status, process, memory, tracker, now)
@@ -591,8 +699,9 @@ def render(status, process, memory, tracker=None, width=100, height=40, style=No
         (2, 0, lambda r: memory_block(status, process, memory, tracker, style, colw, now)),
         (3, 1, lambda r: cpu_block(status, process, cpu, threads, tracker, style, colw, now)),
         (7, 3, lambda r: lanes_block(progress, style, colw, r)),
-        (5 if details else 8, 2, lambda r: details_block(status, progress, style)),
     ]
+    if details:
+        right_blocks.append((1.5, 2, lambda r: details_block(status, progress, style)))
     body_rows = rows - len(top) - 1
     if two:
         left = fit(left_blocks, body_rows, colw)
@@ -603,7 +712,7 @@ def render(status, process, memory, tracker=None, width=100, height=40, style=No
                      right + [''] * (max(len(left), len(right)) - len(right)))]
     else:
         lines = fit(left_blocks + [(p + 0.5, o + 10, m) for p, o, m in right_blocks], body_rows, width)
-    footer = style('q quit  d details  p pause  │  closing leaves the calculation running', 'gray')
+    footer = style(f"q quit  d details {'on' if details else 'off'}  p pause  │  closing leaves the calculation running", 'gray')
     out = top + lines
     if rows - len(out) >= 1:
         out.append(footer)
@@ -611,12 +720,30 @@ def render(status, process, memory, tracker=None, width=100, height=40, style=No
 
 
 def keypress(timeout):
+    # Read the descriptor directly: Python's buffered stdin can hold a second
+    # key where select() no longer sees it.
     try:
-        ready, _, _ = select.select([sys.stdin], [], [], timeout)
+        ready, _, _ = select.select([sys.stdin.fileno()], [], [], timeout)
+        return os.read(sys.stdin.fileno(), 1).decode(errors='ignore') if ready else None
     except (OSError, ValueError):
         time.sleep(timeout)
         return None
-    return sys.stdin.read(1) if ready else None
+
+
+def announce(status):
+    """Bell, window title and (when available) a desktop notification."""
+    ok = status.get('state') == 'complete'
+    text = (f"Reached degree {status.get('completedThroughDegree')} in {duration(status.get('cumulativeElapsedSeconds'))}"
+            if ok else f"Stopped after degree {status.get('completedThroughDegree')}")
+    sys.stdout.write('\a\033]0;fomkyr: ' + ('complete' if ok else 'stopped') + '\007')
+    sys.stdout.flush()
+    notify = shutil.which('notify-send')
+    if notify:
+        try:
+            subprocess.Popen([notify, 'fomkyr ' + ('finished' if ok else 'stopped'), text],
+                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        except OSError:
+            pass
 
 
 def main():
@@ -628,6 +755,7 @@ def main():
     parser.add_argument('--color', action='store_true', help='force ANSI colors even when piped')
     parser.add_argument('--no-color', action='store_true', help='plain text (also honors NO_COLOR)')
     parser.add_argument('--ascii', action='store_true', help='avoid Unicode block characters')
+    parser.add_argument('--no-bell', action='store_true', help='no bell, title or desktop notice when the run ends')
     args = parser.parse_args()
     if args.interval < 0.1:
         parser.error('interval must be at least 0.1 seconds')
@@ -640,6 +768,7 @@ def main():
     tracker, last_pid = Tracker(), None
     previous = None
     details, paused, last_screen = args.once, False, ''
+    last_state, last_inputs = None, None
     hz = os.sysconf('SC_CLK_TCK')
     keys = tty and sys.stdin.isatty()
     saved = None
@@ -670,7 +799,14 @@ def main():
                     previous = (before, sample)
                     if sample is not None and status.get('state') in ('running', 'starting'):
                         tracker.update(before, status, sample, cpu)
-                    last_screen = render(status, sample, host_memory(), tracker, width, height,
+                    state = status.get('state')
+                    if last_state in ('running', 'starting') and state in ('complete', 'stopped'):
+                        tracker.finish(status)
+                        if tty and not args.no_bell:
+                            announce(status)
+                    last_state = state
+                    last_inputs = (status, sample, host_memory(), cpu, threads, before)
+                    last_screen = render(status, sample, last_inputs[2], tracker, width, height,
                                          style, cpu, threads, before, details)
                 except (OSError, ValueError, KeyError, TypeError) as error:
                     last_screen = (f'Waiting for Fomkyr status: {path}\n{error}\n'
@@ -690,6 +826,9 @@ def main():
                 break
             if key in ('d', 'D'):
                 details = not details
+                if paused and last_inputs:
+                    status, sample, mem, cpu, threads, at = last_inputs
+                    last_screen = render(status, sample, mem, tracker, width, height, style, cpu, threads, at, details)
             if key in ('p', 'P'):
                 paused = not paused
     except KeyboardInterrupt:

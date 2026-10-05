@@ -23,7 +23,7 @@ API u64 gn_frontier_export(void){
  if(pending>BATCH_MAX||S.degree_scheduled-S.degree_committed!=pending)return 0;
  u32 anchors=P.active?P.anchor_n:0;u32 bytes=FH*8+(anchors+pending)*16;Lane*l=&S.lanes[0];if(bytes>l->io_size)return 0;
  u8*p=PTR(u8,l->io_base);memset(p,0,bytes);
- u64 v[FH]={FRONTIER_MAGIC,P.active?2:FRONTIER_VERSION,bytes,0,S.completed,S.current,
+ u64 v[FH]={FRONTIER_MAGIC,P.active?(P.mode==3?3:2):FRONTIER_VERSION,bytes,0,S.completed,S.current,
    S.nrules,S.nprefix,S.disk_end,S.terms,S.generators,S.modulus,gn_frontier_hash_bits(),
    S.degree_snapshot,S.iter_f,S.iter_k,S.iter_node,S.iter_ready,S.iter_done,
    S.degree_total,S.degree_seen,S.degree_scheduled,S.degree_committed,S.degree_monomial,
@@ -42,16 +42,16 @@ API int gn_frontier_restore(u32 bytes){
  if(S.current||S.input_expected||S.certifying||GN_LOAD(&S.batch_running)||(reserve_pool_busy()&&!S.coop_ms))return GN_STATE;
  Lane*l=&S.lanes[0];if(bytes<FH*8||bytes>l->io_size)return GN_CORRUPT;
  const u8*p=PTR(u8,l->io_base);u64 v[FH];for(u32 i=0;i<FH;i++)v[i]=fr64(p+i*8);
- if(v[0]!=FRONTIER_MAGIC||(v[1]!=FRONTIER_VERSION&&v[1]!=2)||v[2]!=bytes||v[3]!=frontier_hash(p,bytes))return GN_CORRUPT;
- if(v[38]>BATCH_MAX||v[31]>BATCH_MAX||bytes!=FH*8+(v[31]+(v[1]==2?v[38]:0))*16||v[4]>=GN_INDEX_MAX||v[5]!=v[4]+1||v[5]>S.target)return GN_CORRUPT;
+ if(v[0]!=FRONTIER_MAGIC||(v[1]!=FRONTIER_VERSION&&v[1]!=2&&v[1]!=3)||v[2]!=bytes||v[3]!=frontier_hash(p,bytes))return GN_CORRUPT;
+ if(v[38]>BATCH_MAX||v[31]>BATCH_MAX||bytes!=FH*8+(v[31]+(v[1]>=2?v[38]:0))*16||v[4]>=GN_INDEX_MAX||v[5]!=v[4]+1||v[5]>S.target)return GN_CORRUPT;
  if(v[6]!=S.nrules||v[7]!=S.nprefix||(S.spill&&v[8]!=S.disk_end)||v[9]!=S.terms||v[10]!=S.generators||v[11]!=S.modulus||v[12]!=gn_frontier_hash_bits())return GN_CORRUPT;
  if(v[13]>S.nrules||v[14]<1||v[14]>v[13]+1||v[15]<1||v[15]>GN_INDEX_MAX||v[16]>S.nprefix||v[17]>1||v[18]>1||v[25]>1||v[32]>1||v[33]>1)return GN_CORRUPT;
  if(v[20]!=v[21]+v[23]+v[24]||v[21]!=v[22]+v[31]||(v[25]&&v[20]>v[19]))return GN_CORRUPT;
  if(v[1]==1){for(u32 i=36;i<FH;i++)if(v[i])return GN_CORRUPT;}
- else if(v[36]<1||v[36]>2||v[39]>v[19]||v[38]>v[39]||v[37]>v[19]-v[39]+v[38]||v[20]!=v[39]-v[38]+v[37])return GN_CORRUPT;
+ else if(v[36]<1||v[36]>(v[1]==3?3:2)||v[39]>v[19]||v[38]>v[39]||v[37]>v[19]-v[39]+v[38]||v[20]!=v[39]-v[38]+v[37])return GN_CORRUPT;
  if(S.nrules&&rule(S.nrules)->degree>v[5])return GN_CORRUPT;
  /* Each original snapshot exists in the restored immutable prefix. */
- BatchTask saved[BATCH_MAX],anchors[BATCH_MAX];u32 pending=(u32)v[31],anchor_n=v[1]==2?(u32)v[38]:0;
+ BatchTask saved[BATCH_MAX],anchors[BATCH_MAX];u32 pending=(u32)v[31],anchor_n=v[1]>=2?(u32)v[38]:0;
  for(u32 i=0;i<pending+anchor_n;i++){
   const u8*q=p+FH*8+i*16;u32 f=fr32(q),g=fr32(q+4),k=fr32(q+8),sn=fr32(q+12);
   if(!f||!g||f>v[13]||g>v[13]||sn>v[6]||sn<f||sn<g||sn<v[13])return GN_CORRUPT;
@@ -71,7 +71,7 @@ API int gn_frontier_restore(u32 bytes){
  /* Preserve skip semantics until this degree completes. Both criteria are exact. */
  S.pruning=(u32)v[32];S.chain_enabled=(u32)v[33];
  P.active=0;
- if(v[1]==2){int prc=plan_build((u32)v[36],v[39],anchors,anchor_n);if(prc<=0)return prc<0?-prc:GN_MEMORY;
+ if(v[1]>=2){int prc=plan_build((u32)v[36],v[39],anchors,anchor_n);if(prc<=0)return prc<0?-prc:GN_MEMORY;
   if(P.total!=v[19]||v[37]>P.count)return GN_CORRUPT;P.cursor=(u32)v[37];
   int vr=plan_check_pending(saved,pending);if(vr)return vr;
  }

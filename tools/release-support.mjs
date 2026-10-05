@@ -37,9 +37,10 @@ export function writeJSON(file, value) {
   finally { fs.rmSync(temporary, {force:true}); }
 }
 export function validationSnapshot() {
-  return inventory(['package.json', 'package-lock.json', 'web', 'test', 'tools',
-    'fomkyr', '.github/workflows/pages.yml'], file =>
+  return inventory(['package.json', 'package-lock.json', 'README.md', 'LICENSE.md', '.gitignore', 'web', 'test', 'tools',
+    'fomkyr', ...(fs.existsSync('kircracker') ? ['kircracker'] : []), '.github/workflows/pages.yml'], file =>
     !file.startsWith('web/sources/') && (!file.startsWith('fomkyr/') || fomkyrSourceInput(file.slice('fomkyr/'.length)))
+    && !/^kircracker\/(?:bin|evidence|results-local|kircracker-work|\.cache)(?:\/|$)/.test(file)
     && !file.endsWith('.so') && !file.includes('/__pycache__') && !file.endsWith('.pyc'));
 }
 export function engineHashes() {

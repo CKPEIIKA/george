@@ -19,13 +19,15 @@ export function runOutcome({job, facts = {}, res, summary}) {
   if (facts.resolutionTask) return {state: 'bounded', degree: job.degreeBound, hint: 'res.bounded', params: {d: job.degreeBound}};
   if (!summary) return null;
   const meta = res.fomkyr;
-  if (meta?.unrestrictedBasisComplete) return {state: 'complete', hint: 'fomkyr.completeBasis'};
+  // Imported or assumed dimensions make any completeness claim conditional.
+  const conditional = !!(meta?.conditionalOnImportedFkDimensions || meta?.conditionalOnExternalDimensions);
+  if (meta?.unrestrictedBasisComplete) return conditional ? {state: 'conditional', hint: 'fomkyr.completeConditional'} : {state: 'complete', hint: 'fomkyr.completeBasis'};
   if (!meta && summary.complete && !job.degreeBound) return {state: 'complete', hint: 'basis.complete'};
   if (!meta && summary.complete && facts.itemwise) return {state: 'complete', hint: 'basis.itemwiseComplete', params: {d: job.degreeBound}};
   const through = Number(meta ? summary.completedThroughDegree : job.degreeBound);
   if (!(through > 0)) return {state: 'stopped', hint: 'basis.stoppedPartial'};
   if (!summary.complete && !meta) return {state: 'bounded', degree: through, hint: 'basis.partial'};
-  const certificate = facts.certificate && !meta?.conditionalOnImportedFkDimensions && summary.complete
+  const certificate = facts.certificate && !conditional && summary.complete
     ? completenessCertificate({...facts.certificate, degrees: summary.degrees, through}) : null;
   if (certificate) return {state: 'complete', hint: 'basis.certified', params: {m: certificate.m, bound: certificate.bound, d: through}};
   return {state: 'bounded', degree: through, hint: meta ? 'fomkyr.bounded' : 'basis.bounded', params: {d: through}};

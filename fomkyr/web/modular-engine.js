@@ -60,7 +60,8 @@ export class ModularEngine{
   const result={...stats(engine.e),engine:'fomkyr',version:VERSION,arithmeticMode:'modular-verified',modulus:0,order:'degleftlex',target,identity,complete:true,reduced:false,tailReduced:true,normalization:'primitive-integer; divide each row by its leading coefficient for monic reduced Q form',unrestrictedBasisComplete:globallyComplete,certification:proof,
    runKey:engine.runKey,storage:engine.spill?'opfs':'memory',shared:engine.shared,bits:engine.bits,ioMode:engine.ioMode,executionMode:`wasm${engine.bits}-${engine.shared?'shared':'single'}`,fallbacks:engine.fallbacks??[],requestedBudgetBytes:engine.requestedBudget,linearMemoryBytes:engine.memory.buffer.byteLength,hilbert,
    modular:{attempts:this.attempts,primesUsed:this.acceptedPrimes,verificationCount:this.verificationCount,logicalWorkspaceBudgetBytes:this.workspace,totalAlgorithmMs:performance.now()-started,signaturesImplemented:false},elapsedMs:performance.now()-started,scheduler:engine.scheduler};
-  if(this.options.exportText!==false)Object.assign(result,await engine.exportText(fixture.variables));
+  if(this.options.exportText!==false)Object.assign(result,await engine.exportText(fixture.variables,{tailReduced:true}));
+  result.elapsedMs=performance.now()-started;
   // The first rational checkpoint is published ONLY AFTER every proof check.
   await engine.checkpoint(identity);this.quarantineKey=null;
   if(engine.directory){await writeJSON(engine.directory,'certification.json',proof);if(hilbert)await writeJSON(engine.directory,'hilbert.json',hilbert);if(hilbert?.coefficients)await engine.writeSmallText('hilbert.csv',hilbertCSV(hilbert));const {preview,...metadata}=result;await writeJSON(engine.directory,'fomkyr-result.json',metadata);}

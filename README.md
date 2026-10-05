@@ -32,14 +32,15 @@ Gröbner bases in free associative and commutative algebras over ℚ, 𝔽₂ an
 𝔽ₚ, Hilbert and Poincaré–Betti series, Anick resolutions, Betti numbers of
 algebras and modules, and Hochschild homology. Arithmetic is exact.
 
-**Fomkyr 0.7.1** is the independent [fast pure C engine](fomkyr/README.md) for
+**Fomkyr 0.7.2** is the independent [fast pure C engine](fomkyr/README.md) for
 homogeneous noncommutative Gröbner bases and exact Hilbert coefficients. Its
 standalone executable uses pthread workers and durable checkpoints. George runs
 the same C kernel through WebAssembly. Native builds use O3 and LTO, with optional
 local instruction-set tuning.
-George 0.7.1 adds budgeted large-row workspaces and helper reductions, plus a
-standalone live terminal dashboard. It includes optional FK6 dimension assistance through degree 17, grouped
-engine controls and complete computation bundles with an independent verifier.
+George 0.7.2 adds optional ambiguity-word scheduling and delta commit reduction,
+with monic, tail-reduced output from the exact C normalizer. It includes budgeted
+large-row workspaces, a live terminal dashboard, optional FK6 dimension assistance
+through degree 17, grouped engine controls and computation bundles with a verifier.
 The FK6 preset balances large-row workspace and automatic workers for deeper
 runs. Imported dimensions are labelled as assumptions until independently checked.
 
@@ -57,6 +58,13 @@ includes the browser. [Protocol and measurements](docs/benchmarks/fomkyr-0.6.6-n
 Build the standalone engine with `make check` followed by `make` in `fomkyr/`.
 The [manual](fomkyr/README.md) covers input, memory and checkpoint resume.
 The FK6 browser preset selects Fomkyr with its fast default reduction settings.
+
+## KIRCRACKER
+
+[Kircracker](kircracker/README.md) is a standalone native subproject for FK6
+graded dimensions and certificate verification. Its C++ kernels are driven by a
+Python command-line interface. Build and usage instructions, proof assumptions
+and checkpoint rules are in its manual. It has no browser integration.
 
 ## FK6 BENCHMARK
 

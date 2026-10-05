@@ -46,7 +46,7 @@ API int gn_coop_helper_mode(u32 enabled){
 static void coop_release_lane(Lane*l){
  if(l->reserve_retry){l->a[l->active^1]=l->reserve_saved;l->reserve_retry=0;reserve_release(l);}
  if(l->reserve_owned){l->reserve_owned=0;reserve_release(l);}
- l->resume_tier=0;l->slice_enabled=0;l->error=0;l->busy=0;l->reserve_waiting=0;
+ l->resume_tier=0;l->normal_valid=0;l->delta_floor=0;l->slice_enabled=0;l->error=0;l->busy=0;l->reserve_waiting=0;
 }
 static void coop_clear_lane(u32 lane){
  coop_release_lane(&S.lanes[lane]);GN_STORE(&C.assigned[lane],0);
@@ -153,6 +153,7 @@ static void coop_execute(u32 lane,GN_ATOMIC(u32)*assigned,int helper,double begi
   }
   else if(l->resume_tier){l->error=0;l->busy=1;publish_lane(l,0,0);rc=nf(l,t->snapshot);l->error=rc;l->busy=0;publish_lane(l,l->result.n,0);}
   else rc=gn_reduce_pair(lane);
+  if(!rc){l->normal_valid=1;l->normal_snapshot=t->snapshot;l->normal_degree=S.current;}
   t->rc=(u32)rc;
   if(rc==GN_YIELD)break;
   if(rc==GN_DEFERRED)GN_FETCH_ADD(&C.reserve_deferrals,1);
@@ -192,7 +193,7 @@ API int gn_coop_prepare_commit(void){
  Lane saved=S.lanes[0];S.lanes[0]=coop_coordinator;Lane*l=&S.lanes[0];
  l->error=0;l->slice_enabled=1;l->slice_end=gn_host_clock()+S.coop_ms;l->allow_repack=1;
  l->busy=2;publish_lane(l,l->result.n,0);
- u64 before=l->reductions;int rc=C.commit_snapshot!=S.nrules?GN_STATE:nf(l,C.commit_snapshot);
+ u64 before=l->reductions;int rc=C.commit_snapshot!=S.nrules?GN_STATE:commit_nf(l,C.commit_snapshot);
  C.commit_steps+=l->reductions-before;C.commit_resumes++;C.prepared_slices++;
  if(rc==GN_YIELD)C.commit_yields++;
  else if(!rc)C.commit_ready=1;
@@ -222,7 +223,8 @@ API int gn_coop_commit(void){
    if(C.commit_snapshot!=S.nrules){rc=GN_STATE;break;}
    if(C.commit_error)rc=(int)C.commit_error;
    else if(C.commit_ready){
-    rc=S.certifying?(l->result.n?GN_REJECTED:0):append_rule(l->result,0,0);
+    double append_start=gn_host_clock();rc=S.certifying?(l->result.n?GN_REJECTED:0):append_rule(l->result,0,0);
+    commit_elapsed(13,append_start);l->normal_valid=0;
     if(!rc)S.degree_committed++;
    }else{C.commit_resumes++;rc=gn_commit(0);}
   }else{

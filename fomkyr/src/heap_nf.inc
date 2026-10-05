@@ -77,7 +77,7 @@ static int heap_nf_try(Lane*l,Poly original,u32 active,u32 snapshot,u32 capacity
  while(row.heap_n){
   if((steps++&255)==0){publish_lane(l,(u64)row.heap_n+row.normal_n,0);if(cancelled())return GN_CANCELLED;if(slice_expired(l)){saved_HRow[l->resume_slot]=(HRowResume){row,steps};l->resume_tier=1;l->resume_capacity=capacity;l->slice_yields++;return GN_YIELD;}}
   u32 id=row.radix_enabled?radix_top(&row.radix,row.nodes,sizeof(HNode)):row.heap[0];HNode*node=&row.nodes[id-1];Word word=node->w;i64 coefficient=node->c;heap_remove(&row,id);
-  u32 pos=0;LocalEntry*local=l->skip_rule?NULL:local_find(word,original.degree,snapshot,&pos);
+  u32 pos=0;LocalEntry*local=(l->delta_floor||l->skip_rule)?NULL:local_find(word,original.degree,snapshot,&pos);
   if(local){
    row_remove(&row,id);l->reductions++;l->local_hits++;
    if(!local->n){l->pruned++;continue;}

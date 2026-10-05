@@ -2,7 +2,8 @@
 import {FomkyrEngine} from './engine.js';
 import {parseNativeJob} from './job-adapter.js';
 import {hilbertCSV} from './hilbert.js';
-import {VERSION} from './storage.js';
+import {VERSION,identityOf} from './storage.js';
+import {hilbertClosureOption} from '../../src/dimension-evidence.js';
 let enabled=false,engine=null;
 export async function dispatchFomkyr(message,send=postMessage){
   const {id,command,job,backend}=message;
@@ -16,7 +17,9 @@ export async function dispatchFomkyr(message,send=postMessage){
   try{
     if(!job)throw new Error('fomkyr does not evaluate Lisp. Use a homogeneous presentation and the Gröbner basis task.');
     const {fixture,target,modulus}=parseNativeJob(job);
-    const options=job.fomkyrOptions??job.nativeOptions??{};
+    const {hilbertDimensions,...options}=job.fomkyrOptions??job.nativeOptions??{};
+    // George's dimension evidence: plain dimensions are bound to this presentation.
+    if(hilbertDimensions)options.hilbertClosure=hilbertClosureOption(hilbertDimensions,await identityOf(fixture,modulus),modulus);
     engine=new FomkyrEngine({budgetBytes:Number(job.memoryMiB??3584)*1048576,timeoutMs:job.timeoutMs??0,...options,onEvent:event=>{
       if(['degree-start','degree','progress','phase','capabilities'].includes(event.type)&&engine?.memory)send({id,event:{type:'memory',bytes:engine.memory.buffer.byteLength}});
       if(event.type==='degree')send({id,event});

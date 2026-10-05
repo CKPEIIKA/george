@@ -95,3 +95,55 @@ test('an itemwise Done marker is already a completeness certificate', () => {
   assert.equal(runOutcome({ job: { degreeBound: '6' }, facts, res: {}, summary: { complete: true, degrees: [2] } }).hint, 'basis.itemwiseComplete');
   assert.equal(runOutcome({ job: { degreeBound: '3' }, facts, res: {}, summary: { complete: false, degrees: [2] } }).state, 'bounded');
 });
+
+test('dimension evidence accepts series, pairs, CSV and fomkyr documents', async () => {
+  const { parseDimensionEvidence, hilbertClosureOption } = await import('../web/src/dimension-evidence.js');
+  const entries = (text) => parseDimensionEvidence(text, 'assume').entries;
+  const expected = [{ degree: 1, dimension: '15' }, { degree: 2, dimension: '125' }];
+  assert.deepEqual(entries('1, 15, 125'), expected);
+  assert.deepEqual(entries('1: 15\n2: 125'), expected);
+  assert.deepEqual(entries('degree,dimension,certified\n0,1,true\n1,15,true\n2,125,true\n'), expected);
+  assert.deepEqual(entries('{"coefficients":["1","15","125"]}'), expected);
+  assert.deepEqual(entries('{"2":125,"1":15}'), expected);
+  assert.deepEqual(entries('[{"degree":1,"dimension":"15"},{"degree":2,"dimension":125}]'), expected);
+  for (const bad of ['', '2, 15, 125', '2 125\n1 15', '1 x', '{', '{"schema":1,"kind":"integer-duals"}'])
+    assert.throws(() => parseDimensionEvidence(bad, 'assume'), Error, bad);
+  assert.throws(() => parseDimensionEvidence('1, 15', 'certificate'), /certificate/);
+  const document = { schema: 1, kind: 'integer-duals', identity: 'abc', modulus: 0, entries: [] };
+  const certificate = parseDimensionEvidence(JSON.stringify(document), 'certificate');
+  assert.deepEqual(hilbertClosureOption(certificate, 'ignored', 0), { certificate: document });
+  // Plain dimensions are bound to the presentation the worker computes.
+  const bound = hilbertClosureOption(parseDimensionEvidence('1, 15, 125', 'assume'), 'id', 0).assume;
+  assert.equal(bound.identity, 'id'); assert.equal(bound.kind, 'external-dimensions'); assert.deepEqual(bound.entries, expected);
+});
+
+test('assumed dimensions never yield an unconditional completeness claim', () => {
+  const summary = { complete: true, degrees: [2], completedThroughDegree: 6 };
+  const facts = { certificate: { relationDegree: 2, minWeight: 1 } };
+  const run = (meta) => runOutcome({ job: { degreeBound: '6' }, facts, res: { fomkyr: { complete: true, ...meta } }, summary });
+  assert.equal(run({}).state, 'complete');
+  assert.equal(run({ conditionalOnExternalDimensions: true }).state, 'bounded');
+  assert.equal(run({ unrestrictedBasisComplete: true }).state, 'complete');
+  assert.equal(run({ unrestrictedBasisComplete: true, conditionalOnExternalDimensions: true }).state, 'conditional');
+  assert.equal(run({ unrestrictedBasisComplete: true, conditionalOnImportedFkDimensions: true }).state, 'conditional');
+});
+
+test('fomkyr turns dimension evidence settings into an engine option', async () => {
+  const { buildJob } = B;
+  const form = { task: 'gb', ring: 'noncomm', order: 'degleftlex', field: '0', vars: ['x', 'y'], rels: ['x*y-y*x'], maxdeg: '4',
+    backend: 'fomkyr', memoryMiB: 512, timeoutMinutes: 0, nativeWorkers: 0, weights: '', nonhomog: 'degreewise', strategy: 'default', lowterms: 'quick', outmode: 'ALG' };
+  assert.equal(buildJob(form).fomkyrOptions.hilbertDimensions, undefined);
+  const job = buildJob({ ...form, fomkyrOptions: { dimensionEvidence: 'assume', dimensionText: '1, 2, 3, 4' } });
+  assert.deepEqual(job.fomkyrOptions.hilbertDimensions.entries.map((e) => e.degree), [1, 2, 3]);
+  assert.equal(job.fomkyrOptions.dimensionText, undefined);
+  assert.ok(B.validateSettings({ ...form, fomkyrOptions: { dimensionEvidence: 'assume', dimensionText: '' } }).length);
+});
+
+test('the FK6 example keeps its provided dimension profile, which excludes other evidence', async () => {
+  const { tutorialForm } = await import('../web/src/tutorials.js');
+  const fk6 = tutorialForm('fk6');
+  assert.equal(fk6.fomkyrOptions.hilbertGate, true);
+  assert.equal(fk6.fomkyrOptions.dimensionEvidence, 'off');
+  assert.equal(B.buildJob(fk6).fomkyrOptions.hilbertDimensions, undefined);
+  assert.throws(() => B.buildJob({ ...fk6, fomkyrOptions: { ...fk6.fomkyrOptions, dimensionEvidence: 'assume', dimensionText: '1, 15, 125' } }), /not both/);
+});

@@ -1,0 +1,23 @@
+{
+  "blocks": [
+    {
+      "contribution": 1,
+      "coveredGrades": 1,
+      "file": "block-00.kcb",
+      "grade": [
+        1,
+        2,
+        3,
+        4,
+        6,
+        5
+      ],
+      "rank": 1,
+      "sha256": "72eb3123af47600005d9308c8e6a79b13b0f27cb7a8aec487b057509d673149d"
+    }
+  ],
+  "degree": 1,
+  "prime": 1000003,
+  "rankLowerBound": 1,
+  "storedMatrices": false
+}

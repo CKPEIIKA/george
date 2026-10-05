@@ -1,6 +1,7 @@
 // Independent, exact arithmetic checker. This is test code, not the engine.
 import assert from 'node:assert/strict';
-import { parseRelation, parseBasis } from '../../web/src/bergman-syntax.js';
+import { parseBasis } from '../../web/src/bergman-syntax.js';
+import { parseOutputRelation as parseRelation } from '../../web/src/output-polynomial.js';
 const gcd = (a,b) => { a=a<0n?-a:a; b=b<0n?-b:b; while(b) [a,b]=[b,a%b]; return a; };
 export function algebra(vars, comm=false, modulus=0, weights=vars.map(()=>1), orderWeights=weights) {
   assert.equal(weights.length,vars.length);
@@ -22,7 +23,7 @@ export function algebra(vars, comm=false, modulus=0, weights=vars.map(()=>1), or
   const cmp=(a,b)=>orderDegree(a)-orderDegree(b) || (comm?-1:1)*(a>b?1:a<b?-1:0);
   const lead=f=>[...f.keys()].sort(cmp).at(-1);
   const put=(f,w,c)=>{const v=add(f.get(w)||q(0),c);if(v[0])f.set(w,v);else f.delete(w);};
-  const parse=s=>{const f=new Map();for(const t of parseRelation(s,vars)){put(f,word(t.factors.map(a=>mon(a.v).repeat(a.e)).join('')),q(BigInt(t.sign)*BigInt(t.coef)));}return f;};
+  const parse=s=>{const f=new Map();for(const t of parseRelation(s,vars)){put(f,word(t.factors.map(a=>mon(a.v).repeat(a.e)).join('')),q(BigInt(t.sign)*BigInt(t.coef),BigInt(t.coefDen??1)));}return f;};
   const scale=(f,c,left='',right='')=>{const r=new Map();for(const [w,a] of f)put(r,word(left+w+right),mul(c,a));return r;};
   const sub=(f,g)=>{const r=new Map(f);for(const [w,c] of g)put(r,w,neg(c));return r;};
   const quotient=(w,v)=>{

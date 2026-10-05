@@ -27,6 +27,8 @@ import {basisSummary} from './basis-summary.js';
 import {elapsedSeconds} from './elapsed-time.js';
 import {nextBasisPreview} from './basis-preview.js';
 import {downloadZip} from './zip-download.js';
+import {scriptSettings} from './normal-basis.js';
+import {FomkyrDashboard} from './fomkyr-dashboard.js';
 import {verificationAvailable,verificationEntries} from '../engine/fomkyr/verification-bundle.js';
 import {parseNativeJob} from '../engine/fomkyr/job-adapter.js';
 import {acquireRunLock} from '../engine/fomkyr/storage.js';
@@ -356,9 +358,11 @@ function refresh() {
   els.sharePanel.hidden = true;
   els.shareStatus.hidden = true;
   applyBackendCapabilities(els.form, els.backend.value, {tasks: TASKS, translate: t, onRingChange: fillOrders});
+  // Engines without a Lisp console show the fomkyr dashboard in its place.
   const consoleAvailable = backendCapabilities(els.backend.value).console !== false;
-  document.querySelector('[data-view="console"]').setAttribute('aria-disabled', String(!consoleAvailable));
   consoleView.setEnabled(consoleAvailable);
+  $('lispConsole').hidden = !consoleAvailable;
+  $('fomkyrDashboard').hidden = consoleAvailable;
   const addressing32 = els.backend.value === 'fomkyr' && $('fomkyr-bits').value === '32';
   const heapMaximum = addressing32 ? 4095 : BACKENDS[els.backend.value].maximumHeapMiB;
   for (const option of els.memoryMiB.options) {
@@ -388,7 +392,7 @@ function refresh() {
   syncTaskSelect();
   const chain = variableOrder(f);
   $('varOrder').innerHTML = chain && chain.length > 1
-    ? `${esc(t(f.order === 'matrix' ? 'order.chainMatrix' : 'order.chain'))}<span class="chain-vars">${chain.map(varHTML).join('<span class="gt"> &gt; </span>')}</span>` : '';
+    ? `${esc(t(f.order === 'matrix' ? 'order.chainMatrix' : 'order.chain'))}<span class="chain-vars">${chain.map(varHTML).join('<span class="gt">&nbsp;&gt; </span>')}</span>` : '';
   els.moduleFields.hidden = !task.module;
   els.nmodgenField.hidden = task.module === 'two';
   els.twoModFields.hidden = task.module !== 'two';
@@ -411,6 +415,7 @@ function setStatus(key, params = {}, busy = false) {
   els.runStatus.textContent = t(key, { ...params, seconds, msg: translateMessage(params.msg || '') });
   els.runStatus.classList.toggle('busy', busy);
   els.runMetrics.hidden = !busy;
+  $('results').classList.toggle('running', busy);
   const computing = document.documentElement.classList.contains('computing');
   document.documentElement.classList.toggle('computing', busy);
   if (busy && !computing) $('logo').setCurrentTime?.(0);
@@ -434,7 +439,7 @@ function renderChip() {
   $('runChipWrap').hidden = !outcome;
   if (!outcome) return;
   $('runChip').dataset.state = outcome.state;
-  $('runChip').textContent = t({complete: 'chip.complete', bounded: 'chip.through', stopped: 'chip.stopped'}[outcome.state], {d: outcome.degree});
+  $('runChip').textContent = t({complete: 'chip.complete', conditional: 'chip.conditional', bounded: 'chip.through', stopped: 'chip.stopped'}[outcome.state], {d: outcome.degree});
   $('runChipHint').textContent = t(outcome.hint, outcome.params);
 }
 
@@ -526,6 +531,7 @@ async function compute(ev) {
   try { job = buildJob(f); } catch (error) { setStatus('status.raw', { msg: error.message }); return; }
   if (loadedExample && loadedExample.snapshot === snapshot()) job.exampleId = loadedExample.id;
   lastJob = job;
+  if (job.backend === 'fomkyr') dashboard.start(job);
   let facts;
   try { facts = jobFacts(f, job); } catch { facts = {}; }
   lastOutcome = null;
@@ -546,12 +552,13 @@ async function compute(ev) {
   setStatus('status.busy', {}, true);
   if (matchMedia('(max-width: 960px)').matches) showPane('output');
   const task = TASK_BY_ID.get(job.task);
-  prepareTabs(task);
+  prepareTabs(task, job);
   let stdout = '';
   renderLog(job, stdout);
   try {
     const res = await engine.run(job, (e) => {
       if (generation !== runGeneration) return;
+      if (job.backend === 'fomkyr') dashboard.event(e);
       if (e.type === 'stdout') { stdout += e.text; renderLog(job, stdout); }
       else {
         if (e.type === 'memory-plan') runMemoryPlan = {...e};
@@ -564,6 +571,8 @@ async function compute(ev) {
     const ms = Math.round(performance.now() - t0);
     renderResults(job, res, facts);
     setStatus('status.done', { ms });
+    if (job.backend === 'fomkyr') dashboard.finish('finished', els.runStatus.textContent,
+      lastOutcome && {state: lastOutcome.state, text: $('runChip').textContent, hint: $('runChipHint').textContent});
   } catch (e) {
     if (generation !== runGeneration) return;
     if (e.partialResult) renderResults(job, Object.assign(e.partialResult, {stopped: true}), facts);
@@ -571,6 +580,7 @@ async function compute(ev) {
     if (e.code === 'memory-limit') setStatus(job.memoryMiB === 0 ? 'status.memoryUncapped' : 'status.memory', {mib: job.memoryMiB});
     else if (e.code === 'timeout') setStatus('status.timeout');
     else setStatus(e.name === 'AbortError' ? 'status.stopped' : 'status.error', { engine: job.backend === 'fomkyr' ? 'fomkyr' : 'bergman', msg: e.message });
+    if (job.backend === 'fomkyr') dashboard.finish(e.code === 'memory-limit' || e.code === 'timeout' || e.name === 'AbortError' ? 'stopped' : 'error', els.runStatus.textContent);
   } finally {
     if (generation !== runGeneration) return;
     running = false;
@@ -582,9 +592,9 @@ async function compute(ev) {
   }
 }
 
-function prepareTabs(task) {
+function prepareTabs(task, job) {
   const has = (k) => task.out.includes(k);
-  const show = { basis: true, series: has('hs') || has('pb') || els.backend.value === 'fomkyr', betti: has('anick'), resolution: has('anick'), files: true, log: true };
+  const show = { basis: true, series: has('hs') || has('pb') || !!job.outputs?.hs, betti: has('anick'), resolution: has('anick'), files: true, log: true };
   for (const b of els.tabs.querySelectorAll('button')) b.hidden = !show[b.dataset.tab];
   selectTab(has('anick') ? 'betti' : 'basis');
 }
@@ -611,16 +621,27 @@ function renderResults(job, res, facts = lastRendered?.job === job ? lastRendere
     if (!res.stopped) lastOutcome = runOutcome({job, facts, res, summary});
     const n = summary.total;
     const degs = summary.degrees;
-    let html = `<p class="summary">${(degs.length === 1 ? tn('basis.summary1', n, { a: degs[0] }) : t(degs.length > 1 ? 'basis.summary' : 'basis.summaryFlat', { n, a: degs[0], b: degs.at(-1) }))}${badge(res)}</p>`;
-    if (res.fomkyr?.conditionalOnImportedFkDimensions) html += `<p class="notice">${t('fomkyr.importedDimensionsNotice')}</p>`;
-    if (verificationAvailable(res.fomkyr)) html += `<p><button type="button" class="quiet small" id="downloadVerificationBundle">${t('verification.download')}</button><span id="verificationBundleStatus" role="status"></span></p>`;
-    if (res.fomkyr?.reduced === false) html += `<p class="notice">${t('native.unreduced')}</p>`;
+    let html = `<div class="basis-head"><p class="summary">${(degs.length === 1 ? tn('basis.summary1', n, { a: degs[0] }) : t(degs.length > 1 ? 'basis.summary' : 'basis.summaryFlat', { n, a: degs[0], b: degs.at(-1) }))}${badge(res)}</p>`;
+    // A compact index of the degrees; each entry jumps to its section.
+    if (summary.groups.length > 1) html += `<nav class="degree-index" aria-label="${esc(t('basis.index'))}">` + summary.groups.map(g =>
+      `<button type="button" data-degree="${g.deg}" title="${esc(t('basis.jump', { d: g.deg, n: g.count }))}"><span class="k">${g.deg}</span><span class="v">${g.count}</span></button>`).join('') + '</nav>';
+    // Warnings are callouts; other facts are one quiet line; buttons share one row.
+    const warnings = [], info = [], actions = [];
+    if (res.fomkyr?.conditionalOnImportedFkDimensions) warnings.push(t('fomkyr.importedDimensionsNotice'));
+    if (res.fomkyr?.conditionalOnExternalDimensions) warnings.push(t('fomkyr.externalDimensionsNotice'));
+    else if (res.fomkyr?.hilbertEvidenceMode === 'replayed-integer-duals') info.push(t('fomkyr.certificateNotice'));
+    if (res.fomkyr?.reduced === false) info.push(t('native.unreduced'));
     if (summary.truncated) {
-      html += `<p class="notice">${t('basis.previewCount', { shown: summary.shown, total: n })} ${t('native.preview')} <button type="button" class="quiet small" data-goto="files">${t('tab.files')}</button></p>`;
-      if (res.fomkyr?.fullBasisPath) html += `<p><button type="button" class="quiet small" id="basisMore">${t('basis.showMore')}</button><span id="basisMoreStatus" role="status"></span></p>`;
+      info.push(t('basis.previewCount', { shown: summary.shown, total: n }));
+      if (res.fomkyr?.fullBasisPath) actions.push(`<button type="button" class="quiet small" id="basisMore">${t('basis.showMore')}</button><span id="basisMoreStatus" role="status"></span>`);
+      actions.push(`<button type="button" class="quiet small" data-goto="files">${t('basis.toFiles')}</button>`);
     }
+    if (warnings.length) html += '<ul class="notes">' + warnings.map(note => `<li class="warn">${note}</li>`).join('') + '</ul>';
+    if (info.length) html += `<p class="basis-info">${info.join(' ')}</p>`;
+    if (actions.length) html += `<div class="basis-actions">${actions.join('')}</div>`;
+    html += '</div>';
     for (const g of summary.groups) {
-      html += `<section class="degree"><h3><span class="d">${t(facts.weighted ? 'basis.weightedDegree' : 'basis.degree', { d: g.deg })}</span>${tn('basis.count', g.count)}</h3>`;
+      html += `<section class="degree" id="basis-degree-${g.deg}"><h3><span class="d">${t(facts.weighted ? 'basis.weightedDegree' : 'basis.degree', { d: g.deg })}</span>${tn('basis.count', g.count)}</h3>`;
       if (g.polys.length < g.count) html += `<p class="caption">${t('basis.degreePreview', { shown: g.polys.length, total: g.count })}</p>`;
       html += '<div class="polynomial-groups">';
       const rows = g.polys.map((source, index) => ({source: positiveLeading(source), index, termCount: polynomialTermCount(source)}));
@@ -632,6 +653,9 @@ function renderResults(job, res, facts = lastRendered?.job === job ? lastRendere
       html += '</div></section>';
     }
     $('basisOut').innerHTML = html;
+    // The verification bundle lives in the Files tab, beside the other downloads.
+    $('verificationOut').innerHTML = verificationAvailable(res.fomkyr) ? `<p class="hint">${t('verification.hint')}</p>` +
+      `<button type="button" class="quiet small" id="downloadVerificationBundle">${t('verification.download')}</button> <span id="verificationBundleStatus" role="status"></span>` : '';
     const verification=$('downloadVerificationBundle');
     if(verification)verification.onclick=()=>downloadVerificationBundle(job,res.fomkyr);
     const more = $('basisMore');
@@ -794,7 +818,7 @@ function renderLog(job, stdout) {
   else fileContents.set('session.lsp', job.script);
   fileContents.set('terminal.txt', stdout);
   $('logHint').textContent = t(job.backend === 'fomkyr' ? 'native.logHint' : 'log.hint');
-  $('logOut').innerHTML = codeBlock('input.bg', job.files['input.bg']) + (job.backend === 'fomkyr' ? '' : codeBlock('session.lsp', job.script)) +
+  $('logOut').innerHTML = codeBlock('input.bg', job.files['input.bg']) + (job.backend === 'fomkyr' || !job.script ? '' : codeBlock('session.lsp', job.script)) +
     (stdout ? codeBlock('terminal.txt', stdout, { download: false }) : '');
 }
 
@@ -807,6 +831,7 @@ function updateZipButton() {
 async function downloadResultsZip() {
   if(running || zipBusy || !zipSource)return;
   const source=zipSource,wasDisabled=els.go.disabled;
+  let normalizationError=null;
   zipBusy=true;els.go.disabled=true;updateZipButton();
   els.resultsZipStatus.hidden=false;els.resultsZipStatus.textContent=t('results.zipBusy');
   try{
@@ -824,14 +849,59 @@ async function downloadResultsZip() {
         }else if(name===source.job.outputs.gb && source.meta?.previewTruncated)throw new Error(t('results.zipIncomplete'));
         const archiveName=name===source.job.outputs.gb?'result.txt':name.replace(/\.(hs|pb|anick)$/i,'.$1.txt');
         entries.push({name:archiveName,blob});
+        if(name===source.job.outputs.gb){
+          if(source.meta?.reduced)entries.push({name:'result-normalized.txt',blob});
+          else{
+            try{entries.push({name:'result-normalized.txt',blob:new Blob([await normalizedBasis(source.job,blob)],{type:'text/plain;charset=utf-8'})});}
+            catch(error){normalizationError=error.message;}
+          }
+        }
       }
       return entries;
     });
-    els.resultsZipStatus.textContent=t('results.zipReady');
+    els.resultsZipStatus.textContent=normalizationError?t('results.zipNoNormalized',{msg:normalizationError}):t('results.zipReady');
   }catch(error){
     if(error.name==='AbortError')els.resultsZipStatus.hidden=true;
     else els.resultsZipStatus.textContent=t('results.zipError',{msg:error.message});
   }finally{zipBusy=false;els.go.disabled=wasDisabled||running;updateZipButton();}
+}
+
+// The reduced monic basis, computed in a worker. Terms of any element that
+// another leading monomial divides are rewritten; see normal-basis.js.
+const NORMALIZE_LIMIT_BYTES = 256 * 1048576;
+async function normalizedBasis(job, blob) {
+  if (blob.size > NORMALIZE_LIMIT_BYTES) throw new Error(t('results.normalizeLarge'));
+  const vars = readInputFile(job.files['input.bg']).vars;
+  const settings = scriptSettings(job.script, vars);
+  const text = await blob.text();
+  const worker = new Worker(new URL('./normal-basis-worker.js', import.meta.url), {type: 'module'});
+  try {
+    const result = await new Promise((resolve, reject) => {
+      worker.onerror = (event) => reject(new Error(event.message || 'worker failed'));
+      worker.onmessage = ({data}) => {
+        if (data.progress) els.resultsZipStatus.textContent = t('results.normalizing', {d: data.progress.degree});
+        else if (data.error) reject(new Error(data.error));
+        else resolve(data.result);
+      };
+      worker.postMessage({text, vars, ...settings});
+    });
+    const outcome = lastRendered?.job === job ? lastOutcome : null;
+    const status = !outcome ? 'unknown' : outcome.state === 'complete' ? 'complete reduced Gröbner basis'
+      : outcome.state === 'conditional' ? 'complete if the imported or supplied dimensions are correct'
+      : outcome.degree ? `through degree ${outcome.degree}; higher degrees may add elements` : 'partial; the computation stopped';
+    const settingLines = job.script.split('\n').filter((line) => /^\((\w*IFY|\w*ORDER|SETORDERMATRIX|SETMODULUS|SETWEIGHTS|SETMAXDEG)\b/.test(line));
+    const header = [
+      `% Reduced Gröbner basis, normalized by George ${document.querySelector('.brand-version')?.textContent ?? ''}.`,
+      '% Every element is monic, and no term of an element is divisible by the leading monomial of another.',
+      `% Settings: ${settingLines.join(' ')}`,
+      `% Generators: ${vars.join(', ')}`,
+      `% Status: ${status}.`,
+      result.orderedTails ? '% Each element lists its leading monomial first, then its terms in decreasing monomial order.'
+        : '% Each element lists its leading monomial first, then its terms in a fixed canonical sequence.',
+      ...(result.dropped ? [`% ${result.dropped} element(s) with a redundant leading monomial were removed.`] : []),
+    ];
+    return header.join('\n') + '\n' + result.text + (outcome?.state === 'complete' ? 'Done\n' : '');
+  } finally { worker.terminate(); }
 }
 
 async function downloadVerificationBundle(job,result) {
@@ -926,10 +996,12 @@ document.addEventListener('click', (e) => {
   if (b.dataset.copy) copyText(fileContents.get(b.dataset.copy) ?? '', b);
   else if (b.dataset.download) download(b.dataset.download, fileContents.get(b.dataset.download) ?? '');
   else if (b.dataset.goto) selectTab(b.dataset.goto);
+  else if (b.dataset.degree && b.closest('.degree-index')) $('basis-degree-' + b.dataset.degree)?.scrollIntoView({ block: 'start', behavior: 'smooth' });
 });
 
 // ------------------------------------------------------------ console
 
+const dashboard = new FomkyrDashboard($('fomkyrDashboardBody'), t, (n) => new Intl.NumberFormat(getLanguage()).format(n));
 const consoleView = initConsole({
   $, engine, storage,
   runCurrent: {
@@ -945,10 +1017,6 @@ const consoleView = initConsole({
 // ------------------------------------------------------------ views
 
 function route() {
-  if (location.hash === '#console' && backendCapabilities(els.backend.value).console === false) {
-    location.hash = '#compute';
-    return;
-  }
   const v = (location.hash || '#compute').slice(1);
   const view = v.startsWith('guide') ? 'guide' : ['compute', 'console', 'about'].includes(v) ? v : 'compute';
   for (const s of document.querySelectorAll('.view')) s.hidden = s.id !== `view-${view}`;
@@ -956,7 +1024,7 @@ function route() {
     if (a.dataset.view === view) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
   }
   if (view === 'guide' && v !== 'guide') $('guideContent').querySelector(`#${CSS.escape(v)}`)?.scrollIntoView();
-  if (view === 'console') consoleView.shown();
+  if (view === 'console') { consoleView.shown(); dashboard.render(true); }
 }
 
 function updateGuide() {
@@ -1025,6 +1093,7 @@ function updateLanguage() {
   updateEngineNote();
   updateGuide();
   consoleView.updateLanguage();
+  dashboard.render(true);
   // Re-rendering in the new language must not replace a failed run's status.
   const outcome = lastOutcome;
   if (lastRendered) renderResults(lastRendered.job, lastRendered.res);
@@ -1132,7 +1201,7 @@ async function init() {
   });
   els.share.addEventListener('click', sharePresentation);
   els.shareLink.addEventListener('click', () => els.shareLink.select());
-  els.stop.addEventListener('click', () => { runGeneration++; lastOutcome = null; engine.cancel(); running = false; updateZipButton(); els.go.disabled = false; els.stop.hidden = true; setStatus('status.stopped'); });
+  els.stop.addEventListener('click', () => { runGeneration++; lastOutcome = null; dashboard.finish('stopped'); engine.cancel(); running = false; updateZipButton(); els.go.disabled = false; els.stop.hidden = true; setStatus('status.stopped'); });
   els.resultsZip.addEventListener('click',downloadResultsZip);
   els.tabs.addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) selectTab(b.dataset.tab); });
   els.tabs.addEventListener('keydown', (e) => {

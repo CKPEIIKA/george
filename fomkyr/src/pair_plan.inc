@@ -6,7 +6,18 @@
 static u32 plan_hash(u32 f,u32 g,u32 k){return(u32)mix(((u64)f<<32)^g^mix(k))&1023;}
 static int plan_before(PlanPair a,PlanPair b,u32 mode){
  u64 ac=(u64)rule(a.f)->n+rule(a.g)->n,bc=(u64)rule(b.f)->n+rule(b.g)->n;
- if(mode==1){if(a.k!=b.k)return a.k>b.k;if(ac!=bc)return ac<bc;}
+ if(mode==3){
+  /* Smallest actual ambiguity word first. This is a scheduling order, not
+   * a new monomial order or a discarded-pair criterion. Stream long words
+   * so neither a packed-word cap nor an allocator is introduced. */
+  Rule*af=rule(a.f),*ag=rule(a.g),*bf=rule(b.f),*bg=rule(b.g);
+  for(u32 i=0;i<S.current;i++){
+   u32 x=i<af->degree?letter(af->lm,af->degree,i):letter(ag->lm,ag->degree,a.k+i-af->degree);
+   u32 y=i<bf->degree?letter(bf->lm,bf->degree,i):letter(bg->lm,bg->degree,b.k+i-bf->degree);
+   if(x!=y)return x<y;
+  }
+ }
+ else if(mode==1){if(a.k!=b.k)return a.k>b.k;if(ac!=bc)return ac<bc;}
  else {if(ac!=bc)return ac<bc;if(a.k!=b.k)return a.k>b.k;}
  return a.ordinal<b.ordinal;
 }
@@ -18,7 +29,7 @@ static void plan_sift(PlanPair*t,u32 root,u32 n,u32 mode){
  }t[root]=x;
 }
 static int plan_build(u32 mode,u64 anchor_seen,const BatchTask*anchors,u32 anchor_n){
- if(mode<1||mode>2||anchor_n>BATCH_MAX||!S.current)return -GN_INPUT;
+ if(mode<1||mode>3||anchor_n>BATCH_MAX||!S.current)return -GN_INPUT;
  double started=gn_host_clock();u64 total=0;
  for(u32 id=1;id<=S.degree_snapshot;id++){
   if(!(id&255)&&cancelled())return -GN_CANCELLED;Rule*f=rule(id);if(f->degree>=S.current)continue;

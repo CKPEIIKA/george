@@ -121,7 +121,7 @@ static int rational_nf_try(Lane*l,Poly original,u32 active,u32 snapshot,u32 capa
  while(row.heap_n){
   if((steps++&255)==0){publish_lane(l,(u64)row.heap_n+row.normal_n,0);if(cancelled())return GN_CANCELLED;if(slice_expired(l)){saved_RRow[l->resume_slot]=(RRowResume){row,steps};l->resume_tier=2;l->resume_capacity=capacity;l->slice_yields++;return GN_YIELD;}}
   u32 id=row.radix_enabled?radix_top(&row.radix,row.nodes,sizeof(RNode)):row.heap[0];RNode*node=&row.nodes[id-1];Word word=node->w;RCoef coefficient=node->c;rheap_remove(&row,id);
-  u32 pos=0;LocalEntry*local=(!S.rational_rewrites||l->skip_rule)?NULL:local_find(word,original.degree,snapshot,&pos);
+  u32 pos=0;LocalEntry*local=(l->delta_floor||!S.rational_rewrites||l->skip_rule)?NULL:local_find(word,original.degree,snapshot,&pos);
   if(local){
    rrow_remove(&row,id);l->reductions++;l->local_hits++;l->rational_local_hits++;
    if(!local->n){l->pruned++;continue;}

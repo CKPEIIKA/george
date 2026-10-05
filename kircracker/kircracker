@@ -1,0 +1,10 @@
+#!/bin/sh
+# Resolve an installed launcher symlink; keep all package paths relative.
+SELF=$0
+while [ -L "$SELF" ]; do
+  BASE=$(CDPATH= cd -- "$(dirname -- "$SELF")" && pwd) || exit 1
+  LINK=$(readlink "$SELF") || exit 1
+  case "$LINK" in /*) SELF=$LINK ;; *) SELF=$BASE/$LINK ;; esac
+done
+HERE=$(CDPATH= cd -- "$(dirname -- "$SELF")" && pwd) || exit 1
+exec python3 "$HERE/tools/entry.py" "$@"
