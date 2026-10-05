@@ -94,6 +94,9 @@ cpu, threads = module.cpu_usage({'ticks': 300, 'threads': {1: 300}},
                                {'ticks': 100, 'threads': {1: 100}}, 1, 100)
 assert cpu == 200 and threads == [(1, 200)]
 assert 'last saved sample' in module.render({'state': 'running', 'pid': 42}, None, {}).lower()
+assert not module.health({'state': 'running', 'updatedUnixSeconds': 2000}, {}, {}, None, 100, wall=2001)
+assert any('status not updating for 50s' in message for _, message in
+           module.health({'state': 'running', 'updatedUnixSeconds': 1950}, {}, {}, None, 100, wall=2000))
 assert module.eta(3 * 3600 + 20 * 60) == '3h20m' and module.eta(45) == '45s' and module.eta(None) == '?'
 colored = module.Style(True)('abcdef', 'red')
 assert module.visible(module.clip(colored, 3)) == 3 and module.visible(module.clip(colored, 99)) == 6

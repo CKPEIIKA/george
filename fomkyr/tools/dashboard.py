@@ -286,12 +286,13 @@ class Tracker:
         return total, ratio
 
 
-def health(status, process, memory, tracker, now):
+def health(status, process, memory, tracker, now, wall=None):
     issues = []
     state = status.get('state')
     if process is None and state in ('starting', 'running'):
         issues.append(('red', 'process ended (showing last saved sample)'))
-    age = now - status.get('updatedUnixSeconds', now)
+    wall = time.time() if wall is None else wall
+    age = max(0, wall - status.get('updatedUnixSeconds', wall))
     if process is not None and age > 5:
         issues.append(('red' if age > 20 else 'yellow', f'status not updating for {age:.0f}s'))
     if process and process.get('swap'):
@@ -349,7 +350,7 @@ def analyse(status, process, memory, tracker, now):
     return info
 
 
-def header_lines(status, process, info, style, width):
+def header_lines(status, process, info, style, width, wall=None):
     state = status.get('state', 'unknown')
     alive = process is not None
     if not alive and state in ('starting', 'running'):
@@ -357,7 +358,8 @@ def header_lines(status, process, info, style, width):
     else:
         label, color = state.upper(), {'running': 'green', 'complete': 'cyan', 'starting': 'yellow',
                                        'stopped': 'yellow'}.get(state, 'gray')
-    now_age = max(0, time.time() - status.get('updatedUnixSeconds', time.time()))
+    wall = time.time() if wall is None else wall
+    now_age = max(0, wall - status.get('updatedUnixSeconds', wall))
     line = (style.chip(label, color) + style('  FOMKYR', 'bold')
             + f"  PID {status.get('pid', '?')}  elapsed {duration(status.get('cumulativeElapsedSeconds'))}"
             + style(f"  session {duration(status.get('sessionElapsedSeconds'))}"
@@ -561,7 +563,7 @@ def render(status, process, memory, tracker=None, width=100, height=40, style=No
     wall = time.time() if wall is None else wall
     info = analyse(status, process, memory, tracker, now)
     progress = info['progress']
-    issues = health(status, process, memory, tracker, now)
+    issues = health(status, process, memory, tracker, now, wall)
     rows = height - 1
     if rows < 6 or width < 60:                       # compact: the answer in two lines
         overall, fraction = info['overall_fraction'], info['fraction']
@@ -576,7 +578,7 @@ def render(status, process, memory, tracker=None, width=100, height=40, style=No
             lines.append(f"deg {fraction:.0%}" + (f" ~{eta(info['eta'][1])}" if info['eta'] else '')
                          + (f" cpu {cpu:.0f}%" if cpu is not None else ''))
         return '\n'.join(clip(line, width) for line in lines[:max(1, rows)])
-    top = header_lines(status, process, info, style, width)
+    top = header_lines(status, process, info, style, width, wall)
     two = width >= 110 and rows >= 22
     colw = (width - 3) // 2 if two else width
     left_blocks = [

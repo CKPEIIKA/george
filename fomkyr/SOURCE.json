@@ -963,8 +963,8 @@
       "originalSha256": "5e3305eebdf14632919fbe1c7ea0d0bee28a5eee8e47688389d6c4f8844a6564"
     },
     "tests/test_dashboard.py": {
-      "bytes": 5734,
-      "sha256": "60061dce22c0db76a1aaff452c1b088ea812a804825198e56aec58e91246befc",
+      "bytes": 6015,
+      "sha256": "13b78158edebd2610bd9274129a4d1ad51f779ed5f0c98e8ca50e5a1b5987739",
       "originalSha256": "9066c716f3577f04c6e4bb36e2ad44bca499153b7ccbf706f00a969dcd400e5e"
     },
     "tests/test_deep_polish_wasm.mjs": {
@@ -1222,8 +1222,8 @@
       "sha256": "d3a19a4297cbbe18a17b3d5b2a349a8806d135983c290fbf679f706c500c6ae0"
     },
     "tools/dashboard.py": {
-      "bytes": 32275,
-      "sha256": "af2c220d5fa7e6ba60adf5d2749c203e0ddfc017ea70e15379488c5a38b9bbf5",
+      "bytes": 32403,
+      "sha256": "13c8b6e487a5bebf58083c35b0cde4103d9d373f6b4d115aa27fbabb772d8961",
       "originalSha256": "2968a81d9db58eddaac90a4a6771a6d428b1ea1429e9f0a6eb362265494d99e8"
     },
     "tools/export-verification.py": {
