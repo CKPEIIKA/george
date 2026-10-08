@@ -2,9 +2,9 @@
 
 ## Implemented changes relative to the degree-18 research scripts
 
-1. Generalized degree selection through the verifier's proved limit 20. Paths,
+1. Generalized degree selection through the verifier's proved limit 22. Paths,
    metadata, seed catalogs and original/Nichols namespaces are no longer hard-coded
-   to degree 18. Degree20 can extend the degree19 run in the same workspace.
+   to degree 18. Degree22 can extend degrees 19--21 in the same workspace.
 2. The native builder uses packed 128-bit words rather than a heap allocation for
    each `vector<uint32_t>` word. Its mathematical row recurrence is unchanged.
 3. Immutable per-degree binary checkpoints store action maps and words. The previous
@@ -14,12 +14,16 @@
 4. Upper grade jobs are dispatched by estimated size, without changing operations
    within a grade or the global free-coordinate order. Both fields and serialization
    are checked against the old native implementation at small degrees.
-5. Candidate words are streamed from the native files. Only orbit representatives
-   enter the lower search; the full set of multiplication maps never enters Python.
-   Candidate bookkeeping is logically budgeted. Unsupported blocks remain incomplete.
-6. Verified lower certificates store selected words, grade transports and a determinant,
-   **not** enormous dense matrix JSON. The matrix is independently recomputed on replay.
-7. Prefix verification constructs its trie once and uses narrow exact-integer tiles.
+5. Candidate words are streamed from the native files, and representative left rows are
+   written directly to fixed-width binary shards instead of retained as Python objects.
+   Only orbit representatives enter the lower search; the full set of multiplication maps
+   never enters Python. Candidate bookkeeping is logically budgeted.
+6. Discovery now returns only selected row/column indices and does **not** retain its dense
+   selected matrix. Verified lower certificates store selected words, grade transports and
+   a determinant. The independent prefix verifier reconstructs every accepted entry and
+   determinant from scratch.
+7. Prefix verification constructs its trie once and uses narrow exact-integer tiles. Degrees
+   21--22 use signed 128-bit exact coefficients; 22! < 2^71 is the audited growth bound.
    Only the modular square matrix needed for the determinant is retained. Elimination
    updates the nonzero positions of each pivot row instead of scanning zero terms.
    This does not change the determinant or acceptance condition.
@@ -31,7 +35,7 @@
 10. Native CPU compilation, separate process/degree logs, cache fingerprints, interruption,
     and a refusal to overwrite another active run are exposed through the CLI.
 
-These are implementation facts, not claims of a measured total speedup at degree 19/20.
+These are implementation facts, not claims of a measured total speedup at degree 21/22.
 
 ## 32 GB planning
 
@@ -41,7 +45,7 @@ map sparsity. Monitor `du -sh ~/fk6-work`. A disk-full failure leaves the prior 
 checkpoint; it does not complete the active degree.
 
 24 GiB leaves approximately 8 GiB of physical RAM outside the selected process budget.
-This is a planning choice, not a guarantee that every degree20 row fits or that the OS
+This is a planning choice, not a guarantee that every degree22 row fits or that the OS
 will never kill a process. `doctor` reports the actual detected limits and currently
 available memory; `-m auto` also reduces the budget on a busy system. Swapping can ruin
 performance long before a numerical algorithm fails; do not allocate all 32 GB blindly.
@@ -58,9 +62,10 @@ Limits that can still block progress:
   relative module; the current tool does not invent new identities to close that gap.
 * The candidate dual family can be rank-deficient; `--dual-mode both` is one extension,
   not proof of completeness of the search.
-* One discovery block supports up to 10,000 candidate rows in the inherited kernel.
-  Exceeding that bound produces an incomplete result, not a dimension claim. The code
-  and scheduling limits would need a tested extension if degree20 exceeds it.
+* One discovery block supports up to 50,000 candidate rows. Its scheduler accounts for
+  quadratic modular-verification storage and refuses a block whose estimate does not fit
+  the selected budget. Candidate duals are capped at two million. Exceeding either bound
+  produces an incomplete result, not a dimension claim.
 * Checkpointing is at native degree boundaries and at verified minor-block boundaries,
   not at arbitrary arithmetic instructions.
 * Caches bind code/data and avoid repeating successful work, but a previously saved

@@ -9,7 +9,7 @@
  */
 typedef struct {u32 next[16],fail,out,length;} MatchNode;
 static int matcher_build(void){
- if(!(S.matcher_enabled||S.chain_enabled)||!S.matcher_limit||!S.nrules){S.matcher_nodes=0;S.matcher_snapshot=0;return 0;}
+ if(!(S.matcher_enabled||S.chain_enabled||S.gm_mask)||!S.matcher_limit||!S.nrules){S.matcher_nodes=0;S.matcher_snapshot=0;return 0;}
  if(S.matcher_nodes&&S.matcher_snapshot==S.nrules)return 0;
  u64 upper=1;for(u32 i=1;i<=S.nrules;i++)upper+=rule(i)->degree;
  if(upper>UINT32_MAX){S.matcher_nodes=0;S.matcher_fallbacks++;return 0;}
@@ -71,8 +71,23 @@ static u32 matcher_find(Word w,u32 degree,u32*pos,Lane*l){
  * same-degree "already seen" skip and no finite-field guess is used.
  * See docs/SPEED_AND_PROGRESS.md for the proof and verification matrix.
  */
+/* Exact fallback retains the completed-degree proof when the optional index
+ * cannot fit. Fragments are extended incrementally; long fragments are retained. */
+static int matcher_interior_lookup(const Rule*f,const Rule*g,u32 overlap){
+ GN_FETCH_ADD(&S.chain_fallback_queries,1);
+ for(u32 at=1;at+1<S.current;at++){
+  if(!(at&255)&&cancelled())return 0;
+  Word w={0,0};
+  for(u32 n=1;n<=GN_INLINE_DEGREE&&at+n<S.current;n++){
+   u32 i=at+n-1,c=i<f->degree?letter(f->lm,f->degree,i):letter(g->lm,g->degree,overlap+i-f->degree);
+   w.hi=(w.hi<<4)|(w.lo>>60);w.lo=(w.lo<<4)|c;
+   if(exact_rule(w,n,S.degree_snapshot))return 1;
+  }
+ }return 0;
+}
 static int matcher_interior(const Rule*f,const Rule*g,u32 overlap){
- if(!S.matcher_nodes||S.matcher_snapshot>S.degree_snapshot||S.current<3)return 0;
+ if(S.current<3)return 0;
+ if(!S.matcher_nodes||S.matcher_snapshot>S.degree_snapshot)return matcher_interior_lookup(f,g,overlap);
  MatchNode*nodes=PTR(MatchNode,S.matcher_base);u32 state=0;
  /* Reset at letter 1 and stop before the last letter: every reported match
   * is wholly in W[1:D-1]. The overlap word is streamed, never allocated. */

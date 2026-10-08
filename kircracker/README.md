@@ -1,5 +1,5 @@
 ```
-KIRCRACKER(1)                 Kircracker 0.1.0                 KIRCRACKER(1)
+KIRCRACKER(1)                 Kircracker 0.3.0                 KIRCRACKER(1)
 ```
 
 ## NAME
@@ -27,10 +27,11 @@ and generated workspaces are local build products.
 ## SYNOPSIS
 
 ```sh
-./kircracker run 20 -j auto -m auto -C fk6-work > degree20.json
+./kircracker run 21 -j auto -m auto -C fk6-work > degree21.json
+./kircracker run 22 -j auto -m auto -C fk6-work > degree22.json
 ./kircracker status -C fk6-work --watch
-./kircracker verify 20 -j auto -m auto -C fk6-work > verified20.json
-./kircracker export 20 -j auto -m auto -C fk6-work -o profile20.json
+./kircracker verify 22 -j auto -m auto -C fk6-work > verified22.json
+./kircracker export 22 -j auto -m auto -C fk6-work -o profile22.json
 ```
 
 `-j` sets the worker ceiling; automatic selection accounts for CPU affinity and
@@ -44,8 +45,17 @@ standard error; `--json-events` selects newline-delimited JSON progress.
 
 Kircracker computes original-FK and Nichols upper bounds, checks exact derivative
 minors independently, and assembles permutation-graded dimension bounds. It
-supports research calculations through degree 20. Its signed 64-bit verification
-bound requires another arithmetic implementation for higher degrees.
+supports research calculations through degree 22. Degrees 21–22 use an exact
+signed 128-bit verifier; the derivative-entry bound is \(22!<2^{71}\).
+Degrees through 20 retain the signed 64-bit path. Higher degrees are refused.
+
+Version 0.3.0 streams candidate rows to disk, retains selected minor indices
+instead of a dense discovery matrix, and allows up to 50,000 rows per block
+subject to memory admission. `--dual-mode auto` tries prepend extensions first,
+then both-sided candidates if a verified gap remains. See
+[PERFORMANCE.md](docs/PERFORMANCE.md) for storage, scheduling and remaining limits.
+Support through degree 22 does not guarantee exact closure: unresolved intervals
+remain `BOUNDS_ONLY`.
 
 A closed profile has status `EXACT_IN_PROJECT_PROOF_CHAIN`. The proof chain
 includes inherited computational evidence and written operator, Hopf and coideal
@@ -63,6 +73,22 @@ Kircracker is a standalone subproject in this repository. It has no browser
 backend or George engine-selector entry. An exported dimension profile can be
 reviewed separately for use by Fomkyr's existing FK Gate.
 
+## NICHOLS AND STRUCTURAL TOOLS
+
+```sh
+./kircracker nichols run 21 -j auto -m auto -C nichols-work
+./kircracker nichols export 21 -C nichols-work -o nichols21.json
+./kircracker proof --help
+./kircracker support-formula
+./kircracker support 5 --degree 8
+```
+
+The Nichols namespace computes bounds for B6 separately, using a Nichols upper
+model and independently checked pairing minors. It adds no Q shift. See
+[NICHOLS_B6.md](docs/NICHOLS_B6.md), [PROOFKIT.md](docs/PROOFKIT.md) and
+[SUPPORT_HOMOLOGY.md](docs/SUPPORT_HOMOLOGY.md). Structural summaries state
+whether their underlying matrices are retained and independently replayable.
+
 ## INTERRUPT AND RESUME
 
 Ctrl-C or TERM preserves committed work. Rerun the same operation with the same
@@ -76,9 +102,9 @@ Inputs, fields and checkpoint chains are validated on resume.
 
 ```sh
 ./kircracker --help
-./kircracker plan 20 -j auto -m auto -C fk6-work
-./kircracker upper 20 --namespace both -j auto -m auto -C fk6-work
-./kircracker search 20 --dual-mode both -j auto -m auto -C fk6-work
+./kircracker plan 22 -j auto -m auto -C fk6-work
+./kircracker upper 22 --namespace both -j auto -m auto -C fk6-work
+./kircracker search 22 --dual-mode auto -j auto -m auto -C fk6-work
 ./kircracker check --quick
 ```
 

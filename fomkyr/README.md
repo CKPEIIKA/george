@@ -8,7 +8,7 @@ FOMKYR(1)                     Fomkyr Manual                     FOMKYR(1)
 
 ## VERSION
 
-**0.7.2**, [MIT license](LICENSE). Fomkyr is a standalone C engine and a
+**0.7.4**, [MIT license](LICENSE). Fomkyr is a standalone C engine and a
 subproject of [George](../README.md). George also runs this kernel through
 WebAssembly; its engine chooser marks that integration experimental.
 
@@ -42,6 +42,9 @@ continue the saved calculation or inspect its checkpoint:
 A C11 compiler, make and POSIX threads are sufficient for native execution.
 Node.js and Python are used by optional Wasm tools and test utilities.
 `make install PREFIX=/desired/prefix` installs the executable and manual page.
+
+The optional multiply, leading-word and backward Gröbner criteria are available
+through `--gm`. See [exact filtering and checkpoint compatibility](docs/NC_GM.md).
 
 ## WHOLE-DEGREE PAIR PLANNING
 
@@ -273,15 +276,25 @@ Explicit shared-cache requests can exceed the former one-sixteenth limit.
 George's automatic memory plan reduces requests that would crowd out indexes
 and basis metadata, including when a browser falls back to Wasm32.
 
+`--word-cache-entries N` configures exact divisor lookups. The optional
+`--reducer-tail-cache 256M` caches exactly normalized completed-degree reducers;
+George exposes it under **Engine → Caches**. It is disabled by default, uses
+the existing memory allowance and preserves original saved records. See
+[canonical reducer cache](docs/REDUCER_TAIL_CACHE.md) for admission, telemetry
+and validation.
+
 George groups detailed engine controls under scheduling, workspace, exact
 reduction, caches and storage submenus. Execution mode, addressing and automatic
 memory management remain at the top. Mathematical choices stay in additional
-settings. The FK6 preset starts at degree 11, permits 14304 MiB, requests a
+settings. The FK6 preset starts at degree 11 with ambiguity-word scheduling from degree 12, permits 14304 MiB, requests a
 2048 MiB shared cache and 2% per-lane cache, and leaves the time limit unlimited.
 Automatic concurrency reserves at least 1024 MiB of ordinary workspace per
 reduction lane, including the separate commit lane. An explicit worker count
-overrides this choice. It enables the optional FK6 total/component profile
-through degree 17; assisted results remain conditional on that imported authority.
+overrides this choice. Its Dimension source selector enables the FK6 totals
+through degree 20 and the kernel's component assistance through degree 17.
+The degree-17 source remains available for existing saved jobs. Custom dimensions
+and replayable integer-dual certificates can be loaded in the same settings.
+Assisted results remain conditional on imported dimensions.
 The preset supports deeper runs such as degrees 15–16 within available resources;
 it does not establish a completion time or guarantee browser completion.
 
@@ -458,6 +471,11 @@ component progress, recent rates, and checkpoint age. With no argument it
 finds a recent `status.json` in a job directory. `--once` prints one snapshot.
 Closing the dashboard leaves the computation running. CPU and RAM are sampled
 directly from Linux; solver counters carry the age of their latest status.
+For an active FK dimension gate, ETA uses the average deficit decrease over the
+last 30 minutes, or the available history for a younger session. Its range compares
+10-, 20- and 30-minute averages. Otherwise ETA uses overlap throughput. These are
+rough rate projections. Add `--log calculation.log` to read an existing `--human`
+progress log and show a deficit estimate immediately when opening the dashboard.
 
 Use `--scheduler barrier` for whole-batch scheduling, `--quantum-ms N` for the
 soft slice target, and `--no-radix-cache` to disable cached bucket maxima.

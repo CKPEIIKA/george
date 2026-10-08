@@ -4,7 +4,7 @@ from collections import defaultdict
 import gc,json,os,struct,sys
 from pathlib import Path
 from .util import ROOT,load,sha,json_hash,atomic_json,Incomplete,Invalid
-from .records import PERMS,INDEX,EDGES,EDGE,grade,inverse,conjugate,orbit,code,packed,unpacked,read_minor,state_words,state_info,check_minor
+from .records import PERMS,INDEX,EDGES,EDGE,MASK,grade,inverse,conjugate,orbit,code,packed,unpacked,read_minor,state_words,state_info,check_minor
 from .scheduler import run_tasks,verifier_fingerprint
 MiB=1024**2
 
@@ -61,21 +61,36 @@ def lower_prefix(runner,D,force=False):
  return results
 
 def prepare_candidates(runner,D,mode='prepend'):
- if D<1 or D>20:raise Invalid('candidate degree must be 1..20')
+ if D<1 or D>22:raise Invalid('candidate degree must be 1..22')
  upper=runner.work/'upper/NICHOLS-only';state=upper/f'level-{D:03d}.krm';binding=load(upper/'binding.json')['binding'];info=state_info(state,binding)
  seed=seed_catalog(runner.work,D-1);catalog=validate_catalog(seed);out=runner.work/'candidates'/f'd{D:02d}';out.mkdir(parents=True,exist_ok=True)
- token=json_hash({'upperSHA256':sha(state),'seedSHA256':sha(seed),'degree':D,'dualMode':mode,'method':'one-generator-complementary-extension-v1'})
+ token=json_hash({'upperSHA256':sha(state),'seedSHA256':sha(seed),'degree':D,'dualMode':mode,'method':'one-generator-complementary-extension-v2-streamed'})
  old=out/'tasks.json'
  if old.exists():
   x=load(old)
   if x['binding']==token and all(sha(out/t['left'])==t['leftSHA256'] and sha(out/t['right'])==t['rightSHA256'] for t in x['tasks']):return x
- runner.event('candidate_words',degree=D,upperDimension=info['words'],message='Streaming representative upper words')
- orbits={g:orbit(g) for g in PERMS};reps={min(orbits[g]) for g in PERMS};rows=defaultdict(list)
- for w,_ in state_words(state,binding):
-  u=bytes(EDGE[(a+1,6)] for a in reversed(w));g=grade(u)
-  if g in reps:rows[g].append(u)
- # Distinct boundary-preserving grade orbits partition representative searches.
- duals={g:set() for g in rows};alphabet=[EDGE[e] for e in EDGES if e[1]<6 or e==(5,6)]
+ runner.event('candidate_words',degree=D,upperDimension=info['words'],message='Streaming representative upper words to disk')
+ # Representative rows are written directly as fixed 16-byte words instead of
+ # retained as Python byte objects.  At degrees 21/22 this removes a large and
+ # unnecessary coordinator-memory multiplier.
+ orbits={g:orbit(g) for g in PERMS};reps={min(orbits[g]) for g in PERMS};row_counts=defaultdict(int);buffers={};handles={};tmp_paths={}
+ def emit(g,w):
+  if g not in handles:
+   key=''.join(map(str,g));tmp=out/(key+'.left.tmp');tmp.unlink(missing_ok=True);handles[g]=tmp.open('wb');tmp_paths[g]=tmp;buffers[g]=bytearray()
+  v=code(w);buffers[g]+=struct.pack('<QQ',v&MASK,v>>64);row_counts[g]+=1
+  if len(buffers[g])>=1<<20:handles[g].write(buffers[g]);buffers[g].clear()
+ try:
+  for w,_ in state_words(state,binding):
+   u=bytes(EDGE[(a+1,6)] for a in reversed(w));g=grade(u)
+   if g in reps:emit(g,u)
+ finally:
+  for g,h in handles.items():
+   if buffers[g]:h.write(buffers[g])
+   h.flush();os.fsync(h.fileno());h.close()
+ left_files={}
+ for g,tmp in tmp_paths.items():
+  key=''.join(map(str,g));dest=out/(key+'.left');os.replace(tmp,dest);left_files[g]=dest
+ duals={g:set() for g in row_counts};alphabet=[EDGE[e] for e in EDGES if e[1]<6 or e==(5,6)]
  for block in catalog['blocks']:
   meta,_,vs=read_minor(seed.parent/block['file']);basegrade=tuple(meta['grade'])
   for s0 in meta['transports']:
@@ -93,15 +108,15 @@ def prepare_candidates(runner,D,mode='prepend'):
     for direction,e,g in allowed:
      if direction=='pre' and (not w or w[0]!=e):duals[g].add(bytes([e])+w)
      elif direction=='post' and (not w or w[-1]!=e):duals[g].add(w+bytes([e]))
-  estimate=sum(len(v)*(96+D) for v in duals.values())+sum(len(v)*(64+D) for v in rows.values())
-  if estimate>runner.memory//3:raise Incomplete('candidate preparation exceeds its logical memory budget; raise --memory or use --dual-mode prepend')
+  estimate=sum(len(v)*(96+D) for v in duals.values())
+  if estimate>runner.memory//3:raise Incomplete('dual-candidate preparation exceeds its logical memory budget; raise --memory or use --dual-mode prepend')
   runner.event('candidate_seed_block',degree=D,grade=''.join(map(str,basegrade)),candidateDuals=sum(map(len,duals.values())))
  tasks=[]
- for g,us in sorted(rows.items()):
-  vs=sorted(duals[g]);key=''.join(map(str,g));l=out/(key+'.left');r=out/(key+'.right');l.write_bytes(packed(us));r.write_bytes(packed(vs));nr=len(us);nv=len(vs)
+ for g,nr in sorted(row_counts.items()):
+  vs=sorted(duals[g]);key=''.join(map(str,g));l=left_files[g];r=out/(key+'.right');r.write_bytes(packed(vs));nv=len(vs)
   tasks.append({'degree':D,'prime':1000003,'grade':list(g),'transports':[list(v) for _,v in sorted(orbits[g].items())],'rows':nr,'duals':nv,'left':l.name,'right':r.name,'leftSHA256':sha(l),'rightSHA256':sha(r)})
   del duals[g]
- x={'degree':D,'binding':token,'mode':mode,'upperRelativeDimension':info['words'],'tasks':tasks};atomic_json(old,x);runner.event('candidates_ready',degree=D,blocks=len(tasks),representativeRows=sum(t['rows'] for t in tasks),candidateDuals=sum(t['duals'] for t in tasks));return x
+ x={'degree':D,'binding':token,'mode':mode,'upperRelativeDimension':info['words'],'tasks':tasks,'streamedLeftRows':True};atomic_json(old,x);runner.event('candidates_ready',degree=D,blocks=len(tasks),representativeRows=sum(t['rows'] for t in tasks),candidateDuals=sum(t['duals'] for t in tasks));return x
 
 def discover(runner,D,mode='prepend',seconds=0,only=None):
  c=prepare_candidates(runner,D,mode);candidate=runner.work/'candidates'/f'd{D:02d}';out=runner.work/'lower'/f'd{D:02d}';out.mkdir(parents=True,exist_ok=True);tasks=[]
@@ -109,7 +124,7 @@ def discover(runner,D,mode='prepend',seconds=0,only=None):
   t=dict(t0);key=''.join(map(str,t['grade']));t.update({'left':str(candidate/t['left']),'right':str(candidate/t['right']),'minor':str(out/(key+'.kcb')),'output':str(out/(key+'.audit.json')),'seconds':seconds,'wallSeconds':(seconds+60) if seconds else 0})
   # Conservative admission estimate, and a genuine OS per-process address-space
   # ceiling. A larger actual requirement is reported as incomplete, never zero.
-  t['memoryBytes']=max(384*MiB,12*t['rows']**2+128*t['duals']+256*MiB)
+  t['memoryBytes']=max(384*MiB,8*t['rows']**2+128*t['duals']+320*MiB)
   t['binding']=json_hash({**t0,'candidateBinding':c['binding']})
   if not t['duals']:runner.event('no_dual_candidates',degree=D,grade=key);continue
   tasks.append(t)
@@ -129,5 +144,13 @@ def discover(runner,D,mode='prepend',seconds=0,only=None):
  if errors:raise Incomplete(f'degree-{D} discovery left {len(errors)} unfinished blocks; verified blocks retained')
  # The discovery process has already used the independent verifier; bind these
  # audits into the same aggregate format consumed by the assembly.
- aggregate={'passed':True,'degree':D,'rankLowerBound':sum(grades.values()),'grades':{str(g):n for g,n in grades.items()},'checkedBlocks':len(blocks),'requiredBlocks':len(tasks),'catalog':str(out/'catalog.json'),'catalogSHA256':sha(out/'catalog.json'),'fingerprint':verifier_fingerprint(),'entriesReplayed':sum(x.get('entriesReplayed',0) for x in answers),'errors':[]}
+ aggregate={'passed':True,'degree':D,'rankLowerBound':sum(grades.values()),'candidateUpper':c['upperRelativeDimension'],'grades':{str(g):n for g,n in grades.items()},'checkedBlocks':len(blocks),'requiredBlocks':len(tasks),'catalog':str(out/'catalog.json'),'catalogSHA256':sha(out/'catalog.json'),'fingerprint':verifier_fingerprint(),'entriesReplayed':sum(x.get('entriesReplayed',0) for x in answers),'errors':[]}
  atomic_json(runner.work/'verified'/f'd{D:02d}'/'complete.json',aggregate);return aggregate
+
+
+def discover_auto(runner,D,seconds=0,only=None):
+ """Cheap family first; broaden only if the verified total still misses the upper model."""
+ first=discover(runner,D,'prepend',seconds,only=only)
+ if only is not None or first.get('rankLowerBound',0)>=first.get('candidateUpper',1):return first
+ runner.event('candidate_escalation',degree=D,lower=first['rankLowerBound'],upper=first['candidateUpper'],message='Prepend family left a gap; retrying with both-sided extensions')
+ return discover(runner,D,'both',seconds,only=None)

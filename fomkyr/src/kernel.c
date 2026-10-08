@@ -39,7 +39,7 @@ typedef u64 Coef; /* even: signed 63-bit immediate; odd: offset|1|signbit(2) */
 typedef struct {Word w; Coef c;} Term;
 typedef struct {u64 base,pos,end,peak;u32 error;} Arena;
 typedef struct {u64 off;u32 n,degree;u64 origin;} Poly;
-typedef struct {Word lm;u64 location;u32 bytes,n,degree,next;u64 pinned;} Rule;
+typedef struct {Word lm;u64 location;u32 bytes,n,degree,next;u64 pinned,tail_cache;u32 tail_snapshot,tail_generation,tail_tried;} Rule;
 typedef struct {u32 rule,next;u32 length,pad;} Prefix;
 typedef struct {u32 magic,bytes,n,degree;u64 checksum,reserved;} Record;
 typedef struct {u32 id,bytes;u64 offset;} Cache;
@@ -62,7 +62,7 @@ typedef struct {
   u32 allow_repack;u32 rational_maxed,rational_full_capacity;u64 rational_table_growths;u64 big_attempts,big_successes,big_fallbacks,big_steps,big_compactions,big_pool_misses,big_capacity_misses,big_arena_misses;
   u64 big_growths,big_peak_terms,big_capacity,big_reserved,big_coefficient_live,big_coefficient_bytes,big_reserve_waits,general_fallbacks;
   u64 big_pool_high_water,big_arithmetic_high_water,big_collected_live_high_water;
-  u64 rational_attempts,rational_successes,rational_fallbacks,integer_steps,rational_steps,local_hits,pinned_hits;u64 rational_local_hits,rational_space_misses,rational_coefficient_misses,rational_arithmetic_misses,rational_table_retries;u32 publications,busy,skip_rule,reduction_tier;
+  u64 rational_attempts,rational_successes,rational_fallbacks,integer_steps,rational_steps,local_hits,pinned_hits;u64 rational_local_hits,rational_space_misses,rational_coefficient_misses,rational_arithmetic_misses,rational_table_retries;u32 publications,busy,skip_rule,reduction_tier,tail_generation,tail_snapshot;
 } Lane;
 typedef struct {u32 f,g,k,snapshot,rc,bytes;u64 output;} BatchTask;
 /* Published at sparse safe points, never read another lane's mutable row. */
@@ -106,7 +106,8 @@ typedef struct {
   GN_ATOMIC(u32) cancel;
   u64 base,bump,budget,scratch_base,scratch_size,stack_base,lm_heads,prefix_heads,rule_pages,prefix_pages;
   u64 disk_end,terms,pair_count,zero_pairs,commit_zero,allocated_peak;
-  u32 matcher_enabled,chain_enabled,telemetry_enabled,matcher_snapshot;
+  u32 matcher_enabled,chain_enabled,telemetry_enabled,matcher_snapshot,gm_mask,gm_requested;
+ GN_ATOMIC(u64) gm_examined,gm_skipped[3],gm_unavailable,gm_pending,chain_fallback_queries;
   u32 eager_pruning,quadratic_rewrite,square_mask,commute_mask[16];i64 swap_factor[256];
   u32 matcher_capacity,matcher_nodes,matcher_min,matcher_builds,matcher_fallbacks;
   u64 matcher_base,matcher_limit,matcher_allocated,chain_skipped;
@@ -118,6 +119,16 @@ typedef struct {
   Lane lanes[GN_MAX_WORKERS];
 } State;
 static State S;
+#define TAIL_REQUESTS 256u
+typedef struct {
+ u64 base,capacity,used,workspace,workspace_bytes,requested_bytes;
+ u32 generation,floor,cursor,building;
+ GN_ATOMIC(u32) requests[TAIL_REQUESTS];
+ GN_ATOMIC(u64) hits,misses,queued;
+ u64 attempts,built,declined,saved_terms,saved_bytes,build_us;
+} TailCache;
+static TailCache T;
+static int tail_cache_prepare(void);
 /* Extra arenas are admitted only between worker waves. Every arena has the
  * original reserve's size; its live row keeps an exclusive lease across yields.
  * Worker threads only acquire/release leases and request later admission. */
@@ -152,8 +163,15 @@ static void reserve_pool_admit(void){
  S.bump+=S.reserve_bytes;S.allocated_peak=MAX(S.allocated_peak,S.bump);S.reserve_extra_count++;S.reserve_pool_admissions++;
 }
 /* A bounded whole-degree ambiguity plan. Working polynomials remain per-lane. */
-typedef struct {u32 f,g,k,ordinal;} PlanPair;
-typedef struct {u32 requested,mode,min_degree,active,anchor_n,count,cursor;u64 base,capacity,allocated,budget,total,anchor_seen,builds,declines,adoptions,build_us;BatchTask anchor[BATCH_MAX];} PairPlan;
+typedef struct {u32 f,g,k,ordinal,group;} PlanPair;
+typedef struct {
+ u32 requested,mode,min_degree,active,anchor_n,count,cursor;
+ u32 gate_ready,q14_hint,gate_replans,gate_target,gate_stride;
+ u64 base,capacity,allocated,budget,total,anchor_seen,builds,declines,adoptions,build_us,excluded_base,excluded_count;
+ u32 excluded_bytes;
+ u32 gate_rank[360];u64 gate_pending[360],gate_gap[360],gate_qmass[360],gate_cost[360],gate_injected;
+ BatchTask anchor[BATCH_MAX];
+} PairPlan;
 static PairPlan P;
 
 #ifndef __wasm__
@@ -372,6 +390,15 @@ static int validate_record(u64 off,u32 bytes){
  * No borrowed record pointer survives the next load_rule on the same lane. */
 static Poly load_rule(u32 id,Lane*l){
  Rule*r=rule(id);u64 off=r->location;
+ if(T.base&&!S.certifying&&id<=T.floor&&l->tail_snapshot>=r->tail_snapshot){
+  if(r->tail_cache&&r->tail_generation<=l->tail_generation){
+   Record*h=PTR(Record,r->tail_cache);GN_FETCH_ADD(&T.hits,1);
+   return(Poly){r->tail_cache+sizeof(Record),h->n,h->degree,r->tail_cache};
+  }
+  if(!T.building&&!r->tail_cache&&!r->tail_tried&&r->degree<=S.completed&&r->n>1){
+   GN_FETCH_ADD(&T.misses,1);GN_STORE(&T.requests[id&(TAIL_REQUESTS-1)],id);GN_FETCH_ADD(&T.queued,1);
+  }
+ }
  if(r->pinned){l->pinned_hits++;return(Poly){r->pinned+sizeof(Record),r->n,r->degree,r->pinned};}
  if(S.spill){
   Cache*c=PTR(Cache,l->cache_base)+(id&l->cache_mask);
@@ -563,6 +590,7 @@ static int reserve_nf(Lane*l,Poly p,u32 active,u32 snapshot){
 typedef struct {Poly p;u32 active,scan,tried;u64 steps;} NResume;
 static NResume nresume[GN_RESUME_SLOTS];
 static int nf(Lane*l,u32 snapshot){
+ l->tail_snapshot=snapshot;if(!l->resume_tier)l->tail_generation=T.generation;
  u32 active=l->active;Poly p=l->result;u64 steps=0;u32 scan=0,heap_tried=0;
  u64 capacity_mark=l->big_capacity_misses+l->big_pool_misses+l->big_arena_misses;
  if(l->resume_tier){heap_tried=1;l->slice_resumes++;
@@ -624,6 +652,7 @@ static int reserve_slots(u32 nmore){if(S.nrules==UINT32_MAX||nmore>UINT32_MAX-S.
 static int fg_append_check(Poly p,int restoring);
 static int fg_append_done(Poly p,int restoring);
 static int fg_sector_ids(u32 f,u32 g,u32 k);
+static u32 fg_pair_group(u32 f,u32 g,u32 k);
 static int fg_sector_pair(Lane*l);
 #include "delta_commit.inc"
 static int append_rule(Poly p,u64 existing_disk,int restoring){
@@ -634,7 +663,7 @@ static int append_rule(Poly p,u64 existing_disk,int restoring){
  if(S.spill){location=restoring?existing_disk:S.disk_end;if(!restoring){rc=write_record(p,l->io_base,l->io_size);if(rc)return rc;if(!gn_host_write(location,l->io_base,(u32)size))return GN_IO;}S.disk_end=MAX(S.disk_end,location+size);}
  else{location=alloc_p(size);if(!location)return S.error;rc=write_record(p,location,size);if(rc)return rc;}
  if(wlong(leading)){u64 owned=alloc_p(p.degree);if(!owned)return S.error;memcpy(PTR(u8,owned),PTR(u8,leading.lo),p.degree);leading.lo=owned;}
- u32 id=++S.nrules,b=hash(leading,p.degree);Rule*r=rule(id);*r=(Rule){leading,location,(u32)size,p.n,p.degree,PTR(u32,S.lm_heads)[b],0};PTR(u32,S.lm_heads)[b]=id;
+ u32 id=++S.nrules,b=hash(leading,p.degree);Rule*r=rule(id);*r=(Rule){leading,location,(u32)size,p.n,p.degree,PTR(u32,S.lm_heads)[b],0,0,0,0,0};PTR(u32,S.lm_heads)[b]=id;
  for(u32 len=1;len<p.degree;len++){
   Word key=part(r->lm,p.degree,0,len);u32 h=prefix_hash(key,len,p.degree);
   u32 count=prefix_count(key,len,p.degree,id-1)+1,pid=++S.nprefix;
@@ -716,7 +745,7 @@ API int gn_batch_mode(u32 enabled){S.batch_enabled=!!enabled;return gn_workers(S
 API int gn_init(u32 generators,u32 degree,u32 workers,u64 budget,u64 scratch_pool,u32 hash_bits,u32 modulus,u32 spill){
  if(!generators||generators>16||degree>GN_INDEX_MAX||budget>GN_HARD_BYTES||scratch_pool>budget||scratch_pool<1024*1024||hash_bits<8||hash_bits>26||modulus==1||modulus>2147483647u)return GN_INPUT;
  if(modulus){for(u32 d=2;(u64)d*d<=modulus;d++)if(modulus%d==0)return GN_INPUT;}
- gn_lb_release();memset(&P,0,sizeof(P));memset(&S,0,sizeof(S));S.abi=GN_ABI;S.generators=generators;S.target=degree?degree:GN_INDEX_MAX;S.pruning=1;S.heap_enabled=1;S.rational_enabled=1;S.rational_rewrites=1;S.big_rational_enabled=1;S.growing_rational=1;S.reserve_growth=1;S.radix_enabled=1;S.radix_cache_enabled=1;S.matcher_enabled=1;S.chain_enabled=1;S.telemetry_enabled=1;S.eager_pruning=1;S.quadratic_rewrite=1;S.cost_scheduling=1;S.matcher_limit=MIN(budget/16,UINT64_C(67108864));S.cache_percent=12;S.heap_threshold=16;S.budget=budget;S.modulus=modulus;S.spill=!!spill;S.base=gn_heap_base();S.bump=S.base;S.stack_base=alloc_p((u64)GN_MAX_WORKERS*STACK_BYTES);if(!S.stack_base)return S.error;
+ gn_lb_release();memset(&P,0,sizeof(P));memset(&T,0,sizeof(T));memset(&S,0,sizeof(S));S.abi=GN_ABI;S.generators=generators;S.target=degree?degree:GN_INDEX_MAX;S.pruning=1;S.heap_enabled=1;S.rational_enabled=1;S.rational_rewrites=1;S.big_rational_enabled=1;S.growing_rational=1;S.reserve_growth=1;S.radix_enabled=1;S.radix_cache_enabled=1;S.matcher_enabled=1;S.chain_enabled=1;S.telemetry_enabled=1;S.eager_pruning=1;S.quadratic_rewrite=1;S.cost_scheduling=1;S.matcher_limit=MIN(budget/16,UINT64_C(67108864));S.cache_percent=12;S.heap_threshold=16;S.budget=budget;S.modulus=modulus;S.spill=!!spill;S.base=gn_heap_base();S.bump=S.base;S.stack_base=alloc_p((u64)GN_MAX_WORKERS*STACK_BYTES);if(!S.stack_base)return S.error;
  S.scratch_base=alloc_p(scratch_pool);if(!S.scratch_base)return S.error;S.scratch_size=scratch_pool;int rc=gn_workers(workers);if(rc)return rc;
  S.hash_mask=((u32)1<<hash_bits)-1;u64 hb=((u64)S.hash_mask+1)*4;S.lm_heads=alloc_p(hb);S.prefix_heads=alloc_p(hb);if(S.error)return S.error;memset(PTR(u8,S.lm_heads),0,(size_t)hb);memset(PTR(u8,S.prefix_heads),0,(size_t)hb);
  S.table_capacity=(u32)MIN((budget/(PAGE_N*sizeof(Prefix))+2),(u64)UINT32_MAX/PAGE_N+1);u64 tb=(u64)S.table_capacity*8;S.rule_pages=alloc_p(tb);S.prefix_pages=alloc_p(tb);if(S.error)return S.error;memset(PTR(u8,S.rule_pages),0,(size_t)tb);memset(PTR(u8,S.prefix_pages),0,(size_t)tb);return 0;
@@ -734,6 +763,9 @@ API int gn_optimize(u32 flags,u64 matcher_budget){
 /* Optional per-lane word->divisor cache. Exact word comparison plus snapshot
  * validity checks are unchanged. It holds no polynomial normal forms. At most
  * budget/16 extra bytes; denied optional growth falls back to a smaller table. */
+API int gn_gm_config(u32 mask){if(mask>7)return GN_INPUT;if(S.current||S.input_expected)return GN_STATE;S.gm_mask=S.gm_requested=mask;return 0;}
+API u64 gn_gm_stat(u32 key){switch(key){case 0:return S.gm_mask;case 1:return GN_LOAD(&S.gm_examined);case 2:return GN_LOAD(&S.gm_skipped[0]);case 3:return GN_LOAD(&S.gm_skipped[1]);case 4:return GN_LOAD(&S.gm_skipped[2]);case 5:return GN_LOAD(&S.gm_unavailable);case 6:return GN_LOAD(&S.gm_pending);case 7:return GN_LOAD(&S.chain_fallback_queries);default:return 0;}}
+API int gn_tail_cache_prepare(void){return tail_cache_prepare();}
 API int gn_word_cache(u32 entries){
  if(S.current||S.input_expected||S.nrules||entries>1048576u)return GN_INPUT;
  if(!entries)entries=RED_CACHE_N;
@@ -799,11 +831,13 @@ API int gn_input_bytes(u32 length,i64 coefficient){
 API int gn_input_end(void){if(S.input_used!=S.input_expected||!S.input_expected)return GN_STATE;S.input_expected=0;Lane*l=&S.lanes[0];Term*t=PTR(Term,l->result.off);u32 n=l->result.n;/* Inputs are small; insertion sort avoids library allocation. */
  for(u32 i=1;i<n;i++){Term x=t[i];u32 j=i;while(j&&wcmp(t[j-1].w,x.w)<0){t[j]=t[j-1];--j;}t[j]=x;}
  u32 k=0;for(u32 i=0;i<n;i++){if(k&&weq(t[k-1].w,t[i].w)){t[k-1].c=addf(&l->a[0],t[k-1].c,t[i].c);if(!t[k-1].c)--k;}else if(t[i].c)t[k++]=t[i];}l->result.n=k;if(l->a[0].error)return l->a[0].error;int rc=normalise(&l->result,&l->a[0]);if(!rc)rc=nf(l,S.nrules);if(!rc)rc=S.certifying?(l->result.n?GN_REJECTED:0):append_rule(l->result,0,0);return rc;}
+#include "tail_cache.inc"
+#include "nc_gm.inc"
 #include "pair_plan.inc"
 static void reset_degree_progress(void){S.degree_seen=0;S.degree_scheduled=0;S.degree_committed=0;S.degree_monomial=0;S.degree_chain=0;}
 API int gn_start_degree(u32 degree){
  if(cancelled())return GN_CANCELLED;if(S.current||degree!=S.completed+1||degree>S.target)return GN_STATE;
- S.gate_active=S.gate_closed=0;S.gate_skipped=0;S.current=degree;S.degree_snapshot=S.nrules;S.iter_f=1;S.iter_k=1;S.iter_node=0;S.iter_ready=0;S.iter_done=0;
+ S.gate_active=S.gate_closed=0;S.gate_skipped=0;S.gm_mask=S.gm_requested;S.current=degree;S.degree_snapshot=S.nrules;S.iter_f=1;S.iter_k=1;S.iter_node=0;S.iter_ready=0;S.iter_done=0;
  reset_degree_progress();S.degree_total=0;S.degree_total_known=0;S.degree_replays=0;
  int rc=matcher_build();if(rc)return rc;
  rc=local_build();if(rc)return rc;
@@ -823,11 +857,11 @@ API int gn_start_degree(u32 degree){
   }
   S.degree_total_known=1;
  }
- P.active=0;P.count=P.cursor=0;P.anchor_seen=P.anchor_n=0;
+ P.active=0;P.count=P.cursor=0;P.anchor_seen=P.anchor_n=0;P.excluded_bytes=0;P.excluded_count=0;
  if(P.requested&&degree>=P.min_degree){int planned=plan_build(P.requested,0,NULL,0);if(planned<0)return -planned;}
  return 0;
 }
-API int gn_rewind_degree(void){if(!S.current)return GN_STATE;if(P.active&&P.anchor_seen){int rc=plan_build(P.mode,0,NULL,0);if(rc<0)return -rc;if(!rc)P.active=0;}else if(P.active)P.cursor=0;reset_degree_progress();S.degree_replays++;S.iter_f=1;S.iter_k=1;S.iter_node=0;S.iter_ready=0;S.iter_done=0;return 0;}
+API int gn_rewind_degree(void){if(!S.current)return GN_STATE;if(P.active&&P.anchor_seen){P.excluded_bytes=0;P.excluded_count=0;int rc=plan_build(P.mode,0,NULL,0);if(rc<0)return -rc;if(!rc)P.active=0;}else if(P.active)P.cursor=0;reset_degree_progress();S.degree_replays++;S.iter_f=1;S.iter_k=1;S.iter_node=0;S.iter_ready=0;S.iter_done=0;return 0;}
 API int gn_next_pair(u32 lane){if(lane>=S.workers||!S.current)return -GN_STATE;if(P.active)return S.iter_done?0:plan_next(lane);Lane*l=&S.lanes[lane];if(S.iter_done)return 0;u64 polls=0;
  while(S.iter_f<=S.degree_snapshot){if((++polls&1023)==0){if(S.telemetry_enabled)(void)gn_host_clock();if(cancelled())return -GN_CANCELLED;}Rule*f=rule(S.iter_f);if(f->degree>=S.current||S.iter_k>=f->degree){S.iter_f++;S.iter_k=1;S.iter_ready=0;continue;}
   u32 k=S.iter_k,glen=S.current-f->degree+k;Word suffix=part(f->lm,f->degree,f->degree-k,k);
@@ -837,13 +871,15 @@ API int gn_next_pair(u32 lane){if(lane>=S.workers||!S.current)return -GN_STATE;i
    S.degree_seen++;
    if(S.pruning&&f->n==1&&g->n==1){S.zero_pairs++;S.degree_monomial++;continue;}
    if(S.chain_enabled&&matcher_interior(f,g,k)){S.chain_skipped++;S.degree_chain++;continue;}
+   if(gm_pair(S.iter_f,id,k)){S.degree_chain++;continue;}
    l->f=S.iter_f;l->g=id;l->k=k;l->snapshot=S.nrules;l->error=0;S.pair_count++;S.degree_scheduled++;return 1;
   }
   S.iter_k++;S.iter_ready=0;
  }
  S.iter_done=1;return 0;
 }
-static int reduce_pair_impl(u32 lane){if(lane>=S.workers)return GN_INPUT;Lane*l=&S.lanes[lane];l->normal_valid=0;l->delta_floor=0;l->error=0;reset_a(&l->a[0]);reset_a(&l->a[1]);l->active=0;l->result=(Poly){0};l->pairs++;
+static int reduce_pair_impl(u32 lane){if(lane>=S.workers)return GN_INPUT;Lane*l=&S.lanes[lane];l->normal_valid=0;l->delta_floor=0;l->error=0;reset_a(&l->a[0]);reset_a(&l->a[1]);l->active=0;l->result=(Poly){0};l->pairs++;l->tail_generation=T.generation;l->tail_snapshot=l->snapshot;
+ if(pair_replay_filter(l->f,l->g,l->k))return 0;
  if(fg_sector_pair(l))return 0;
  Rule*f=rule(l->f),*g=rule(l->g);u32 nr=g->degree-l->k;Word suffix=part(g->lm,g->degree,l->k,nr),left=part(f->lm,f->degree,0,f->degree-l->k);Poly fp=load_rule(l->f,l);if(l->error)return l->error;
  Poly p=copy_poly(fp,&l->a[0],(Word){0,0},suffix,nr,S.current);if(l->a[0].error)return l->a[0].error;Poly gp=load_rule(l->g,l);if(l->error)return l->error;Coef a=pc(gp,0),b=pc(p,0);Arena*ar=&l->a[1];Coef z=S.modulus?2:gcdc(ar,a,b);Coef sp=S.modulus?a:exactdiv(ar,a,z),sg=negf(S.modulus?b:exactdiv(ar,b,z));if(ar->error)return ar->error;
@@ -877,6 +913,7 @@ static void order_batch(void){
 }
 API int gn_batch_fill(u32 limit){
  if(!S.batch_enabled||!S.current||!limit||limit>BATCH_MAX)return -GN_STATE;
+ int tc=tail_cache_prepare();if(tc)return -tc;
  reserve_pool_admit();
  S.batch_n=0;S.batch_first=0;S.batch_committed=0;GN_STORE(&S.batch_next,0);
  for(u32 l=0;l<S.workers;l++)S.lanes[l].out_used=0;
@@ -977,7 +1014,7 @@ API u64 gn_normalize_rule(u32 lane,u32 id){
  if(lane>=S.workers)return 0;
  Lane*l=&S.lanes[lane];l->error=0;
  if(S.current||S.input_expected||S.certifying||S.canonical_snapshot!=S.nrules||!id||id>S.nrules){l->error=GN_STATE;return 0;}
- l->skip_rule=0;l->slice_enabled=0;l->resume_tier=0;l->allow_repack=0;
+ l->skip_rule=0;l->slice_enabled=0;l->resume_tier=0;l->allow_repack=0;l->tail_generation=T.generation;l->tail_snapshot=S.nrules;
  l->delta_floor=0;l->normal_valid=0;
  l->busy=1;l->f=id;l->g=0;l->k=0;
  int rc=0;
@@ -1139,7 +1176,7 @@ API int gn_radix_queue(u32 enabled){if(enabled>1)return GN_INPUT;if(S.current||S
 #include "cooperative.inc"
 
 API int gn_pair_plan_config(u32 order,u32 min_degree,u64 bytes){
- if(order>3||!min_degree||min_degree>GN_INDEX_MAX||S.current||S.input_expected||S.nrules)return GN_INPUT;
+ if(order>4||!min_degree||min_degree>GN_INDEX_MAX||S.current||S.input_expected||S.nrules)return GN_INPUT;
  P.requested=order;P.min_degree=min_degree;P.budget=MIN(bytes,S.budget/8);return 0;
 }
 API int gn_pair_plan_adopt(void){
@@ -1157,10 +1194,43 @@ API int gn_pair_plan_adopt(void){
  S.batch_n=S.batch_first=S.batch_committed=S.batch_work_n=0;GN_STORE(&S.batch_next,0);
  S.iter_f=1;S.iter_k=1;S.iter_node=S.iter_ready=0;S.iter_done=P.count==0;P.adoptions++;return 1;
 }
-API u64 gn_pair_plan_stat(u32 key){switch(key){case 0:return P.active;case 1:return P.mode;case 2:return P.count;case 3:return P.cursor;case 4:return P.total;case 5:return P.anchor_seen;case 6:return P.anchor_n;case 7:return P.allocated;case 8:return P.builds;case 9:return P.declines;case 10:return P.adoptions;case 11:return P.build_us;default:return 0;}}
+API int gn_pair_plan_reorder(void){
+ if(!P.requested||!P.active||!S.current||P.mode==P.requested)return 0;
+ if(S.input_expected||GN_LOAD(&S.batch_running)||reserve_pool_busy()||C.commit_task)return -GN_STATE;
+ for(u32 i=0;i<S.workers;i++)if(S.lanes[i].resume_tier||GN_LOAD(&C.assigned[i]))return -GN_STATE;
+ u32 pending=S.batch_n-S.batch_committed;
+ if(pending>BATCH_MAX||S.degree_scheduled<S.degree_committed||S.degree_scheduled-S.degree_committed!=pending)return -GN_STATE;
+ BatchTask*task=&S.tasks[S.batch_committed];
+ for(u32 i=0;i<pending;i++)if(task[i].rc!=GN_STATE&&task[i].rc!=GN_DEFERRED)return -GN_STATE;
+ int rc=plan_check_pending(task,pending);if(rc)return -rc;
+ u64 remaining=(u64)P.count-P.cursor+pending,baseline=S.degree_seen-pending;
+ if(remaining>P.capacity||baseline>P.total||remaining!=P.total-baseline)return -GN_CORRUPT;
+ u32 bytes=(u32)((P.total+7)/8);
+ if((u64)FH*8+pending*16+bytes>MIN(S.lanes[0].io_size,GN_FRONTIER_MAX_BYTES)||bytes>P.budget-P.allocated)return -GN_MEMORY;
+ /* Allocate separately before changing the active plan. All subsequent work is
+  * bounded and cannot fail; a stop signal is handled after migration finishes. */
+ u64 bitmap=alloc_p(bytes);if(!bitmap)return -GN_MEMORY;
+ PlanPair saved[BATCH_MAX],*t=PTR(PlanPair,P.base);u32 found=0;
+ u32 slots[1024]={0};for(u32 i=0;i<pending;i++){u32 h=plan_hash(task[i].f,task[i].g,task[i].k);while(slots[h])h=(h+1)&1023;slots[h]=i+1;}
+ for(u32 i=0;i<P.cursor;i++){u32 h=plan_hash(t[i].f,t[i].g,t[i].k);while(slots[h]){u32 j=slots[h]-1;if(t[i].f==task[j].f&&t[i].g==task[j].g&&t[i].k==task[j].k){saved[found++]=t[i];break;}h=(h+1)&1023;}}
+ u8*bits=PTR(u8,bitmap);memset(bits,255,bytes);if(P.total&7)bits[bytes-1]=(u8)((1u<<(P.total&7))-1);
+ u32 tail=P.count-P.cursor;
+ for(u32 i=P.cursor;i<P.count;i++)bits[t[i].ordinal>>3]&=(u8)~(1u<<(t[i].ordinal&7));
+ for(u32 i=0;i<found;i++)bits[saved[i].ordinal>>3]&=(u8)~(1u<<(saved[i].ordinal&7));
+ memmove(t,t+P.cursor,(u64)tail*sizeof(PlanPair));memcpy(t+tail,saved,(u64)pending*sizeof(PlanPair));
+ P.count=tail+pending;P.cursor=0;P.mode=P.requested;P.gate_ready=0;
+ for(u32 i=P.count/2;i--;)plan_sift(t,i,P.count,P.mode);
+ for(u32 i=P.count;i>1;){PlanPair x=t[0];t[0]=t[--i];t[i]=x;plan_sift(t,0,i,P.mode);}
+ P.excluded_base=bitmap;P.excluded_bytes=bytes;P.excluded_count=baseline;P.allocated+=bytes;P.anchor_n=0;P.anchor_seen=baseline;
+ S.degree_seen-=pending;S.degree_scheduled-=pending;S.pair_count-=pending;
+ S.batch_n=S.batch_first=S.batch_committed=S.batch_work_n=0;GN_STORE(&S.batch_next,0);
+ S.iter_f=1;S.iter_k=1;S.iter_node=S.iter_ready=0;S.iter_done=P.count==0;P.adoptions++;return 1;
+}
+API u64 gn_pair_plan_stat(u32 key){switch(key){case 0:return P.active;case 1:return P.mode;case 2:return P.count;case 3:return P.cursor;case 4:return P.total;case 5:return P.anchor_seen;case 6:return P.anchor_n;case 7:return P.allocated;case 8:return P.builds;case 9:return P.declines;case 10:return P.adoptions;case 11:return P.build_us;case 12:return P.gate_replans;case 13:return P.gate_ready;case 14:return P.q14_hint;case 15:return P.gate_target;case 16:return P.gate_injected;case 17:return P.gate_stride;case 18:return P.excluded_bytes;case 19:return P.excluded_count;default:return 0;}}
+API int gn_q14_hint(u32 enabled){if(enabled>1||S.current||S.input_expected||S.nrules)return GN_STATE;P.q14_hint=enabled;return 0;}
 
 API int gn_delta_commit(u32 enabled){if(enabled>1||S.nrules||S.current||S.input_expected||GN_LOAD(&S.batch_running))return GN_STATE;S.delta_commit=enabled;return 0;}
 API u64 gn_commit_stat(u32 key){if(key==0)return S.delta_commit;return key<16?GN_LOAD(&S.commit_metrics[key]):0;}
 
 /* Supported ordering modes as a bitset; host ABI guard for mode 3. */
-API u32 gn_pair_plan_modes(void){return 15;}
+API u32 gn_pair_plan_modes(void){return 31;}

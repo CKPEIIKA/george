@@ -194,6 +194,7 @@ def spark(values, width, style, color='cyan', top=None):
 WINDOWS = (120, 600, 1800, 7200, None)
 LONG_WINDOW, MIN_SPAN, MIN_EVENTS = 600, 5, 8
 LOG_STEP, LOG_CAP, SMOOTH = 10, 20000, 120
+DEFICIT_WINDOW = 1800
 
 
 class Tracker:
@@ -211,7 +212,41 @@ class Tracker:
         self.last_move = None
         self.last_resolved = None
         self.degree_log = []
+        self.deficit_log = []
         self.smooth = None
+
+    def seed_log(self, now, status, path):
+        """Read existing human progress so opening the dashboard retains its ETA."""
+        degree = (status.get('progress') or {}).get('degree', status.get('currentDegree'))
+        session = status.get('sessionElapsedSeconds')
+        if not path or not isinstance(session, (int, float)):
+            return
+        try:
+            with Path(path).open('rb') as stream:
+                stream.seek(max(0, Path(path).stat().st_size - 4 * 1048576))
+                text = stream.read().decode(errors='replace')
+        except OSError:
+            return
+        # An appended log may contain older sessions. Only the last native start
+        # and matching active degree contribute to this process's estimate.
+        starts = list(re.finditer(r'^Fomkyr .*native C;', text, re.M))
+        if starts:
+            text = text[starts[-1].start():]
+        points, stamp = [], None
+        for line in text.splitlines():
+            match = re.search(r'Degree (\d+): .*Elapsed: ([\d.]+) s', line)
+            if match:
+                stamp = float(match[2]) if int(match[1]) == degree else None
+            match = re.search(r'FK6 degree (\d+): .*dimension deficit (\d+)', line)
+            if match and int(match[1]) == degree and stamp is not None and 0 <= stamp <= session:
+                point = (now - session + stamp, int(match[2]))
+                if points and (point[0] < points[-1][0] or point[1] > points[-1][1]):
+                    points = []
+                if points and point[0] == points[-1][0]:
+                    points[-1] = point
+                else:
+                    points.append(point)
+        self.deficit_log = points[-LOG_CAP:]
 
     def update(self, now, status, sample, cpu):
         progress = status.get('progress') or {}
@@ -227,6 +262,7 @@ class Tracker:
             self.degree_start_known = previous_degree is not None or not resolved
             self.last_resolved = None
             self.degree_log, self.smooth = [], None
+            self.deficit_log = []
         if resolved != self.last_resolved:
             self.last_resolved, self.last_move = resolved, now
         if self.last_move is None:
@@ -237,12 +273,20 @@ class Tracker:
             if len(self.degree_log) > LOG_CAP:
                 self.degree_log = self.degree_log[::2]
         gate = status.get('fkGate') or {}
+        deficit = gate.get('deficit') if gate.get('degree') == degree and status.get('fkGateEnabled') else None
+        if deficit is not None:
+            if self.deficit_log and deficit > self.deficit_log[-1][1]:
+                self.deficit_log = []
+            if not self.deficit_log or now - self.deficit_log[-1][0] >= LOG_STEP:
+                self.deficit_log.append((now, deficit))
+                if len(self.deficit_log) > LOG_CAP:
+                    self.deficit_log = self.deficit_log[::2]
         self.samples.append(dict(
             t=now, degree=degree, resolved=resolved, total=progress.get('totalOverlaps'),
             rewrites=progress.get('sampledRewrites', 0), cpu=cpu,
             rss=sample.get('rss') if sample else None,
             alloc=status.get('allocatedBytes'), closed=gate.get('closedSectors'),
-            deficit=gate.get('deficit')))
+            deficit=deficit))
 
     def finish(self, status):
         """Record the final degree's duration once the solver reports the end."""
@@ -309,6 +353,34 @@ class Tracker:
         """Longest throughput window behind the current ETA, in seconds."""
         rates = self.window_rates(now)
         return max(elapsed for _, elapsed, _ in rates) if rates else None
+
+    def deficit_eta(self, now, deficit):
+        """Remaining deficit / its arithmetic mean decrease per second.
+
+        Prefer the last 30 minutes; use available history for a younger session.
+        Idle intervals remain in the denominator. The range compares 10, 20 and
+        30 minute averages and is a sensitivity range, not a confidence interval.
+        """
+        fine = [(s['t'], s['deficit']) for s in self.current() if s['deficit'] is not None]
+        start = fine[0][0] if fine else float('inf')
+        points = [p for p in self.deficit_log if p[0] < start] + fine
+        if deficit == 0:
+            return (0, 0, 0), None, None
+        if not points:
+            return None, None, None
+        rates = []
+        for window in (600, 1200, DEFICIT_WINDOW):
+            first = next((p for p in points if p[0] >= now - window), points[0])
+            elapsed, drop = now - first[0], first[1] - deficit
+            if elapsed >= MIN_SPAN and drop >= MIN_EVENTS:
+                rates.append((window, elapsed, drop / elapsed))
+        if not rates:
+            observed = now - max(points[0][0], now - DEFICIT_WINDOW)
+            return None, observed, 0 if observed >= MIN_SPAN and points[0][1] == deficit else None
+        _, observed, average = rates[-1]
+        mid = deficit / average
+        estimates = [deficit / rate for _, _, rate in rates]
+        return (min(estimates), mid, max(estimates)), observed, average
 
     def series(self, key, now, seconds=1e9):
         return [s[key] for s in self.samples if now - s['t'] <= seconds]
@@ -394,10 +466,16 @@ def analyse(status, process, memory, tracker, now):
     finished = status.get('state') == 'complete'
     info = dict(progress=progress, degree=degree, done=done, target=target, resolved=resolved,
                 total=total, fraction=fraction, remaining=remaining, finished=finished,
-                eta=None, overall=None, elapsed_in_degree=None, overall_fraction=None)
+                eta=None, eta_basis='overlaps', deficit_rate=None, overall=None,
+                elapsed_in_degree=None, overall_fraction=None)
     if tracker and status.get('state') == 'running' and process is not None:
-        info['eta'] = tracker.degree_eta(now, remaining)
-        info['observed'] = tracker.observed(now)
+        gate = status.get('fkGate') or {}
+        if status.get('fkGateEnabled') and gate.get('degree') == degree and gate.get('deficit') is not None:
+            info['eta_basis'] = 'deficit'
+            info['eta'], info['observed'], info['deficit_rate'] = tracker.deficit_eta(now, gate['deficit'])
+        else:
+            info['eta'] = tracker.degree_eta(now, remaining)
+            info['observed'] = tracker.observed(now)
         if tracker.degree_start_known and tracker.degree == degree:
             info['elapsed_in_degree'] = max(0.0, status.get('cumulativeElapsedSeconds', 0)
                                             - tracker.degree_start)
@@ -452,7 +530,7 @@ def progress_block(status, info, style, width, now_wall):
     if info['fraction'] is not None:
         line = style(f'Degree {degree}'.ljust(7) + ' ', 'bold') + bar(info['fraction'], wbar, 'green', style) \
             + f" {info['fraction']:5.1%}  {info['resolved']:,}/{info['total']:,} overlaps"
-        if info['eta']:
+        if info['eta'] and info['eta_basis'] == 'overlaps':
             low, mid, high = info['eta']
             line += '  ' + style(f'ETA ~{eta(mid)}', 'bold', 'cyan')
             if high > low * 1.2:
@@ -467,6 +545,18 @@ def progress_block(status, info, style, width, now_wall):
         closed, sectors = gate.get('closedSectors', 0), gate.get('totalSectors', 360)
         lines.append(style('FK gate ', 'bold') + bar(closed / sectors if sectors else 0, wbar, 'cyan', style)
                      + f" {closed}/{sectors} components   deficit {gate.get('deficit', 0):,}")
+        if info['eta_basis'] == 'deficit':
+            if info['eta']:
+                low, mid, high = info['eta']
+                line = style(f'ETA ~{eta(mid)}', 'bold', 'cyan')
+                if high > low * 1.2:
+                    line += style(f' ({eta(low)}–{eta(high)})', 'gray')
+                lines.append(line + style(' · deficit average', 'gray'))
+                if info['deficit_rate'] is not None:
+                    lines.append(f"  {info['deficit_rate'] * 60:.1f}/min over {eta(info['observed'])}; rough estimate")
+            else:
+                lines.append(style('ETA unavailable: deficit not decreasing' if info['deficit_rate'] == 0
+                                   else 'ETA: collecting deficit history', 'gray'))
     return lines
 
 
@@ -683,7 +773,7 @@ def render(status, process, memory, tracker=None, width=100, height=40, style=No
             parts.append('ETA ~' + eta(info['overall'][0]))
         lines = [' '.join(parts)]
         if fraction is not None:
-            lines.append(f"deg {fraction:.0%}" + (f" ~{eta(info['eta'][1])}" if info['eta'] else '')
+            lines.append(f"deg {fraction:.0%}" + (f" {info['eta_basis']} ~{eta(info['eta'][1])}" if info['eta'] else '')
                          + (f" cpu {cpu:.0f}%" if cpu is not None else ''))
         return '\n'.join(clip(line, width) for line in lines[:max(1, rows)])
     top = header_lines(status, process, info, style, width, wall)
@@ -756,6 +846,7 @@ def main():
     parser.add_argument('--no-color', action='store_true', help='plain text (also honors NO_COLOR)')
     parser.add_argument('--ascii', action='store_true', help='avoid Unicode block characters')
     parser.add_argument('--no-bell', action='store_true', help='no bell, title or desktop notice when the run ends')
+    parser.add_argument('--log', help='native --human progress log to seed the deficit average immediately')
     args = parser.parse_args()
     if args.interval < 0.1:
         parser.error('interval must be at least 0.1 seconds')
@@ -790,7 +881,8 @@ def main():
                         raise ValueError('status file is too large')
                     status = json.loads(path.read_text())
                     pid = int(status['pid'])
-                    if last_pid != pid:
+                    changed_pid = last_pid != pid
+                    if changed_pid:
                         previous, last_pid = None, pid
                         tracker.reset()
                     sample = process_sample(pid)
@@ -799,6 +891,8 @@ def main():
                     previous = (before, sample)
                     if sample is not None and status.get('state') in ('running', 'starting'):
                         tracker.update(before, status, sample, cpu)
+                        if changed_pid:
+                            tracker.seed_log(before, status, args.log)
                     state = status.get('state')
                     if last_state in ('running', 'starting') and state in ('complete', 'stopped'):
                         tracker.finish(status)

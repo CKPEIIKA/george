@@ -1,6 +1,6 @@
 {
   "name": "george",
-  "version": "0.7.2",
+  "version": "0.7.4",
   "description": "Gr\u00f6bner bases, Hilbert series and Anick resolutions in the browser, an interface to bergman and more",
   "private": true,
   "type": "module",

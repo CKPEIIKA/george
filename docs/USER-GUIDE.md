@@ -57,7 +57,7 @@ file remains Bergman's original text. See [the export format](RESOLUTION-EXPORT.
 | Anick chains | Graded Betti table and differentials |
 | Group relation x² = 1 | Augmentation to 1, shifted generators, ungraded homology |
 | Idempotent x² = x | Itemwise completion, augmentation to 0, exact ungraded ranks |
-| Fomin–Kirillov FK6 | Exact tested 15-generator / 100-relation input; starts at degree 4 |
+| Fomin–Kirillov FK6 | 15 generators / 100 relations; starts at degree 11 with dimension assistance |
 | Two bosonic oscillator modes | Homogenized canonical commutators; normal ordering through degree 6 |
 | Euclidean Clifford algebra | Four gamma generators; ordered products through degree 6 |
 | Angular momentum / sl₂ | Homogenized raising/lowering commutators through degree 6 |
@@ -72,8 +72,8 @@ Oscillator, Clifford and sl₂ inputs retain a central homogenizing variable
 `t`; specializing `t = 1` recovers the usual operator relations. The
 Yang–Mills example uses the Euclidean metric and links to
 [Connes and Dubois-Violette's defining presentation](https://arxiv.org/html/math-ph/0411062).
-Loading an example sets its documented computational options and preserves
-the computation engine selection.
+Loading an example sets its documented computational options. FK6 selects Fomkyr,
+automatic workers and its large-row workspace settings.
 Changing display language preserves the current presentation and output files.
 
 ## Sharing a presentation
@@ -171,3 +171,25 @@ are in that directory and `tools/package-ui.mjs`. This follows MathJax's
 
 Run `npm run test:ui` for the Chromium checks. See
 [VALIDATION.md](development/VALIDATION.md) for results.
+
+## Output and downloads
+
+The parsed relation list starts expanded and can be folded. Relations and basis
+rows are grouped by term count; copying preserves explicit powers such as `a^2`.
+The displayed basis can be a preview. Degree counts and totals come from engine
+metadata; **Files** downloads the saved full result, including a text ZIP.
+Fomkyr result export is monic and tail-reduced by default. Saved internal
+checkpoint records retain primitive integer rows; a raw export preserves them.
+
+The progress icons show elapsed seconds, the reported degree and allocated Wasm
+capacity. Hover or focus for completed-degree, reduction and workspace details.
+Allocated linear memory includes reserved workspace; physical RAM is committed
+as pages are touched. Disk checkpoints and browser objects have separate sizes.
+
+## Dimension sources
+
+Fomkyr's mathematical settings offer a **Dimension source** list. A preset fills
+the associated evidence fields; custom input can supply external dimensions or
+an integer-dual certificate. FK6 presets include totals through degree 20 and
+component assistance through degree 17. Imported dimensions are assumptions until
+independently verified. The supplied verification bundle records those dependencies.

@@ -7,7 +7,7 @@ NATIVE ?= 0
 ifeq ($(NATIVE),1)
 CXXFLAGS += -march=native -mtune=native
 endif
-BIN := bin/kir-relative bin/libpair.so bin/libverify.so bin/libtriepair.so bin/libconvolve.so
+BIN := bin/kir-relative bin/libpair.so bin/libverify.so bin/libtriepair.so bin/libconvolve.so bin/libproofnf.so
 PREFIX ?= $(HOME)/.local
 DESTDIR ?=
 .PHONY: all check native clean test install proof-tools
@@ -28,6 +28,8 @@ bin/libverify.so: src/prefix_verify.cpp | bin
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -fPIC -shared $< -o $@
 bin/libtriepair.so: src/trie_discovery.cpp src/pair_kernel.cpp src/minor_stream.inc | bin
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -fPIC -shared $< -o $@
+bin/libproofnf.so: proofkit_src/nf.cpp | bin
+	$(CXX) $(CXXFLAGS) -fPIC -shared $< -lgmpxx -lgmp -o $@
 bin/libconvolve.so: src/group_convolution.cpp | bin
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -fPIC -shared $< -o $@
 proof-tools: bin/exact-quotient-audit

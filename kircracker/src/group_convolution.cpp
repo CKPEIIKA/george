@@ -5,7 +5,7 @@
 #include <thread>
 #include <limits>
 extern "C" int kc_convolve(const uint64_t*a,const uint64_t*b,uint64_t*out,int D,const uint16_t*table,int threads){
- if(!a||!b||!out||!table||D<0||D>20||threads<1||threads>128)return 1;
+ if(!a||!b||!out||!table||D<0||D>22||threads<1||threads>128)return 1;
  try{using Item=std::pair<uint16_t,uint64_t>;std::vector<std::vector<Item>>A(D+1),B(D+1);
  for(int d=0;d<=D;d++)for(int g=0;g<720;g++){if(a[d*720+g])A[d].emplace_back(g,a[d*720+g]);if(b[d*720+g])B[d].emplace_back(g,b[d*720+g]);}
  for(int i=0;i<720*720;i++)if(table[i]>=720)return 1;

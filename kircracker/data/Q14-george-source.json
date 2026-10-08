@@ -1,0 +1,2573 @@
+{
+  "claim": "NORMAL_FORM_QUERY_ONLY",
+  "algebra": "original FK6 over Q",
+  "variables": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "k",
+    "m",
+    "n",
+    "p",
+    "q",
+    "r",
+    "s"
+  ],
+  "degree": 14,
+  "QCanonicalSHA256": "087d924d383071e693178fba7c1285821d6ef4bf9062c38cc0ab73ba867fdb35",
+  "terms": [
+    {
+      "word": [
+        "e",
+        "g",
+        "e",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "f",
+        "s",
+        "f"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "e",
+        "g",
+        "s",
+        "e",
+        "r",
+        "f",
+        "e",
+        "s",
+        "e",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "e",
+        "g",
+        "s",
+        "r",
+        "f",
+        "e",
+        "s",
+        "e",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "s"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "e",
+        "g",
+        "s",
+        "r",
+        "f",
+        "s",
+        "e",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "s",
+        "f"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "e",
+        "g",
+        "s",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "s",
+        "f",
+        "g"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "e",
+        "g",
+        "r",
+        "f",
+        "e",
+        "s",
+        "e",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g",
+        "s"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "e",
+        "g",
+        "r",
+        "f",
+        "e",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g",
+        "f",
+        "s"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "e",
+        "g",
+        "r",
+        "f",
+        "s",
+        "e",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g",
+        "s",
+        "f"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "e",
+        "g",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "f",
+        "s",
+        "f",
+        "g"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "e",
+        "s",
+        "e",
+        "r",
+        "f",
+        "e",
+        "s",
+        "g",
+        "e",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "e",
+        "s",
+        "e",
+        "r",
+        "f",
+        "g",
+        "e",
+        "s",
+        "g",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "e",
+        "s",
+        "g",
+        "e",
+        "r",
+        "f",
+        "g",
+        "s",
+        "g",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "e",
+        "s",
+        "r",
+        "f",
+        "e",
+        "s",
+        "g",
+        "e",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "s"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "e",
+        "s",
+        "r",
+        "f",
+        "g",
+        "e",
+        "s",
+        "g",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "s"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "e",
+        "s",
+        "r",
+        "f",
+        "s",
+        "g",
+        "e",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "s",
+        "f"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "e",
+        "s",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "s",
+        "f",
+        "e",
+        "g"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "e",
+        "r",
+        "f",
+        "e",
+        "s",
+        "e",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "g",
+        "s"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "e",
+        "r",
+        "f",
+        "e",
+        "s",
+        "g",
+        "e",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "s"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "e",
+        "r",
+        "f",
+        "e",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "g",
+        "f",
+        "s"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "e",
+        "r",
+        "f",
+        "g",
+        "e",
+        "s",
+        "g",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "s"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "e",
+        "r",
+        "f",
+        "g",
+        "e",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "f",
+        "s"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "e",
+        "r",
+        "f",
+        "s",
+        "e",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "g",
+        "s",
+        "f"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "e",
+        "r",
+        "f",
+        "s",
+        "g",
+        "e",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "s",
+        "f"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "e",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "g",
+        "e",
+        "s",
+        "g",
+        "r",
+        "f",
+        "g",
+        "s",
+        "g",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "g",
+        "e",
+        "s",
+        "r",
+        "f",
+        "g",
+        "s",
+        "g",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "s"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "g",
+        "e",
+        "s",
+        "r",
+        "f",
+        "s",
+        "g",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "s",
+        "f"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "g",
+        "e",
+        "s",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "s",
+        "f",
+        "e"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "g",
+        "e",
+        "r",
+        "f",
+        "g",
+        "s",
+        "g",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "s"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "g",
+        "e",
+        "r",
+        "f",
+        "g",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "f",
+        "s"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "g",
+        "e",
+        "r",
+        "f",
+        "s",
+        "g",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "s",
+        "f"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "g",
+        "e",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "g",
+        "s",
+        "e",
+        "g",
+        "r",
+        "f",
+        "e",
+        "s",
+        "e",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "g",
+        "s",
+        "g",
+        "r",
+        "f",
+        "e",
+        "g",
+        "s",
+        "e",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "g",
+        "s",
+        "g",
+        "r",
+        "f",
+        "g",
+        "s",
+        "e",
+        "g",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "g",
+        "s",
+        "r",
+        "f",
+        "e",
+        "g",
+        "s",
+        "e",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "s"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "g",
+        "s",
+        "r",
+        "f",
+        "g",
+        "s",
+        "e",
+        "g",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "s"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "g",
+        "s",
+        "r",
+        "f",
+        "s",
+        "e",
+        "g",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "s",
+        "f"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "g",
+        "s",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "s",
+        "f",
+        "g",
+        "e"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "g",
+        "r",
+        "f",
+        "e",
+        "g",
+        "s",
+        "e",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g",
+        "s"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "g",
+        "r",
+        "f",
+        "e",
+        "g",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g",
+        "f",
+        "s"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "g",
+        "r",
+        "f",
+        "g",
+        "s",
+        "e",
+        "g",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g",
+        "s"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "g",
+        "r",
+        "f",
+        "g",
+        "s",
+        "g",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g",
+        "e",
+        "s"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "g",
+        "r",
+        "f",
+        "g",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g",
+        "e",
+        "f",
+        "s"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "g",
+        "r",
+        "f",
+        "s",
+        "e",
+        "g",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g",
+        "s",
+        "f"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "g",
+        "r",
+        "f",
+        "s",
+        "g",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g",
+        "e",
+        "s",
+        "f"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "g",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "f",
+        "s",
+        "f",
+        "g",
+        "e"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "f",
+        "s"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "f",
+        "e",
+        "g",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g",
+        "f",
+        "s"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "f",
+        "e",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "g",
+        "f",
+        "s"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "f",
+        "g",
+        "e",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "f",
+        "s"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "f",
+        "g",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g",
+        "e",
+        "f",
+        "s"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "f",
+        "s",
+        "e",
+        "g",
+        "e",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "s"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "f",
+        "s",
+        "e",
+        "g",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g",
+        "s"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "f",
+        "s",
+        "e",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "g",
+        "s"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "f",
+        "s",
+        "g",
+        "e",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "s"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "f",
+        "s",
+        "g",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g",
+        "e",
+        "s"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "f",
+        "s",
+        "f",
+        "e",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "g"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "f",
+        "s",
+        "f",
+        "g",
+        "e",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "f",
+        "s",
+        "f",
+        "g",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g",
+        "e"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "f",
+        "s",
+        "f",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "g",
+        "e"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "f",
+        "s",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "g",
+        "e",
+        "s"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "f",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "g",
+        "e",
+        "f",
+        "s"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "s",
+        "e",
+        "g",
+        "e",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "s",
+        "f"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "s",
+        "e",
+        "g",
+        "r",
+        "f",
+        "e",
+        "s",
+        "e",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "s",
+        "e",
+        "g",
+        "r",
+        "f",
+        "e",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g",
+        "f"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "s",
+        "e",
+        "g",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g",
+        "s",
+        "f"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "s",
+        "e",
+        "r",
+        "f",
+        "e",
+        "s",
+        "e",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "g"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "s",
+        "e",
+        "r",
+        "f",
+        "e",
+        "s",
+        "g",
+        "e",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "s",
+        "e",
+        "r",
+        "f",
+        "e",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "g",
+        "f"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "s",
+        "e",
+        "r",
+        "f",
+        "g",
+        "e",
+        "s",
+        "g",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "s",
+        "e",
+        "r",
+        "f",
+        "g",
+        "e",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "f"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "s",
+        "e",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "g",
+        "s",
+        "f"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "s",
+        "g",
+        "e",
+        "r",
+        "f",
+        "g",
+        "s",
+        "g",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "s",
+        "g",
+        "e",
+        "r",
+        "f",
+        "g",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "f"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "s",
+        "g",
+        "e",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "s",
+        "f"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "s",
+        "g",
+        "r",
+        "f",
+        "e",
+        "g",
+        "s",
+        "e",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "s",
+        "g",
+        "r",
+        "f",
+        "e",
+        "g",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g",
+        "f"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "s",
+        "g",
+        "r",
+        "f",
+        "g",
+        "s",
+        "e",
+        "g",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "s",
+        "g",
+        "r",
+        "f",
+        "g",
+        "s",
+        "g",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g",
+        "e"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "s",
+        "g",
+        "r",
+        "f",
+        "g",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g",
+        "e",
+        "f"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "s",
+        "g",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g",
+        "e",
+        "s",
+        "f"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "f"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "s",
+        "f",
+        "e",
+        "g",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g",
+        "f"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "s",
+        "f",
+        "e",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "g",
+        "f"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "s",
+        "f",
+        "g",
+        "e",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "f"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "s",
+        "f",
+        "g",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g",
+        "e",
+        "f"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "s",
+        "f",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "g",
+        "e",
+        "f"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "s",
+        "r",
+        "f",
+        "e",
+        "g",
+        "s",
+        "e",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "s",
+        "g"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "s",
+        "r",
+        "f",
+        "e",
+        "g",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "s",
+        "g",
+        "f"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "s",
+        "r",
+        "f",
+        "e",
+        "s",
+        "e",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "s",
+        "e",
+        "g"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "s",
+        "r",
+        "f",
+        "e",
+        "s",
+        "g",
+        "e",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "s",
+        "e"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "s",
+        "r",
+        "f",
+        "e",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "s",
+        "e",
+        "g",
+        "f"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "s",
+        "r",
+        "f",
+        "g",
+        "e",
+        "s",
+        "g",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "s",
+        "e"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "s",
+        "r",
+        "f",
+        "g",
+        "e",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "s",
+        "e",
+        "f"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "s",
+        "r",
+        "f",
+        "g",
+        "s",
+        "e",
+        "g",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "s",
+        "g"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "s",
+        "r",
+        "f",
+        "g",
+        "s",
+        "g",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "s",
+        "g",
+        "e"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "s",
+        "r",
+        "f",
+        "g",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "s",
+        "g",
+        "e",
+        "f"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "s",
+        "r",
+        "f",
+        "s",
+        "e",
+        "g",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "s",
+        "f",
+        "g"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "s",
+        "r",
+        "f",
+        "s",
+        "e",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "s",
+        "f",
+        "e",
+        "g"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "s",
+        "r",
+        "f",
+        "s",
+        "g",
+        "e",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "s",
+        "f",
+        "e"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "s",
+        "r",
+        "f",
+        "s",
+        "g",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "s",
+        "f",
+        "g",
+        "e"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "s",
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "g",
+        "e",
+        "s",
+        "f"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "r",
+        "f",
+        "e",
+        "g",
+        "s",
+        "e",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g",
+        "s",
+        "g"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "r",
+        "f",
+        "e",
+        "g",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g",
+        "f",
+        "s",
+        "g"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "r",
+        "f",
+        "e",
+        "g",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "f",
+        "s",
+        "g",
+        "f"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "r",
+        "f",
+        "e",
+        "s",
+        "e",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "g",
+        "s",
+        "e"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "r",
+        "f",
+        "e",
+        "s",
+        "e",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g",
+        "s",
+        "e",
+        "g"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "r",
+        "f",
+        "e",
+        "s",
+        "g",
+        "e",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "s",
+        "e"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "r",
+        "f",
+        "e",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "g",
+        "f",
+        "s",
+        "e"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "r",
+        "f",
+        "e",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g",
+        "f",
+        "s",
+        "e",
+        "g"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "r",
+        "f",
+        "e",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "f",
+        "s",
+        "e",
+        "g",
+        "f"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "r",
+        "f",
+        "g",
+        "e",
+        "s",
+        "g",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "s",
+        "e"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "r",
+        "f",
+        "g",
+        "e",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "f",
+        "s",
+        "e"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "r",
+        "f",
+        "g",
+        "e",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "f",
+        "s",
+        "e",
+        "f"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "r",
+        "f",
+        "g",
+        "s",
+        "e",
+        "g",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g",
+        "s",
+        "g"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "r",
+        "f",
+        "g",
+        "s",
+        "g",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "s",
+        "g",
+        "e"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "r",
+        "f",
+        "g",
+        "s",
+        "g",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g",
+        "e",
+        "s",
+        "g"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "r",
+        "f",
+        "g",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "f",
+        "s",
+        "g",
+        "e"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "r",
+        "f",
+        "g",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g",
+        "e",
+        "f",
+        "s",
+        "g"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "r",
+        "f",
+        "g",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "f",
+        "s",
+        "g",
+        "e",
+        "f"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "r",
+        "f",
+        "s",
+        "e",
+        "g",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g",
+        "s",
+        "f",
+        "g"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "r",
+        "f",
+        "s",
+        "e",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "g",
+        "s",
+        "f",
+        "e"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "r",
+        "f",
+        "s",
+        "e",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g",
+        "s",
+        "f",
+        "e",
+        "g"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "r",
+        "f",
+        "s",
+        "g",
+        "e",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "s",
+        "f",
+        "e"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "r",
+        "f",
+        "s",
+        "g",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "s",
+        "f",
+        "g",
+        "e"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "r",
+        "f",
+        "s",
+        "g",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g",
+        "e",
+        "s",
+        "f",
+        "g"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "g",
+        "e",
+        "f",
+        "s",
+        "f"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "g",
+        "f",
+        "s",
+        "f",
+        "e"
+      ],
+      "coefficient": "-1"
+    },
+    {
+      "word": [
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "e",
+        "f",
+        "s",
+        "f",
+        "g",
+        "e"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g",
+        "e",
+        "f",
+        "s",
+        "f",
+        "g"
+      ],
+      "coefficient": "1"
+    },
+    {
+      "word": [
+        "r",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g",
+        "e",
+        "r",
+        "g",
+        "f",
+        "s",
+        "f",
+        "e",
+        "g"
+      ],
+      "coefficient": "-1"
+    }
+  ],
+  "expression": "e*g*e*r*f*s*f*e*g*e*r*f*s*f-e*g*s*e*r*f*e*s*e*f*e*g*e*r+e*g*s*r*f*e*s*e*f*e*g*e*r*s-e*g*s*r*f*s*e*f*e*g*e*r*s*f+e*g*s*r*f*s*f*e*g*e*r*s*f*g-e*g*r*f*e*s*e*f*e*g*e*r*g*s-e*g*r*f*e*s*f*e*g*e*r*g*f*s+e*g*r*f*s*e*f*e*g*e*r*g*s*f-e*g*r*f*s*f*e*g*e*r*f*s*f*g+e*s*e*r*f*e*s*g*e*f*e*g*e*r+e*s*e*r*f*g*e*s*g*f*e*g*e*r+e*s*g*e*r*f*g*s*g*f*e*g*e*r-e*s*r*f*e*s*g*e*f*e*g*e*r*s-e*s*r*f*g*e*s*g*f*e*g*e*r*s+e*s*r*f*s*g*e*f*e*g*e*r*s*f-e*s*r*f*s*f*e*g*e*r*s*f*e*g+e*r*f*e*s*e*f*e*g*e*r*e*g*s+e*r*f*e*s*g*e*f*e*g*e*r*e*s+e*r*f*e*s*f*e*g*e*r*e*g*f*s+e*r*f*g*e*s*g*f*e*g*e*r*e*s+e*r*f*g*e*s*f*e*g*e*r*e*f*s-e*r*f*s*e*f*e*g*e*r*e*g*s*f-e*r*f*s*g*e*f*e*g*e*r*e*s*f+e*r*f*s*f*e*g*e*r*f*s*f*e*g+g*e*s*g*r*f*g*s*g*f*e*g*e*r-g*e*s*r*f*g*s*g*f*e*g*e*r*s+g*e*s*r*f*s*g*f*e*g*e*r*s*f-g*e*s*r*f*s*f*e*g*e*r*s*f*e+g*e*r*f*g*s*g*f*e*g*e*r*e*s+g*e*r*f*g*s*f*e*g*e*r*e*f*s-g*e*r*f*s*g*f*e*g*e*r*e*s*f+g*e*r*f*s*f*e*g*e*r*f*s*f*e-g*s*e*g*r*f*e*s*e*f*e*g*e*r-g*s*g*r*f*e*g*s*e*f*e*g*e*r-g*s*g*r*f*g*s*e*g*f*e*g*e*r+g*s*r*f*e*g*s*e*f*e*g*e*r*s+g*s*r*f*g*s*e*g*f*e*g*e*r*s-g*s*r*f*s*e*g*f*e*g*e*r*s*f+g*s*r*f*s*f*e*g*e*r*s*f*g*e-g*r*f*e*g*s*e*f*e*g*e*r*g*s-g*r*f*e*g*s*f*e*g*e*r*g*f*s-g*r*f*g*s*e*g*f*e*g*e*r*g*s-g*r*f*g*s*g*f*e*g*e*r*g*e*s-g*r*f*g*s*f*e*g*e*r*g*e*f*s+g*r*f*s*e*g*f*e*g*e*r*g*s*f+g*r*f*s*g*f*e*g*e*r*g*e*s*f-g*r*f*s*f*e*g*e*r*f*s*f*g*e+f*e*g*e*r*f*s*f*e*g*e*r*f*s-f*e*g*r*f*s*f*e*g*e*r*g*f*s+f*e*r*f*s*f*e*g*e*r*e*g*f*s+f*g*e*r*f*s*f*e*g*e*r*e*f*s-f*g*r*f*s*f*e*g*e*r*g*e*f*s-f*s*e*g*e*r*f*s*f*e*g*e*r*s+f*s*e*g*r*f*s*f*e*g*e*r*g*s-f*s*e*r*f*s*f*e*g*e*r*e*g*s-f*s*g*e*r*f*s*f*e*g*e*r*e*s+f*s*g*r*f*s*f*e*g*e*r*g*e*s+f*s*f*e*g*e*r*f*s*f*e*g*e*r-f*s*f*e*g*r*f*s*f*e*g*e*r*g+f*s*f*e*r*f*s*f*e*g*e*r*e*g+f*s*f*g*e*r*f*s*f*e*g*e*r*e-f*s*f*g*r*f*s*f*e*g*e*r*g*e+f*s*f*r*f*s*f*e*g*e*r*e*g*e-f*s*r*f*s*f*e*g*e*r*e*g*e*s+f*r*f*s*f*e*g*e*r*e*g*e*f*s-s*e*g*e*r*f*s*f*e*g*e*r*s*f-s*e*g*r*f*e*s*e*f*e*g*e*r*g-s*e*g*r*f*e*s*f*e*g*e*r*g*f+s*e*g*r*f*s*f*e*g*e*r*g*s*f+s*e*r*f*e*s*e*f*e*g*e*r*e*g+s*e*r*f*e*s*g*e*f*e*g*e*r*e+s*e*r*f*e*s*f*e*g*e*r*e*g*f+s*e*r*f*g*e*s*g*f*e*g*e*r*e+s*e*r*f*g*e*s*f*e*g*e*r*e*f-s*e*r*f*s*f*e*g*e*r*e*g*s*f+s*g*e*r*f*g*s*g*f*e*g*e*r*e+s*g*e*r*f*g*s*f*e*g*e*r*e*f-s*g*e*r*f*s*f*e*g*e*r*e*s*f-s*g*r*f*e*g*s*e*f*e*g*e*r*g-s*g*r*f*e*g*s*f*e*g*e*r*g*f-s*g*r*f*g*s*e*g*f*e*g*e*r*g-s*g*r*f*g*s*g*f*e*g*e*r*g*e-s*g*r*f*g*s*f*e*g*e*r*g*e*f+s*g*r*f*s*f*e*g*e*r*g*e*s*f+s*f*e*g*e*r*f*s*f*e*g*e*r*f-s*f*e*g*r*f*s*f*e*g*e*r*g*f+s*f*e*r*f*s*f*e*g*e*r*e*g*f+s*f*g*e*r*f*s*f*e*g*e*r*e*f-s*f*g*r*f*s*f*e*g*e*r*g*e*f+s*f*r*f*s*f*e*g*e*r*e*g*e*f+s*r*f*e*g*s*e*f*e*g*e*r*s*g+s*r*f*e*g*s*f*e*g*e*r*s*g*f-s*r*f*e*s*e*f*e*g*e*r*s*e*g-s*r*f*e*s*g*e*f*e*g*e*r*s*e-s*r*f*e*s*f*e*g*e*r*s*e*g*f-s*r*f*g*e*s*g*f*e*g*e*r*s*e-s*r*f*g*e*s*f*e*g*e*r*s*e*f+s*r*f*g*s*e*g*f*e*g*e*r*s*g+s*r*f*g*s*g*f*e*g*e*r*s*g*e+s*r*f*g*s*f*e*g*e*r*s*g*e*f-s*r*f*s*e*g*f*e*g*e*r*s*f*g+s*r*f*s*e*f*e*g*e*r*s*f*e*g+s*r*f*s*g*e*f*e*g*e*r*s*f*e-s*r*f*s*g*f*e*g*e*r*s*f*g*e-s*r*f*s*f*e*g*e*r*e*g*e*s*f-r*f*e*g*s*e*f*e*g*e*r*g*s*g-r*f*e*g*s*f*e*g*e*r*g*f*s*g-r*f*e*g*s*f*e*g*e*r*f*s*g*f+r*f*e*s*e*f*e*g*e*r*e*g*s*e+r*f*e*s*e*f*e*g*e*r*g*s*e*g+r*f*e*s*g*e*f*e*g*e*r*e*s*e+r*f*e*s*f*e*g*e*r*e*g*f*s*e+r*f*e*s*f*e*g*e*r*g*f*s*e*g+r*f*e*s*f*e*g*e*r*f*s*e*g*f+r*f*g*e*s*g*f*e*g*e*r*e*s*e+r*f*g*e*s*f*e*g*e*r*e*f*s*e+r*f*g*e*s*f*e*g*e*r*f*s*e*f-r*f*g*s*e*g*f*e*g*e*r*g*s*g-r*f*g*s*g*f*e*g*e*r*e*s*g*e-r*f*g*s*g*f*e*g*e*r*g*e*s*g-r*f*g*s*f*e*g*e*r*e*f*s*g*e-r*f*g*s*f*e*g*e*r*g*e*f*s*g-r*f*g*s*f*e*g*e*r*f*s*g*e*f+r*f*s*e*g*f*e*g*e*r*g*s*f*g-r*f*s*e*f*e*g*e*r*e*g*s*f*e-r*f*s*e*f*e*g*e*r*g*s*f*e*g-r*f*s*g*e*f*e*g*e*r*e*s*f*e+r*f*s*g*f*e*g*e*r*e*s*f*g*e+r*f*s*g*f*e*g*e*r*g*e*s*f*g+r*f*s*f*e*g*e*r*e*g*e*f*s*f-r*f*s*f*e*g*e*r*e*g*f*s*f*e+r*f*s*f*e*g*e*r*e*f*s*f*g*e+r*f*s*f*e*g*e*r*g*e*f*s*f*g-r*f*s*f*e*g*e*r*g*f*s*f*e*g",
+  "warning": "Do not append this polynomial to the FK input ideal without an ORIGINAL-IDEAL membership proof. It is established as zero in the Nichols quotient only. Nonzero remainder under an incomplete basis proves nothing."
+}

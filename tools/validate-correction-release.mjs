@@ -116,7 +116,7 @@ try {
     assert.equal(await page.locator('#nativeWorkers').getAttribute('placeholder'),'Automatic');
     assert.equal(await page.locator('#maxdeg').inputValue(),'11');
     assert.equal(await page.locator('#fomkyr-bits').inputValue(),'auto');
-    assert.equal(await page.locator('#fomkyr-pairOrder').inputValue(),'overlap');
+    assert.equal(await page.locator('#fomkyr-pairOrder').inputValue(),'word');
     assert.equal(await page.locator('#fomkyr-planMinDegree').inputValue(),'12');
     assert.equal(await page.locator('#monomialPruning').isChecked(),true);
     await page.locator('#engineSettings').evaluate(node=>node.open=true);
@@ -125,7 +125,7 @@ try {
     await page.locator('#fomkyrOptions > details').evaluateAll(nodes=>nodes.forEach(node=>node.open=true));
     await page.locator('#memoryMiB').selectOption('3584');
     await page.locator('details.advanced').evaluate(node=>node.open=true);
-    await page.locator('#fomkyr-hilbertGate').uncheck();
+    await page.locator('#fomkyr-dimensionEvidence').selectOption('off');
     assert.equal(await page.locator('#fomkyr-memoryPolicy').inputValue(),'auto');
     assert.equal(await page.locator('#fomkyr-scratchMiB').isDisabled(),true);
     assert.equal(await page.locator('#fomkyr-rowReserveMiB').isDisabled(),true);
@@ -143,14 +143,14 @@ try {
     defaultWorkspace={budgetMiB:3584,scratchMiB:2048,reserveMiB:512,batchPairs:128,verified:true};
    }
    await page.locator('#preset').selectOption('tutorial:fk6');
-   assert.equal(await page.locator('#fomkyr-hilbertGate').isChecked(),true);
+   assert.equal(await page.locator('#fomkyr-dimensionEvidence').inputValue(),'fk6-20');
    assert.equal(await page.locator('#fomkyr-hilbertSectors').isDisabled(),false);
    await page.locator('details.advanced').evaluate(node=>node.open=true);
    // Exercise assisted computation in a fresh job.
    await page.locator('#engineSettings').evaluate(node=>node.open=true);
    await page.locator('#fomkyrOptions > details').evaluateAll(nodes=>nodes.forEach(node=>node.open=true));
    await page.locator('#fomkyr-resume').uncheck();
-   await page.locator('#fomkyr-hilbertGate').check();
+   await page.locator('#fomkyr-dimensionEvidence').selectOption('fk6-20');
    assert.equal(await page.locator('#fomkyr-hilbertSectors').isDisabled(),false);
    await page.locator('#maxdeg').fill('4');
    const gated=await compute();assert.equal(gated.completedThroughDegree,4);

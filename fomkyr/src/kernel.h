@@ -10,6 +10,7 @@ typedef uint64_t u64; typedef int64_t i64; typedef uint32_t u32; typedef uint8_t
 #define GN_ABI 3
 #define GN_INLINE_DEGREE 31
 /* Degree is an unsigned 32-bit index, not a fixed word-storage capacity. */
+#define GN_FRONTIER_MAX_BYTES (8u*1024u*1024u)
 #define GN_INDEX_MAX (UINT32_MAX-1u)
 #define GN_MAX_WORKERS 32
 #define GN_WASM_HARD_BYTES UINT64_C(15000000000)
@@ -51,8 +52,16 @@ API u64 gn_memory_stat(u32 key);
 API u64 gn_reserve_stat(u32 lane,u32 key);
 API u32 gn_pair_plan_modes(void);
 API int gn_pair_plan_config(u32 order,u32 min_degree,u64 bytes);
+API int gn_tail_cache_config(u64 bytes); /* optional exact derived reducers; 0 disables */
+API u64 gn_tail_cache_stat(u32 key);
+API int gn_tail_cache_prepare(void); /* coordinator, readers joined */
+API int gn_gm_config(u32 mask);
+API u64 gn_gm_stat(u32 key);
 API int gn_pair_plan_adopt(void); /* 1 adopted, 0 ordinary/already active, <0 error */
+API int gn_pair_plan_reorder(void);
 API u64 gn_pair_plan_stat(u32 key);
+/* Scheduler-only conditional degree-14 Q hint. It never authorizes pruning or closure. */
+API int gn_q14_hint(u32 enabled);
 API u32 gn_abi(void);
 API u64 gn_heap_base(void);
 API int gn_init(u32 generators,u32 degree,u32 workers,u64 budget,u64 scratch_pool,u32 hash_bits,u32 modulus,u32 spill);
@@ -111,6 +120,8 @@ API int gn_coop_policy(u32 flags,u32 max_window);
  * Default on; helpers cannot lease the exceptional-row workspace. Configure
  * before input. Workspace admission is automatic within the total budget. */
 API int gn_coop_helper_mode(u32 enabled);
+/* Greedily diversify the first dispatch wave by left-rule family; scheduling only. */
+API int gn_coop_family_mode(u32 enabled);
 API int gn_coop_fill(u32 limit);
 API int gn_coop_reduce(u32 lane);
 /* After lane zero's worker call returns, prepare its parked commit NF while

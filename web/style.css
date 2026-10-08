@@ -959,6 +959,7 @@ table.fk-lanes th { color: var(--ink-2); font-weight: 400; }
 p.small { color: var(--ink-3); font-size: 0.85rem; margin-top: 20px; }
 .fomkyr-options { margin: 8px 0; padding: 16px; border: 1px solid var(--rule); border-radius: 8px; }
 .fomkyr-control-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.fomkyr-control-grid .dimension-source-field { grid-column: 1 / -1; }
 .fomkyr-submenu { margin-top: 12px; border-top: 1px solid var(--rule); padding-top: 8px; }
 .fomkyr-submenu > summary { cursor: pointer; padding: 4px 0; }
 .fomkyr-submenu[open] > .fomkyr-control-grid { margin-top: 12px; }

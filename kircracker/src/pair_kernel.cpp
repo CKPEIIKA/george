@@ -46,7 +46,7 @@ struct Eval{
   int ans=int(sum%p);if(ans<0)ans+=p;if(cache.size()<limit)cache.emplace(k,ans);return ans;
  }
  int checked(U u,U v,int len){
-  if(len<0||len>20)return -1;if(len<32&&((u>>(4*len))||(v>>(4*len))))return -1;int gu=0,gv=0,pu=-1,pv=-1,E=n*(n-1)/2;
+  if(len<0||len>22)return -1;if(len<32&&((u>>(4*len))||(v>>(4*len))))return -1;int gu=0,gv=0,pu=-1,pv=-1,E=n*(n-1)/2;
   for(int j=len-1;j>=0;j--){int a=int((u>>(4*j))&15)-1,b=int((v>>(4*j))&15)-1;if(a<0||a>=E||b<0||b>=E)return -1;if(a==pu||b==pv)return 0;pu=a;pv=b;gu=right[gu][a];gv=right[gv][b];}
   if(gu!=inv[gv])return 0;return eval(u,v,len);
  }
@@ -57,7 +57,7 @@ int kp_eval(void*e,Count u,Count v,int len){try{if(len>16)return -1;return ((Eva
 Count kp_stat(void*e,int k){Eval*x=(Eval*)e;return k==0?x->calls:k==1?x->hits:k==2?x->cache.size():x->skips;}
 int kp_eval_wide(void*e,Count ul,Count uh,Count vl,Count vh,int len){try{return ((Eval*)e)->checked(U(ul)|(U(uh)<<64),U(vl)|(U(vh)<<64),len);}catch(...){return -2;}}
 int kp_column_wide(void*e,const Count*us,int nu,Count vl,Count vh,int len,int*out){
- if(!e||!us||!out||nu<0||nu>2000000||len<0||len>20)return 1;
+ if(!e||!us||!out||nu<0||nu>2000000||len<0||len>22)return 1;
  try{U v=U(vl)|(U(vh)<<64);for(int i=0;i<nu;i++){int value=((Eval*)e)->checked(U(us[2*i])|(U(us[2*i+1])<<64),v,len);if(value<0)return 2;out[i]=value;}return 0;}catch(...){return 3;}
 }
 void kp_clear(void*e){((Eval*)e)->cache.clear();}

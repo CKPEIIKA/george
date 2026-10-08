@@ -32,6 +32,26 @@ test('explicit shared cache exceeds old budget/16 ceiling and adapts after Wasm3
 const form = {backend:'fomkyr',field:'0',nativeWorkers:4,monomialPruning:true};
 const available = change => fomkyrControlAvailability({...form,...change});
 
+test('canonical reducer cache is optional, bounded, engine-specific and shareable', async()=>{
+  assert.equal(FOMKYR_DEFAULTS.reducerTailCacheMiB,0);
+  assert.equal(fomkyrEngineOptions(form).reducerTailCacheBytes,0);
+  assert.equal(available({}).reducerTailCacheMiB,true);
+  assert.equal(available({backend:'compiled'}).reducerTailCacheMiB,false);
+  assert.equal(available({nativeWorkers:32}).reducerTailCacheMiB,false);
+  for(const reducerTailCacheMiB of [0,16,64,256]) {
+    const value={...form,memoryMiB:512,fomkyrOptions:{reducerTailCacheMiB}};
+    const options=fomkyrEngineOptions(value);
+    assert.equal(options.reducerTailCacheBytes,reducerTailCacheMiB*1048576);
+    assert.equal(options.reducerTailCacheMiB,undefined);
+    const decoded=await readShareLink(new URL(await createShareLink(value,'https://example.org/')).hash);
+    assert.equal(decoded.fomkyrOptions.reducerTailCacheMiB,reducerTailCacheMiB);
+  }
+  for(const reducerTailCacheMiB of [-1,1,15,16.5,14305,'auto'])
+    assert.throws(()=>validateFomkyrOptions({reducerTailCacheMiB}));
+  assert.throws(()=>fomkyrEngineOptions({...form,memoryMiB:128,fomkyrOptions:{reducerTailCacheMiB:128}}));
+  assert.equal(fomkyrEngineOptions({...form,nativeWorkers:32,fomkyrOptions:{reducerTailCacheMiB:64}}).reducerTailCacheBytes,0);
+});
+
 test('large-row admission and helper execution default to automatic and remain shareable', async () => {
   assert.equal(FOMKYR_DEFAULTS.largeRowWorkspaces,0);
   assert.equal(FOMKYR_DEFAULTS.helperRows,true);

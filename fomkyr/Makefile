@@ -24,11 +24,11 @@ $(BUILD_DIR)/native-flags: FORCE
 	@printf '%s\n' '$(CC)' '$(CFLAGS)' '$(ARCHFLAGS)' '$(LDFLAGS)' '$(PREFIX)' '$(NATIVE_PROFILE)' > $@.tmp
 	@cmp -s $@.tmp $@ && rm $@.tmp || mv $@.tmp $@
 ifeq ($(NATIVE_PROFILE),pgo)
-$(BUILD_DIR)/fomkyr: src/kernel.c src/kernel.h $(wildcard src/*.inc fk_gate/src/* fk_gate/profiles/*.h fk_gate/adapters/*.inc) $(NATIVE) $(wildcard native/*.h) tools/build-native-pgo.sh Makefile $(HOST_CONFIG) $(BUILD_DIR)/native-flags
+$(BUILD_DIR)/fomkyr: src/kernel.c src/kernel.h $(wildcard src/*.inc src/*.h fk_gate/src/* fk_gate/profiles/*.h fk_gate/adapters/*.inc) $(NATIVE) $(wildcard native/*.h) tools/build-native-pgo.sh Makefile $(HOST_CONFIG) $(BUILD_DIR)/native-flags
 	FOMKYR_PGO_CC="$(CC)" NATIVE_ARCH="$(NATIVE_ARCH)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" bash tools/build-native-pgo.sh "$(BUILD_DIR)/native-pgo"
 	cp "$(BUILD_DIR)/native-pgo/fomkyr" "$@"
 else
-$(BUILD_DIR)/kernel-native.o: src/kernel.c src/kernel.h $(wildcard src/*.inc fk_gate/src/* fk_gate/profiles/*.h fk_gate/adapters/*.inc) Makefile $(HOST_CONFIG) $(BUILD_DIR)/native-flags
+$(BUILD_DIR)/kernel-native.o: src/kernel.c src/kernel.h $(wildcard src/*.inc src/*.h fk_gate/src/* fk_gate/profiles/*.h fk_gate/adapters/*.inc) Makefile $(HOST_CONFIG) $(BUILD_DIR)/native-flags
 	$(CC) $(CFLAGS) $(ARCHFLAGS) -ffreestanding -fno-builtin -c src/kernel.c -o $@
 $(BUILD_DIR)/fomkyr: $(BUILD_DIR)/kernel-native.o $(NATIVE) $(wildcard native/*.h) $(BUILD_DIR)/native-flags
 	$(CC) $(CFLAGS) $(ARCHFLAGS) -DFOMKYR_DATADIR='"$(PREFIX)/share/fomkyr"' $(NATIVE) $(BUILD_DIR)/kernel-native.o $(LDFLAGS) -o $@

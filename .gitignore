@@ -15,6 +15,8 @@
 /fomkyr/dist/native-flags*
 /fomkyr/dist/native-config.mk*
 /fomkyr/dist/native-*/
+/fomkyr/dist/cache-merge/
+/fomkyr/dist/gm-checked/
 /fomkyr/dist/*.gcda
 /fomkyr/dist/*.gcno
 /fomkyr/dist/*.profraw
@@ -64,3 +66,4 @@ __pycache__/
 /kircracker/results-local/
 /kircracker/kircracker-work/
 /kircracker/.cache/
+/kircracker/.local-deps/

@@ -1,0 +1,206 @@
+{
+  "name": "kircracker-frontier",
+  "version": "0.2.0",
+  "generatedUTC": "2026-10-03T22:06:51.021298+00:00",
+  "scope": "Exact Nichols-side closure and a conditional original-FK one-element fork; no original-FK branch decision",
+  "sourceArchives": {
+    "kircracker-frontier-0.1.0.zip": "90ebdb396aa6f844813393b1af646804308883900f932a00e57f685be717afe5",
+    "kircracker-0.3.0.zip": "92d0f231962baff61be108490ec041d5f59b3830a15862a0c87a706e1aba2a28",
+    "fk-gate-0.2.0.zip": "ccb1e38534505cb14c66a964e879a16f4b5b8af92a0b58dd217bddcb0c31903d"
+  },
+  "newPolynomial": {
+    "degree": 14,
+    "terms": 134,
+    "coefficients": [
+      -1,
+      1
+    ],
+    "permutationDegree": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "sha256": "087d924d383071e693178fba7c1285821d6ef4bf9062c38cc0ab73ba867fdb35",
+    "file": "certificates/nichols/degree14-radical.json",
+    "zeroInNicholsProved": true,
+    "zeroInOriginalFKProved": false,
+    "nonzeroInOriginalFKProved": false
+  },
+  "radicalProof": {
+    "allScalarDerivativeChainsCovered": true,
+    "distinctProjectiveStates": 12959,
+    "edges": 105185,
+    "peakTerms": 165,
+    "twoDerivativeImplementationsAgree": true,
+    "finiteHModelBuiltIndependently": true,
+    "stateDAGSHA256": "a0bf775eb2e17557d98b254caa8fb520434394d8e637b8885046d6c2b43790ee",
+    "publishedFiniteHDimensionDependency": 14400
+  },
+  "bounds": {
+    "exactNicholsThroughDegree": 16,
+    "nicholsDimensions14To16": [
+      346652739,
+      850296015,
+      2031123359
+    ],
+    "relativeNicholsDimensions14To16": [
+      56856,
+      109262,
+      207276
+    ],
+    "exactOriginalFKThroughDegree": 13,
+    "originalFKLower14To16": [
+      346652739,
+      850296015,
+      2031123359
+    ],
+    "originalFKUpper14To16": [
+      346652740,
+      850296030,
+      2031123484
+    ],
+    "originalFKGateProfilesChanged": false
+  },
+  "conditionalTheorem": {
+    "passed": true,
+    "claim": "CONDITIONAL_ONE_ELEMENT_FORK",
+    "degrees": [
+      14,
+      15,
+      16
+    ],
+    "branches": [
+      {
+        "condition": "Q=0 in ORIGINAL FK6",
+        "dimensions": [
+          346652739,
+          850296015,
+          2031123359
+        ],
+        "conclusion": "FK6 and its Nichols quotient agree through degree16, not an all-degree equality or finiteness conclusion"
+      },
+      {
+        "condition": "Q!=0 in ORIGINAL FK6",
+        "dimensions": [
+          346652740,
+          850296030,
+          2031123484
+        ],
+        "conclusion": "Q is primitive of identity group degree; its powers are nonzero, so FK6 is infinite-dimensional"
+      }
+    ],
+    "branchDecided": false,
+    "primitiveIfNonzero": true,
+    "unconditionalNewFKDimensions": false,
+    "gateProfileChangeAuthorized": false,
+    "checkedGapAsGradedShift": [
+      1,
+      15,
+      125
+    ],
+    "reason": "Minimal Hopf-kernel degree is14. A nonzero identity-grade primitive has ordinary binomial self-coproduct. Low-degree right multiplication by Q is injective by the nondegenerate pairing. See THEOREM.md for proof; this script checks finite dimensional data, not a formal proof assistant."
+  },
+  "testEvidence": {
+    "legacyTestsPassed": true,
+    "missingLegacySanitizerSourceRepaired": true,
+    "nativeSanitizerCrossComparisons": 13056,
+    "newRadicalTestGroups": 12,
+    "forkNamespaceChecks": 4,
+    "reversalMatrixDimensions": [
+      9,
+      27,
+      81
+    ],
+    "allExistingPairingEntriesReplayed": 11936828,
+    "knownOriginalRelationsRechecked": 929,
+    "newNicholsOrbitRelations": 120,
+    "newOrbitTerms": 16080,
+    "signedUserQueryRoundtripPassed": true,
+    "fullRunLog": "evidence/0.2/full-test-final.log",
+    "nativeUpperRecomputed": true
+  },
+  "proofDependencies": [
+    "Original FK-to-Nichols graded braided Hopf quotient and full pairing radical characterization.",
+    "Known finite rank<=5 nondegenerate algebras, including H dimension14400 and FK5 dimension8294400.",
+    "Explicit extension of coideal freeness, support partition and reversal arguments to the Nichols quotient (docs/THEOREM.md).",
+    "Original FK upper library and complementary minors individually replayed; no FK6/Nichols equality beyond13 assumed."
+  ],
+  "notEstablished": [
+    "Original-FK h14,h15,h16 chosen between the two branches.",
+    "A nonzero higher primitive in original FK6.",
+    "FK6 finite or infinite dimensionality.",
+    "Any new production gate speedup or completed degree14 direct run.",
+    "Peer review, author confirmation, proof-assistant formalization or literature priority."
+  ],
+  "directDiagnostics": {
+    "freshSingularExecuted": false,
+    "freshBergmanExecuted": false,
+    "localFomkyr065PartialResumeAttempted": true,
+    "unshippedGuardAdjustmentRequired": true,
+    "completedThroughDegree": 13,
+    "diagnosticLimitSeconds": 120,
+    "QReductionStatus": "CANCELLED at30seconds; no valid final normal form",
+    "remoteRepositoryModified": false,
+    "remoteWebsiteModified": false
+  },
+  "hashes": {
+    "src/common.hpp": "c018143085781f349e06a0b9926b62effdd1fb1ba254097393db3a2679190405",
+    "src/module_builder.cpp": "d4ec0ff3e72fcb7943a58a917f1e3b424df9c2481a798fb942603d1533f55f4f",
+    "src/pair_kernel.cpp": "3681b3211d026be38fdb5594829c5ff26e23b605bda6606e446ff95b00016d99",
+    "src/prefix_verify.cpp": "d6bb9b38d72deb17b5c9c9c9fe3cfcc411ba2a053ff6ad0ac395b4c009c399b1",
+    "tools/build.sh": "cf00610b81f58b29ebbcc2ec240d108e3a2264daf1f5469a88ef0b08004698ba",
+    "tools/check_defect.py": "c7fa33d495259563af539b5e7b769f7760d62a2a85a1191f93e70f5f8bc00189",
+    "tools/discover.py": "b979b072e9992ca7ea821704de087f7e92b8ad40bb08e23c3e982d9b64aedfab",
+    "tools/export_gate.py": "356aed511db6c535e2682fed346cd49a2aac509bbe253b241c87bfe809a85c7b",
+    "tools/fork.py": "9364e0247ad1760ece8bc4f218caa501d46fcca2f8e10f6368353da3857036b2",
+    "tools/graded_bounds.py": "d31eb8168772be8cc56d422352906b4c3c2212f876fdc31675e17f1fad1153c2",
+    "tools/native_pair.py": "99914cd5c7e551c0e25940d3d4cd668e06c03ecdcb5ea82581bb5f41e547e692",
+    "tools/native_verify.py": "2c504d783bae0b0d70adc07204c486dc17388a848cc0889beccd1810c8e04420",
+    "tools/pairing_from_upper.py": "27d624198b951a920c6b6649b5a366275e133f8a354657e73acc8f5b972437eb",
+    "tools/radical.py": "3b47bc760b1cefcb321cddef19844582f93af7d0a061f20944b0409d13eb4f59",
+    "tools/replay.py": "3215b077d9f33367f41a9b4c141cc8e95eeaf7846257ee1baff9fcf60232c33b",
+    "tools/replay_nichols.py": "574c705ec5fcb82d0155328c89b56ccf72ece2072210471b61c49b19a90905fd",
+    "tools/star_relations.py": "ee1e9444e5d6df38ae0d3e446de70b23611f1d28b707ff9666a1aa39e9837e84",
+    "tools/test.sh": "116cda1092e1c999b14ce1592bbcffc779d29094a2ad831d02e529b448c44248",
+    "tools/test_frontier02.sh": "bb39122ca7b3593a87781a31a76524632f79dc63187c38a29d12e26d11cb67be",
+    "tools/verify_projection.py": "b8efd966c48dedf7efa7c1a79f429030770f6cbf3f68f2689fe8483dd623b538",
+    "reference/finite_model_cert/__init__.py": "f742656284e4568ced1c091b3c51b354f93b3722921c2df1462f94803364ed98",
+    "reference/finite_model_cert/budgeted.py": "39ddb08fe2d6cd9607386304ee85699a49e891bd4493dde213c59a2a3ed96b16",
+    "reference/finite_model_cert/core.py": "6bf9d6b640559f28ed2e9963e216748244746020e9ce8f05dab4142c233b37eb",
+    "reference/finite_model_cert/deletion.py": "305578c78ea46327cb1b6fed58544ffef9515ef660e2bb163926dd055f99ca8f",
+    "reference/finite_model_cert/finite_model.py": "f30021d5b5d083e577bdc586de7cb87def01fa50f4af4173c2e274fde543a76d",
+    "reference/finite_model_cert/relative_calculus.py": "be442c550a2f8a94aadd3b605ae9fa3d80e4e830ac8192b5643b7eec2e607fd4",
+    "reference/finite_model_cert/series.py": "5c4ad0b541f49047f95356974f88b824a8c4abfa22c0e0e1421283b330431fb6",
+    "reference/finitefk/__init__.py": "6f13804132b1b8f52ca7f14607e48c1e2340a9414f9bdb551df281c1a6a4cfe6",
+    "reference/finitefk/budgeted.py": "39ddb08fe2d6cd9607386304ee85699a49e891bd4493dde213c59a2a3ed96b16",
+    "reference/finitefk/core.py": "6bf9d6b640559f28ed2e9963e216748244746020e9ce8f05dab4142c233b37eb",
+    "reference/finitefk/deletion.py": "305578c78ea46327cb1b6fed58544ffef9515ef660e2bb163926dd055f99ca8f",
+    "reference/finitefk/finite_model.py": "f30021d5b5d083e577bdc586de7cb87def01fa50f4af4173c2e274fde543a76d",
+    "reference/finitefk/series.py": "5c4ad0b541f49047f95356974f88b824a8c4abfa22c0e0e1421283b330431fb6",
+    "reference/kircracker/__init__.py": "f8caf670ce2f670b4599541862814ba88b456491814dcc831bb8d5308c1b9bc7",
+    "reference/kircracker/core.py": "6bf9d6b640559f28ed2e9963e216748244746020e9ce8f05dab4142c233b37eb",
+    "reference/kircracker/coset_pairing.py": "4ebd72188bf11921dc1bcea0d220034afe811ee0237e47175369729898f4802a",
+    "reference/kircracker/sectors.py": "788ceeb43ce8840c8629eec7e3c881c87327d2ecf308f0636aa6221bfca1bd49",
+    "tests/native_sanitizer.cpp": "972a2a571fcff2077b440e44b529fd846cf19a1b963e3bb0127d6a6fe10df422",
+    "tests/test_fork.py": "a81764ba4cf81a4028e5991f6ea7d857dbe1af6b94976bc65e73e8776b31228e",
+    "tests/test_input.py": "f6ea24e91c5caa4911dba90fc8e2f725b4d09805d7ed55d358178b481cbd8db1",
+    "tests/test_kernels.py": "52cf29883c7512247fe9a59ac11f84b7b03b70d40c6be21a6a2d03c143241c76",
+    "tests/test_radical.py": "938364a933e33b7530b39fe90bacb51a02ced6d1e7f998474f3d490b7cd80af3",
+    "tests/test_reversal.py": "d6db336f0bbe0b9c9038986c6db1bf6fb34f5d4567ccd149b80bdfe44ecd8b0c",
+    "certificates/base-through13.json": "973681645854498141e517a38952f030567a3ac2b8edfaaa73668720a5b2d42c",
+    "certificates/nichols/degree14-radical.json": "f223e6cb550d6ac25f140ca608e7c918778297ae631c9026f7ba8783633cd7bc",
+    "certificates/relative-lower-14.json": "9d816f2e6ba17b2c0cf9b1867bfd4bcd7d371b160eaafd8b6a9e23acaf648a68",
+    "certificates/relative-lower-15.json": "60e1b923db603cc3840c7ab2227c9f08e6a0acf7e3e7dc938d16426735fef6a7",
+    "certificates/relative-lower-16.json": "9e25e673c4a09579b92d6e244da862d3ab1e06eb01b22bb05bc6b7d22be7e7d9",
+    "inputs/direct-fk6.json": "fc262ce4250ffbdaf366243b4aac1765caa97c2832313be013f82373ef6f0419",
+    "inputs/direct-identification.json": "098f9c534224590831775f3d565ab25e947586f7aa444937771a3572c7eca851",
+    "inputs/previous-profile-through13.json": "d6cc7393e077a873e275eee95537ad440d39dbe408c57aa2d51371d3fb92bc9a",
+    "queries/Q-original-user-order.json": "4cbbeaeecd099f0b32f4f97a7ae6576ba9d5176026e8b9133aaaef80c12a1e59",
+    "queries/Q-original-user-order.txt": "b6b72c2b1e688363208dd57243259e9ffa579b3f8fd805201a447f9e4260a758",
+    "docs/THEOREM.md": "52d8176bbfd62b214e198e6e3d20f4a32a0690d14ffd935a8dc4bb8b45d8cabf"
+  },
+  "reportHash": "f83162408513b226708cccb5c64d6bae97c720a5dc9e8adb4acd174849e0d5a8"
+}

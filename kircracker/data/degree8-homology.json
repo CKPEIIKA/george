@@ -1,0 +1,20 @@
+{
+  "schema": "kircracker-degree8-homology-v1",
+  "algebra": "five-edge star S; identical to T=S/(Q) in internal degree 8 because deg(Q)=14",
+  "internalDegree": 8,
+  "matrixShapes": {
+    "d4": [1449, 2215],
+    "d5": [2215, 1360],
+    "d6": [1360, 400]
+  },
+  "ranks": {"d4": 985, "d5": 840, "d6": 280},
+  "betti_p2_to_p8": [39, 200, 390, 240, 80, 20, 5],
+  "knownSupportSplit": {
+    "d4": {"support3": 70, "support4": 675, "support5": 240}
+  },
+  "supportSplitScope": "The full ranks are fixed; only the displayed d4 support split is shipped as a regression datum in this lightweight package. Recompute further support-resolved representatives with imported differential data before making stronger claims.",
+  "reciprocalHilbertCoefficient": 54,
+  "rankCancellation": true,
+  "status": "RECORDED_EXACT_RESULT_FROM_KIRCRACKER_0.3_DEVELOPMENT",
+  "warning": "This JSON is a result/cross-check, not by itself an independent replay of the three matrices. The CLI verifies all algebraic consistency identities and is designed to ingest/recompute sparse differential matrices when supplied."
+}

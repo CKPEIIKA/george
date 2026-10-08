@@ -22,11 +22,11 @@
 #include <ctype.h>
 #include <math.h>
 #include <time.h>
-#define VERSION "0.7.2"
+#define VERSION "0.7.4"
 static u32 plan_order=0,plan_min=12;static u64 plan_bytes=UINT64_C(67108864);
 static u32 quantum_ms=250,lookahead=128,coop_flags=3,coop_max_window=512,cache_maxima=1,big_row_max_terms=0,cache_percent=12;
 static u64 shared_cache_bytes=UINT64_MAX;
-static u32 helper_rows=1,large_row_workspaces=0;
+static u32 helper_rows=1,large_row_workspaces=0,family_diversity=1,q14_hint=0;
 static const char *scratch_arg="auto",*reserve_arg="auto",*telemetry_path;
 static u64 planned_scratch,planned_reserve;
 static int raw_export;
@@ -59,7 +59,8 @@ static int lock_job(const char*dir){
 typedef struct {pthread_mutex_t m;pthread_cond_t work,done;pthread_t threads[GN_MAX_WORKERS];u32 ids[GN_MAX_WORKERS],created,active,remaining;unsigned epoch;int stop,rc,normalizing;u32 rows[GN_MAX_WORKERS];u64 output[GN_MAX_WORKERS];} Pool;
 static Pool pool={.m=PTHREAD_MUTEX_INITIALIZER,.work=PTHREAD_COND_INITIALIZER,.done=PTHREAD_COND_INITIALIZER};
 static int pool_waiting;
-static u32 commit_task;static u32 delta_commit=0;
+static u32 commit_task;static u32 delta_commit=0;static u64 tail_cache_bytes=0;static u32 word_cache_entries=256;static void tail_json(Buffer*);
+static u32 gm_mask=0,no_chain=0,replan_remaining=0;static void gm_json(Buffer*);
 static void*worker(void*arg){u32 lane=*(u32*)arg;unsigned seen=0;pthread_mutex_lock(&pool.m);for(;;){while(!pool.stop&&seen==pool.epoch)pthread_cond_wait(&pool.work,&pool.m);if(pool.stop)break;seen=pool.epoch;int active=lane<pool.active,normalizing=pool.normalizing;pthread_mutex_unlock(&pool.m);int rc=0;if(active){if(normalizing)pool.output[lane]=gn_normalize_rule(lane,pool.rows[lane]);else rc=gn_coop_stat(0)?gn_coop_reduce(lane):gn_batch_reduce(lane);}pthread_mutex_lock(&pool.m);if(active){if(rc&&!pool.rc)pool.rc=rc;if(--pool.remaining==0)pthread_cond_signal(&pool.done);}}pthread_mutex_unlock(&pool.m);return NULL;}
 static int pool_open(u32 n){for(u32 i=1;i<n;i++){pool.ids[i]=i;int e=pthread_create(&pool.threads[i],NULL,worker,&pool.ids[i]);if(e)return e;pool.created++;}return 0;}
 static int pool_reduce(u32 active){
@@ -90,21 +91,28 @@ static void pool_normalize(const u32*ids,u32 active){
 }
 #include "hilbert_closure.h"
 #include "fk_gate_host.h"
+static u32 matching_partial_current;
 typedef struct {Buffer payload;char*frontier;u64 sequence,rules,bytes;u32 completed,current,hash_bits;int partial,valid;double elapsed_ms;} Checkpoint;
 static void cp_free(Checkpoint*c){buf_free(&c->payload);free(c->frontier);memset(c,0,sizeof(*c));}
 static int cp_read(Checkpoint*c,const char*dir,const char*name,const char*identity,u64 filebytes){
- char*p=path_join(dir,name),*text=read_file(p,1048576,NULL);free(p);if(!text)return 0;Json j={0};int success=0;
+ char*p=path_join(dir,name),*text=read_file(p,2u*GN_FRONTIER_MAX_BYTES+1048576u,NULL);free(p);if(!text)return 0;Json j={0};int success=0;
  if(json_parse(&j,text))goto end;int ok=1;if(json_u64(&j,json_key(&j,0,"schema"),&ok)!=2||!ok)goto end;
  int payload=json_key(&j,0,"payload"),hs=json_key(&j,0,"sha256");if(payload<0||j.t[payload].type!='{')goto end;
  char*compact=json_compact(text+j.t[payload].start,(size_t)(j.t[payload].end-j.t[payload].start));char*want=json_string(&j,hs);char hash[65];if(!compact||!want){free(compact);free(want);goto end;}sha256_hex(compact,strlen(compact),hash);if(strcmp(hash,want)){free(compact);free(want);goto end;}free(want);
  char*id=json_string(&j,json_key(&j,payload,"identity"));if(!id||strcmp(id,identity)){free(id);free(compact);goto end;}free(id);
+ /* Remember a valid, matching partial envelope before checking reader limits.
+  * Unsupported partials must never silently select an older complete degree. */
+ {char*pp=json_string(&j,json_key(&j,payload,"partial"));int pok=1;
+  u64 pd=json_u64(&j,json_key(&j,payload,"currentDegree"),&pok);
+  if(pp&&!strcmp(pp,"true")&&pok&&pd<=GN_INDEX_MAX&&pd>matching_partial_current)matching_partial_current=(u32)pd;
+  free(pp);}
  u64 abi=json_u64(&j,json_key(&j,payload,"abi"),&ok);c->rules=json_u64(&j,json_key(&j,payload,"basisSize"),&ok);c->bytes=json_u64(&j,json_key(&j,payload,"diskBytes"),&ok);
  u64 completed=json_u64(&j,json_key(&j,payload,"completedThroughDegree"),&ok);if(!ok||(abi!=2&&abi!=3&&abi!=4&&abi!=5)||c->rules>UINT32_MAX||completed>GN_INDEX_MAX||c->bytes>filebytes||c->rules>c->bytes/56){free(compact);goto end;}c->completed=(u32)completed;
  if(abi==5){char*dep=json_string(&j,json_key(&j,payload,"fkGateProfileId"));if(!dep||!fg_enabled||(strcmp(dep,FKG_AUTHORITY_ID)&&strcmp(dep,FKG_UPSTREAM_AUTHORITY_ID)&&strcmp(dep,FKG_LEGACY_AUTHORITY_ID_0)&&strcmp(dep,FKG_LEGACY_AUTHORITY_ID_1))){fg_dependency_error=1;free(dep);free(compact);goto end;}free(dep);}
  if(abi==4||(abi==5&&json_key(&j,payload,"hilbertEvidenceId")>=0)){char*dep=json_string(&j,json_key(&j,payload,"hilbertEvidenceId"));if(!dep||!hc.enabled||strcmp(dep,hc.key)){closure_dependency_error=1;free(dep);free(compact);goto end;}free(dep);}
  char*elapsed=json_string(&j,json_key(&j,payload,"cumulativeElapsedMs"));if(elapsed){char*end;double v=strtod(elapsed,&end);if(!*end&&isfinite(v)&&v>=0)c->elapsed_ms=v;free(elapsed);}
  int seq=json_key(&j,payload,"sequence");c->sequence=seq<0?0:json_u64(&j,seq,&ok);char*partial=json_string(&j,json_key(&j,payload,"partial"));c->partial=partial&&!strcmp(partial,"true");free(partial);
- if(c->partial){u64 current=json_u64(&j,json_key(&j,payload,"currentDegree"),&ok),hb=json_u64(&j,json_key(&j,payload,"hashBits"),&ok);c->frontier=json_string(&j,json_key(&j,payload,"frontier"));if(!ok||current!=completed+1||current>GN_INDEX_MAX||hb<8||hb>26||!c->frontier||strlen(c->frontier)>40000||strlen(c->frontier)%2){free(compact);goto end;}c->current=(u32)current;c->hash_bits=(u32)hb;}
+ if(c->partial){u64 current=json_u64(&j,json_key(&j,payload,"currentDegree"),&ok),hb=json_u64(&j,json_key(&j,payload,"hashBits"),&ok);c->frontier=json_string(&j,json_key(&j,payload,"frontier"));if(!ok||current!=completed+1||current>GN_INDEX_MAX||hb<8||hb>26||!c->frontier||strlen(c->frontier)>2u*GN_FRONTIER_MAX_BYTES||strlen(c->frontier)%2){free(compact);goto end;}c->current=(u32)current;c->hash_bits=(u32)hb;}
  buf_add(&c->payload,compact);free(compact);c->valid=success=1;
 end:json_free(&j);free(text);if(!success)cp_free(c);return success;
 }
@@ -132,20 +140,25 @@ static void telemetry_save(const char *state,const char *progress,double now){
  Buffer b={0};
  buf_printf(&b,"{\"schema\":1,\"engine\":\"fomkyr-native\",\"version\":\"%s\",\"pid\":%ld,\"state\":\"%s\",\"updatedUnixSeconds\":%lld,\"budgetBytes\":%" PRIu64 ",\"ordinaryScratchBytes\":%" PRIu64 ",\"rowReserveBytes\":%" PRIu64 ",\"allocatedBytes\":%" PRIu64 ",\"sharedCacheBytes\":%" PRIu64 ",\"sharedCacheUsedBytes\":%" PRIu64 ",\"basisSize\":%" PRIu64 ",\"diskBytes\":%" PRIu64 ",\"checkpointSequence\":%" PRIu64 ",\"checkpointAgeSeconds\":%.3f,\"sessionElapsedSeconds\":%.3f,\"cumulativeElapsedSeconds\":%.3f,\"hilbertAssumed\":%s,\"fkGateEnabled\":%s,\"fkSectorsEnabled\":%s,\"progress\":%s",
  VERSION,(long)getpid(),state,(long long)time(NULL),gn_stat(5),planned_scratch,planned_reserve,gn_stat(4),gn_stat(39),gn_stat(40),gn_stat(0),gn_stat(6),sequence,(now-last_checkpoint)/1000,(now-started)/1000,(prior_elapsed_ms+now-started)/1000,hc.enabled&&hc.assumed?"true":"false",fg_enabled?"true":"false",fg_enabled&&fg_sectors?"true":"false",progress?progress:"null");
- buf_printf(&b,",\"currentDegree\":%" PRIu64 ",\"completedThroughDegree\":%" PRIu64 ",\"targetDegree\":%" PRIu64 ",\"workers\":%" PRIu64 ",\"largeRowWorkspaces\":%" PRIu64 ",\"activeLargeRowWorkspaces\":%" PRIu64,gn_stat(3),gn_stat(2),telemetry_target,gn_stat(10),gn_reserve_pool_stat(0),gn_reserve_pool_stat(4));
+ buf_printf(&b,",\"currentDegree\":%" PRIu64 ",\"completedThroughDegree\":%" PRIu64 ",\"workers\":%" PRIu64 ",\"largeRowWorkspaces\":%" PRIu64 ",\"activeLargeRowWorkspaces\":%" PRIu64,gn_stat(3),gn_stat(2),gn_stat(10),gn_reserve_pool_stat(0),gn_reserve_pool_stat(4));
  if(fg_enabled){u64 deficit=(u64)gn_fg_limb(2,0)|((u64)gn_fg_limb(2,1)<<32);buf_printf(&b,",\"fkGate\":{\"degree\":%" PRIu64 ",\"closedSectors\":%" PRIu64 ",\"totalSectors\":360,\"deficit\":%" PRIu64 ",\"sectorSkips\":%" PRIu64 "}",gn_fg_stat(0),gn_fg_stat(20),deficit,gn_fg_stat(8));}
- buf_add(&b,"}\n");
+ buf_printf(&b,",\"targetDegree\":%"PRIu64,telemetry_target);gm_json(&b);tail_json(&b);buf_add(&b,"}\n");
  char *directory=strdup(telemetry_path);if(!directory){buf_free(&b);return;}char *slash=strrchr(directory,'/');const char *name=telemetry_path;
  if(slash){name=telemetry_path+(slash-directory)+1;if(slash==directory)slash[1]=0;else *slash=0;}else strcpy(directory,".");
  int failed=write_atomic(directory,name,b.s,b.n);if(failed&&!telemetry_failed)fprintf(stderr,"Dashboard status write failed: %s (computation continues).\n",telemetry_path);telemetry_failed=failed;free(directory);buf_free(&b);
 }
 #include "hilbert_reference.h"
+static void tail_json(Buffer*b){
+ buf_printf(b,",\"reducerTailCache\":{\"requestedBytes\":%"PRIu64",\"enabled\":%s,\"capacityBytes\":%"PRIu64",\"usedBytes\":%"PRIu64",\"workspaceBytes\":%"PRIu64",\"hits\":%"PRIu64",\"misses\":%"PRIu64",\"attempts\":%"PRIu64",\"built\":%"PRIu64",\"declined\":%"PRIu64",\"savedTerms\":%"PRIu64",\"savedBytes\":%"PRIu64",\"buildMicroseconds\":%"PRIu64"}",gn_tail_cache_stat(0),gn_tail_cache_stat(1)?"true":"false",gn_tail_cache_stat(2),gn_tail_cache_stat(3),gn_tail_cache_stat(4),gn_tail_cache_stat(5),gn_tail_cache_stat(6),gn_tail_cache_stat(8),gn_tail_cache_stat(9),gn_tail_cache_stat(10),gn_tail_cache_stat(11),gn_tail_cache_stat(12),gn_tail_cache_stat(13));
+}
+static void gm_json(Buffer*b){buf_printf(b,",\"gm\":{\"mask\":%"PRIu64",\"examined\":%"PRIu64",\"multiplySkipped\":%"PRIu64",\"leadingWordSkipped\":%"PRIu64",\"backwardSkipped\":%"PRIu64",\"unavailable\":%"PRIu64",\"pendingPruned\":%"PRIu64",\"fallbackQueries\":%"PRIu64",\"counterScope\":\"session\"}",gn_gm_stat(0),gn_gm_stat(1),gn_gm_stat(2),gn_gm_stat(3),gn_gm_stat(4),gn_gm_stat(5),gn_gm_stat(6),gn_gm_stat(7));}
 static void capture_safe(int partial){
  /* A dimension-closed degree must be finished before publishing its frontier. */
  if(partial && (hc.enabled||fg_enabled) && gn_hilbert_gate_stat(3))return;
  Buffer b={0};buf_printf(&b,"{\"abi\":%d,\"version\":\"%s\",\"identity\":\"%s\",\"basisSize\":%" PRIu64 ",\"terms\":%" PRIu64 ",\"diskBytes\":%" PRIu64 ",\"completedThroughDegree\":%" PRIu64 ",\"currentDegree\":%" PRIu64 ",\"partial\":%s,\"hashBits\":%u,\"runKey\":\"%s\"",(fg_enabled?5:hc.enabled?4:3),VERSION,identity,gn_stat(0),gn_stat(1),gn_stat(6),gn_stat(2),gn_stat(3),partial?"true":"false",gn_frontier_hash_bits(),runkey);
- if(partial){u64 p=gn_frontier_export();u32 n=gn_frontier_size();if(!p){buf_free(&b);return;}unsigned char*t=native_pointer(p);buf_add(&b,",\"frontier\":\"");char hex[2*(40*8+2*512*16)];const char*digits="0123456789abcdef";for(u32 i=0;i<n;i++){hex[2*i]=digits[t[i]>>4];hex[2*i+1]=digits[t[i]&15];}buf_n(&b,hex,2*n);buf_printf(&b,"\",\"retainedCommittedPairs\":%" PRIu64 ",\"resolvedOverlaps\":%" PRIu64 ",\"totalOverlaps\":%" PRIu64 ",\"pendingPairs\":%u",gn_progress_stat(2),gn_progress_stat(2)+gn_progress_stat(4)+gn_progress_stat(5),gn_progress_stat(0),gn_frontier_pending());}
- if(partial&&gn_pair_plan_stat(0))buf_printf(&b,",\"pairPlanOrder\":%"PRIu64",\"frontierABI\":%u,\"minimumReader\":\"%s\"",gn_pair_plan_stat(1),gn_pair_plan_stat(1)==3?3:2,gn_pair_plan_stat(1)==3?"0.7.2":"0.7.1");
+ if(partial){u64 p=gn_frontier_export();u32 n=gn_frontier_size();if(!p){buf_free(&b);return;}unsigned char*t=native_pointer(p);buf_add(&b,",\"frontier\":\"");char*hex=malloc((size_t)n*2);if(!hex){buf_free(&b);return;}const char*digits="0123456789abcdef";for(u32 i=0;i<n;i++){hex[2*i]=digits[t[i]>>4];hex[2*i+1]=digits[t[i]&15];}buf_n(&b,hex,2*n);free(hex);buf_printf(&b,"\",\"retainedCommittedPairs\":%" PRIu64 ",\"resolvedOverlaps\":%" PRIu64 ",\"totalOverlaps\":%" PRIu64 ",\"pendingPairs\":%u",gn_progress_stat(2),gn_progress_stat(2)+gn_progress_stat(4)+gn_progress_stat(5),gn_progress_stat(0),gn_frontier_pending());}
+ if(partial&&gn_gm_stat(0)&&!gn_pair_plan_stat(0))buf_add(&b,",\"frontierABI\":6,\"minimumReader\":\"0.7.4-gm1\"");
+ if(partial&&gn_pair_plan_stat(0)){u64 pm=gn_pair_plan_stat(1);buf_printf(&b,",\"pairPlanOrder\":%"PRIu64",\"frontierABI\":%"PRIu64",\"minimumReader\":\"%s\"",pm,gn_gm_stat(0)?6:gn_pair_plan_stat(18)?5:pm>=3?pm:2,gn_gm_stat(0)?"0.7.4-gm1":gn_pair_plan_stat(18)?"0.7.4":pm==4?"0.7.3":pm==3?"0.7.1-pref4.2":"0.7.1");}
  closure_metadata(&b);fg_metadata(&b);reference_json(&b);buf_free(&safe_payload);safe_payload=b;safe_partial=partial;
 }
 static int save_safe(int force){if(!safe_payload.s)return 0;double now=gn_host_clock();if(!force&&!native_checkpoint&&now-last_checkpoint<checkpoint_ms)return 0;Buffer p={0},e={0};buf_n(&p,safe_payload.s,safe_payload.n);buf_printf(&p,",\"sequence\":%" PRIu64 ",\"sessionElapsedMs\":%" PRIu64 ",\"cumulativeElapsedMs\":%" PRIu64 "}",++sequence,(u64)(now-started),(u64)(prior_elapsed_ms+now-started));char hash[65];sha256_hex(p.s,p.n,hash);buf_printf(&e,"{\"schema\":2,\"payload\":%s,\"sha256\":\"%s\"}\n",p.s,hash);char name[64];snprintf(name,sizeof(name),"%s-%u.json",safe_partial?"partial":"checkpoint",safe_partial?(unsigned)(sequence%2):(unsigned)(gn_stat(2)%2));int rc=native_sync()||write_atomic(run_dir,name,e.s,e.n)?GN_IO:0;if(!rc){last_checkpoint=gn_host_clock();native_checkpoint=0;checkpoints_written++;if(!quiet)log_json(stderr,"{\"event\":\"checkpoint\",\"partial\":%s,\"sequence\":%" PRIu64 ",\"file\":\"%s\"}\n",safe_partial?"true":"false",sequence,name);}buf_free(&p);buf_free(&e);return rc;}
@@ -203,12 +216,12 @@ static int execute_cooperative(u32*workers,u32 limit){
 }
 static int configure(Fixture*f,u32 target,u32 workers,u64 budget,u64 scratch,u64 reserve,u32 hashbits,u32 prime,int radix){int rc=gn_init(f->nv,target,workers,budget,scratch,hashbits,prime,1);if(rc)return rc;
 #define SET(call) do{rc=(call);if(rc)return rc;}while(0)
- SET(gn_memory_policy(1));SET(gn_delta_commit(delta_commit));SET(gn_pair_plan_config(plan_order,plan_min,plan_bytes));SET(gn_rational_heap(1));SET(gn_big_rational_heap(1));SET(gn_big_row_limit(big_row_max_terms));SET(gn_growing_rational(1));SET(gn_rational_rewrites(1));SET(gn_radix_queue((u32)radix));SET(gn_reserve_growth(1));SET(gn_pin_cache(shared_cache_bytes==UINT64_MAX?budget/16:shared_cache_bytes));SET(gn_local_rewrites(4,budget/16<8*MIB?budget/16:8*MIB,8));SET(gn_optimize(63,budget/16<64*MIB?budget/16:64*MIB));SET(gn_tune(3,cache_percent,16));SET(gn_word_cache(256));SET(gn_row_reserve(reserve));SET(gn_batch_mode(1));SET(gn_radix_cache(cache_maxima));SET(gn_cooperative(quantum_ms,lookahead));SET(gn_coop_policy(coop_flags,coop_max_window));SET(gn_coop_helper_mode(helper_rows));SET(gn_reserve_pool(large_row_workspaces));SET(fg_host_bind(identity));
+ SET(gn_memory_policy(1));SET(gn_gm_config(gm_mask));SET(gn_delta_commit(delta_commit));SET(gn_q14_hint(q14_hint));SET(gn_pair_plan_config(plan_order,plan_min,plan_bytes));SET(gn_rational_heap(1));SET(gn_big_rational_heap(1));SET(gn_big_row_limit(big_row_max_terms));SET(gn_growing_rational(1));SET(gn_rational_rewrites(1));SET(gn_radix_queue((u32)radix));SET(gn_reserve_growth(1));SET(gn_pin_cache(shared_cache_bytes==UINT64_MAX?budget/16:shared_cache_bytes));SET(gn_local_rewrites(4,budget/16<8*MIB?budget/16:8*MIB,8));SET(gn_optimize(no_chain?61:63,budget/16<64*MIB?budget/16:64*MIB));SET(gn_tune(3,cache_percent,16));SET(gn_word_cache(word_cache_entries));SET(gn_row_reserve(reserve));SET(gn_batch_mode(1));SET(gn_radix_cache(cache_maxima));SET(gn_cooperative(quantum_ms,lookahead));SET(gn_coop_policy(coop_flags,coop_max_window));SET(gn_coop_helper_mode(helper_rows));SET(gn_coop_family_mode(family_diversity));SET(gn_reserve_pool(large_row_workspaces));SET(gn_tail_cache_config(tail_cache_bytes));SET(fg_host_bind(identity));
 #undef SET
  if(quantum_ms&&!gn_coop_stat(0)&&!quiet)fprintf(stderr,"Cooperative scheduler disabled: workspace cannot fit a separate commit arena; using the legacy exact scheduler.\n");
  return 0;}
 static void help(void){puts(
-"fomkyr 0.7.2 - exact homogeneous noncommutative Groebner bases\n"
+"fomkyr 0.7.4 - exact homogeneous noncommutative Groebner bases\n"
 "Usage: fomkyr -i input.bg -d 14 -j 8 --workdir fk14 [options]\n"
 "  -i, --input FILE           JSON fixture or expanded George vars/polynomial form\n"
 "  -d, --degree N             Inclusive degree bound; 0 means no user bound\n"
@@ -240,7 +253,17 @@ static void help(void){puts(
 "      --wasm                Execute the packaged WASM engine via Node (same CLI)\n"
 "      --wasm-limit          Keep native execution but impose the 15e9-byte ceiling\n"
 "      --checkpoint-seconds N  Save at quiescent frontiers (default 30; 0 every one)\n"
-"      --pair-order MODE      legacy (default), overlap, sparse, or word whole-degree plan\n"
+"      --word-cache-entries N  Exact divisor cache: power of two, default 256\n"
+"      --reducer-tail-cache SIZE  Optional canonical reducer cache, off (default)\n"
+"      --gm MODE              off, multiply, leading-word, backward or all (default off)\n"
+"      --no-chain             Disable the interior criterion for ablation\n"
+"      --raw-export           Export primitive-integer rows without normalization\n"
+"      --replan-remaining     Reorder only unfinished pairs on explicit resume\n"
+"      --pair-order MODE      legacy, overlap, sparse, word, or gateword whole-degree plan\n"
+"      --fk-q14-hint          Scheduler-only Q14 identity-grade layer hint; never prunes\n"
+"      --no-family-diversity  Allow a dispatch front to repeat one left-rule family\n"
+"      --family-diversity     Explicitly enable family diversification on resume\n"
+"      --resume-072-compat    Keep 0.7.2 dispatcher, full commits, no Q hint; does not change a saved plan\n"
 "      --plan-min-degree N    Plan only degrees N and above (default 12)\n"
 "      --pair-plan-memory SIZE  Optional global candidate pool ceiling (default 64M)\n"
 "      --time-limit N        Seconds after initialization; unfinished degree is retained\n"
@@ -250,8 +273,7 @@ static void help(void){puts(
 "      --hilbert-certificate FILE  Replay exact integer-dual lower bounds\n"
 "      --assume-hilbert FILE  Explicitly trust external dimensions (conditional output)\n"
 "      --hilbert-fixed-batch Do not bound speculation near Hilbert equality\n"
-"      --export              Stream monic, tail-reduced result.gb after completion\n"
-"      --raw-export          Retain primitive-integer rows and original tails\n"
+"      --export              Stream result.gb after completion\n"
 "      --no-radix            Retain the binary-queue ablation\n"
 "      --status              Print newest matching durable checkpoint; do not compute\n"
 "      --dry-run             Show native memory plan without allocation\n"
@@ -293,13 +315,17 @@ static int export_hilbert(u32 degree,u64 budget){u64 left=budget-gn_stat(4);int 
 int main(int argc,char**argv){
  {const u32 endian=1;if(*(const unsigned char*)&endian!=1)die("This release requires a little-endian native host for ABI-3 records");}
  for(int i=1;i<argc;i++)if(!strcmp(argv[i],"--wasm"))wasm_exec(argc,argv);
- const char*input=NULL,*workdir="fomkyr-job",*mem="auto",*hilbert_file=NULL;int hilbert_assumed=0;u32 target=20,workers=native_cpus(),prime=0,batch=128,hashbits=18;int fresh=0,status=0,dry=0,dump=0,wasmlimit=0,hilbert=0,export=0,radix=1,prime_set=0,resume_requested=0;double time_limit=0;
- static const struct option opts[]={{"input",1,0,'i'},{"degree",1,0,'d'},{"workers",1,0,'j'},{"workdir",1,0,1000},{"resume",1,0,1001},{"fresh",0,0,1002},{"memory",1,0,1003},{"wasm-limit",0,0,1004},{"checkpoint-seconds",1,0,1005},{"time-limit",1,0,1006},{"batch-pairs",1,0,1007},{"field",1,0,1008},{"hilbert",0,0,1009},{"export",0,0,1010},{"no-radix",0,0,1011},{"status",0,0,1012},{"dry-run",0,0,1013},{"dump-fixture",0,0,1014},{"version",0,0,1015},{"hilbert-certificate",1,0,1016},{"assume-hilbert",1,0,1017},{"hilbert-fixed-batch",0,0,1018},{"scheduler",1,0,1019},{"quantum-ms",1,0,1020},{"lookahead",1,0,1021},{"no-radix-cache",0,0,1022},{"fk-gate",0,0,1023},{"fk-total-only",0,0,1024},{"fk-gate-memory",1,0,1025},{"human",0,0,1026},{"big-row-max-terms",1,0,1027},{"cache-percent",1,0,1028},{"shared-cache",1,0,1029},{"max-lookahead",1,0,1030},{"no-elastic-window",0,0,1031},{"no-sector-priority",0,0,1032},{"no-helper-rows",0,0,1033},{"large-row-workspaces",1,0,1034},{"scratch",1,0,1035},{"row-reserve",1,0,1036},{"progress-seconds",1,0,1037},{"telemetry",1,0,1038},{"pair-order",1,0,1039},{"plan-min-degree",1,0,1040},{"pair-plan-memory",1,0,1041},{"raw-export",0,0,1042},{"commit-reduction",1,0,1043},{"quiet",0,0,'q'},{"help",0,0,'h'},{0,0,0,0}};
- int ch;while((ch=getopt_long(argc,argv,"i:d:j:qh",opts,NULL))!=-1){u64 n;switch(ch){case'i':input=optarg;break;case'd':n=parse_u64(optarg);if(n>GN_INDEX_MAX)die("degree index exceeds uint32 representation");target=(u32)n;break;case'j':n=parse_u64(optarg);if(!n||n>32)die("workers must be 1..32");workers=(u32)n;break;case'q':quiet=1;break;case 1039:if(!strcmp(optarg,"legacy"))plan_order=0;else if(!strcmp(optarg,"overlap"))plan_order=1;else if(!strcmp(optarg,"sparse"))plan_order=2;else if(!strcmp(optarg,"word"))plan_order=3;else die("pair-order must be legacy, overlap, sparse or word");break;case 1040:n=parse_u64(optarg);if(!n||n>GN_INDEX_MAX)die("plan-min-degree out of range");plan_min=(u32)n;break;case 1041:plan_bytes=parse_bytes(optarg);break;case'h':help();return 0;case 1000:workdir=optarg;break;case 1001:workdir=optarg;resume_requested=1;break;case 1002:fresh=1;break;case 1003:mem=optarg;break;case 1004:wasmlimit=1;break;case 1005:checkpoint_ms=parse_seconds(optarg)*1000;break;case 1006:time_limit=parse_seconds(optarg);break;case 1007:n=parse_u64(optarg);if(!n||n>512)die("batch-pairs must be 1..512");batch=(u32)n;break;case 1008:n=parse_u64(optarg);if(n>2147483647)die("characteristic too large");prime=(u32)n;prime_set=1;break;case 1009:hilbert=1;break;case 1010:export=1;break;case 1042:raw_export=1;break;case 1043:if(!strcmp(optarg,"full"))delta_commit=0;else if(!strcmp(optarg,"delta"))delta_commit=1;else die("commit-reduction must be full or delta");break;case 1011:radix=0;break;case 1012:status=1;break;case 1013:dry=1;break;case 1014:dump=1;break;case 1015:puts(VERSION);return 0;case 1016:case 1017:if(hilbert_file)die("choose only one Hilbert authority");hilbert_file=optarg;hilbert_assumed=ch==1017;break;case 1018:closure_adaptive=0;break;
+ const char*input=NULL,*workdir="fomkyr-job",*mem="auto",*hilbert_file=NULL;int hilbert_assumed=0;u32 target=20,workers=native_cpus(),prime=0,batch=128,hashbits=18;int fresh=0,status=0,dry=0,dump=0,wasmlimit=0,hilbert=0,export=0,radix=1,prime_set=0,resume_requested=0,compat_072=0,family_override=-1;double time_limit=0;
+ static const struct option opts[]={{"input",1,0,'i'},{"degree",1,0,'d'},{"workers",1,0,'j'},{"workdir",1,0,1000},{"resume",1,0,1001},{"fresh",0,0,1002},{"memory",1,0,1003},{"wasm-limit",0,0,1004},{"checkpoint-seconds",1,0,1005},{"time-limit",1,0,1006},{"batch-pairs",1,0,1007},{"field",1,0,1008},{"hilbert",0,0,1009},{"export",0,0,1010},{"no-radix",0,0,1011},{"status",0,0,1012},{"dry-run",0,0,1013},{"dump-fixture",0,0,1014},{"version",0,0,1015},{"hilbert-certificate",1,0,1016},{"assume-hilbert",1,0,1017},{"hilbert-fixed-batch",0,0,1018},{"scheduler",1,0,1019},{"quantum-ms",1,0,1020},{"lookahead",1,0,1021},{"no-radix-cache",0,0,1022},{"fk-gate",0,0,1023},{"fk-total-only",0,0,1024},{"fk-gate-memory",1,0,1025},{"human",0,0,1026},{"big-row-max-terms",1,0,1027},{"cache-percent",1,0,1028},{"shared-cache",1,0,1029},{"max-lookahead",1,0,1030},{"no-elastic-window",0,0,1031},{"no-sector-priority",0,0,1032},{"no-helper-rows",0,0,1033},{"large-row-workspaces",1,0,1034},{"scratch",1,0,1035},{"row-reserve",1,0,1036},{"progress-seconds",1,0,1037},{"telemetry",1,0,1038},{"pair-order",1,0,1039},{"plan-min-degree",1,0,1040},{"pair-plan-memory",1,0,1041},{"commit-reduction",1,0,1042},{"no-family-diversity",0,0,1043},{"fk-q14-hint",0,0,1044},{"resume-072-compat",0,0,1045},{"family-diversity",0,0,1046},{"raw-export",0,0,1053},{"replan-remaining",0,0,1052},{"no-chain",0,0,1051},{"word-cache-entries",1,0,1054},{"reducer-tail-cache",1,0,1055},{"gm",1,0,1050},{"quiet",0,0,'q'},{"help",0,0,'h'},{0,0,0,0}};
+ int ch;while((ch=getopt_long(argc,argv,"i:d:j:qh",opts,NULL))!=-1){u64 n;switch(ch){case'i':input=optarg;break;case'd':n=parse_u64(optarg);if(n>GN_INDEX_MAX)die("degree index exceeds uint32 representation");target=(u32)n;break;case'j':n=parse_u64(optarg);if(!n||n>32)die("workers must be 1..32");workers=(u32)n;break;case'q':quiet=1;break;case 1039:if(!strcmp(optarg,"legacy"))plan_order=0;else if(!strcmp(optarg,"overlap"))plan_order=1;else if(!strcmp(optarg,"sparse"))plan_order=2;else if(!strcmp(optarg,"word"))plan_order=3;else if(!strcmp(optarg,"gateword"))plan_order=4;else die("pair-order must be legacy, overlap, sparse, word or gateword");break;case 1040:n=parse_u64(optarg);if(!n||n>GN_INDEX_MAX)die("plan-min-degree out of range");plan_min=(u32)n;break;case 1041:plan_bytes=parse_bytes(optarg);break;case 1042:if(!strcmp(optarg,"full"))delta_commit=0;else if(!strcmp(optarg,"delta"))delta_commit=1;else die("commit-reduction must be full or delta");break;case 1043:family_override=0;break;case 1044:q14_hint=1;break;case 1045:compat_072=1;break;case 1046:family_override=1;break;case 1053:raw_export=1;break;case 1052:replan_remaining=1;break;case 1051:no_chain=1;break;case 1054:n=parse_u64(optarg);if(n<256||n>1048576||(n&(n-1)))die("word-cache-entries must be a power of two, 256..1048576");word_cache_entries=(u32)n;break;case 1055:tail_cache_bytes=!strcmp(optarg,"off")?0:parse_bytes(optarg);if(tail_cache_bytes&&tail_cache_bytes<16*MIB)die("reducer-tail-cache must be off/0 or at least 16M");break;case 1050:if(!strcmp(optarg,"off"))gm_mask=0;else if(!strcmp(optarg,"multiply"))gm_mask=1;else if(!strcmp(optarg,"leading-word"))gm_mask=2;else if(!strcmp(optarg,"backward"))gm_mask=4;else if(!strcmp(optarg,"all"))gm_mask=7;else die("gm must be off, multiply, leading-word, backward or all");break;case'h':help();return 0;case 1000:workdir=optarg;break;case 1001:workdir=optarg;resume_requested=1;break;case 1002:fresh=1;break;case 1003:mem=optarg;break;case 1004:wasmlimit=1;break;case 1005:checkpoint_ms=parse_seconds(optarg)*1000;break;case 1006:time_limit=parse_seconds(optarg);break;case 1007:n=parse_u64(optarg);if(!n||n>512)die("batch-pairs must be 1..512");batch=(u32)n;break;case 1008:n=parse_u64(optarg);if(n>2147483647)die("characteristic too large");prime=(u32)n;prime_set=1;break;case 1009:hilbert=1;break;case 1010:export=1;break;case 1011:radix=0;break;case 1012:status=1;break;case 1013:dry=1;break;case 1014:dump=1;break;case 1015:puts(VERSION);return 0;case 1016:case 1017:if(hilbert_file)die("choose only one Hilbert authority");hilbert_file=optarg;hilbert_assumed=ch==1017;break;case 1018:closure_adaptive=0;break;
  case 1019:if(!strcmp(optarg,"barrier"))quantum_ms=0;else if(!strcmp(optarg,"cooperative")){if(!quantum_ms)quantum_ms=250;}else die("scheduler must be cooperative or barrier");break;
  case 1020:n=parse_u64(optarg);if(n<1||n>10000)die("quantum-ms must be 1..10000");quantum_ms=(u32)n;break;
  case 1021:n=parse_u64(optarg);if(!n||n>512)die("lookahead must be 1..512");lookahead=(u32)n;break;
  case 1022:cache_maxima=0;break;case 1023:fg_requested=1;fg_sectors=1;break;case 1024:fg_requested=1;fg_sectors=0;break;case 1025:fg_budget=parse_bytes(optarg);break;case 1026:human_output=1;break;case 1027:n=!strcmp(optarg,"auto")?0:parse_u64(optarg);if(n&&(n<128||n>(1u<<30)||(n&(n-1))))die("big-row-max-terms must be auto, 0, or a power of two from 128 to 1073741824");big_row_max_terms=(u32)n;break;case 1028:n=parse_u64(optarg);if(n>40)die("cache-percent must be 0..40");cache_percent=(u32)n;break;case 1029:shared_cache_bytes=!strcmp(optarg,"auto")?UINT64_MAX:parse_bytes(optarg);break;case 1030:n=parse_u64(optarg);if(!n||n>512)die("max-lookahead must be 1..512");coop_max_window=(u32)n;break;case 1031:coop_flags&=~1u;break;case 1032:coop_flags&=~2u;break;case 1033:helper_rows=0;break;case 1034:n=!strcmp(optarg,"auto")?0:parse_u64(optarg);if(n>33)die("large-row-workspaces must be auto, 0, or 1..33");large_row_workspaces=(u32)n;break;case 1035:scratch_arg=optarg;break;case 1036:reserve_arg=optarg;break;case 1037:progress_ms=parse_seconds(optarg)*1000;if(progress_ms<100)die("progress-seconds must be at least 0.1");break;case 1038:telemetry_path=optarg;if(!*telemetry_path||telemetry_path[strlen(telemetry_path)-1]=='/')die("telemetry must name a file");break;default:help();return 2;}}
+ /* Compatibility preset affects only future scheduling controls, NEVER a saved cursor.
+ * Explicit --family-diversity / --no-family-diversity overrides the preset. */
+ if(compat_072){if(!resume_requested)die("--resume-072-compat requires --resume DIR");if(q14_hint)die("--resume-072-compat conflicts with --fk-q14-hint");q14_hint=0;delta_commit=0;family_diversity=0;}
+ if(family_override>=0)family_diversity=(u32)family_override;
  if((coop_flags&1)&&coop_max_window<lookahead)die("max-lookahead must be at least lookahead");
  if(optind<argc){if(input||optind+1!=argc)die("unexpected arguments");input=argv[optind];}
  char*saved_identity=NULL;char*jobpath=path_join(workdir,"job.json");char*jobtext=read_file(jobpath,65536,NULL);free(jobpath);
@@ -311,8 +337,10 @@ int main(int argc,char**argv){
  if(wasmlimit&&budget>GN_WASM_HARD_BYTES)budget=GN_WASM_HARD_BYTES&~(PAGE-1);
  if(budget<16*MIB||budget>GN_HARD_BYTES)die("memory ceiling must be >=16 MiB and fit native address representation");
  if(shared_cache_bytes!=UINT64_MAX&&shared_cache_bytes>budget)die("shared-cache must fit inside the memory ceiling");
- u64 scratch=(!strcmp(scratch_arg,"auto")?budget/7*4:parse_bytes(scratch_arg))&~(PAGE-1);
- u64 reserve=(!strcmp(reserve_arg,"auto")?(budget>=128*MIB?budget/7:0):parse_bytes(reserve_arg))&~(PAGE-1);
+ if(tail_cache_bytes>budget||(tail_cache_bytes&&budget-tail_cache_bytes<16*MIB))die("reducer-tail-cache needs metadata headroom inside the memory ceiling");
+ u64 work_budget=budget-(workers<GN_MAX_WORKERS?tail_cache_bytes:0);
+ u64 scratch=(!strcmp(scratch_arg,"auto")?work_budget/7*4:parse_bytes(scratch_arg))&~(PAGE-1);
+ u64 reserve=(!strcmp(reserve_arg,"auto")?(work_budget>=128*MIB?work_budget/7:0):parse_bytes(reserve_arg))&~(PAGE-1);
  if(scratch<MIB||scratch>=budget||reserve>budget-scratch||budget-scratch-reserve<MIB)die("scratch and row-reserve must fit within memory with metadata headroom");
  planned_scratch=scratch;planned_reserve=reserve;
  while(workers>1&&scratch/workers<MIB)workers/=2;
@@ -325,6 +353,9 @@ int main(int argc,char**argv){
  if(fg_dependency_error&&!fresh)die("checkpoint depends on FK Gate profile; explicitly supply --fk-gate or --fk-total-only (data retained)");
  if(closure_dependency_error&&!fresh)die("checkpoint depends on Hilbert evidence; explicitly supply the SAME policy file/mode (data retained)");
  for(u32 i=0;i<count;i++)for(u32 j=i+1;j<count;j++)if(cp_better(&cps[j],&cps[i])){Checkpoint t=cps[i];cps[i]=cps[j];cps[j]=t;}
+ if(!status&&!fresh&&matching_partial_current&&(!count||
+    (matching_partial_current>cps[0].completed&&(!cps[0].partial||cps[0].current<matching_partial_current))))
+   die("A matching partial checkpoint is unsupported or rejected; older-degree fallback refused; all data retained");
  if(status){if(count)emit_json(stdout,cps[0].payload.s);else emit_json(stdout,"{\"checkpoint\":null}");for(u32 i=0;i<count;i++)cp_free(&cps[i]);native_close();fixture_free(&fixture);free(dir);return count?0:66;}
  if(fresh){if(native_truncate(0))die("cannot truncate explicitly reset job");for(u32 i=0;i<4;i++){char*p=path_join(dir,names[i]);unlink(p);free(p);}}
  else if(!count&&native_size())die("no valid matching checkpoint; data retained. Use --fresh only to discard it");
@@ -335,14 +366,16 @@ int main(int argc,char**argv){
  if(count){rc=GN_CORRUPT;for(u32 i=0;i<count;i++){workers=initial_workers;u32 kt=target;if(kt&&kt<cps[i].completed)kt=cps[i].completed;if(kt&&kt<cps[i].current)kt=cps[i].current;
    rc=configure(&fixture,kt,workers,budget,scratch,reserve,cps[i].partial?cps[i].hash_bits:hashbits,prime,radix);if(!rc)rc=restore_cp(&cps[i],&workers);
    if(!rc){if(hc.enabled){Json q={0};if(!json_parse(&q,cps[i].payload.s)){int ev=json_key(&q,0,"hilbertClosureEvents");if(ev>=0&&q.t[ev].type=='['&&q.t[ev].end-q.t[ev].start>2)buf_n(&hc.events,q.text+q.t[ev].start+1,(size_t)(q.t[ev].end-q.t[ev].start-2));}json_free(&q);}restored=cps[i].completed;restored_partial=cps[i].partial;resumed_pending=gn_frontier_pending();sequence=cps[i].sequence;prior_elapsed_ms=cps[i].elapsed_ms;if(!preserve_newer_partial)if(native_truncate(cps[i].bytes))rc=GN_IO;break;}
+   if(native_stop||rc==GN_CANCELLED){rc=GN_CANCELLED;break;}
+   if(cps[i].partial){fprintf(stderr,"Partial checkpoint restore failed (%s); older-degree fallback refused, data retained.\n",ename(rc));if(rc==GN_MEMORY||rc==GN_SCRATCH||rc==GN_LIMIT)fprintf(stderr,"Increase the memory or pair-plan allowance to resume this checkpoint.\n");break;}
    /* A valid planned frontier cannot be silently replaced by an older degree
     * merely because this invocation requests too little plan/work memory. */
-   if(cps[i].partial&&cps[i].frontier&&strlen(cps[i].frontier)>=32&&(!strncmp(cps[i].frontier+16,"0200000000000000",16)||!strncmp(cps[i].frontier+16,"0300000000000000",16))&&(rc==GN_MEMORY||rc==GN_SCRATCH||rc==GN_LIMIT)){
+   if(cps[i].partial&&cps[i].frontier&&strlen(cps[i].frontier)>=32&&(!strncmp(cps[i].frontier+16,"0200000000000000",16)||!strncmp(cps[i].frontier+16,"0300000000000000",16)||!strncmp(cps[i].frontier+16,"0400000000000000",16))&&(rc==GN_MEMORY||rc==GN_SCRATCH||rc==GN_LIMIT)){
     fprintf(stderr,"Planned checkpoint needs a larger memory/plan allowance; basis and frontier retained.\n");break;
    }
    fprintf(stderr,"Rejected checkpoint: %s\n",ename(rc));
   }}else rc=configure(&fixture,target,workers,budget,scratch,reserve,hashbits,prime,radix);
- if(!rc&&plan_order&&gn_stat(3)){int adopted=gn_pair_plan_adopt();if(adopted<0)rc=-adopted;else if(adopted){resumed_pending=0;if(!quiet)log_json(stderr,"{\"event\":\"pair-plan-adopted\",\"retainedCommittedPairs\":%"PRIu64",\"plannedCandidates\":%"PRIu64"}\n",gn_progress_stat(2),gn_pair_plan_stat(2));}}
+ if(!rc&&plan_order&&gn_stat(3)){int adopted=replan_remaining?gn_pair_plan_reorder():gn_pair_plan_adopt();if(adopted<0)rc=-adopted;else if(adopted){resumed_pending=0;if(!quiet)log_json(stderr,"{\"event\":\"pair-plan-adopted\",\"retainedCommittedPairs\":%"PRIu64",\"plannedCandidates\":%"PRIu64"}\n",gn_progress_stat(2),gn_pair_plan_stat(2));}}
  for(u32 i=0;i<count;i++)cp_free(&cps[i]);if(rc){fprintf(stderr,"Initialization: %s\n",ename(rc));native_close();return 70;}
  if(!quiet)log_json(stderr,"{\"event\":\"start\",\"engine\":\"native\",\"version\":\"%s\",\"budgetBytes\":%" PRIu64 ",\"ordinaryScratchBytes\":%" PRIu64 ",\"rowReserveBytes\":%" PRIu64 ",\"workers\":%u,\"resumedFromDegree\":%u,\"resumedPartial\":%s,\"pendingPairs\":%u}\n",VERSION,budget,scratch,reserve,workers,restored,restored_partial?"true":"false",resumed_pending);
  rc=closure_verify(&fixture,budget);if(rc){fprintf(stderr,"Hilbert certificate rejected: %s\n",ename(rc));native_close();return 65;}if(hc.enabled&&write_atomic(run_dir,"hilbert-evidence.json",hc.text,strlen(hc.text)))die("could not persist Hilbert evidence");
@@ -362,7 +395,7 @@ int main(int argc,char**argv){
   }if(rc)break;if(fg_enabled&&gn_fg_status()==FKG_ACTIVE){rc=GN_REJECTED;break;}rc=gn_finish_degree();if(rc)break;capture_safe(0);rc=save_safe(1);if(rc)break;
  }
  if(rc){if(gn_coop_stat(0)){gn_coop_discard();capture_safe(1);}int saved=save_safe(1);if(saved)fprintf(stderr,"Checkpoint save failed: %s (previous durable checkpoint retained)\n",ename(saved));}
- else {native_set_pulse(NULL);if(hilbert)rc=export_hilbert(target?target:(u32)gn_stat(2),budget);if(!rc&&export)rc=export_basis(&fixture);}
+ else {gn_deadline(0);native_set_pulse(NULL);if(hilbert)rc=export_hilbert(target?target:(u32)gn_stat(2),budget);if(!rc&&export)rc=export_basis(&fixture);}
  last_log=0;log_pulse(gn_host_clock());telemetry_save(rc?"stopped":"complete",NULL,gn_host_clock());
  double elapsed=(gn_host_clock()-started)/1000;native_set_pulse(NULL);pool_close();struct rusage usage;getrusage(RUSAGE_SELF,&usage);u64 rss=(u64)usage.ru_maxrss;
 #ifndef __APPLE__
@@ -370,18 +403,18 @@ int main(int argc,char**argv){
 #endif
  Buffer result={0};buf_printf(&result,"{\"engine\":\"fomkyr-native\",\"version\":\"%s\",\"complete\":%s,\"code\":\"%s\",\"completedThroughDegree\":%" PRIu64 ",\"currentDegree\":%" PRIu64 ",\"basisSize\":%" PRIu64 ",\"terms\":%" PRIu64 ",\"diskBytes\":%" PRIu64 ",\"allocatedBytes\":%" PRIu64 ",\"budgetBytes\":%" PRIu64 ",\"peakRSSBytes\":%" PRIu64 ",\"workers\":%u,\"resumedFromDegree\":%u,\"resumedPartial\":%s,\"resolvedOverlaps\":%" PRIu64 ",\"totalOverlaps\":%" PRIu64 ",\"checkpointsWritten\":%" PRIu64 ",\"elapsedSeconds\":%.6f,\"identity\":\"%s\",\"recordABI\":3,\"independentGroebnerCertificate\":false}",VERSION,rc?"false":"true",ename(rc),gn_stat(2),gn_stat(3),gn_stat(0),gn_stat(1),gn_stat(6),gn_stat(4),budget,rss,workers,restored,restored_partial?"true":"false",gn_progress_stat(2)+gn_progress_stat(4)+gn_progress_stat(5),gn_progress_stat(0),checkpoints_written,elapsed,identity);if(hc.enabled){result.n--;result.s[result.n]=0;closure_metadata(&result);buf_add(&result,"}");}
  result.n--;result.s[result.n]=0;fg_metadata(&result);
- buf_printf(&result,",\"reduced\":%s,\"normalization\":\"%s\",\"normalizationSeconds\":%.6f,\"exportedTerms\":%"PRIu64,!rc&&export&&!raw_export?"true":"false",export?(raw_export?"primitive-integer":"monic-tail-reduced"):"not-exported",normalization_seconds,exported_terms);
- buf_printf(&result,",\"normalizationWorkers\":%u",normalization_workers);
- buf_printf(&result,",\"pairPlan\":{\"active\":%s,\"order\":%"PRIu64",\"candidates\":%"PRIu64",\"next\":%"PRIu64",\"totalRawOverlaps\":%"PRIu64",\"adoptedSeen\":%"PRIu64",\"adoptedPending\":%"PRIu64",\"allocatedBytes\":%"PRIu64",\"builds\":%"PRIu64",\"declines\":%"PRIu64",\"adoptions\":%"PRIu64",\"buildMicroseconds\":%"PRIu64"}",gn_pair_plan_stat(0)?"true":"false",gn_pair_plan_stat(1),gn_pair_plan_stat(2),gn_pair_plan_stat(3),gn_pair_plan_stat(4),gn_pair_plan_stat(5),gn_pair_plan_stat(6),gn_pair_plan_stat(7),gn_pair_plan_stat(8),gn_pair_plan_stat(9),gn_pair_plan_stat(10),gn_pair_plan_stat(11));
+ buf_printf(&result,",\"pairPlan\":{\"active\":%s,\"order\":%"PRIu64",\"candidates\":%"PRIu64",\"next\":%"PRIu64",\"totalRawOverlaps\":%"PRIu64",\"adoptedSeen\":%"PRIu64",\"adoptedPending\":%"PRIu64",\"allocatedBytes\":%"PRIu64",\"builds\":%"PRIu64",\"declines\":%"PRIu64",\"adoptions\":%"PRIu64",\"buildMicroseconds\":%"PRIu64",\"gateReplans\":%"PRIu64",\"gateRankingReady\":%s,\"gateTarget\":%"PRIu64",\"gatePromotions\":%"PRIu64",\"gateBlockSize\":%"PRIu64",\"q14Hint\":%s,\"q14Authority\":\"conditional-scheduler-only\",\"q14ExplicitPolynomialLoaded\":false,\"q14UsedForPruning\":false}",gn_pair_plan_stat(0)?"true":"false",gn_pair_plan_stat(1),gn_pair_plan_stat(2),gn_pair_plan_stat(3),gn_pair_plan_stat(4),gn_pair_plan_stat(5),gn_pair_plan_stat(6),gn_pair_plan_stat(7),gn_pair_plan_stat(8),gn_pair_plan_stat(9),gn_pair_plan_stat(10),gn_pair_plan_stat(11),gn_pair_plan_stat(12),gn_pair_plan_stat(13)?"true":"false",gn_pair_plan_stat(15),gn_pair_plan_stat(16),gn_pair_plan_stat(17),gn_pair_plan_stat(14)?"true":"false");
  buf_printf(&result,",\"cooperative\":{\"quantumMs\":%" PRIu64 ",\"epochs\":%" PRIu64 ",\"started\":%" PRIu64 ",\"finished\":%" PRIu64 ",\"committed\":%" PRIu64 ",\"nonprefixCommits\":%" PRIu64 ",\"capacityReplayPairs\":%" PRIu64 ",\"pending\":%" PRIu64 ",\"commitRewrites\":%" PRIu64 ",\"lanes\":[",gn_coop_stat(0),gn_coop_stat(1),gn_coop_stat(2),gn_coop_stat(3),gn_coop_stat(4),gn_coop_stat(5),gn_coop_stat(6),gn_coop_stat(7),gn_coop_stat(8));
  for(u32 i=0;i<gn_memory_stat(1);i++)buf_printf(&result,"%s{\"activeMicroseconds\":%" PRIu64 ",\"maxSliceMicroseconds\":%" PRIu64 ",\"yields\":%" PRIu64 ",\"resumes\":%" PRIu64 "}",i?",":"",gn_coop_stat(100+i),gn_coop_stat(200+i),gn_coop_stat(300+i),gn_coop_stat(400+i));
- buf_printf(&result,"],\"window\":%" PRIu64 ",\"windowExpansions\":%" PRIu64 ",\"sectorOrderings\":%" PRIu64 ",\"policyFlags\":%" PRIu64 ",\"parkedCommit\":%" PRIu64 ",\"commitYields\":%" PRIu64 ",\"commitResumes\":%" PRIu64 ",\"preparedCommitSlices\":%" PRIu64 ",\"helperStarted\":%" PRIu64 ",\"helperFinished\":%" PRIu64 ",\"helperDeferred\":%" PRIu64 ",\"helperWorkspaceBytes\":%" PRIu64 ",\"helpersEnabled\":%s}",gn_coop_stat(13),gn_coop_stat(14),gn_coop_stat(15),gn_coop_stat(16),gn_coop_stat(18),gn_coop_stat(19),gn_coop_stat(20),gn_coop_stat(21),gn_coop_stat(22),gn_coop_stat(23),gn_coop_stat(24),gn_coop_stat(25),gn_coop_stat(26)?"true":"false");
+ buf_printf(&result,"],\"window\":%" PRIu64 ",\"windowExpansions\":%" PRIu64 ",\"sectorOrderings\":%" PRIu64 ",\"policyFlags\":%" PRIu64 ",\"parkedCommit\":%" PRIu64 ",\"commitYields\":%" PRIu64 ",\"commitResumes\":%" PRIu64 ",\"preparedCommitSlices\":%" PRIu64 ",\"helperStarted\":%" PRIu64 ",\"helperFinished\":%" PRIu64 ",\"helperDeferred\":%" PRIu64 ",\"helperWorkspaceBytes\":%" PRIu64 ",\"helpersEnabled\":%s,\"familyDiversity\":%s,\"familySwaps\":%" PRIu64 "}",gn_coop_stat(13),gn_coop_stat(14),gn_coop_stat(15),gn_coop_stat(16),gn_coop_stat(18),gn_coop_stat(19),gn_coop_stat(20),gn_coop_stat(21),gn_coop_stat(22),gn_coop_stat(23),gn_coop_stat(24),gn_coop_stat(25),gn_coop_stat(26)?"true":"false",gn_coop_stat(27)?"true":"false",gn_coop_stat(28));
  buf_printf(&result,",\"largeRowPool\":{\"workspaces\":%" PRIu64 ",\"limit\":%" PRIu64 ",\"workspaceBytes\":%" PRIu64 ",\"active\":%" PRIu64 ",\"admissions\":%" PRIu64 ",\"declines\":%" PRIu64 "}",gn_reserve_pool_stat(0),gn_reserve_pool_stat(1),gn_reserve_pool_stat(2),gn_reserve_pool_stat(4),gn_reserve_pool_stat(5),gn_reserve_pool_stat(6));
  buf_printf(&result,",\"cachePercent\":%u,\"sharedCacheBytes\":%" PRIu64 ",\"bigRowMaxTerms\":%u,\"bigRows\":[",cache_percent,shared_cache_bytes==UINT64_MAX?budget/16:shared_cache_bytes,big_row_max_terms);
  for(u32 i=0;i<gn_memory_stat(1);i++)buf_printf(&result,"%s{\"growths\":%" PRIu64 ",\"peakTerms\":%" PRIu64 ",\"lastCapacity\":%" PRIu64 ",\"reservedCapacity\":%" PRIu64 ",\"capacityMisses\":%" PRIu64 ",\"coefficientPoolMisses\":%" PRIu64 ",\"arithmeticWorkspaceMisses\":%" PRIu64 ",\"generalFallbacks\":%" PRIu64 ",\"reserveWaits\":%" PRIu64 "}",i?",":"",gn_exact_stat(i,12),gn_exact_stat(i,13),gn_exact_stat(i,14),gn_exact_stat(i,15),gn_exact_stat(i,6),gn_exact_stat(i,5),gn_exact_stat(i,7),gn_exact_stat(i,20),gn_exact_stat(i,19));
  buf_add(&result,"],\"rowMemoryPeaks\":[");
  for(u32 i=0;i<gn_memory_stat(1);i++)buf_printf(&result,"%s{\"lane\":%u,\"coefficientPoolHighWaterBytes\":%"PRIu64",\"arithmeticTempHighWaterBytes\":%"PRIu64",\"collectedLiveHighWaterBytes\":%"PRIu64"}",i?",":"",i,gn_exact_stat(i,21),gn_exact_stat(i,22),gn_exact_stat(i,23));
- buf_add(&result,"]");commit_json(&result);buf_add(&result,"}");
+ buf_add(&result,"]");gm_json(&result);tail_json(&result);
+ buf_printf(&result,",\"reduced\":%s,\"normalization\":\"%s\",\"normalizationSeconds\":%.6f,\"exportedTerms\":%"PRIu64,!rc&&export&&!raw_export?"true":"false",export?(raw_export?"primitive-integer":"monic-tail-reduced"):"not-exported",normalization_seconds,exported_terms);
+ commit_json(&result);buf_add(&result,"}");
  emit_json(stdout,result.s);if(human_output){printf("Job directory: %s\n",workdir);if(!rc&&export)printf("Basis file: %s/result.gb\n",dir);if(!rc&&hilbert)printf("Hilbert coefficients: %s/hilbert.json\n",dir);}if(write_atomic(dir,"native-result.json",result.s,result.n))fprintf(stderr,"Could not save result metadata: %s\n",strerror(errno));buf_free(&result);buf_free(&safe_payload);native_close();fixture_free(&fixture);free(dir);unlock_job();
  if(!rc)return 0;if(rc==GN_CANCELLED)return native_stop?128+native_stop:124;return rc==GN_MEMORY||rc==GN_SCRATCH?75:70;
 }

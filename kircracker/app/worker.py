@@ -15,15 +15,15 @@ def verify_task(task):
 
 def discover_task(task):
  t=time.monotonic();d=task['degree'];nr=task['rows'];nv=task['duals']
- if not 1<=nr<=10000 or not 1<=nv<=1000000:raise Incomplete('native per-block row/dual limit; preserve bounds and enlarge kernel with tests before increasing')
+ if not 1<=nr<=50000 or not 1<=nv<=2000000:raise Incomplete('native per-block row/dual limit; preserve bounds and split the component before increasing')
  for key in ['left','right']:
   if sha(Path(task[key]))!=task[key+'SHA256']:raise Invalid('candidate binding changed')
  lraw=Path(task['left']).read_bytes();rraw=Path(task['right']).read_bytes()
  if len(lraw)!=nr*16 or len(rraw)!=nv*16:raise Invalid('candidate word count')
  pair,_=libraries();ctx=pair.kp_create(6,task['prime'],0)
  if not ctx:raise Incomplete('cannot initialize pairing context')
- ri=(C.c_int*nr)();ci=(C.c_int*nr)();mat=(C.c_int*(nr*nr))();stats=(C.c_uint64*6)()
- try:rank=pair.kp_minor_trie_wide(ctx,buffer(lraw),nr,buffer(rraw),nv,d,ri,ci,mat,stats,float(task.get('seconds') or 1e12))
+ ri=(C.c_int*nr)();ci=(C.c_int*nr)();stats=(C.c_uint64*6)()
+ try:rank=pair.kp_minor_trie_wide(ctx,buffer(lraw),nr,buffer(rraw),nv,d,ri,ci,None,stats,float(task.get('seconds') or 1e12))
  finally:pair.kp_destroy(ctx)
  if rank<0:raise Incomplete(f'discovery stopped (code {rank}); no unchecked block is accepted')
  if Path(task['minor']).exists():
@@ -38,7 +38,7 @@ def discover_task(task):
  del lraw,rraw
  meta={'degree':d,'rank':rank,'prime':task['prime'],'grade':task['grade'],'transports':task['transports'],'origin':'fresh suffix discovery + independent integer prefix replay'}
  found=time.monotonic()-t
- result=verify_words(meta,a,b,expected=mat,threads=1);meta['determinant']=result['determinant'];del mat
+ result=verify_words(meta,a,b,expected=None,threads=1);meta['determinant']=result['determinant']
  us=unpacked(a,d);vs=unpacked(b,d);grades=check_minor(meta,us,vs);digest=write_minor(Path(task['minor']),meta,us,vs)
  return {'passed':True,'degree':d,'rank':rank,'candidateRows':nr,'candidateColumns':nv,'candidateDeficit':nr-rank,'fullCandidateRank':rank==nr,'lowerGrades':{str(k):v for k,v in grades.items()},'minorSHA256':digest,'discoverySeconds':found,'seconds':time.monotonic()-t,'nativeStats':list(stats),'taskBinding':task['binding'],'verifierFingerprint':task['fingerprint'],**result}
 

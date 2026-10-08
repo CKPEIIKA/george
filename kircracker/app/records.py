@@ -39,7 +39,7 @@ def orbit(g):
 
 def check_minor(meta,us,vs):
  d=meta.get('degree');p=meta.get('prime');r=meta.get('rank');g=tuple(meta.get('grade',()))
- if type(d)is not int or not 0<=d<=20 or p!=1000003 or type(r)is not int or not 1<=r<=32768:raise Invalid('minor metadata limits')
+ if type(d)is not int or not 0<=d<=22 or p!=1000003 or type(r)is not int or not 1<=r<=50000:raise Invalid('minor metadata limits')
  if len(us)!=r or len(vs)!=r or len(set(us))!=r or len(set(vs))!=r:raise Invalid('repeated or inconsistent minor words')
  if set(g)!=set(range(1,7)) or len(g)!=6:raise Invalid('permutation grade')
  star=set(EDGE[(i,6)] for i in range(1,6));dual={EDGE[e] for e in EDGES if e[1]<6}|{EDGE[(5,6)]}
@@ -75,7 +75,7 @@ def read_minor(path):
   if len(z.namelist())!=3 or set(z.namelist())!={'metadata.json','left.bin','right.bin'}:raise Invalid('minor members')
   if z.getinfo('metadata.json').file_size>65536:raise Invalid('oversized metadata')
   m=json.loads(z.read('metadata.json'));d=m.get('degree');r=m.get('rank')
-  if type(d)is not int or not 0<=d<=20 or type(r)is not int or not 1<=r<=32768:raise Invalid('minor degree/rank')
+  if type(d)is not int or not 0<=d<=22 or type(r)is not int or not 1<=r<=50000:raise Invalid('minor degree/rank')
   if z.getinfo('left.bin').file_size!=r*16 or z.getinfo('right.bin').file_size!=r*16:raise Invalid('minor word count')
   us=unpacked(z.read('left.bin'),d);vs=unpacked(z.read('right.bin'),d)
  check_minor(m,us,vs);return m,us,vs

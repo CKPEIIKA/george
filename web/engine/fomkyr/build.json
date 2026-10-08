@@ -2,8 +2,8 @@
   "backend": "fomkyr",
   "name": "fomkyr",
   "upstreamName": "fomkyr",
-  "version": "0.7.2",
-  "appVersion": "0.7.2",
+  "version": "0.7.4",
+  "appVersion": "0.7.4",
   "license": "MIT",
   "compiler": {
     "language": "C",
@@ -14,7 +14,7 @@
     "pgo": true,
     "compilerVersion": "23.1.1",
     "profileKind": "frontend",
-    "profileSha256": "9d85e361853252d30fc7c5325822f45fcb82162c117845495eb69fa1c83a1a2e"
+    "profileSha256": "bc6b04b755b267a8c86b0b6a8ef7d596421c63624d70032faebbbe196d7acdaf"
   },
   "variants": [
     "wasm32-shared",
@@ -49,6 +49,8 @@
     "scratchBytes": 2147483648,
     "rowReserveBytes": 536870912,
     "bigRowMaxTerms": 0,
+    "reducerTailCacheBytes": 0,
+    "wordCacheEntries": 256,
     "batchPairs": 128,
     "radixHeap": true,
     "reserveInPlace": true,
@@ -57,7 +59,7 @@
     "smallerBudgets": "Automatic scratch uses 4/7 of the effective budget; rational overflow reserve uses 1/7. Saved workspace choices apply in manual mode."
   },
   "provenance": {
-    "archiveSha256": "0e553e53d54338cd997fc359a8529f6e3bed31e775869630b6a75550bd96d439",
+    "archiveSha256": "897a373d9fa441dcf465271f50bb4e2e3f2b761ae24de5e8614973207440c13e",
     "kernelChanged": true,
     "hostAdapted": true,
     "curatedSources": true,
@@ -74,7 +76,7 @@
     },
     "build-info.js": {
       "bytes": 605,
-      "sha256": "237462f2f952e25fbf2dd19de3c104248dd1c63885711a6989be35c9b72931bf"
+      "sha256": "727e1da8672545bebf04a8b5b9622cbf186a86b89d0f90eda169e3a527591a4a"
     },
     "candidate-verifier.js": {
       "bytes": 3942,
@@ -85,8 +87,8 @@
       "sha256": "526e19b4f53f89c32135917d036d3f7ed7740197300bae9345cd5669fe0c9ccc"
     },
     "controls.js": {
-      "bytes": 19680,
-      "sha256": "6a9119bef4986a0803848cdd62b75d92b1a25dc6db5e533e543dbbd193cbd617"
+      "bytes": 19900,
+      "sha256": "afc87191e0aae58a7fa8efd2d9dd17d247a3c3253f384392f5f26d87ed646176"
     },
     "demo-worker.js": {
       "bytes": 613,
@@ -97,8 +99,8 @@
       "sha256": "4805cdd611774acdff74583661be3723774eaeca60b926bccdbfcb8c012ba3aa"
     },
     "engine.js": {
-      "bytes": 55531,
-      "sha256": "343f3a0d196c1be512ca1592b9a7e335a9d2835293972cc2081d442e80d0ed00"
+      "bytes": 58154,
+      "sha256": "f09ea351f6da07d50704da5f7c7ffa679eeee386a0c7cfe40beadd58817e9b8a"
     },
     "fk-gate.js": {
       "bytes": 4005,
@@ -109,20 +111,20 @@
       "sha256": "41bf71ff70c5e98858ace8dc2a9168911bf38f591307e2254f7314eb30ac49dc"
     },
     "fomkyr32-single.wasm": {
-      "bytes": 318865,
-      "sha256": "99c01dd2d811087b45ba03c118df41d707e8ad68e7f8635e5bc2db47a748e074"
+      "bytes": 332609,
+      "sha256": "01ec0962fd276fa43dc128d496cacbc1bff86dbd923bc85379eadb605e68eb4e"
     },
     "fomkyr32.wasm": {
-      "bytes": 319015,
-      "sha256": "48abc0431a68115cdc717680e283ddf591e7d6e7043353d48a50c855a05c1c90"
+      "bytes": 332972,
+      "sha256": "0ac950babdcc7e2c916f105f784fa74dd740c0a00336d4c7f935d065bb97e26d"
     },
     "fomkyr64-single.wasm": {
-      "bytes": 327785,
-      "sha256": "661739e264c4844aeb64e6a3e939f1016c2212908d99da6a13db288b34d0d366"
+      "bytes": 348459,
+      "sha256": "26f83a8382fc82d30c6a026d970013dcbed8ebaa720fe8331e29a047d1deb54b"
     },
     "fomkyr64.wasm": {
-      "bytes": 327694,
-      "sha256": "55613c2fdbc0af5177a96557a4c6e3ba8871f24c1bf6eebc4538fee4c4c10165"
+      "bytes": 347951,
+      "sha256": "b684bf6364e7c2c14300a89f5343e4f88014f3ea7945a8a423248ef8558efa5d"
     },
     "form-options.js": {
       "bytes": 1409,
@@ -197,16 +199,16 @@
       "sha256": "0bcdc961b8eab820736846ed99bb722573e41f58514af9d278e18efda38a2ec8"
     },
     "runtime.js": {
-      "bytes": 11243,
-      "sha256": "f05826178e9bdc034a298fc346e8d8d8340f9a0e9f1571c3dbf800e451653286"
+      "bytes": 11460,
+      "sha256": "9ba4dec1cbd082115d68ab39538b0f1bf2258bbfff53ceedfdeeb57ce974dc7d"
     },
     "sha256-stream.js": {
       "bytes": 3101,
       "sha256": "8f07f861cf676f5f722c586846af9c840b0929b0cbba723ec75dcbedc07a02db"
     },
     "storage.js": {
-      "bytes": 6260,
-      "sha256": "c5d7386db23f2e253720ecdd26aa65dd5a9881ca7644766d8e1d3b81abc2b5f0"
+      "bytes": 6565,
+      "sha256": "1cdc3f3481986a204869c12134916d4f8aa64b6d73597d92eefcf3735f2178e7"
     },
     "verification-bundle.js": {
       "bytes": 4967,

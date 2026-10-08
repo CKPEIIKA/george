@@ -75,6 +75,9 @@ static void emit_json(FILE *out, const char *payload) {
     free(tier);int end=j.t[entry].end;i++;while(i<j.n&&j.t[i].start<end)i++;
    }
   }
+ }else if(event&&!strcmp(event,"pair-plan-reordered")){
+  u64 order=0,retained=0,remaining=0;human_number(&j,0,"order",&order);human_number(&j,0,"retainedCommittedPairs",&retained);human_number(&j,0,"remainingCandidates",&remaining);
+  fprintf(out,"Reordered unfinished pairs: order %" PRIu64 "; retained committed pairs %" PRIu64 "; remaining candidates %" PRIu64 ".\n",order,retained,remaining);
  }else if(event&&!strcmp(event,"pair-plan-adopted")){
   u64 kept=0,candidates=0;human_number(&j,0,"retainedCommittedPairs",&kept);human_number(&j,0,"plannedCandidates",&candidates);
   fprintf(out,"Whole-degree pair plan adopted: %" PRIu64 " committed pairs retained; %" PRIu64 " remaining candidates.\n",kept,candidates);

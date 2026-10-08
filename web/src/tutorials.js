@@ -36,7 +36,7 @@ export const TUTORIALS = [
     description: { en: '15 generators and 100 quadratic relations in the original order. Starts through degree 11 with the optional FK6 dimension profile, large-row memory settings and automatic workers. Increase the degree for longer runs; imported dimensions remain explicit assumptions.', ru: '15 образующих и 100 квадратичных соотношений в исходном порядке. Начальная степень — 11; включены профиль размерностей FK6, память для больших строк и автоматический выбор потоков. Для длительных вычислений увеличьте степень. Импортированные размерности остаются явным допущением.' },
     form: { ...TUTORIAL_PRESENTATIONS.fk6, backend: 'fomkyr', memoryMiB: 14304, timeoutMinutes: 0,
       nativeWorkers: 0, monomialPruning: true,
-      fomkyrOptions: { ...FOMKYR_DEFAULTS, pairOrder:'overlap', planMinDegree:12, pairPlanMiB:64, autoWorkerMiB:1024, cachePercent:2, sharedCacheMiB:2048, gateMiB:1024, hilbertGate:true, hilbertSectors:true } } },
+      fomkyrOptions: { ...FOMKYR_DEFAULTS, pairOrder:'word', planMinDegree:12, pairPlanMiB:64, autoWorkerMiB:1024, cachePercent:2, sharedCacheMiB:2048, gateMiB:1024, dimensionEvidence:'fk6-20', hilbertGate:true, hilbertSectors:true } } },
   { id: 'oscillator',
     title: { en: 'Bosonic creation and annihilation operators', ru: 'Бозонные операторы рождения и уничтожения' },
     description: { en: 'Two independent oscillator modes with central t and [a_i, b_j] = δ_ij t². Setting t = 1 gives the canonical commutators. Explore normal ordering through degree 6.', ru: 'Две независимые моды осциллятора: t центрально, [a_i, b_j] = δ_ij t². При t = 1 получаются канонические коммутаторы. Исследуйте нормальное упорядочение до степени 6.' },

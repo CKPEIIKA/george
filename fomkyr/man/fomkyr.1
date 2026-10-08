@@ -1,4 +1,4 @@
-.TH FOMKYR 1 "October 2026" "fomkyr 0.7.2"
+.TH FOMKYR 1 "October 2026" "fomkyr 0.7.4-gm1"
 .SH NAME
 fomkyr \- fast pure C engine for exact homogeneous noncommutative Groebner bases
 .SH SYNOPSIS
@@ -18,6 +18,15 @@ optional WebAssembly backend uses the same direct-exact kernel. Expanded homogen
 fixtures are supported. The field is Q unless a prime characteristic is given.
 The last declared generator is greatest in degree-left-lex order.
 .SH OPTIONS
+.TP
+.BI \-\-gm " off|multiply|leading-word|backward|all"
+Exact noncommutative Gebauer-Moeller filtering. Default off. The existing
+interior criterion already covers these cases on the audited FK6 frontier.
+.TP
+.B \-\-no-chain
+Disable interior filtering for controlled comparisons. Keep it enabled for
+ordinary computations.
+
 .TP
 .BI \-\-memory " auto|SIZE"
 One allocation ceiling. K, M, G and T are binary units. Native execution has no
@@ -111,6 +120,12 @@ for cases outside that contract.
 .BI \-\-plan-min-degree " N"
 First degree using the requested global plan; default 12.
 .TP
+.B \-\-replan-remaining
+On explicit resume, change the active plan to the requested nonlegacy pair order.
+Only pending and never-dispensed pairs are reordered. Committed basis records,
+completed pairs and exact skips are retained. Migrated checkpoints use frontier
+version 4 and require a reader implementing remaining-pair replanning.
+.TP
 .BI \-\-pair-plan-memory " SIZE"
 Shared candidate-plan allowance; default 64 MiB, bounded by the total kernel
 budget. New plans may decline if they do not fit. Restoring a planned frontier
@@ -172,6 +187,19 @@ the shared immutable cache already holds the frequently used reducers.
 Pinned immutable reducer records, in binary K/M/G/T units. Default auto uses
 one sixteenth of the memory allowance; 0 disables pinning. This allocation
 remains inside the total budget.
+.TP
+.B --reducer-tail-cache SIZE
+Optional exact canonical reducer cache, disabled by default (off or 0).
+At least 16M when enabled; half stores derived records and half prepares them.
+The allocation remains within the memory allowance. Only completed-degree
+reducers are eligible. Short preparation slices decline expensive rows safely.
+Original records and checkpoints are unchanged; paused reductions retain their
+original cache generation. Available with up to 31 workers. See
+docs/REDUCER_TAIL_CACHE.md for telemetry and limitations.
+.TP
+.B --word-cache-entries N
+Per-lane exact divisor lookup cache entries, a power of two from 256 to 1048576.
+Default 256. This is separate from disk-record and canonical reducer caches.
 .TP
 .B --lookahead N
 Initial pending pair window, 1 to 512; default 128.

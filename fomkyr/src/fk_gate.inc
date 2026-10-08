@@ -11,6 +11,7 @@ static int fg_quiet(void){
  return 1;
 }
 #include "../fk_gate/adapters/sector_counter.inc"
+static int fg_plan_replan(void);
 /* In-place completion of a new current-degree leader removes exactly ONE
  * normal word. Verify the premises, including product homogeneity, before write. */
 static int fg_append_check(Poly p,int restoring){
@@ -25,9 +26,11 @@ static int fg_append_check(Poly p,int restoring){
 }
 static int fg_append_done(Poly p,int restoring){
  if(restoring||!S.fgate.presentation_ok||S.fgate.status<FKG_ACTIVE||S.fgate.status>FKG_READY)return 0;
- if(S.fg_sector_ready){u32 g=fg_word_group(pw(p,0),p.degree);S.fg_sector_upper[g]--;}
- int rc=fkg_observe(&S.fgate,S.current,S.completed,S.nrules,1,1);
- return rc<0?GN_REJECTED:0;
+ u32 closed_now=0;
+ if(S.fg_sector_ready){u32 g=fg_word_group(pw(p,0),p.degree),lower=fkg_class_per_grade[S.current][fkg_group_class[S.current&1][g]];S.fg_sector_upper[g]--;closed_now=S.fg_sector_upper[g]==lower;}
+ int rc=fkg_observe(&S.fgate,S.current,S.completed,S.nrules,1,1);if(rc<0)return GN_REJECTED;
+ if(closed_now&&P.mode==4&&!GN_LOAD(&S.batch_running)){int pr=fg_plan_replan();if(pr)return pr;}
+ return 0;
 }
 static int fg_upper(u64 budget,FkgCount*out){
  int rc=gn_hilbert_upper(S.current,budget);if(rc){gn_hilbert_release();return rc;}
@@ -57,6 +60,7 @@ API int gn_fg_begin(u64 budget){
    S.fg_sector_ready=1;
   }
  }
+ if(S.fg_sector_ready){int pr=fg_plan_replan();if(pr)return -pr;}
  return st;
 }
 API int gn_fg_poll(void){
@@ -105,6 +109,56 @@ static u32 fg_pair_group(u32 f,u32 r,u32 k){
  for(u32 j=0;j<a->degree;j++,pos++)g=fkg_group_step[pos&1][g][letter(a->lm,a->degree,j)];
  for(u32 j=k;j<b->degree;j++,pos++)g=fkg_group_step[pos&1][g][letter(b->lm,b->degree,j)];
  return g;
+}
+
+/* Re-rank only the UNSEEN suffix of a gateword plan after the imported sector
+ * counter has been rebuilt for this exact basis prefix. Already-dispensed task
+ * descriptors retain their durable meaning. Ranking is scheduling only: no pair
+ * is discarded here and no lower bound is invented.
+ */
+static int fg_plan_replan(void){
+ if(!P.active||P.mode!=4||!S.fg_sector_ready||S.fgate.degree!=S.current||P.cursor>=P.count)return 0;
+ PlanPair*t=PTR(PlanPair,P.base);for(u32 g=0;g<360;g++){P.gate_pending[g]=0;P.gate_gap[g]=0;P.gate_qmass[g]=0;P.gate_cost[g]=0;P.gate_rank[g]=359;}
+ for(u32 i=P.cursor;i<P.count;i++){
+  if(!(i&4095)&&cancelled())return GN_CANCELLED;
+  u32 g=fg_pair_group(t[i].f,t[i].g,t[i].k);t[i].group=g;P.gate_pending[g]++;
+  u64 c=(u64)rule(t[i].f)->n+rule(t[i].g)->n;if(UINT64_MAX-P.gate_cost[g]<c)P.gate_cost[g]=UINT64_MAX;else P.gate_cost[g]+=c;
+ }
+ u32 target=UINT32_MAX;u64 best_gap=UINT64_MAX,best_avg=UINT64_MAX,best_pending=0,best_q=0;
+ for(u32 g=0;g<360;g++){
+  u64 lower=fkg_class_per_grade[S.current][fkg_group_class[S.current&1][g]],upper=S.fg_sector_upper[g];
+  P.gate_gap[g]=upper>=lower?upper-lower:UINT64_MAX;
+  if(P.q14_hint&&S.current>=14){u32 qd=S.current-14;if(qd<=FKG_PROFILE_DEGREE)P.gate_qmass[g]=fkg_class_per_grade[qd][fkg_group_class[qd&1][g]];}
+  /* gateword is a FINISHER, not a sector sprint. Pulling work from a sector
+   * with a large remaining deficit destroyed global word-order productivity in
+   * bounded FK6 tests. Only sectors within two missing leaders of their exact
+   * imported target are eligible for promotion. */
+  if(!P.gate_pending[g]||!P.gate_gap[g]||P.gate_gap[g]==UINT64_MAX||P.gate_gap[g]>2)continue;
+  u64 avg=P.gate_cost[g]/P.gate_pending[g];if(!avg)avg=1;u64 q=P.q14_hint?P.gate_qmass[g]:0;
+  /* Integer-only lexicographic leverage score; deliberately avoids scaled
+   * products so the freestanding wasm build needs no compiler-rt i128 helper. */
+  if(target==UINT32_MAX||P.gate_gap[g]<best_gap||
+     (P.gate_gap[g]==best_gap&&q>best_q)||
+     (P.gate_gap[g]==best_gap&&q==best_q&&avg<best_avg)||
+     (P.gate_gap[g]==best_gap&&q==best_q&&avg==best_avg&&P.gate_pending[g]>best_pending)){
+    target=g;best_gap=P.gate_gap[g];best_q=q;best_avg=avg;best_pending=P.gate_pending[g];
+  }
+ }
+ /* Restore the globally productive word order.  Promotion is LOCAL: at most one
+  * candidate from the near-closed target sector is moved to the front of each
+  * 128-candidate block.  No ambiguity can jump an entire degree plan.  This
+  * preserves word-order cost locality while giving the exact sector gate a
+  * chance to finish a sector and retire its remaining candidates. */
+ int rc=plan_sort(t+P.cursor,P.count-P.cursor,3);if(rc<0)return -rc;
+ P.gate_target=target;P.gate_stride=128;P.gate_injected=0;
+ if(target!=UINT32_MAX){
+  for(u32 block=P.cursor;block<P.count;block+=P.gate_stride){
+   u32 end=MIN(P.count,block+P.gate_stride),pick=UINT32_MAX;
+   for(u32 i=block;i<end;i++)if(t[i].group==target){pick=i;break;}
+   if(pick!=UINT32_MAX&&pick!=block){PlanPair x=t[block];t[block]=t[pick];t[pick]=x;P.gate_injected++;}
+  }
+ }
+ P.gate_ready=1;P.gate_replans++;return 0;
 }
 static int fg_sector_ids(u32 f,u32 r,u32 k){
  if(!S.fg_sector_ready||S.fgate.degree!=S.current||S.certifying||S.fgate.status<FKG_ACTIVE||S.fgate.status>FKG_READY)return 0;

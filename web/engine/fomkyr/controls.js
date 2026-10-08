@@ -4,7 +4,7 @@ import {requestPersistentStorage,listCachedRuns,deleteCachedRun} from './storage
 import {browserCapabilities} from './capabilities.js';
 import {requestIsolation} from './isolation.js';
 const KEY='fomkyr-options-v3'; // keep existing user tuning on upgrade
-const defaults={commitReduction:'full',pairOrder:'legacy',planMinDegree:12,pairPlanMiB:64,hilbertGate:false,hilbertSectors:true,gateMiB:128,scheduler:'cooperative',helperRows:true,largeRowWorkspaces:0,quantumMs:250,lookahead:128,maxLookahead:512,elasticWindow:true,sectorPriority:true,radixMaxCache:true,hilbertClosureMode:'off',hilbertEvidenceText:'',hilbertClosureBatching:true,arithmeticMode:'exact',memoryPolicy:'auto',modularMinPrimes:2,modularMaxPrimes:8,workers:0,execution:'auto',bits:'auto',spill:true,hilbert:true,resume:'auto',ioMode:'auto',monomialPruning:true,heapReduction:true,rationalHeap:true,bigRationalHeap:true,bigRowMaxTerms:0,fastBigDivision:true,growingRationalHeap:true,radixHeap:true,reserveInPlace:true,rowReserveMiB:null,compiledRewrites:true,rewriteDegree:4,rewriteSupport:8,rewriteMiB:8,sharedCacheMiB:null,cachePercent:12,heapThreshold:16,batchPairs:null,hashBits:18,scratchMiB:null,hilbertMiB:256,wordMatcher:true,chainCriterion:true,eagerPruning:true,quadraticRewrite:true,costScheduling:true,wordCacheEntries:256,progress:true,progressIntervalMs:1000,midDegreeCheckpoints:true,checkpointIntervalMs:30000,referenceProgress:true};
+const defaults={commitReduction:'full',pairOrder:'legacy',planMinDegree:12,pairPlanMiB:64,hilbertGate:false,hilbertSectors:true,gateMiB:128,scheduler:'cooperative',helperRows:true,largeRowWorkspaces:0,quantumMs:250,lookahead:128,maxLookahead:512,elasticWindow:true,sectorPriority:true,radixMaxCache:true,hilbertClosureMode:'off',hilbertEvidenceText:'',hilbertClosureBatching:true,arithmeticMode:'exact',memoryPolicy:'auto',modularMinPrimes:2,modularMaxPrimes:8,workers:0,execution:'auto',bits:'auto',spill:true,hilbert:true,resume:'auto',ioMode:'auto',monomialPruning:true,heapReduction:true,rationalHeap:true,bigRationalHeap:true,bigRowMaxTerms:0,fastBigDivision:true,growingRationalHeap:true,radixHeap:true,reserveInPlace:true,rowReserveMiB:null,compiledRewrites:true,rewriteDegree:4,rewriteSupport:8,rewriteMiB:8,sharedCacheMiB:null,cachePercent:12,heapThreshold:16,batchPairs:null,hashBits:18,scratchMiB:null,hilbertMiB:256,wordMatcher:true,chainCriterion:true,eagerPruning:true,quadraticRewrite:true,costScheduling:true,reducerTailCacheMiB:0,wordCacheEntries:256,progress:true,progressIntervalMs:1000,midDegreeCheckpoints:true,checkpointIntervalMs:30000,referenceProgress:true};
 let state={...defaults};
 try{const saved=JSON.parse(globalThis.localStorage?.getItem(KEY)||'{}');for(const key of Object.keys(defaults))if(Object.hasOwn(saved,key))state[key]=saved[key];}catch{}
 // Public George controls retain only the measured direct mode. The explicit
@@ -21,6 +21,7 @@ export function readFomkyrOptions(){
   }
   delete out.gateMiB;out.gateBudgetBytes=Number(state.gateMiB)*1048576;
   delete out.scratchMiB;delete out.hilbertMiB;delete out.rewriteMiB;delete out.sharedCacheMiB;delete out.rowReserveMiB;
+  delete out.reducerTailCacheMiB;out.reducerTailCacheBytes=Number(state.reducerTailCacheMiB??0)*1048576;
   out.rewriteBudgetBytes=Number(state.rewriteMiB??8)*1048576;
   if(state.sharedCacheMiB!==null)out.sharedReducerCacheBytes=Number(state.sharedCacheMiB)*1048576;
   if(out.batchPairs===null)delete out.batchPairs;
@@ -96,6 +97,7 @@ export function installFomkyrControls(){
   check('eagerPruning','Discard proved square/commutation zeros before heap insertion',details);
   check('quadraticRewrite','Pre-rewrite known monic quadratic binomials',details);
   check('costScheduling','Dispatch larger input pairs first; exact re-reduction before every commit',details);
+  number('reducerTailCacheMiB','Canonical reducer cache, MiB (0 disables)',0,14304,details);
   number('wordCacheEntries','Exact word-cache entries per lane (power of two; 256 = small cache)',256,1048576,details);
   check('progress','Live overlap-count progress and conservative timing estimates',details);
   number('progressIntervalMs','Progress update interval, milliseconds',250,60000,details);

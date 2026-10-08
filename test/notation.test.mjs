@@ -139,11 +139,11 @@ test('fomkyr turns dimension evidence settings into an engine option', async () 
   assert.ok(B.validateSettings({ ...form, fomkyrOptions: { dimensionEvidence: 'assume', dimensionText: '' } }).length);
 });
 
-test('the FK6 example keeps its provided dimension profile, which excludes other evidence', async () => {
+test('the FK6 example selects its degree-20 continuation, which excludes unrelated evidence', async () => {
   const { tutorialForm } = await import('../web/src/tutorials.js');
   const fk6 = tutorialForm('fk6');
   assert.equal(fk6.fomkyrOptions.hilbertGate, true);
-  assert.equal(fk6.fomkyrOptions.dimensionEvidence, 'off');
-  assert.equal(B.buildJob(fk6).fomkyrOptions.hilbertDimensions, undefined);
+  assert.equal(fk6.fomkyrOptions.dimensionEvidence, 'fk6-20');
+  assert.deepEqual(B.buildJob(fk6).fomkyrOptions.hilbertDimensions.document.entries.map(entry => entry.degree), [18, 19, 20]);
   assert.throws(() => B.buildJob({ ...fk6, fomkyrOptions: { ...fk6.fomkyrOptions, dimensionEvidence: 'assume', dimensionText: '1, 15, 125' } }), /not both/);
 });

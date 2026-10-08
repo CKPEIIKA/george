@@ -11,7 +11,8 @@ typedef struct {
  GN_ATOMIC(u32) assigned[GN_MAX_WORKERS];
  GN_ATOMIC(u32) helper_assigned[GN_MAX_WORKERS];
  GN_ATOMIC(u64) helper_started,helper_finished,helper_deferred;
- u32 helpers_enabled;
+ u32 helpers_enabled,family_diversity;
+ u64 family_swaps;
  u64 epochs,committed,nonprefix_commits,replays,commit_steps; GN_ATOMIC(u64) started,finished;
  GN_ATOMIC(u64) slice_us[GN_MAX_WORKERS],max_slice_us[GN_MAX_WORKERS];
  GN_ATOMIC(u32) exhausted[GN_MAX_WORKERS];
@@ -29,7 +30,7 @@ static Cooperative C;
 API int gn_radix_cache(u32 enabled){if(enabled>1||S.current||S.input_expected)return GN_INPUT;S.radix_cache_enabled=enabled;return 0;}
 API int gn_cooperative(u32 quantum_ms,u32 lookahead){
  if(quantum_ms>10000||lookahead<1||lookahead>BATCH_MAX||S.current||S.input_expected||S.nrules||GN_LOAD(&S.batch_running))return GN_STATE;
- memset(&C,0,sizeof(C));C.policy=3;C.max_window=BATCH_MAX;C.helpers_enabled=1;S.coop_ms=quantum_ms;S.coop_lookahead=lookahead;
+ memset(&C,0,sizeof(C));C.policy=3;C.max_window=BATCH_MAX;C.helpers_enabled=1;C.family_diversity=1;S.coop_ms=quantum_ms;S.coop_lookahead=lookahead;
  int rc=layout_workers(S.workers,0);
  if(rc==GN_MEMORY&&quantum_ms){S.coop_ms=0;return layout_workers(S.workers,0);}
  return rc;
@@ -42,6 +43,10 @@ API int gn_coop_policy(u32 flags,u32 max_window){
 API int gn_coop_helper_mode(u32 enabled){
  if(enabled>1||S.current||S.input_expected||S.nrules||GN_LOAD(&S.batch_running))return GN_STATE;
  C.helpers_enabled=enabled;return 0;
+}
+API int gn_coop_family_mode(u32 enabled){
+ if(enabled>1||S.current||S.input_expected||S.nrules||GN_LOAD(&S.batch_running))return GN_STATE;
+ C.family_diversity=enabled;return 0;
 }
 static void coop_release_lane(Lane*l){
  if(l->reserve_retry){l->a[l->active^1]=l->reserve_saved;l->reserve_retry=0;reserve_release(l);}
@@ -90,6 +95,22 @@ static void coop_order(void){
    while(i<mid||j<end){int first=j==end||(i<mid&&coop_before(S.batch_order[i],S.batch_order[j]));S.batch_sort[k++]=first?S.batch_order[i++]:S.batch_order[j++];}}
   memcpy(S.batch_order,S.batch_sort,(size_t)S.batch_work_n*4);
  }
+ /* Do not launch every worker into one repeated left-rule family when another
+  * ready descriptor exists. This changes dispatch order only; persistent pair
+  * coverage and commit verification are untouched. */
+ if(C.family_diversity&&S.workers>1&&S.batch_work_n>1){
+  u32 front=MIN(S.workers,S.batch_work_n);
+  for(u32 pos=1;pos<front;pos++){
+   u32 cur=S.batch_order[pos],cf=S.tasks[cur].f,dup=0;
+   for(u32 q=0;q<pos;q++)dup|=S.tasks[S.batch_order[q]].f==cf;
+   if(!dup)continue;
+   for(u32 j=pos+1;j<S.batch_work_n;j++){
+    u32 cand=S.batch_order[j],f=S.tasks[cand].f,seen=0;
+    for(u32 q=0;q<pos;q++)seen|=S.tasks[S.batch_order[q]].f==f;
+    if(!seen){u32 tmp=S.batch_order[pos];S.batch_order[pos]=cand;S.batch_order[j]=tmp;C.family_swaps++;break;}
+   }
+  }
+ }
  GN_STORE(&S.batch_next,0);
  C.ready_peak=MAX(C.ready_peak,S.batch_work_n);
  if(C.sector_order&&S.batch_work_n)C.sector_orderings++;
@@ -97,6 +118,7 @@ static void coop_order(void){
 API int gn_coop_fill(u32 limit){
  if(!S.coop_ms||!S.batch_enabled||!S.current||GN_LOAD(&S.batch_running)||!limit||limit>BATCH_MAX)return -GN_STATE;
  if(cancelled())return -GN_CANCELLED;
+ int tc=tail_cache_prepare();if(tc)return -tc;
  reserve_pool_admit();
  /* An existing persisted legacy prefix may have first/committed offsets. This
   * reader starts with an uncommitted compact descriptor array after restore. */
@@ -279,7 +301,7 @@ API u64 gn_coop_stat(u32 key){
  case 18:return C.commit_task;case 19:return C.commit_yields;case 20:return C.commit_resumes;
  case 21:return C.prepared_slices;
  case 22:return GN_LOAD(&C.helper_started);case 23:return GN_LOAD(&C.helper_finished);case 24:return GN_LOAD(&C.helper_deferred);
- case 25:return S.helper_bytes;case 26:return C.helpers_enabled;
+ case 25:return S.helper_bytes;case 26:return C.helpers_enabled;case 27:return C.family_diversity;case 28:return C.family_swaps;
  default:break;}
  if(key>=100&&key<100+GN_MAX_WORKERS)return C.slice_us[key-100];
  if(key>=200&&key<200+GN_MAX_WORKERS)return C.max_slice_us[key-200];

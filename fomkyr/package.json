@@ -1,6 +1,6 @@
 {
   "name": "fomkyr",
-  "version": "0.7.2",
+  "version": "0.7.4",
   "description": "Fast pure C engine for exact homogeneous noncommutative Groebner bases",
   "private": true,
   "type": "module",
@@ -10,6 +10,7 @@
     "test:controls": "node tests/test_direct_controls.mjs && node tests/test_063_controls.mjs",
     "build:native": "make native",
     "test:pref4": "bash tools/verify_pref4.sh",
+    "benchmark:pref4": "python3 tests/benchmark_pref4.py",
     "test:word": "bash tools/verify_pref42.sh",
     "benchmark:word": "python3 tests/benchmark_word_priority.py"
   }

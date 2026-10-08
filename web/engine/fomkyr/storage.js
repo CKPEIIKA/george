@@ -2,7 +2,7 @@ import {sameFkGateProfile} from './fk-gate.js';
 // SPDX-License-Identifier: MIT
 // OPFS data are origin-local. Persistence is a request, never a backup guarantee.
 export const STORE='fomkyr';
-export const VERSION='0.7.2';
+export const VERSION='0.7.4';
 const encoder=new TextEncoder();
 export async function sha256(bytes){
   const hash=await crypto.subtle.digest('SHA-256',typeof bytes==='string'?encoder.encode(bytes):bytes);
@@ -28,7 +28,7 @@ export async function acquireRunLock(key){
 }
 export async function readCheckpoint(file){
   const blob=await file.getFile();
-  if(blob.size>1048576)throw new Error('Oversized checkpoint metadata');
+  if(blob.size>2*8388608+1048576){const e=new Error('Oversized checkpoint metadata; cache left unchanged');e.code='CHECKPOINT_METADATA_LIMIT';throw e;}
   const envelope=JSON.parse(await blob.text());
   if(envelope.schema!==2||!envelope.payload||await sha256(JSON.stringify(envelope.payload))!==envelope.sha256)throw new Error('Checkpoint metadata checksum mismatch');
   return envelope.payload;
@@ -50,11 +50,11 @@ export async function checkpointCandidates(directory,identity,diskBytes,evidence
       if(!Number.isInteger(cp.completedThroughDegree)||cp.completedThroughDegree<0||cp.completedThroughDegree>0xfffffffe)continue;
       if(!Number.isSafeInteger(cp.basisSize)||cp.basisSize<0||!Number.isSafeInteger(cp.diskBytes)||cp.diskBytes<cp.basisSize*56||cp.diskBytes>diskBytes)continue;
       if(cp.partial){
-        if(cp.currentDegree!==cp.completedThroughDegree+1||typeof cp.frontier!=='string'||!/^[0-9a-f]+$/.test(cp.frontier)||cp.frontier.length>40000||cp.frontier.length%2)continue;
+        if(cp.currentDegree!==cp.completedThroughDegree+1||typeof cp.frontier!=='string'||!/^[0-9a-f]+$/.test(cp.frontier)||cp.frontier.length>2*8388608||cp.frontier.length%2){const e=new Error('Unsupported matching partial checkpoint; cache left unchanged');e.code='CHECKPOINT_PARTIAL_INVALID';throw e;}
         if(!Number.isInteger(cp.hashBits)||cp.hashBits<8||cp.hashBits>26)continue;
       }
       result.push(cp);
-    }catch{}
+    }catch(error){if(['CHECKPOINT_METADATA_LIMIT','CHECKPOINT_PARTIAL_INVALID'].includes(error.code))throw error;}
   }
   if(fkMismatch){const e=new Error('Checkpoint depends on the SAME imported FK Gate profile: explicitly enable hilbertGate. Cache left unchanged.');e.code='FK_GATE_PROFILE_REQUIRED';throw e;}
   if(evidenceMismatch){const e=new Error('Checkpoint depends on Hilbert evidence: explicitly supply the SAME policy/mode; cache left unchanged.');e.code='HILBERT_EVIDENCE_REQUIRED';throw e;}
