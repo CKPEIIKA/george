@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>George 0.7.4</title>
+<meta name="description" content="George computes Gröbner bases, Hilbert series, Anick resolutions and Betti numbers for noncommutative and commutative algebras, using bergman and fomkyr in your browser.">
+<meta name="theme-color" content="#eef2f3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#111a27" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Cpath d=%22M16 3 29 16 16 29 3 16Z%22 fill=%22%23ffe45c%22 stroke=%22%231b2a4a%22 stroke-width=%222.5%22/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+<script type="module" src="src/start.js"></script>
+</head>
+<body>
+<a class="skip" href="#main" data-i18n="skip">Skip to content</a>
+
+<header class="top">
+  <div class="brand">
+    <a class="brand-home" href="#compute" aria-label="George">
+    <svg class="logo" id="logo" viewBox="0 0 28 28" aria-hidden="true"><path class="logo-face" d="M14 3 25 14 14 25 3 14Z"/><path class="logo-edge" d="M14 3 25 14 14 25 3 14Z"/><circle cx="14" cy="3.6" r="2"/><circle cx="24.4" cy="14" r="2"/><circle cx="14" cy="24.4" r="2"/><circle cx="3.6" cy="14" r="2"/>
+      <!-- While computing: the diamond lemma. An ambiguity at the top is reduced
+           along both sides; the two reductions meet at a common bottom. -->
+      <g class="logo-run">
+        <circle class="logo-ripple" cx="14" cy="3.6" r="2"><animate attributeName="r" values="2;5;5" keyTimes="0;0.16;1" dur="2.4s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;0;0" keyTimes="0;0.16;1" dur="2.4s" repeatCount="indefinite"/></circle>
+        <path class="logo-trace" d="M14 3.6 3.6 14 14 24.4" pathLength="1"><animate attributeName="stroke-dashoffset" values="1;1;0;0;1" keyTimes="0;0.1;0.6;0.95;1" dur="2.4s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;1;1;0;0" keyTimes="0;0.1;0.75;0.95;1" dur="2.4s" repeatCount="indefinite"/></path>
+        <path class="logo-trace" d="M14 3.6 24.4 14 14 24.4" pathLength="1"><animate attributeName="stroke-dashoffset" values="1;1;0;0;1" keyTimes="0;0.1;0.6;0.95;1" dur="2.4s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;1;1;0;0" keyTimes="0;0.1;0.75;0.95;1" dur="2.4s" repeatCount="indefinite"/></path>
+        <circle class="logo-walker" r="1.7"><animateMotion path="M14 3.6 3.6 14 14 24.4" keyPoints="0;0;1;1" keyTimes="0;0.1;0.6;1" calcMode="linear" dur="2.4s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.1;0.6;0.66;1" dur="2.4s" repeatCount="indefinite"/></circle>
+        <circle class="logo-walker" r="1.7"><animateMotion path="M14 3.6 24.4 14 14 24.4" keyPoints="0;0;1;1" keyTimes="0;0.1;0.6;1" calcMode="linear" dur="2.4s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.1;0.6;0.66;1" dur="2.4s" repeatCount="indefinite"/></circle>
+        <circle class="logo-ripple" cx="14" cy="24.4" r="2" opacity="0"><animate attributeName="r" values="2;2;6.5;6.5" keyTimes="0;0.6;0.9;1" dur="2.4s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0;1;0;0" keyTimes="0;0.59;0.6;0.9;1" dur="2.4s" repeatCount="indefinite"/></circle>
+      </g>
+    </svg>
+    <span class="brand-name">George <small class="brand-version">0.7.4</small></span>
+    </a>
+    <span class="brand-sub"><span data-i18n="brand.subPrefix">an interface to bergman and </span><a href="#guide-fomkyr" data-i18n="brand.more">more…</a></span>
+  </div>
+  <nav class="views" aria-label="Views" data-i18n-attr="aria-label:nav.views">
+    <a href="#compute" data-view="compute" data-i18n="nav.compute">Compute</a>
+    <a href="#console" data-view="console" data-i18n="nav.console">Console</a>
+    <a href="#guide" data-view="guide" data-i18n="nav.guide">User guide</a>
+    <a href="#about" data-view="about" data-i18n="nav.about">About</a>
+  </nav>
+  <div class="preferences">
+    <div class="lang-switch" role="group" aria-label="Language" data-i18n-attr="aria-label:lang.label">
+      <button type="button" data-lang="en" lang="en" title="English" aria-pressed="true">EN</button>
+      <button type="button" data-lang="ru" lang="ru" title="Русский" aria-pressed="false">RU</button>
+    </div>
+    <button type="button" class="icon-button theme-button" id="theme" data-pref="auto" aria-label="Theme: Automatic" title="Theme: Automatic">
+      <svg class="icon icon-auto" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.25" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 3.75a8.25 8.25 0 0 1 0 16.5Z" fill="currentColor"/></svg>
+      <svg class="icon icon-light" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2.6M12 18.9v2.6M2.5 12h2.6M18.9 12h2.6M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <svg class="icon icon-dark" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 14.6A8 8 0 0 1 9.4 4.5a8 8 0 1 0 10.1 10.1Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<p class="engine-note" id="engineNote" role="status" data-i18n="engine.loading">
+  Loading computation engine… Computations run locally in your browser.
+</p>
+
+<main id="main">
+
+<!-- ============================================================ compute -->
+<section class="view view-compute" id="view-compute" aria-labelledby="computeTitle">
+  <h1 class="visually-hidden" id="computeTitle" data-i18n="nav.compute">Compute</h1>
+
+  <div class="pane-switch" role="tablist" aria-label="Show" data-i18n-attr="aria-label:pane.show">
+    <button role="tab" id="switchInput" aria-controls="presentation" aria-selected="true" data-i18n="pane.input">Presentation</button>
+    <button role="tab" id="switchOutput" aria-controls="results" aria-selected="false"><span data-i18n="pane.output">Results</span> <span class="dot" id="resultsDot" hidden></span></button>
+  </div>
+
+  <form class="sheet presentation" id="presentation" novalidate autocomplete="off" spellcheck="false">
+
+    <div class="field-row start-row">
+      <div class="field grow">
+        <span class="label-row"><label class="label" for="preset" data-i18n="start.label">Start from</label><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="presetHelp" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="presetHelp"><span id="presetDescription" data-i18n="start.hint">Choose a guided example to explore fields, weights, orders and resolutions.</span> <a href="#guide-examples" data-i18n="nav.guide">User guide</a></span></span></span>
+        <select id="preset" aria-describedby="presetDescription"></select>
+      </div>
+      <label class="field n-field" id="presetNField" hidden>
+        <span class="label"><var>n</var></span>
+        <input type="number" id="presetN" min="2" max="7" value="3" inputmode="numeric">
+      </label>
+    </div>
+
+    <div class="field task-field">
+      <span class="label-row"><label class="label" for="taskSelect" data-i18n="legend.compute">Compute</label><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="taskDescription" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="taskDescription"></span></span></span>
+      <select id="taskSelect" aria-describedby="taskDescription"></select>
+      <p class="tasks-unavailable" id="tasksUnavailable" hidden><span id="tasksUnavailableText"></span><button type="button" class="link-button" id="useBergman" data-i18n="tasks.useBergman">Use Bergman</button></p>
+      <!-- The radio group stays the form's model; the select above drives it. -->
+      <div id="taskList" class="task-list" hidden></div>
+      <label for="backend" class="field engine-field">
+        <span class="label-row"><span class="label" data-i18n="backend.label">Computation engine</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="backendHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="backendHint" data-i18n="backend.hint">The engine selection is saved with your settings and share link.</span></span></span>
+        <select id="backend">
+          <optgroup label="bergman">
+            <option value="memory64" selected data-i18n="backend.memory64">C / ECL O3 + LTO (memory64)</option>
+            <option value="compiled" data-i18n="backend.compiled">C / ECL O3 + LTO</option>
+            <option value="optimized" data-i18n="backend.optimized">Lisp / ECL O3 + LTO</option>
+            <option value="standard" data-i18n="backend.standard">Lisp / ECL O2</option>
+          </optgroup>
+          <optgroup label="fomkyr">
+            <option value="fomkyr" data-i18n="backend.fomkyr">fomkyr / C O3 + LTO (experimental)</option>
+          </optgroup>
+        </select>
+      </label>
+    </div>
+
+    <fieldset class="block">
+      <legend data-i18n="legend.algebra">Algebra</legend>
+      <div class="seg" role="radiogroup" aria-label="Algebra" data-i18n-attr="aria-label:legend.algebra">
+        <label><input type="radio" name="ring" value="noncomm" checked><span data-i18n="ring.noncomm">Noncommutative</span></label>
+        <label><input type="radio" name="ring" value="comm"><span data-i18n="ring.comm">Commutative</span></label>
+      </div>
+    </fieldset>
+
+    <fieldset class="block">
+      <legend><span data-i18n="legend.generators">Generators</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="varsHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="varsHint" data-i18n="vars.hint">Separate names with commas. Names are case sensitive; their order sets the variable order.</span></span></legend>
+      <input type="text" id="vars" class="code" value="x, y" aria-describedby="varsHint varsErr">
+      <p class="error" id="varsErr" hidden></p>
+      <div class="module-fields" id="moduleFields" hidden>
+        <label class="field" id="nmodgenField">
+          <span class="label" data-i18n="module.n">Module generators (the last ones listed)</span>
+          <input type="number" id="nmodgen" min="1" value="1" inputmode="numeric">
+        </label>
+        <div class="field-row" id="twoModFields" hidden>
+          <label class="field"><span class="label" data-i18n="module.nl">Left module generators</span><input type="number" id="nlmodgen" min="1" value="1" inputmode="numeric"></label>
+          <label class="field"><span class="label" data-i18n="module.nr">Right module generators</span><input type="number" id="nrmodgen" min="1" value="1" inputmode="numeric"></label>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset class="block">
+      <legend><span data-i18n="legend.relations">Relations</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="relsHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="relsHint" data-i18n-html="rels.hint">One per line or separated by commas, with integer coefficients: <code>4*x*x-3*y*x</code>. Single-letter generators can be written together: <code>xyx-yxy</code>.</span></span></legend>
+      <textarea id="rels" class="code" rows="3" aria-describedby="relsHint"></textarea>
+      <details id="relPreviewPanel" class="relation-preview" open>
+        <summary><span data-i18n="rels.preview">Relations as read</span> <span class="preview-count" id="relPreviewCount"></span></summary>
+        <div class="preview" id="relPreview" aria-label="Relations as read" data-i18n-attr="aria-label:rels.preview"></div>
+      </details>
+    </fieldset>
+
+    <fieldset class="block">
+      <legend data-i18n="legend.coefficients">Coefficients</legend>
+      <div class="field-row">
+        <div class="seg" role="radiogroup" aria-label="Coefficient field" data-i18n-attr="aria-label:field.aria">
+          <label><input type="radio" name="field" value="0" checked><span>ℚ</span></label>
+          <label><input type="radio" name="field" value="2"><span>𝔽<sub>2</sub></span></label>
+          <label><input type="radio" name="field" value="p"><span>𝔽<sub><var>p</var></sub></span></label>
+        </div>
+        <label class="field p-field" id="pField" hidden>
+          <span class="label"><var>p</var> =</span>
+          <input type="number" id="modulus" min="3" value="5" inputmode="numeric">
+        </label>
+      </div>
+      <p class="error" id="pErr" hidden></p>
+    </fieldset>
+
+    <fieldset class="block">
+      <legend data-i18n="legend.order">Monomial order</legend>
+      <select id="order" aria-label="Monomial order" data-i18n-attr="aria-label:legend.order"></select>
+      <p class="var-order" id="varOrder" aria-live="polite"></p>
+      <label class="check"><input type="checkbox" id="reverseVars"><span data-i18n="reverse">Reverse the variable order</span></label>
+      <label class="field" id="matrixField" hidden>
+        <span class="label" data-i18n="matrix.label">Order matrix, one row per line</span>
+        <textarea id="matrix" class="code" rows="3">1 2 1
+0 -1 1
+3 -2 2</textarea>
+      </label>
+    </fieldset>
+
+    <fieldset class="block">
+      <legend data-i18n="legend.degrees">Degrees</legend>
+      <div class="field-row">
+        <label for="maxdeg" class="field">
+          <span class="label-row"><span class="label" data-i18n="maxdeg">Maximal degree</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="maxdegHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="maxdegHint" data-i18n="maxdeg.hint">Compute through this degree. A bounded result does not certify an unrestricted Gröbner basis. Blank requests completion without a chosen degree bound; timeout, memory limits and Stop still apply.</span></span></span>
+          <input type="number" id="maxdeg" min="1" placeholder="none" data-i18n-attr="placeholder:maxdeg.none" inputmode="numeric">
+        </label>
+        <label for="weights" class="field grow">
+          <span class="label-row"><span class="label" data-i18n="weights">Weights (one per generator)</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="weightsHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="weightsHint" data-i18n="weights.hint">Positive generator degrees in the displayed variable order. Blank means all 1. fomkyr also accepts an explicit list of ones; other weights require Bergman.</span></span></span>
+          <input type="text" id="weights" class="code" placeholder="all 1" data-i18n-attr="placeholder:weights.none">
+        </label>
+      </div>
+      <p class="warn" id="homogWarn" hidden></p>
+    </fieldset>
+
+    <details id="engineSettings" class="block engine-settings">
+      <summary data-i18n="engine.settings">Engine</summary>
+      <label for="nativeWorkers" class="field" id="nativeWorkersField" hidden>
+        <span class="label-row"><span class="label" data-i18n="native.workers">Worker count</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="nativeWorkersHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="nativeWorkersHint" data-i18n="native.workersHint">Blank or 0 uses the browser's reported CPU thread count minus one, within 1–32. Set 1–32 explicitly to use a chosen count. The scratch memory budget is shared between workers. Compare counts for your presentation; speed depends on the workload. Single-worker execution uses one.</span></span></span>
+        <input id="nativeWorkers" type="number" min="0" max="32" step="1" placeholder="Automatic" data-i18n-attr="placeholder:native.workersAuto" aria-describedby="nativeWorkersHint">
+
+      </label>
+      <fieldset id="fomkyrOptions" class="fomkyr-options" hidden><legend data-i18n="fomkyr.settings">fomkyr settings</legend></fieldset>
+      <label for="timeoutMinutes" class="field">
+        <span class="label-row"><span class="label" data-i18n="timeout.label">Time limit (minutes)</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="timeoutHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="timeoutHint" data-i18n="timeout.hint">0 means unlimited. Applies to computations and console commands. Stop is always available.</span></span></span>
+        <input id="timeoutMinutes" type="number" min="0" step="any" value="0" aria-describedby="timeoutHint">
+
+      </label>
+      <label for="memoryMiB" class="field">
+        <span class="label-row"><span class="label" data-i18n="memory.label">Memory limit</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="memoryHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="memoryHint" data-i18n="memory.hint">Memory grows as needed. Larger limits help large presentations; the browser also needs memory for files and results.</span></span></span>
+        <select id="memoryMiB" aria-describedby="memoryHint">
+          <option value="512">512 MiB</option>
+          <option value="1024">1 GiB</option>
+          <option value="2048">2 GiB</option>
+          <option value="3072">3 GiB</option>
+          <option value="3584">3.5 GiB</option>
+          <option value="3789">3.7 GiB</option>
+          <option value="3994">3.9 GiB</option>
+          <option value="4095">≈4 GiB (4095 MiB)</option>
+          <option value="6144" data-memory64 hidden disabled>6 GiB</option>
+          <option value="8192" data-memory64 hidden disabled>8 GiB</option>
+          <option value="12288" data-memory64 hidden disabled>12 GiB</option>
+          <option value="14304" data-i18n="memory.nativeMax">≈14 GiB (Fomkyr maximum)</option>
+          <option value="16077" data-memory64 selected>15.7 GiB</option>
+          <option value="16384" data-memory64 hidden disabled>16 GiB</option>
+          <option value="0" data-memory64 data-i18n="memory.uncapped" hidden disabled>No heap cap (browser limit)</option>
+        </select>
+
+      </label>
+      <label for="monomialPruning" class="field">
+        <span class="label-row"><span><input id="monomialPruning" type="checkbox" aria-describedby="pruningHint"> <span data-i18n="pruning.label">Monomial pruning</span></span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="pruningHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="pruningHint" data-i18n="pruning.hint">Release stored monomials after each completed degree. Available for unweighted homogeneous noncommutative Gröbner bases with the default degreewise strategy.</span></span></span>
+      </label>
+      <label for="strategy" class="field">
+        <span class="label-row"><span class="label" data-i18n="strategy.label">Strategy</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="strategyHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="strategyHint" data-i18n="strategy.hint">The default completes consecutive degrees. Rabbit changes Bergman’s processing strategy and can help some presentations; its parameters require care. Fomkyr uses its own degreewise algorithm.</span></span></span>
+        <select id="strategy">
+          <option value="default" data-i18n="strategy.default">Default (Buchberger, degree by degree)</option>
+          <option value="rabbit" data-i18n="strategy.rabbit">Rabbit: jump ahead in degree</option>
+        </select>
+      </label>
+      <label for="rabbit" class="field" id="rabbitField" hidden>
+        <span class="label-row"><span class="label" data-i18n="rabbit.label">Rabbit parameters</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="rabbitHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="rabbitHint" data-i18n="rabbit.hint">Three positive integers passed to Bergman’s SETRABBIT. See the Bergman manual for their meaning; use the default strategy if you are unsure.</span></span></span>
+        <input type="text" id="rabbit" class="code" value="2 2 8">
+      </label>
+      <label for="lowterms" class="field">
+        <span class="label-row"><span class="label" data-i18n="lowterms.label">Low terms handling</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="lowtermsHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="lowtermsHint" data-i18n="lowterms.hint">Quick uses Bergman’s usual reduction handling. Safe is needed for linear relations and some nonhomogeneous jobs. Itemwise processing selects it automatically.</span></span></span>
+        <select id="lowterms">
+          <option value="quick" data-i18n="lowterms.quick">Quick</option>
+          <option value="safe" data-i18n="lowterms.safe">Safe (needed for linear relations)</option>
+        </select>
+      </label>
+      <label for="outmode" class="field">
+        <span class="label-row"><span class="label" data-i18n="outmode.label">Output format</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="outmodeHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="outmodeHint" data-i18n="outmode.hint">Algebraic output matches the presentation syntax. Macaulay adds a file in Bergman’s Macaulay format. Fomkyr exports only algebraic text plus its checkpoint data.</span></span></span>
+        <select id="outmode">
+          <option value="ALG" data-i18n="outmode.alg">Algebraic, like the input</option>
+          <option value="MACAULAY">Macaulay</option>
+        </select>
+      </label>
+      <div class="check-row">
+        <label class="check">
+          <input type="checkbox" id="legacy" aria-describedby="legacyHint">
+          <span data-i18n="legacy.label">Legacy mode: behave exactly like bergman 1.001</span>
+        </label>
+        <span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="legacyHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="legacyHint" data-i18n="legacy.hint">Legacy mode keeps bergman 1.001’s original behaviour. By default George applies its documented fixes.</span></span>
+      </div>
+    </details>
+
+    <details class="block advanced">
+      <summary data-i18n="advanced">More settings</summary>
+      <div id="fomkyrMathOptions" hidden></div>
+      <label for="augmentation" class="field">
+        <span class="label-row"><span class="label" data-i18n="augmentation.label">Augmentation for the Anick resolution</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="augmentationHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="augmentationHint" data-i18n="augmentation.hint">Choose the map to the coefficient field used by the Anick resolution. For graded algebras generators map to 0; for monoids and groups they map to 1. Relations must respect this choice.</span></span></span>
+        <select id="augmentation">
+          <option value="graded" data-i18n="augmentation.graded">Generators map to 0</option>
+          <option value="monoid" data-i18n="augmentation.monoid">Generators map to 1 (monoids and groups)</option>
+        </select>
+      </label>
+      <label for="nonhomog" class="field">
+        <span class="label-row"><span class="label" data-i18n="nonhomog.label">Nonhomogeneous relations</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="nonhomogHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="nonhomogHint" data-i18n="nonhomog.hint">Automatic mode processes nonhomogeneous relations item by item. Degreewise mode is appropriate for homogeneous presentations. Fomkyr requires homogeneous relations.</span></span></span>
+        <select id="nonhomog">
+          <option value="auto" data-i18n="nonhomog.auto">Process item by item when needed</option>
+          <option value="itemwise" data-i18n="nonhomog.itemwise">Always process item by item</option>
+          <option value="degreewise" data-i18n="nonhomog.degreewise">Always process degree by degree</option>
+        </select>
+      </label>
+      <label for="maxserdeg" class="field" id="maxserdegField" hidden>
+        <span class="label-row"><span class="label" data-i18n="maxserdeg">Hilbert series up to degree</span><span class="help"><button type="button" class="help-btn" aria-expanded="false" aria-controls="maxserdegHint" aria-label="Help" data-i18n-attr="aria-label:help">?</button><span class="help-pop" id="maxserdegHint" data-i18n="maxserdeg.hint">Highest power requested in the commutative Hilbert series. This is separate from the Gröbner basis degree bound.</span></span></span>
+        <input type="number" id="maxserdeg" min="1" value="7" inputmode="numeric">
+      </label>
+    </details>
+
+    <div class="actions">
+      <button type="submit" class="primary" id="go">Compute Gröbner basis</button>
+      <button type="button" class="quiet" id="stop" hidden data-i18n="stop">Stop</button>
+      <button type="button" class="quiet small share-button" id="share" title="Copy a link to this presentation and all settings" data-i18n-attr="title:share.hint">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m10 13 4-4m-6 5-1 1a4 4 0 0 1-6-6l4-4a4 4 0 0 1 6 0m2 5 1-1a4 4 0 0 1 6 6l-4 4a4 4 0 0 1-6 0" transform="translate(1 1)" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span data-i18n="share.button">Share</span>
+      </button>
+    </div>
+    <div class="share-panel" id="sharePanel" hidden><input type="url" id="shareLink" class="code" readonly aria-label="Share link" data-i18n-attr="aria-label:share.link"></div>
+    <p class="hint share-status" id="shareStatus" role="status" aria-live="polite" hidden></p>
+  </form>
+
+  <section class="sheet results" id="results" aria-labelledby="resultsTitle">
+    <div class="results-head">
+      <div class="results-title">
+        <h2 id="resultsTitle" data-i18n="results">Results</h2>
+      </div>
+      <div class="run-info">
+        <span class="help run-chip-wrap" id="runChipWrap" hidden>
+          <button type="button" class="help-btn run-chip" id="runChip" aria-expanded="false" aria-controls="runChipHint" aria-describedby="runChipHint"></button>
+          <span class="help-pop" id="runChipHint"></span>
+        </span>
+        <p class="run-status" id="runStatus" aria-live="polite" data-i18n="status.idle">Nothing computed yet.</p>
+        <div class="run-metrics" id="runMetrics" hidden>
+          <span class="help run-metric" id="memoryUsage" hidden>
+            <button type="button" class="help-btn metric-button" id="memoryMetric" aria-expanded="false" aria-controls="memoryUsageHint" aria-describedby="memoryUsageHint" aria-label="Wasm memory" data-i18n-attr="aria-label:monitor.memory">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="6" width="14" height="12" rx="2"/><path d="M9 10v4m6-4v4M8 3v3m4-3v3m4-3v3M8 18v3m4-3v3m4-3v3M2 9h3m-3 6h3m14-6h3m-3 6h3"/></svg>
+              <span id="memoryValue"></span>
+            </button>
+            <span class="help-pop" id="memoryUsageHint">Wasm linear memory capacity, including reserved workspace. Physical RAM is committed as pages are touched. Browser objects and disk checkpoints are measured separately.</span>
+          </span>
+          <span class="help run-metric" id="degreeUsage">
+            <button type="button" class="help-btn metric-button" id="degreeMetric" aria-expanded="false" aria-controls="degreeUsageHint" aria-describedby="degreeUsageHint" aria-label="Degree" data-i18n-attr="aria-label:monitor.degree">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5m0 14h16M8 15h4v-4h4V7h4"/></svg>
+              <span id="degreeValue">—</span>
+            </button>
+            <span class="help-pop" id="degreeUsageHint"></span>
+          </span>
+          <span class="help run-metric" id="timeUsage">
+            <button type="button" class="help-btn metric-button" id="timeMetric" aria-expanded="false" aria-controls="timeUsageHint" aria-describedby="timeUsageHint" aria-label="Elapsed time" data-i18n-attr="aria-label:monitor.time">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+              <span id="timeValue"></span>
+            </button>
+            <span class="help-pop" id="timeUsageHint" data-i18n="monitor.timeHint">Elapsed time in seconds, including engine loading.</span>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Result views" data-i18n-attr="aria-label:tabs.aria" id="tabs">
+      <button role="tab" data-tab="basis" data-i18n="tab.basis" aria-selected="true">Gröbner basis</button>
+      <button role="tab" data-tab="series" data-i18n="tab.series" hidden>Series</button>
+      <button role="tab" data-tab="betti" data-i18n="tab.betti" hidden>Betti numbers</button>
+      <button role="tab" data-tab="resolution" data-i18n="tab.resolution" hidden>Resolution</button>
+      <button role="tab" data-tab="files" data-i18n="tab.files">Files</button>
+      <button role="tab" data-tab="log" data-i18n="tab.log">Session</button>
+    </div>
+
+    <div class="tabpanel" data-panel="basis" role="tabpanel">
+      <div class="empty" id="basisEmpty">
+        <p class="empty-start" data-i18n="empty.start">Enter generators and relations, or pick one of bergman’s test examples under “Start from”, then compute.</p>
+        <p class="empty-running" data-i18n="empty.running">The results appear here when the computation finishes.</p>
+      </div>
+      <div id="basisOut"></div>
+    </div>
+    <div class="tabpanel" data-panel="series" role="tabpanel" hidden><div id="seriesOut"></div></div>
+    <div class="tabpanel" data-panel="betti" role="tabpanel" hidden><div id="bettiOut"></div></div>
+    <div class="tabpanel" data-panel="resolution" role="tabpanel" hidden><div id="resolutionOut"></div></div>
+    <div class="tabpanel" data-panel="files" role="tabpanel" hidden>
+      <div class="files-actions">
+        <button type="button" class="quiet small zip-download" id="downloadResultsZip" hidden disabled
+          title="Download text results as ZIP" aria-label="Download text results as ZIP" data-i18n-attr="title:results.zip;aria-label:results.zip">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v7M14 3v5h4M12 12v8m-3-3 3 3 3-3M5 15v6h14v-6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span data-i18n="results.zip">Download text results as ZIP</span>
+        </button>
+        <p class="hint zip-status" id="resultsZipStatus" role="status" aria-live="polite" hidden></p>
+        <p class="hint zip-hint" data-i18n-html="results.zipHint">The ZIP holds the engine output and <code>result-normalized.txt</code>, the reduced monic basis.</p>
+      </div>
+      <div class="verification-out" id="verificationOut"></div>
+      <div id="filesOut"></div>
+    </div>
+    <div class="tabpanel" data-panel="log" role="tabpanel" hidden>
+      <p class="hint" id="logHint" data-i18n="log.hint">The bergman session for this computation: the input file, the commands, and the terminal output.</p>
+      <div id="logOut"></div>
+    </div>
+  </section>
+</section>
+
+<!-- ============================================================ console -->
+<section class="view view-console" id="view-console" aria-labelledby="consoleTitle" hidden>
+  <div class="sheet fk-dash" id="fomkyrDashboard" hidden>
+    <div class="console-head">
+      <h1 data-i18n="dash.title">fomkyr dashboard</h1>
+      <p class="hint" data-i18n="dash.hint">Live progress of the current fomkyr computation. The Lisp console belongs to the Bergman engines.</p>
+    </div>
+    <div id="fomkyrDashboardBody" aria-live="off"></div>
+  </div>
+  <div class="sheet console-sheet" id="lispConsole">
+    <div class="console-head">
+      <h1 id="consoleTitle" data-i18n="console.title">Console</h1>
+      <p class="hint" data-i18n-html="console.hint">Evaluate Lisp forms such as <code>(noncommify)</code> or <code>(setmaxdeg 5)</code>. Use the presentation form for algebraic input, or run a command with explicit input and output files.</p>
+    </div>
+    <div class="terminal" id="terminal" role="log" aria-live="polite" tabindex="0"></div>
+    <div class="chips" id="consoleChips" aria-label="Common commands" data-i18n-attr="aria-label:console.chips"></div>
+    <form class="prompt" id="promptForm">
+      <label for="promptInput" class="prompt-label" id="promptLabel">1 lisp&gt;</label>
+      <div class="editor">
+        <pre class="editor-hl" id="promptHl" aria-hidden="true"></pre>
+        <textarea id="promptInput" rows="1" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="send" aria-describedby="promptStatus" data-i18n-attr="placeholder:console.placeholder" placeholder="(help)   or   ?setmaxdeg"></textarea>
+      </div>
+      <button type="submit" class="primary small" data-i18n="console.run">Run</button>
+    </form>
+    <div class="prompt-status" id="promptStatus"><span class="sig" id="promptSig"></span><span class="bal" id="promptBal" aria-live="polite"></span></div>
+    <div class="console-actions">
+      <button type="button" class="quiet" id="pasteJob" data-i18n="console.current">Run the current computation</button>
+      <button type="button" class="quiet" id="stopConsole" hidden data-i18n="stop">Stop</button>
+      <button type="button" class="quiet" id="clearTerm" data-i18n="console.clear">Clear</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ guide -->
+<section class="view view-guide" id="view-guide" aria-labelledby="guideTitle" hidden>
+  <article class="sheet prose guide" id="guideContent" aria-live="off"></article>
+  <p class="hint" id="mathNotice" hidden></p>
+</section>
+
+<!-- ============================================================ about -->
+<section class="view view-about" id="view-about" aria-labelledby="aboutTitle" hidden>
+  <article class="sheet prose">
+    <h1 id="aboutTitle" data-i18n="about.title">About George</h1>
+    <p data-i18n-html="about.p1">George computes Gröbner bases of ideals in free associative and in commutative polynomial algebras, degree by degree, and from them Hilbert and Poincaré–Betti series, Anick resolutions and Betti numbers of algebras and modules, and Hochschild homology.</p>
+    <p data-i18n-html="about.p2">George is an interface to bergman, written by Jörgen Backelin with Svetlana Cojocaru, Alexander Podoplelov, Victor Ufnarovski and others, and named after George Bergman, whose diamond lemma underlies the method. George does not reimplement it: it runs bergman-1.001-fix, the original bergman 1.001 with documented fixes and a legacy mode, on ECL, a Common Lisp compiled to WebAssembly, inside your browser. Nothing is sent to a server.</p>
+    <h2 data-i18n="about.input">Input</h2>
+    <p data-i18n-html="about.inputP">Relations are sums of monomials with integer coefficients, as in bergman’s own <code>algforminput</code>: <code>5*x*y, x^2-y^2</code>. In the noncommutative case the order of the factors matters, so <code>x*y-y*x</code> is the commutator. The order of the generators decides the variable order.</p>
+    <h2 data-i18n="about.what">What can be computed</h2>
+    <dl class="features">
+      <dt data-i18n="about.gb">Gröbner bases</dt><dd data-i18n-html="about.gbD">Noncommutative and commutative, over ℚ and 𝔽<sub><var>p</var></sub>, with degree-lexicographic, reverse lexicographic, elimination and matrix orders, and weighted generators.</dd>
+      <dt data-i18n="about.series">Series</dt><dd data-i18n-html="about.seriesD">Hilbert series of commutative and noncommutative quotients, and the double Poincaré–Betti series.</dd>
+      <dt data-i18n="about.res">Resolutions</dt><dd data-i18n-html="about.resD">Anick resolutions, Betti numbers of the trivial module, of right and left modules, of pairs of modules and of factor-algebras, and Hochschild homology.</dd>
+      <dt data-i18n="about.console">Console</dt><dd data-i18n-html="about.consoleD">Lisp forms and file-based bergman commands in a persistent session.</dd>
+    </dl>
+    <h2 data-i18n="about.related">Related</h2>
+    <p data-i18n-html="about.relatedP"><a href="https://smimram.github.io/ocaml-alg/bergman/">Bergman 2</a> by Samuel Mimram is an independent OCaml implementation of noncommutative Gröbner bases and Anick resolutions in the browser. Its example families are available in George under “Start from”.</p>
+    <h2 data-i18n="about.license">License and source</h2>
+    <p data-i18n-html="about.licenseP">George is free software. Its own code may be used under the Bergman General Public License or under the GNU General Public License, version 2 or later. bergman is © 1992–2006 Jörgen Backelin, under the Bergman General Public License; George runs it with small, dated portability patches and a list of behaviour fixes that legacy mode switches off. The complete source of this site, including bergman, is at <a href="https://github.com/CKPEIIKA/george">github.com/CKPEIIKA/george</a>; the details are in its LICENSE.md.</p>
+    <p class="small" data-i18n="about.small">George contains no code from Bergman 2; its example families are standard presentations written from their definitions.</p>
+    <p class="small" data-i18n="about.mathjax">Mathematical notation is rendered locally with MathJax.</p>
+    <p class="small"><a href="licenses/NOTICE.txt" data-i18n="about.notices">Component notices</a> · <a href="sources/george-source.tar.gz" data-i18n="about.georgeSource">George source</a> · <a href="sources/ecl-source.tar.gz" data-i18n="about.eclSource">ECL, GMP and GC source</a></p>
+  </article>
+</section>
+
+</main>
+
+</body>
+</html>

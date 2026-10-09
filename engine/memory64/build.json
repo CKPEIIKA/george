@@ -1,0 +1,51 @@
+{
+  "bergman": "bergman-1.001-fix",
+  "upstreamBergman": "1.001",
+  "defaultBehavior": "fixed",
+  "legacyBehavior": "original",
+  "ecl": "59f60e09102961bf5872c672fdd9d200b2e83d6b",
+  "emscripten": "4.0.12",
+  "files": {
+    "ecl.js": {
+      "bytes": 113128,
+      "sha256": "20396f8ba77b29ef330513e55fcab5352678ba20c96119d4d7174089b3c1e667"
+    },
+    "ecl.wasm": {
+      "bytes": 6809943,
+      "sha256": "56a55b5829bb678eb65c35eee34eb6ecb91b714d0b057eba045367774e85960d"
+    },
+    "ecl.data": {
+      "bytes": 3024774,
+      "sha256": "dce742ded7cc24a6ace543505cad50b4699d7acdb9c51fef8dbae01905871ece"
+    }
+  },
+  "appVersion": "0.7.4",
+  "memory": {
+    "wasmMaximumBytes": 17179869184,
+    "defaultHeapMiB": 16077,
+    "maximumHeapMiB": 16384,
+    "uncappedHeap": true
+  },
+  "compiler": {
+    "libraryOptimization": "O3",
+    "linkOptimization": "O3",
+    "lto": true,
+    "aot": true,
+    "memory64": true,
+    "longjmp": "emscripten",
+    "pointerSpilling": true,
+    "profiling": false
+  },
+  "backend": "memory64",
+  "boundaryFixes": "2026-10-01: one-generator degree sums and weighted Hilbert series; equal-word and unequal-length elimination comparisons; both modes",
+  "binaryen": {
+    "revision": "fc6a7977cccea66c7d78f3d86eb0cdac9f37cbdb",
+    "memory64StackPatchSha256": "071c2e981cd50bcb59f5cb9baba2e22559b378be2a0eff961ea5fb5250409b83"
+  },
+  "compilation": {
+    "functions": 763,
+    "aliases": 163,
+    "sourceModules": 18,
+    "compilerFailure": false
+  }
+}

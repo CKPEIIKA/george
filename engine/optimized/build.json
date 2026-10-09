@@ -1,0 +1,39 @@
+{
+  "bergman": "bergman-1.001-fix",
+  "upstreamBergman": "1.001",
+  "defaultBehavior": "fixed",
+  "legacyBehavior": "original",
+  "ecl": "59f60e09102961bf5872c672fdd9d200b2e83d6b",
+  "emscripten": "4.0.12",
+  "files": {
+    "ecl.js": {
+      "bytes": 109173,
+      "sha256": "d4bda52e4d48ed9610f55ef882cdaf2a64639a3903f1fa27a77e4a2c72550916"
+    },
+    "ecl.wasm": {
+      "bytes": 5235093,
+      "sha256": "221a268e3aac9bf1a7167f1e613eb51f600437f8c65596c2b0dfbbff0677786c"
+    },
+    "ecl.data": {
+      "bytes": 3024774,
+      "sha256": "dce742ded7cc24a6ace543505cad50b4699d7acdb9c51fef8dbae01905871ece"
+    }
+  },
+  "appVersion": "0.7.4",
+  "memory": {
+    "wasmMaximumBytes": 4294967296,
+    "defaultHeapMiB": 2048,
+    "maximumHeapMiB": 4095
+  },
+  "compiler": {
+    "libraryOptimization": "O3",
+    "linkOptimization": "O3",
+    "lto": true,
+    "aot": false,
+    "longjmp": "emscripten",
+    "pointerSpilling": true,
+    "profiling": false
+  },
+  "backend": "optimized",
+  "boundaryFixes": "2026-10-01: one-generator degree sums and weighted Hilbert series; equal-word and unequal-length elimination comparisons; both modes"
+}

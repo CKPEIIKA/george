@@ -1,0 +1,386 @@
+// Public, persisted options for Fomkyr.
+import {automaticWorkers} from '../engine/fomkyr/worker-count.js';
+import {defaultMemoryMiB} from './backends.js';
+import {planMemory} from '../engine/fomkyr/memory-policy.js';
+import {formatMemorySize} from './memory-monitor.js';
+import {parseDimensionEvidence} from './dimension-evidence.js';
+import {DIMENSION_PROFILES, DIMENSION_PROFILE_MODES, dimensionProfileText} from './dimension-profiles.js';
+export const FOMKYR_DEFAULTS = Object.freeze({
+  pairOrder: 'legacy', planMinDegree: 12, pairPlanMiB: 64, commitReduction: 'full',
+  hilbertGate: false, hilbertSectors: true, gateMiB: 128,
+  dimensionEvidence: 'off', dimensionText: '',
+  scheduler: 'cooperative', quantumMs: 250, lookahead: 128, maxLookahead: 512, elasticWindow: true, sectorPriority: true, radixMaxCache: true, helperRows: true, largeRowWorkspaces: 0,
+  execution: 'auto', bits: 'auto', memoryPolicy: 'auto', autoWorkerMiB: 0, spill: true, resume: 'auto', hilbert: false,
+  heapReduction: true, cachePercent: 12, heapThreshold: 16, batchPairs: 128,
+  hashBits: 18, scratchMiB: null, hilbertMiB: 256, ioMode: 'auto',
+  wordMatcher: true, chainCriterion: true, eagerPruning: true,
+  quadraticRewrite: true, costScheduling: true, wordCacheEntries: 256, reducerTailCacheMiB: 0,
+  matcherMiB: null, progress: true, progressIntervalSeconds: 1,
+  rationalHeap: true, rationalRewrites: true, compiledRewrites: true, rewriteDegree: 4, rewriteSupport: 8,
+  bigRationalHeap: true, bigRowMaxTerms: 0, fastBigDivision: true, growingRationalHeap: true,
+  radixHeap: true, reserveInPlace: true, rowReserveMiB: null,
+  rewriteMiB: null, sharedCacheMiB: null,
+  gmCriteria: 'off', midDegreeCheckpoints: true, checkpointIntervalSeconds: 30, diskLimitMiB: null,
+});
+export const FOMKYR_FIELDS = Object.freeze([
+  ['pairOrder', 'select', ['legacy', 'overlap', 'sparse', 'word', 'gateword']],
+  ['gmCriteria', 'select', ['off', 'multiply', 'leading-word', 'backward', 'all']],
+  ['midDegreeCheckpoints', 'checkbox'], ['checkpointIntervalSeconds', 'number', 0, 3600], ['diskLimitMiB', 'number', 64, 16777216],
+  ['commitReduction', 'select', ['full', 'delta']],
+  ['planMinDegree', 'number', 1, 4294967294], ['pairPlanMiB', 'number', 0, 14304],
+  ['dimensionEvidence', 'select', ['off', ...DIMENSION_PROFILE_MODES, 'assume', 'certificate']], ['dimensionText', 'textarea'],
+  ['hilbertGate', 'checkbox'], ['hilbertSectors', 'checkbox'], ['gateMiB', 'number', 0, 14304],
+  ['scheduler', 'select', ['cooperative', 'barrier']],
+  ['quantumMs', 'number', 1, 10000], ['lookahead', 'number', 1, 512], ['radixMaxCache', 'checkbox'],
+  ['helperRows', 'checkbox'], ['largeRowWorkspaces', 'number', 0, 33],
+  ['maxLookahead', 'number', 1, 512], ['elasticWindow', 'checkbox'], ['sectorPriority', 'checkbox'],
+  ['execution', 'select', ['auto', 'single', 'multicore']],
+  ['bits', 'select', ['auto', '32', '64']],
+  ['memoryPolicy', 'select', ['auto', 'manual']],
+  ['autoWorkerMiB', 'number', 0, 14304],
+  ['spill', 'checkbox'], ['resume', 'checkbox'], ['hilbert', 'checkbox'],
+  ['heapReduction', 'checkbox'], ['cachePercent', 'number', 0, 40],
+  ['rationalHeap', 'checkbox'], ['rationalRewrites', 'checkbox'], ['compiledRewrites', 'checkbox'],
+  ['bigRationalHeap', 'checkbox'], ['bigRowMaxTerms', 'number', 0, 1073741824], ['fastBigDivision', 'checkbox'], ['growingRationalHeap', 'checkbox'],
+  ['radixHeap', 'checkbox'], ['reserveInPlace', 'checkbox'], ['rowReserveMiB', 'number', 0, 14304],
+  ['rewriteDegree', 'number', 2, 4], ['rewriteSupport', 'number', 1, 64],
+  ['rewriteMiB', 'number', 0, 256], ['sharedCacheMiB', 'number', 0, 14304],
+  ['wordMatcher', 'checkbox'], ['chainCriterion', 'checkbox'], ['eagerPruning', 'checkbox'],
+  ['quadraticRewrite', 'checkbox'], ['costScheduling', 'checkbox'],
+  ['wordCacheEntries', 'number', 256, 1048576], ['reducerTailCacheMiB', 'number', 0, 14304], ['matcherMiB', 'number', 0, 14304],
+  ['progress', 'checkbox'], ['progressIntervalSeconds', 'number', 0.25, 60],
+  ['heapThreshold', 'number', 1, 1048576], ['batchPairs', 'number', 0, 512],
+  ['hashBits', 'number', 8, 26], ['scratchMiB', 'number', 1, 14303],
+  ['hilbertMiB', 'number', 0, 14304], ['ioMode', 'select', ['auto', 'broker', 'direct']],
+]);
+export const FOMKYR_GROUPS=Object.freeze({
+  execution:['execution','bits','memoryPolicy'],
+  scheduling:['pairOrder','planMinDegree','pairPlanMiB','scheduler','quantumMs','lookahead','maxLookahead','elasticWindow','sectorPriority','helperRows','batchPairs','costScheduling','autoWorkerMiB'],
+  memory:['largeRowWorkspaces','scratchMiB','rowReserveMiB','reserveInPlace','bigRowMaxTerms','cachePercent','sharedCacheMiB','hashBits'],
+  criteria:['chainCriterion','gmCriteria','eagerPruning'],
+  reduction:['commitReduction','heapReduction','heapThreshold','rationalHeap','bigRationalHeap','growingRationalHeap','fastBigDivision','radixHeap','radixMaxCache','quadraticRewrite'],
+  caches:['reducerTailCacheMiB','wordMatcher','wordCacheEntries','matcherMiB','compiledRewrites','rationalRewrites','rewriteDegree','rewriteSupport','rewriteMiB'],
+  storage:['spill','resume','midDegreeCheckpoints','checkpointIntervalSeconds','diskLimitMiB','ioMode','progress','progressIntervalSeconds'],
+  mathematics:['dimensionEvidence','dimensionText','hilbertGate','hilbertSectors','gateMiB','hilbert','hilbertMiB'],
+});
+// Tuning profiles set performance options only; they never add mathematical
+// assumptions such as dimension profiles. Unlisted options keep their defaults.
+export const FOMKYR_TUNING = Object.freeze({
+  balanced: Object.freeze({}),
+  large: Object.freeze({pairOrder: 'word', planMinDegree: 12, pairPlanMiB: 64, autoWorkerMiB: 1024, cachePercent: 2, sharedCacheMiB: 2048}),
+  lowMemory: Object.freeze({cachePercent: 4, batchPairs: 32, helperRows: false, hashBits: 16, sharedCacheMiB: 0}),
+  experimental: Object.freeze({pairOrder: 'word', commitReduction: 'delta', reducerTailCacheMiB: 256, gmCriteria: 'all'}),
+});
+const TUNING_GROUPS = ['execution', 'scheduling', 'memory', 'criteria', 'reduction', 'caches'];
+const TUNING_KEYS = TUNING_GROUPS.flatMap(group => FOMKYR_GROUPS[group]);
+export function tuningProfile(options = {}) {
+  const values = {...FOMKYR_DEFAULTS, ...options};
+  return Object.keys(FOMKYR_TUNING).find(name => TUNING_KEYS.every(key =>
+    values[key] === (FOMKYR_TUNING[name][key] ?? FOMKYR_DEFAULTS[key]))) ?? 'custom';
+}
+function resolveDimensionProfile(options) {
+  const values = {...FOMKYR_DEFAULTS, ...options};
+  // Older drafts and Share links used a separate FK6 checkbox.
+  if (values.hilbertGate && values.dimensionEvidence === 'off') values.dimensionEvidence = 'fk6-17';
+  if (DIMENSION_PROFILE_MODES.includes(values.dimensionEvidence)) {
+    values.hilbertGate = DIMENSION_PROFILES[values.dimensionEvidence].settings.hilbertGate ?? false;
+    values.dimensionText = dimensionProfileText(values.dimensionEvidence);
+  }
+  return values;
+}
+export function validateFomkyrOptions(options = {}) {
+  if (!options || typeof options !== 'object' || Array.isArray(options)) throw new Error('Invalid Fomkyr options.');
+  for (const key of Object.keys(options)) if (!Object.hasOwn(FOMKYR_DEFAULTS, key)) throw new Error('Unknown Fomkyr option: ' + key);
+  const values = {...FOMKYR_DEFAULTS, ...options};
+  for (const [key, type, min, max] of FOMKYR_FIELDS) {
+    const value = values[key];
+    const valid = type === 'select' ? min.includes(value)
+      : type === 'textarea' ? typeof value === 'string' && value.length <= 64 * 1048576
+      : type === 'checkbox' ? (key === 'resume' ? value === 'auto' || value === false : typeof value === 'boolean')
+      : value === null && (FOMKYR_DEFAULTS[key] === null || key === 'batchPairs') || (key === 'progressIntervalSeconds' ? Number.isFinite(value) : Number.isInteger(value)) && value >= min && value <= max;
+    if (!valid) throw new Error('Invalid Fomkyr option: ' + key);
+    if (key === 'bigRowMaxTerms' && value && (value < 128 || (value & (value - 1)) !== 0)) throw new Error('Fomkyr big-row ceiling must be 0 or a power of two from 128 to 1073741824.');
+    if (key === 'reducerTailCacheMiB' && value > 0 && value < 16) throw new Error('Reducer tail cache must be 0 or at least 16 MiB.');
+    if (key === 'wordCacheEntries' && (value & (value - 1)) !== 0) throw new Error('Fomkyr word cache entries must be a power of two.');
+  }
+  if(values.elasticWindow&&values.maxLookahead<values.lookahead)throw new Error('Fomkyr expanded window ceiling must be at least the initial window.');
+  return resolveDimensionProfile(values);
+}
+// Keep saved choices intact while showing which settings the kernel uses.
+// The matcher is shared by divisor lookup and the chain criterion. The exact
+// integer divider is also used by the general reducer, outside heap reduction.
+export function fomkyrControlAvailability(form) {
+  const o = resolveDimensionProfile(form.fomkyrOptions);
+  const enabled = form.backend === 'fomkyr';
+  const rational = (form.field ?? '0') === '0';
+  const heap = o.heapReduction;
+  const rewrites = heap && o.compiledRewrites && o.rewriteMiB !== 0;
+  const reserve = rational && heap && (o.rationalHeap || o.bigRationalHeap);
+  return Object.fromEntries(FOMKYR_FIELDS.map(([key]) => [key, enabled && ({
+    reducerTailCacheMiB: o.execution === 'single' || Number(form.nativeWorkers)!==32,
+    midDegreeCheckpoints: o.spill, checkpointIntervalSeconds: o.spill && o.midDegreeCheckpoints, diskLimitMiB: o.spill,
+    planMinDegree: o.pairOrder !== 'legacy', pairPlanMiB: o.pairOrder !== 'legacy',
+    dimensionText: o.dimensionEvidence !== 'off',
+    hilbertGate: rational, hilbertSectors: rational && o.hilbertGate, gateMiB: rational && o.hilbertGate,
+    quantumMs: o.scheduler === 'cooperative' && o.batchPairs !== 0,
+    lookahead: o.scheduler === 'cooperative' && o.batchPairs !== 0,
+    elasticWindow: o.scheduler === 'cooperative' && o.batchPairs !== 0,
+    maxLookahead: o.scheduler === 'cooperative' && o.batchPairs !== 0 && o.elasticWindow,
+    sectorPriority: o.scheduler === 'cooperative' && o.batchPairs !== 0 && o.costScheduling && o.execution !== 'single' && Number(form.nativeWorkers) !== 1 && rational && o.hilbertGate && o.hilbertSectors,
+    helperRows: o.scheduler === 'cooperative' && o.batchPairs !== 0 && o.execution !== 'single' && Number(form.nativeWorkers) !== 1,
+    largeRowWorkspaces: reserve && (o.memoryPolicy === 'auto' || o.rowReserveMiB !== 0),
+    radixMaxCache: heap && o.radixHeap,
+    resume: o.spill, ioMode: o.spill && o.execution !== 'single' && Number(form.nativeWorkers) !== 1,
+    sharedCacheMiB: o.spill, progressIntervalSeconds: o.progress,
+    autoWorkerMiB: o.execution !== 'single' && !Number(form.nativeWorkers) && o.memoryPolicy === 'auto',
+    hilbertMiB: o.hilbert, heapThreshold: heap, radixHeap: heap,
+    rationalHeap: rational && heap, bigRationalHeap: rational && heap,
+    bigRowMaxTerms: rational && heap && o.bigRationalHeap,
+    fastBigDivision: rational, growingRationalHeap: rational && heap && o.rationalHeap,
+    rationalRewrites: rational && rewrites && (o.rationalHeap || o.bigRationalHeap),
+    compiledRewrites: heap,
+    rewriteDegree: rewrites, rewriteSupport: rewrites,
+    rewriteMiB: heap && o.compiledRewrites,
+    scratchMiB: o.memoryPolicy === 'manual',
+    rowReserveMiB: reserve && o.memoryPolicy === 'manual',
+    reserveInPlace: reserve && (o.memoryPolicy === 'auto' || o.rowReserveMiB !== 0),
+    matcherMiB: o.wordMatcher || o.chainCriterion,
+    eagerPruning: heap && form.monomialPruning !== false,
+    quadraticRewrite: heap,
+    costScheduling: o.batchPairs !== 0 && o.execution !== 'single' && Number(form.nativeWorkers) !== 1,
+  }[key] ?? true)]));
+}
+export function updateFomkyrControlAvailability(form, root = document, translate) {
+  const availability = fomkyrControlAvailability(form);
+  availability.nativeWorkers = form.backend === 'fomkyr' && (form.fomkyrOptions?.execution ?? FOMKYR_DEFAULTS.execution) !== 'single';
+  for (const [key, enabled] of Object.entries(availability)) {
+    const input = root.getElementById(key === 'nativeWorkers' ? key : 'fomkyr-' + key);
+    input.disabled = !enabled;
+    const load = root.getElementById('fomkyr-' + key + '-load');
+    if (load) load.disabled = !enabled || DIMENSION_PROFILE_MODES.includes(form.fomkyrOptions?.dimensionEvidence);
+    input.closest('label')?.classList.toggle('backend-disabled', !enabled);
+  }
+  // The sector-finishing order relies on the FK6 component profile.
+  const gateword = [...(root.getElementById('fomkyr-pairOrder')?.options ?? [])].find(option => option.value === 'gateword');
+  if (gateword) gateword.disabled = !resolveDimensionProfile(form.fomkyrOptions).hilbertGate;
+  const profile = root.getElementById('fomkyr-profile');
+  if (profile && translate) {
+    const name = tuningProfile(form.fomkyrOptions);
+    profile.value = name;
+    profile.querySelector('option[value="custom"]').hidden = name !== 'custom';
+    root.getElementById('fomkyr-profileHint').textContent = translate('fomkyr.profile.' + name + 'Hint');
+  }
+  const mode = root.getElementById('fomkyr-dimensionEvidence');
+  const text = root.getElementById('fomkyr-dimensionText');
+  if (text) text.readOnly = DIMENSION_PROFILE_MODES.includes(mode?.value);
+  for (const option of mode?.options ?? []) {
+    if (DIMENSION_PROFILE_MODES.includes(option.value)) option.disabled = form.backend !== 'fomkyr' || (form.field ?? '0') !== '0' || (form.ring ?? 'noncomm') !== 'noncomm' || (form.order ?? 'degleftlex') !== 'degleftlex';
+  }
+  const summary = root.getElementById('fomkyr-autoMemorySummary');
+  if (summary && translate) {
+    summary.hidden = form.backend !== 'fomkyr' || (form.fomkyrOptions?.memoryPolicy ?? 'auto') !== 'auto';
+    if (!summary.hidden) {
+      const options = {...FOMKYR_DEFAULTS, ...form.fomkyrOptions};
+      const budget = Math.min(Number(form.memoryMiB ?? defaultMemoryMiB('fomkyr')), options.bits === '32' ? 4095 : 14304) * 1048576;
+      try {
+        const plan = planMemory(budget-(fomkyrControlAvailability(form).reducerTailCacheMiB?options.reducerTailCacheMiB:0)*1048576, 1, {memoryPolicy:'auto'});
+        const label = value => {
+          const size = formatMemorySize(value, root.documentElement?.lang ?? 'en');
+          return `${size.amount} ${translate(size.unit === 'GiB' ? 'memory.gib' : 'memory.mib')}`;
+        };
+        summary.textContent = translate('fomkyr.autoMemorySummary', {
+          scratch:label(plan.ordinaryScratchBytes),reserve:label((form.field ?? '0') === '0' ? plan.rowReserveBytes : 0),
+        });
+      } catch {summary.textContent = '';}
+    }
+  }
+}
+export function fomkyrEngineOptions(form) {
+  const options = validateFomkyrOptions(form.fomkyrOptions);
+  const {pairPlanMiB, gateMiB, scratchMiB, hilbertMiB, matcherMiB, rewriteMiB, sharedCacheMiB, rowReserveMiB, progressIntervalSeconds, dimensionEvidence, dimensionText,
+    checkpointIntervalSeconds, diskLimitMiB, ...engine} = options;
+  if (options.pairOrder === 'gateword' && !options.hilbertGate) throw new Error('The sector-finishing pair order requires the FK6 dimension profile.');
+  engine.checkpointIntervalMs = checkpointIntervalSeconds * 1000;
+  if (diskLimitMiB !== null) engine.diskLimitBytes = diskLimitMiB * 1048576;
+  const profile = DIMENSION_PROFILES[dimensionEvidence];
+  // The worker binds plain dimensions to the presentation's identity.
+  if (dimensionEvidence !== 'off' && profile?.mode !== 'compiled') {
+    // Both authorities close degrees through the same kernel gate.
+    if (options.hilbertGate && !profile?.settings.hilbertGate) throw new Error('Use either the imported FK6 dimension profile or other dimension evidence, not both.');
+    engine.hilbertDimensions = parseDimensionEvidence(dimensionText, profile?.mode ?? dimensionEvidence);
+    if (profile?.componentThroughDegree) {
+      // The compiled profile already supplies totals and components through 17.
+      // Its continuation supplies only the extra degrees, avoiding two recounts.
+      engine.hilbertDimensions.document.entries = engine.hilbertDimensions.document.entries.filter(entry => entry.degree > profile.componentThroughDegree);
+    }
+  }
+  const memoryMiB=Number(form.memoryMiB??defaultMemoryMiB('fomkyr'));
+  const availability = fomkyrControlAvailability({...form, backend: 'fomkyr', fomkyrOptions: options});
+  engine.pairPlanBytes=pairPlanMiB*1048576;
+  engine.arithmeticMode='exact';
+  const tailMiB=availability.reducerTailCacheMiB?options.reducerTailCacheMiB:0;
+  if(tailMiB>memoryMiB-16)throw new Error('Reducer tail cache must leave at least 16 MiB of metadata headroom inside the memory allowance.');
+  engine.reducerTailCacheBytes=tailMiB*1048576;
+  delete engine.reducerTailCacheMiB;
+  if (engine.batchPairs === null) engine.batchPairs=FOMKYR_DEFAULTS.batchPairs;
+  if (options.memoryPolicy === 'manual' && scratchMiB !== null) {
+    const lanes = engine.execution === 'single' ? 1 : Number(form.nativeWorkers) || automaticWorkers();
+    if (scratchMiB >= memoryMiB || scratchMiB < lanes) throw new Error('Fomkyr scratch space must fit the memory budget and provide at least 1 MiB per worker.');
+    engine.scratchBytes = scratchMiB * 1048576;
+  } else if (options.memoryPolicy === 'manual') {
+    // At 3.5 GiB and above, use 2 GiB. Smaller allowances retain bounded
+    // workspace and room for hash tables, reducer caches and the reserve.
+    engine.scratchBytes=Math.floor(Math.min(2048,Math.max(memoryMiB/3,memoryMiB-1536)))*1048576;
+  }
+  engine.gateBudgetBytes = gateMiB * 1048576;
+  engine.hilbertBudgetBytes = hilbertMiB * 1048576;
+  if (matcherMiB !== null) {
+    if (availability.matcherMiB && matcherMiB >= memoryMiB) throw new Error('Fomkyr matcher space must fit the memory budget.');
+    engine.matcherBudgetBytes = matcherMiB * 1048576;
+  }
+  for (const [key, value, control] of [['rewriteBudgetBytes', rewriteMiB, 'rewriteMiB'], ['sharedReducerCacheBytes', sharedCacheMiB, 'sharedCacheMiB'], ['rowReserveBytes', rowReserveMiB, 'rowReserveMiB']]) {
+    if (control === 'rowReserveMiB' && options.memoryPolicy === 'auto') continue;
+    if (value !== null) {
+      if (availability[control] && value >= memoryMiB) throw new Error('Fomkyr cache space must fit the memory budget.');
+      engine[key] = value * 1048576;
+    }
+  }
+  engine.progressIntervalMs = progressIntervalSeconds * 1000;
+  engine.workers = Number(form.nativeWorkers) || undefined;
+  engine.monomialPruning = form.monomialPruning ?? true;
+  if (String(form.maxserdeg ?? '').trim() !== '') engine.hilbertDegree = Number(form.maxserdeg);
+  return engine;
+}
+export function readFomkyrOptions(root = document) {
+  return Object.fromEntries(FOMKYR_FIELDS.map(([key, type]) => {
+    const input = root.getElementById('fomkyr-' + key);
+    const value = type === 'checkbox' ? (key === 'resume' ? input.checked ? 'auto' : false : input.checked)
+      : type === 'number' ? input.value === '' ? null : Number(input.value) : input.value;
+    return [key, value];
+  }));
+}
+export function writeFomkyrOptions(options = {}, root = document, {strict = true} = {}) {
+  // Local drafts can contain unfinished numeric edits; keep them editable.
+  // Shared/imported settings are validated before being written to the form.
+  const values = strict ? validateFomkyrOptions(options) : resolveDimensionProfile(options);
+  for (const [key, type] of FOMKYR_FIELDS) {
+    const input = root.getElementById('fomkyr-' + key);
+    if (type === 'checkbox') input.checked = !!values[key];
+    else input.value = values[key] ?? '';
+  }
+}
+export function installFomkyrControls(root, t) {
+  const groups={};
+  // A tuning profile first; every individual option sits under Advanced tuning.
+  const settings=root.getElementById('fomkyrOptions');
+  const profileLabel=root.createElement('label');profileLabel.className='field fomkyr-profile';
+  const profileTitle=root.createElement('span');profileTitle.className='label';profileTitle.dataset.i18n='fomkyr.profile';profileTitle.textContent=t('fomkyr.profile');
+  const profile=root.createElement('select');profile.id='fomkyr-profile';profile.setAttribute('aria-describedby','fomkyr-profileHint');
+  for(const name of [...Object.keys(FOMKYR_TUNING),'custom']){
+    const option=root.createElement('option');option.value=name;option.dataset.i18n='fomkyr.profile.'+name;option.textContent=t(option.dataset.i18n);profile.append(option);
+  }
+  const profileHint=root.createElement('span');profileHint.className='hint';profileHint.id='fomkyr-profileHint';
+  profileLabel.append(profileTitle,profile,profileHint);
+  const advanced=root.createElement('details');advanced.className='fomkyr-advanced';advanced.id='fomkyr-advanced';
+  const advancedSummary=root.createElement('summary');advancedSummary.dataset.i18n='fomkyr.advanced';advancedSummary.textContent=t('fomkyr.advanced');
+  advanced.append(advancedSummary);settings.append(profileLabel,advanced);
+  // Choosing a profile writes its values before the form reads the controls.
+  const applyTuning=()=>{
+    const values=FOMKYR_TUNING[profile.value];
+    if(!values)return;
+    for(const key of TUNING_KEYS){
+      const input=root.getElementById('fomkyr-'+key),value=values[key]??FOMKYR_DEFAULTS[key];
+      if(input.type==='checkbox')input.checked=!!value;else input.value=value??'';
+    }
+  };
+  profile.addEventListener('input',applyTuning);profile.addEventListener('change',applyTuning);
+  for(const [group] of Object.entries(FOMKYR_GROUPS)){
+    const parent=group==='mathematics'?root.getElementById('fomkyrMathOptions'):advanced;
+    const body=root.createElement('div');body.className='fomkyr-control-grid';
+    if(group==='execution'||group==='mathematics')parent.append(body);
+    else {
+      const details=root.createElement('details');details.className='fomkyr-submenu';details.id='fomkyr-group-'+group;
+      const summary=root.createElement('summary');summary.dataset.i18n='fomkyr.group.'+group;summary.textContent=t(summary.dataset.i18n);
+      details.append(summary,body);parent.append(details);
+    }
+    groups[group]=body;
+  }
+  for (const [key, type, min, max] of FOMKYR_FIELDS) {
+    const group=Object.keys(FOMKYR_GROUPS).find(name=>FOMKYR_GROUPS[name].includes(key));
+    const container=groups[group];
+    if (key === 'hilbertGate') {
+      // Internal compatibility flag; the source selector is the visible control.
+      const input = root.createElement('input'); input.id = 'fomkyr-' + key;
+      input.type = 'checkbox'; input.hidden = true; container.append(input); continue;
+    }
+    const label = root.createElement('label');
+    if (key === 'dimensionEvidence' || key === 'dimensionText') label.className = 'dimension-source-field';
+    const title = root.createElement('span'); title.className = 'label-row';
+    const text = root.createElement('span'); text.dataset.i18n = 'fomkyr.' + key; text.textContent = t(text.dataset.i18n);
+    const help = root.createElement('span'); help.className = 'help';
+    const button = root.createElement('button'); button.type = 'button'; button.className = 'help-btn';
+    button.textContent = '?'; button.setAttribute('aria-expanded', 'false'); button.setAttribute('aria-controls', 'fomkyr-' + key + '-hint');
+    button.dataset.i18nAttr = 'aria-label:help'; button.setAttribute('aria-label', t('help'));
+    const hint = root.createElement('span'); hint.className = 'help-pop'; hint.id = 'fomkyr-' + key + '-hint';
+    hint.dataset.i18n = 'fomkyr.' + key + 'Hint'; hint.textContent = t(hint.dataset.i18n);
+    help.append(button, hint); title.append(text, help);
+    const input = root.createElement(type === 'select' ? 'select' : type === 'textarea' ? 'textarea' : 'input'); input.id = 'fomkyr-' + key;
+    input.setAttribute('aria-describedby', hint.id);
+    if (type === 'select') for (const value of min) {
+      const option = root.createElement('option'); option.value = value;
+      // A field may name its own choice label, e.g. fomkyr.choice.gmCriteria.off.
+      const own = 'fomkyr.choice.' + key + '.' + value;
+      option.dataset.i18n = t(own) !== own ? own : 'fomkyr.choice.' + value; option.textContent = t(option.dataset.i18n); input.append(option);
+    }
+    else if (type === 'textarea') {input.className = 'code'; input.rows = 4; input.spellcheck = false; input.dataset.i18nAttr = 'placeholder:fomkyr.dimensionTextPlaceholder'; input.placeholder = t('fomkyr.dimensionTextPlaceholder');}
+    else {input.type = type; if (type === 'number') {input.min = min; input.max = max; input.step = key === 'progressIntervalSeconds' ? 0.25 : 1;}}
+    if (type === 'checkbox') {label.className = 'check'; label.append(input, title);}
+    else label.append(title, input);
+    container.append(label);
+    if (type === 'textarea') {
+      // A file fills the text box; the text box is what is saved and shared.
+      const file = root.createElement('input'); file.type = 'file'; file.id = 'fomkyr-' + key + '-file'; file.hidden = true;
+      file.accept = '.json,.csv,.txt,application/json,text/csv,text/plain';
+      const load = root.createElement('button'); load.type = 'button'; load.className = 'quiet small'; load.id = 'fomkyr-' + key + '-load';
+      load.dataset.i18n = 'fomkyr.dimensionLoad'; load.textContent = t(load.dataset.i18n);
+      load.addEventListener('click', () => file.click());
+      file.addEventListener('change', async () => {
+        const chosen = file.files?.[0]; file.value = '';
+        if (!chosen) return;
+        if (chosen.size > 64 * 1048576) { input.setCustomValidity(t('err.dimLarge')); input.reportValidity(); return; }
+        input.setCustomValidity('');
+        input.value = await chosen.text();
+        const mode = root.getElementById('fomkyr-dimensionEvidence');
+        let certificate = false;
+        try { certificate = JSON.parse(input.value).kind === 'integer-duals'; } catch {}
+        mode.value = certificate ? 'certificate' : 'assume';
+        root.getElementById('fomkyr-hilbertGate').checked = false;
+        input.readOnly = false;
+        input.dispatchEvent(new Event('input', {bubbles: true}));
+      });
+      label.append(load, file);
+    }
+    if (key === 'memoryPolicy') {
+      const summary = root.createElement('p'); summary.className = 'hint';
+      summary.id = 'fomkyr-autoMemorySummary'; summary.hidden = true;
+      container.append(summary);
+    }
+  }
+  const mode = root.getElementById('fomkyr-dimensionEvidence');
+  const applyProfile = () => {
+    const profile = DIMENSION_PROFILE_MODES.includes(mode.value);
+    const text = root.getElementById('fomkyr-dimensionText');
+    root.getElementById('fomkyr-hilbertGate').checked = profile && (DIMENSION_PROFILES[mode.value].settings.hilbertGate ?? false);
+    text.readOnly = profile;
+    text.setCustomValidity('');
+    if (profile) {
+      text.value = dimensionProfileText(mode.value);
+      root.getElementById('fomkyr-hilbertSectors').checked = DIMENSION_PROFILES[mode.value].settings.hilbertSectors ?? false;
+    } else if (mode.value === 'certificate') {
+      try { if (JSON.parse(text.value).kind === 'external-dimensions') text.value = ''; } catch {}
+    }
+  };
+  mode.addEventListener('input', applyProfile);
+  mode.addEventListener('change', applyProfile);
+  writeFomkyrOptions({}, root);
+}

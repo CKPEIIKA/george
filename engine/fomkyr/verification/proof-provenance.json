@@ -1,0 +1,38 @@
+{
+  "dimensions14To16": [
+    346652740,
+    850296030,
+    2031123484
+  ],
+  "exactTotalThroughDegree": 17,
+  "field": "Q",
+  "name": "FK Gate exact FK6 profile provenance",
+  "notes": [
+    "Digest binds bytes; it is not by itself a mathematical proof.",
+    "Runtime applicability is restricted to the exact FK6 presentation, Q, and the supported monomial-order semantics.",
+    "No full original-order Groebner basis through degree17 is bundled."
+  ],
+  "presentationIdentity": "17c5a3b13bbae1fd6e03ece75139f297d437bda2ae062b093d77a92f091b88bf",
+  "profileThroughDegree": 17,
+  "proofBundleDigestSHA256": "65772a579ecb04c4c08a97446cb7980fee5041c40429c49ed0825d8a1f5f26f5",
+  "proofStatus": "computational proof package; independently replayed within project; external specialist review pending",
+  "runtimeUsesProofSearch": false,
+  "sourceArtifacts": {
+    "previousFrontierArchiveSHA256": "689d2fd4ded5be56617a0576a11c3ea5228d629d7a7522aca1fda35feffdc25a",
+    "originalInputLibrarySHA256": "973681645854498141e517a38952f030567a3ac2b8edfaaa73668720a5b2d42c",
+    "nonzeroQCertificateSHA256": "ce34533fd4a3f76de507a93ffab32dd37f5055cd0f75c3d69798587ecbb3f79a",
+    "newDegree17LowerCertificateSHA256": "ed5b74e0d98a438313e15ad9e41e2381cb7e3c034fc18155b82cf09800409bcb",
+    "newFreshReplaySHA256": "66e8747d9410b356dbba07cef05f337424fae9890caf694ad61d19cd1deddb44",
+    "exactProfileSHA256": "4e1a6470339da6a66e2fc6e54f32412cb82671616d0c2df01fa944f8edbd2edf"
+  },
+  "version": "0.3.1",
+  "dimensions14To17": [
+    346652740,
+    850296030,
+    2031123484,
+    4735557180
+  ],
+  "newStatement": "Exact Q original FK6 h17; Nichols quotient and original algebra distinguished; inherited proof explicitly replayed",
+  "upstreamProvenanceSha256": "f4051dee388f007abcd8ad3c4dd65be3d03082e08ded50af5af294a255392301",
+  "upstreamAuthorityId": "5660d53b16742ee43ce3c8fde48cc29df2812a0d8372197998adebadc841db24"
+}
