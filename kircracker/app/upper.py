@@ -2,12 +2,12 @@ from __future__ import annotations
 from collections import Counter
 import json,os,struct,sys,time
 from pathlib import Path
-from .util import ROOT,load,sha,json_hash,atomic_json,Incomplete,Invalid
+from .util import ROOT,load,sha,json_hash,atomic_json,Incomplete,Invalid,data_path
 from .records import state_info,state_words,PERMS
 
 SEMANTICS='relative-original-relation-F2-packed-checkpoint-v1'
 def library(runner):
- out=runner.work/'library';out.mkdir(exist_ok=True);inputs={'base':sha(ROOT/'data/base-through13.json'),'radical':sha(ROOT/'data/degree14-radical.json'),'proofCode':sha(ROOT/'tools/star_relations.py')};finger=json_hash(inputs)
+ out=runner.work/'library';out.mkdir(exist_ok=True);inputs={'base':sha(data_path('base-through13.json')),'radical':sha(data_path('degree14-radical.json')),'proofCode':sha(ROOT/'tools/star_relations.py')};finger=json_hash(inputs)
  cp=out/'verified.json'
  if cp.exists():
   v=load(cp)

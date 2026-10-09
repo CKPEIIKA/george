@@ -4,7 +4,7 @@ from __future__ import annotations
 import argparse,contextlib,json,math,os,platform,shutil,signal,subprocess,sys,time
 from pathlib import Path
 from . import __version__
-from .util import ROOT,Runner,Invalid,Incomplete,Stopped,load,sha,json_hash,atomic_json,bytes_arg,hardware,resolve_resources,workspace_lock
+from .util import ROOT,Runner,Invalid,Incomplete,Stopped,load,sha,json_hash,atomic_json,bytes_arg,hardware,resolve_resources,workspace_lock,data_path,proof_archive
 
 def common(p):
  p.add_argument('-C','--workdir',type=Path,default=Path('kircracker-work'),help='persistent calculation directory (default: ./kircracker-work)')
@@ -48,7 +48,7 @@ def ready():
 def bind_workspace(work):
  # This mathematical identity excludes worker count, memory budget, requested
  # degree and CPU code generation; those may safely change on continuation.
- token=json_hash({'programSemantics':'fk6-certificate-cli-v1','base':sha(ROOT/'data/base-through13.json'),'Q':sha(ROOT/'data/degree14-radical.json'),'proofArchive':sha(ROOT/'proof/frontier-0.5.0.zip')})
+ token=json_hash({'programSemantics':'fk6-certificate-cli-v1','base':sha(data_path('base-through13.json')),'Q':sha(data_path('degree14-radical.json')),'proofArchive':sha(proof_archive())})
  path=work/'workspace.json'
  if path.exists() and load(path).get('binding')!=token:raise Invalid('workspace belongs to different mathematical inputs; use a new directory')
  atomic_json(path,{'format':'kircracker-workspace-v1','binding':token,'version':__version__,'createdOrOpenedUTC':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime())})

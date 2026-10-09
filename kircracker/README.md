@@ -64,10 +64,15 @@ arguments have not received external specialist review or proof-assistant
 formalization. `BOUNDS_ONLY` preserves unresolved lower and upper intervals.
 The program does not produce the full original-order Gröbner basis.
 
-The included proof archive retains the degree-14 representation witness,
-certificate bindings, replay sources and their mathematical dependencies.
-[CONTENTS.json](proof/CONTENTS.json) records its inputs and original archive
-digest. Historical run directories and producer binaries are excluded.
+The proof archive `proof/frontier-0.5.0.zip` retains the degree-14 representation
+witness, certificate bindings, replay sources and their mathematical dependencies.
+It is not stored in git: download it from the George release assets and place it
+in `proof/`, or set `KIRCRACKER_PROOF_ARCHIVE` to its path. Its sha256 and inputs
+are recorded in [CONTENTS.json](proof/CONTENTS.json). On first use Kircracker
+extracts `data/base-through13.json` and `data/degree14-radical.json` from it and
+rebuilds `data/star14-leading-words.json` with `tools/derive_star14_index.py`;
+each file is checked against the sha256 in [SOURCE.json](SOURCE.json).
+Historical run directories and producer binaries are excluded.
 
 Kircracker is a standalone subproject in this repository. It has no browser
 backend or George engine-selector entry. An exported dimension profile can be

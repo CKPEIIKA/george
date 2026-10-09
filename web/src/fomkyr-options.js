@@ -20,9 +20,12 @@ export const FOMKYR_DEFAULTS = Object.freeze({
   bigRationalHeap: true, bigRowMaxTerms: 0, fastBigDivision: true, growingRationalHeap: true,
   radixHeap: true, reserveInPlace: true, rowReserveMiB: null,
   rewriteMiB: null, sharedCacheMiB: null,
+  gmCriteria: 'off', midDegreeCheckpoints: true, checkpointIntervalSeconds: 30, diskLimitMiB: null,
 });
 export const FOMKYR_FIELDS = Object.freeze([
-  ['pairOrder', 'select', ['legacy', 'overlap', 'sparse', 'word']],
+  ['pairOrder', 'select', ['legacy', 'overlap', 'sparse', 'word', 'gateword']],
+  ['gmCriteria', 'select', ['off', 'multiply', 'leading-word', 'backward', 'all']],
+  ['midDegreeCheckpoints', 'checkbox'], ['checkpointIntervalSeconds', 'number', 0, 3600], ['diskLimitMiB', 'number', 64, 16777216],
   ['commitReduction', 'select', ['full', 'delta']],
   ['planMinDegree', 'number', 1, 4294967294], ['pairPlanMiB', 'number', 0, 14304],
   ['dimensionEvidence', 'select', ['off', ...DIMENSION_PROFILE_MODES, 'assume', 'certificate']], ['dimensionText', 'textarea'],
@@ -54,11 +57,27 @@ export const FOMKYR_GROUPS=Object.freeze({
   execution:['execution','bits','memoryPolicy'],
   scheduling:['pairOrder','planMinDegree','pairPlanMiB','scheduler','quantumMs','lookahead','maxLookahead','elasticWindow','sectorPriority','helperRows','batchPairs','costScheduling','autoWorkerMiB'],
   memory:['largeRowWorkspaces','scratchMiB','rowReserveMiB','reserveInPlace','bigRowMaxTerms','cachePercent','sharedCacheMiB','hashBits'],
-  reduction:['commitReduction','heapReduction','heapThreshold','rationalHeap','bigRationalHeap','growingRationalHeap','fastBigDivision','radixHeap','radixMaxCache','eagerPruning','quadraticRewrite'],
-  caches:['reducerTailCacheMiB','wordMatcher','chainCriterion','wordCacheEntries','matcherMiB','compiledRewrites','rationalRewrites','rewriteDegree','rewriteSupport','rewriteMiB'],
-  storage:['spill','resume','ioMode','progress','progressIntervalSeconds'],
+  criteria:['chainCriterion','gmCriteria','eagerPruning'],
+  reduction:['commitReduction','heapReduction','heapThreshold','rationalHeap','bigRationalHeap','growingRationalHeap','fastBigDivision','radixHeap','radixMaxCache','quadraticRewrite'],
+  caches:['reducerTailCacheMiB','wordMatcher','wordCacheEntries','matcherMiB','compiledRewrites','rationalRewrites','rewriteDegree','rewriteSupport','rewriteMiB'],
+  storage:['spill','resume','midDegreeCheckpoints','checkpointIntervalSeconds','diskLimitMiB','ioMode','progress','progressIntervalSeconds'],
   mathematics:['dimensionEvidence','dimensionText','hilbertGate','hilbertSectors','gateMiB','hilbert','hilbertMiB'],
 });
+// Tuning profiles set performance options only; they never add mathematical
+// assumptions such as dimension profiles. Unlisted options keep their defaults.
+export const FOMKYR_TUNING = Object.freeze({
+  balanced: Object.freeze({}),
+  large: Object.freeze({pairOrder: 'word', planMinDegree: 12, pairPlanMiB: 64, autoWorkerMiB: 1024, cachePercent: 2, sharedCacheMiB: 2048}),
+  lowMemory: Object.freeze({cachePercent: 4, batchPairs: 32, helperRows: false, hashBits: 16, sharedCacheMiB: 0}),
+  experimental: Object.freeze({pairOrder: 'word', commitReduction: 'delta', reducerTailCacheMiB: 256, gmCriteria: 'all'}),
+});
+const TUNING_GROUPS = ['execution', 'scheduling', 'memory', 'criteria', 'reduction', 'caches'];
+const TUNING_KEYS = TUNING_GROUPS.flatMap(group => FOMKYR_GROUPS[group]);
+export function tuningProfile(options = {}) {
+  const values = {...FOMKYR_DEFAULTS, ...options};
+  return Object.keys(FOMKYR_TUNING).find(name => TUNING_KEYS.every(key =>
+    values[key] === (FOMKYR_TUNING[name][key] ?? FOMKYR_DEFAULTS[key]))) ?? 'custom';
+}
 function resolveDimensionProfile(options) {
   const values = {...FOMKYR_DEFAULTS, ...options};
   // Older drafts and Share links used a separate FK6 checkbox.
@@ -99,6 +118,7 @@ export function fomkyrControlAvailability(form) {
   const reserve = rational && heap && (o.rationalHeap || o.bigRationalHeap);
   return Object.fromEntries(FOMKYR_FIELDS.map(([key]) => [key, enabled && ({
     reducerTailCacheMiB: o.execution === 'single' || Number(form.nativeWorkers)!==32,
+    midDegreeCheckpoints: o.spill, checkpointIntervalSeconds: o.spill && o.midDegreeCheckpoints, diskLimitMiB: o.spill,
     planMinDegree: o.pairOrder !== 'legacy', pairPlanMiB: o.pairOrder !== 'legacy',
     dimensionText: o.dimensionEvidence !== 'off',
     hilbertGate: rational, hilbertSectors: rational && o.hilbertGate, gateMiB: rational && o.hilbertGate,
@@ -140,6 +160,16 @@ export function updateFomkyrControlAvailability(form, root = document, translate
     if (load) load.disabled = !enabled || DIMENSION_PROFILE_MODES.includes(form.fomkyrOptions?.dimensionEvidence);
     input.closest('label')?.classList.toggle('backend-disabled', !enabled);
   }
+  // The sector-finishing order relies on the FK6 component profile.
+  const gateword = [...(root.getElementById('fomkyr-pairOrder')?.options ?? [])].find(option => option.value === 'gateword');
+  if (gateword) gateword.disabled = !resolveDimensionProfile(form.fomkyrOptions).hilbertGate;
+  const profile = root.getElementById('fomkyr-profile');
+  if (profile && translate) {
+    const name = tuningProfile(form.fomkyrOptions);
+    profile.value = name;
+    profile.querySelector('option[value="custom"]').hidden = name !== 'custom';
+    root.getElementById('fomkyr-profileHint').textContent = translate('fomkyr.profile.' + name + 'Hint');
+  }
   const mode = root.getElementById('fomkyr-dimensionEvidence');
   const text = root.getElementById('fomkyr-dimensionText');
   if (text) text.readOnly = DIMENSION_PROFILE_MODES.includes(mode?.value);
@@ -167,7 +197,11 @@ export function updateFomkyrControlAvailability(form, root = document, translate
 }
 export function fomkyrEngineOptions(form) {
   const options = validateFomkyrOptions(form.fomkyrOptions);
-  const {pairPlanMiB, gateMiB, scratchMiB, hilbertMiB, matcherMiB, rewriteMiB, sharedCacheMiB, rowReserveMiB, progressIntervalSeconds, dimensionEvidence, dimensionText, ...engine} = options;
+  const {pairPlanMiB, gateMiB, scratchMiB, hilbertMiB, matcherMiB, rewriteMiB, sharedCacheMiB, rowReserveMiB, progressIntervalSeconds, dimensionEvidence, dimensionText,
+    checkpointIntervalSeconds, diskLimitMiB, ...engine} = options;
+  if (options.pairOrder === 'gateword' && !options.hilbertGate) throw new Error('The sector-finishing pair order requires the FK6 dimension profile.');
+  engine.checkpointIntervalMs = checkpointIntervalSeconds * 1000;
+  if (diskLimitMiB !== null) engine.diskLimitBytes = diskLimitMiB * 1048576;
   const profile = DIMENSION_PROFILES[dimensionEvidence];
   // The worker binds plain dimensions to the presentation's identity.
   if (dimensionEvidence !== 'off' && profile?.mode !== 'compiled') {
@@ -237,8 +271,31 @@ export function writeFomkyrOptions(options = {}, root = document, {strict = true
 }
 export function installFomkyrControls(root, t) {
   const groups={};
+  // A tuning profile first; every individual option sits under Advanced tuning.
+  const settings=root.getElementById('fomkyrOptions');
+  const profileLabel=root.createElement('label');profileLabel.className='field fomkyr-profile';
+  const profileTitle=root.createElement('span');profileTitle.className='label';profileTitle.dataset.i18n='fomkyr.profile';profileTitle.textContent=t('fomkyr.profile');
+  const profile=root.createElement('select');profile.id='fomkyr-profile';profile.setAttribute('aria-describedby','fomkyr-profileHint');
+  for(const name of [...Object.keys(FOMKYR_TUNING),'custom']){
+    const option=root.createElement('option');option.value=name;option.dataset.i18n='fomkyr.profile.'+name;option.textContent=t(option.dataset.i18n);profile.append(option);
+  }
+  const profileHint=root.createElement('span');profileHint.className='hint';profileHint.id='fomkyr-profileHint';
+  profileLabel.append(profileTitle,profile,profileHint);
+  const advanced=root.createElement('details');advanced.className='fomkyr-advanced';advanced.id='fomkyr-advanced';
+  const advancedSummary=root.createElement('summary');advancedSummary.dataset.i18n='fomkyr.advanced';advancedSummary.textContent=t('fomkyr.advanced');
+  advanced.append(advancedSummary);settings.append(profileLabel,advanced);
+  // Choosing a profile writes its values before the form reads the controls.
+  const applyTuning=()=>{
+    const values=FOMKYR_TUNING[profile.value];
+    if(!values)return;
+    for(const key of TUNING_KEYS){
+      const input=root.getElementById('fomkyr-'+key),value=values[key]??FOMKYR_DEFAULTS[key];
+      if(input.type==='checkbox')input.checked=!!value;else input.value=value??'';
+    }
+  };
+  profile.addEventListener('input',applyTuning);profile.addEventListener('change',applyTuning);
   for(const [group] of Object.entries(FOMKYR_GROUPS)){
-    const parent=root.getElementById(group==='mathematics'?'fomkyrMathOptions':'fomkyrOptions');
+    const parent=group==='mathematics'?root.getElementById('fomkyrMathOptions'):advanced;
     const body=root.createElement('div');body.className='fomkyr-control-grid';
     if(group==='execution'||group==='mathematics')parent.append(body);
     else {
@@ -271,7 +328,9 @@ export function installFomkyrControls(root, t) {
     input.setAttribute('aria-describedby', hint.id);
     if (type === 'select') for (const value of min) {
       const option = root.createElement('option'); option.value = value;
-      option.dataset.i18n = 'fomkyr.choice.' + value; option.textContent = t(option.dataset.i18n); input.append(option);
+      // A field may name its own choice label, e.g. fomkyr.choice.gmCriteria.off.
+      const own = 'fomkyr.choice.' + key + '.' + value;
+      option.dataset.i18n = t(own) !== own ? own : 'fomkyr.choice.' + value; option.textContent = t(option.dataset.i18n); input.append(option);
     }
     else if (type === 'textarea') {input.className = 'code'; input.rows = 4; input.spellcheck = false; input.dataset.i18nAttr = 'placeholder:fomkyr.dimensionTextPlaceholder'; input.placeholder = t('fomkyr.dimensionTextPlaceholder');}
     else {input.type = type; if (type === 'number') {input.min = min; input.max = max; input.step = key === 'progressIntervalSeconds' ? 0.25 : 1;}}

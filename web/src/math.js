@@ -7,15 +7,14 @@ export function loadMath() {
   loaded = new Promise((resolve, reject) => {
     const base = new URL('../vendor/mathjax/', import.meta.url).href.replace(/\/$/, '');
     window.MathJax = {
-      loader: { paths: { mathjax: base, fonts: base, 'mathjax-newcm': `${base}/newcm` } },
+      loader: { load: ['input/tex', 'output/svg', 'a11y/assistive-mml'], paths: { mathjax: base, fonts: base, 'mathjax-newcm': `${base}/newcm` } },
       output: { font: 'mathjax-newcm', fontPath: `${base}/newcm` },
       tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
       svg: { fontCache: 'local' },
-      options: { enableMenu: false, enableEnrichment: false, enableExplorer: false, enableSpeech: false, enableBraille: false },
       startup: { typeset: false },
     };
     const script = document.createElement('script');
-    script.src = `${base}/tex-svg.js`;
+    script.src = `${base}/startup.js`;
     script.onload = () => window.MathJax.startup.promise.then(resolve, reject);
     script.onerror = () => reject(new Error('Cannot load the local mathematical renderer.'));
     document.head.append(script);

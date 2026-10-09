@@ -33,7 +33,7 @@ function clean(id){
   assert.equal(git(['rev-parse',id+'^{tree}']),git(['rev-parse',next+'^{tree}']));
   map.set(id,next);rewritten.push({original:id,clean:next});return next;
 }
-const main=clean(original),pagesParent=clean(previous.get(refs[1])==='0'.repeat(40)?oldPages:previous.get(refs[1]));
+const main=clean(original);
 const workflow=git(['show',main+':.github/workflows/pages.yml']);
 assert.match(workflow,/name: github-pages\b/);
 assert.match(workflow,/if: github\.ref == 'refs\/heads\/gh-pages'/,'Deployment must originate on gh-pages.');
@@ -42,12 +42,10 @@ const out='build/publication';fs.mkdirSync(out,{recursive:true});
 const body=path.resolve(out,'pages-message.txt');
 const version=JSON.parse(fs.readFileSync('package.json','utf8')).version;
 fs.writeFileSync(body,`Publish George ${version} with Bergman and fomkyr engines\n`);
-const pages=git(['commit-tree',siteTree,'-p',pagesParent,'-F',body]);
+// The site branch holds one parentless commit; it replaces gh-pages on push.
+const pages=git(['commit-tree',siteTree,'-F',body]);
 const leases=Object.fromEntries(['main','gh-pages'].map(branch=>[branch,git(['rev-parse','refs/remotes/origin/'+branch])]));
-if(fastForward){
-  git(['merge-base','--is-ancestor',leases.main,main]);
-  git(['merge-base','--is-ancestor',leases['gh-pages'],pages]);
-}
+if(fastForward)git(['merge-base','--is-ancestor',leases.main,main]);
 git(['update-ref','--stdin'],`start\nupdate ${refs[0]} ${main} ${previous.get(refs[0])}\nupdate ${refs[1]} ${pages} ${previous.get(refs[1])}\nprepare\ncommit\n`);
 for(const ref of refs){
   const history=git(['log',ref,'--format=%an <%ae>%n%B']);
@@ -57,9 +55,9 @@ for(const ref of refs){
 assert.equal(git(['rev-parse',refs[0]+'^{tree}']),git(['rev-parse',original+'^{tree}']));
 assert.equal(git(['rev-parse',refs[1]+'^{tree}']),siteTree);
 const command=fastForward
-  ? 'git push --atomic origin publish/main:main publish/gh-pages:gh-pages'
+  ? `git push --atomic --force-with-lease=refs/heads/gh-pages:${leases['gh-pages']} origin publish/main:main +publish/gh-pages:gh-pages`
   : `git push --atomic --force-with-lease=refs/heads/main:${leases.main} --force-with-lease=refs/heads/gh-pages:${leases['gh-pages']} origin publish/main:main publish/gh-pages:gh-pages`;
-const plan={date:new Date().toISOString(),original,oldPages,main,pages,pagesParent,webTree:tree,pagesTree:siteTree,
+const plan={date:new Date().toISOString(),original,oldPages,main,pages,webTree:tree,pagesTree:siteTree,
   rewritten,leases,command,deploymentBranch:'gh-pages',deploymentEnvironment:'github-pages',verifyDeployment:true,fastForwardOnly:fastForward,remotePublication:false,originalRefsPreserved:true};
 fs.writeFileSync(path.join(out,'plan.json'),JSON.stringify(plan,null,2)+'\n');
 fs.writeFileSync(path.join(out,'publish.sh'),`#!/bin/sh

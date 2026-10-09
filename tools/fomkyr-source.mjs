@@ -12,9 +12,9 @@ export function fomkyrSourceInput(relative) {
     && !/(?:^|\/)__pycache__(?:\/|$)/.test(relative)
     && !/\.(?:so|o|a|pyc|log|gcda|gcno|profraw|profdata)$/.test(relative);
 }
-export function copyFomkyrSource(destination) {
-  const source = fileURLToPath(new URL('../fomkyr/',import.meta.url));
-  fs.cpSync(source,destination,{recursive:true,
+export function copyFomkyrSource(destination, source = fileURLToPath(new URL('../fomkyr/',import.meta.url))) {
+  // Keep relative links (web/*.wasm -> ../dist) as they are inside the bundle.
+  fs.cpSync(source,destination,{recursive:true,verbatimSymlinks:true,
     filter:file=>fomkyrSourceInput(path.relative(source,file).split(path.sep).join('/'))});
 }
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

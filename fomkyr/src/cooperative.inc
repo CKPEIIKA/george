@@ -19,6 +19,7 @@ typedef struct {
  u64 ready_peak,parked_peak; GN_ATOMIC(u64) reserve_deferrals;
  u32 policy,max_window,window,window_degree;u64 window_expansions,sector_orderings;
  u64 work_gap[BATCH_MAX],work_cost[BATCH_MAX];u32 sector_order;
+ u8 finisher_tag[BATCH_MAX];u32 finisher_order;u64 finisher_selected,finisher_held;
  u32 commit_task,commit_snapshot;u64 commit_yields,commit_resumes;
  u32 commit_ready,commit_error;u64 prepared_slices;
 } Cooperative;
@@ -65,6 +66,10 @@ API void gn_coop_discard(void){
  for(u32 i=0;i<S.batch_n;i++){S.tasks[i].rc=GN_STATE;S.tasks[i].output=0;S.tasks[i].bytes=0;}
 }
 static int coop_before(u32 a,u32 b){
+ if(C.finisher_order){
+  if(C.finisher_tag[a]!=C.finisher_tag[b])return C.finisher_tag[a]>C.finisher_tag[b];
+  if(C.finisher_tag[a])return C.work_cost[a]<=C.work_cost[b];
+ }
  if(C.sector_order){
   /* A small remaining component deficit makes a cheap new leader especially
    * useful: closure can retire other exact rows in that same component. */
@@ -88,9 +93,29 @@ static void coop_order(void){
  /* Short rows already finish within a wave. Component closure ordering targets
   * substantial input records; ordinary rows retain the established cost order. */
  if(C.sector_order){u64 largest=0;for(u32 j=0;j<S.batch_work_n;j++)largest=MAX(largest,C.work_cost[S.batch_order[j]]);if(largest<65536)C.sector_order=0;}
+ C.finisher_order=P.mode==4&&P.gate_ready&&P.gate_target<360&&S.fg_sector_ready&&(C.policy&2);
+ memset(C.finisher_tag,0,sizeof(C.finisher_tag));
+ if(C.finisher_order){
+  u32 active=0,ordinary_active=0,ordinary_ready=0;
+  for(u32 lane=0;lane<S.workers;lane++){
+   u32 ids[2]={GN_LOAD(&C.assigned[lane]),GN_LOAD(&C.helper_assigned[lane])};
+   for(u32 j=0;j<2;j++)if(ids[j]){BatchTask*t=&S.tasks[ids[j]-1];if(fg_pair_group(t->f,t->g,t->k)==P.gate_target)active++;else ordinary_active++;}
+  }
+  if(C.commit_task){BatchTask*t=&S.tasks[C.commit_task-1];if(fg_pair_group(t->f,t->g,t->k)==P.gate_target)active++;}
+  for(u32 j=0;j<S.batch_work_n;j++){u32 i=S.batch_order[j];BatchTask*t=&S.tasks[i];if(fg_pair_group(t->f,t->g,t->k)==P.gate_target)C.finisher_tag[i]=1;else ordinary_ready++;}
+  u32 cap=MIN(2u,S.workers);
+  if(!ordinary_ready&&!ordinary_active&&P.cursor==P.count)cap=S.workers;
+  u32 slots=active<cap?cap-active:0;
+  for(u32 q=0;q<slots;q++){
+   u32 best=UINT32_MAX;u64 smallest=UINT64_MAX;
+   for(u32 j=0;j<S.batch_work_n;j++){u32 i=S.batch_order[j];if(C.finisher_tag[i]==1&&C.work_cost[i]<smallest){best=i;smallest=C.work_cost[i];}}
+   if(best==UINT32_MAX)break;C.finisher_tag[best]=2;C.finisher_selected++;
+  }
+  u32 count=0;for(u32 j=0;j<S.batch_work_n;j++){u32 i=S.batch_order[j];if(C.finisher_tag[i]==1){C.finisher_held++;continue;}C.finisher_tag[i]=C.finisher_tag[i]==2;S.batch_order[count++]=i;}S.batch_work_n=count;
+ }
  /* Stable cost ordering within the bounded ready queue; running tasks are not
   * re-enqueued. The already parked task of each lane receives every next wave. */
- if(S.cost_scheduling&&S.workers>1)for(u32 span=1;span<S.batch_work_n;span*=2){
+ if((S.cost_scheduling||C.finisher_order)&&S.workers>1)for(u32 span=1;span<S.batch_work_n;span*=2){
   for(u32 left=0;left<S.batch_work_n;left+=2*span){u32 mid=MIN(left+span,S.batch_work_n),end=MIN(left+2*span,S.batch_work_n),i=left,j=mid,k=left;
    while(i<mid||j<end){int first=j==end||(i<mid&&coop_before(S.batch_order[i],S.batch_order[j]));S.batch_sort[k++]=first?S.batch_order[i++]:S.batch_order[j++];}}
   memcpy(S.batch_order,S.batch_sort,(size_t)S.batch_work_n*4);
@@ -107,7 +132,7 @@ static void coop_order(void){
    for(u32 j=pos+1;j<S.batch_work_n;j++){
     u32 cand=S.batch_order[j],f=S.tasks[cand].f,seen=0;
     for(u32 q=0;q<pos;q++)seen|=S.tasks[S.batch_order[q]].f==f;
-    if(!seen){u32 tmp=S.batch_order[pos];S.batch_order[pos]=cand;S.batch_order[j]=tmp;C.family_swaps++;break;}
+    if(!seen&&(!C.finisher_order||C.finisher_tag[S.batch_order[pos]]==C.finisher_tag[cand])){u32 tmp=S.batch_order[pos];S.batch_order[pos]=cand;S.batch_order[j]=tmp;C.family_swaps++;break;}
    }
   }
  }
@@ -240,7 +265,7 @@ API int gn_coop_commit(void){
   if(st==GN_STATE||st==GN_YIELD||st==GN_DEFERRED||st==COOP_OUTPUT_WAIT||st==COOP_HELPER_DEFERRED){keep[i]=1;blocked=1;continue;}
   if(st){rc=(int)st;break;}
   Lane*l=&S.lanes[0];l->error=0;l->slice_enabled=1;l->slice_end=slice_end;l->allow_repack=1;
-  u64 before=l->reductions;
+  u64 before=l->reductions;u32 rules_before=S.nrules;
   if(C.commit_task){
    if(C.commit_snapshot!=S.nrules){rc=GN_STATE;break;}
    if(C.commit_error)rc=(int)C.commit_error;
@@ -257,6 +282,7 @@ API int gn_coop_commit(void){
   if(rc==GN_YIELD){C.commit_task=i+1;C.commit_snapshot=S.nrules;C.commit_yields++;rc=0;break;}
   if(rc==GN_DEFERRED){keep[i]=1;blocked=1;rc=0;continue;}
   if(rc)break;
+  fg_note_pair_commit(S.tasks[i].f,S.tasks[i].g,S.tasks[i].k,rules_before);
   C.commit_task=C.commit_ready=C.commit_error=0;
   C.committed++;if(blocked)C.nonprefix_commits++;
   S.tasks[i].rc=UINT32_MAX; /* committed; remove even if a later task fails */

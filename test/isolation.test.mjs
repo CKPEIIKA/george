@@ -40,7 +40,7 @@ test('isolation worker preserves response content and revalidates same-origin as
   vm.runInNewContext(fs.readFileSync('web/isolation-worker.js', 'utf8'), {self, URL, Headers, Response,
     fetch: async (request, options) => {requests.push({request, options}); return new Response('fresh', {headers: {'content-type': 'application/wasm'}});}});
   let response;
-  handlers.fetch({request: new Request('https://example.org/george/engine/native/george32.wasm'), respondWith: p => response = p});
+  handlers.fetch({request: new Request('https://example.org/george/engine/fomkyr/fomkyr32.wasm'), respondWith: p => response = p});
   const r = await response;
   assert.equal(await r.text(), 'fresh'); assert.equal(r.headers.get('content-type'), 'application/wasm');
   assert.equal(r.headers.get('cross-origin-opener-policy'), 'same-origin');

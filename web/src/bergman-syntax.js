@@ -590,7 +590,7 @@ export function validateSettings(form) {
     if (weights.length && (weights.length !== n || weights.some(w => w !== '1'))) errors.push('Fomkyr requires unit generator degrees.');
     try { fomkyrEngineOptions(form); } catch (error) { errors.push(error.message); }
   }
-  if (['fomkyr', 'native'].includes(form.backend) && !(form.backend === 'fomkyr' && form.fomkyrOptions?.execution === 'single')
+  if (form.backend === 'fomkyr' && form.fomkyrOptions?.execution !== 'single'
       && form.nativeWorkers !== undefined && !integer(form.nativeWorkers, 0, 32)) errors.push('Worker count must be an integer from 0 to 32 (0 means automatic).');
   if (caps.homogeneous || caps.relationDegrees || caps.maximumCoefficient) {
     try {
@@ -727,7 +727,6 @@ export function buildJob(form) {
   if (form.outmode === 'MACAULAY') outputs.macaulay = 'result.macaulay';
   const job = { task: task.id, files, script: session.join('\n') + '\n', outputs, legacy: !!form.legacy, degreeBound: form.maxdeg || (task.group === 'Resolutions' ? 6 : null), memoryMiB: Number(form.memoryMiB ?? defaultMemoryMiB(form.backend ?? 'standard')), backend: form.backend ?? 'standard' };
   job.timeoutMs = timeoutMilliseconds(form.timeoutMinutes);
-  if (job.backend === 'native') job.nativeOptions = {workers: Number(form.nativeWorkers) || undefined};
   if (job.backend === 'fomkyr') {
     job.fomkyrOptions = fomkyrEngineOptions(form);
     if (job.fomkyrOptions.hilbert) job.outputs.hs = 'result.hs';

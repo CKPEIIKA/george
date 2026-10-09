@@ -393,6 +393,7 @@ Firefox integration, storage, resume, Share and cancellation.
 `npm run test:fk6:prefixes` checks FK6 prefixes against saved independent references.
 
 Native CLI, partial-resume and Hilbert authority checks are in `tests/`.
+`make analyze` runs the available C analyzers; see [C analysis](docs/STATIC_ANALYSIS.md).
 The developer release guide describes bounded validation and reuse of unchanged
 oracle evidence. Generated reports and machine measurements stay local.
 

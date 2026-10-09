@@ -516,6 +516,9 @@ function selectTab(name) {
 }
 
 let lastJob = null;
+// How bergman bases are shown: normalized (monic) or as the engine printed them.
+let basisView = 'normalized';
+try { if (localStorage.getItem('george.basisView') === 'engine') basisView = 'engine'; } catch { /* storage unavailable */ }
 
 async function compute(ev) {
   ev.preventDefault();
@@ -639,8 +642,24 @@ function renderResults(job, res, facts = lastRendered?.job === job ? lastRendere
     if (warnings.length) html += '<ul class="notes">' + warnings.map(note => `<li class="warn">${note}</li>`).join('') + '</ul>';
     if (info.length) html += `<p class="basis-info">${info.join(' ')}</p>`;
     if (actions.length) html += `<div class="basis-actions">${actions.join('')}</div>`;
+    // Bergman prints primitive integer elements; fomkyr already exports the
+    // reduced monic basis. Show the normalized basis for both by default.
+    let groups = summary.groups;
+    const normalizable = !res.fomkyr?.reduced && !summary.truncated && gbText.length <= DISPLAY_NORMALIZE_CHARS;
+    if (normalizable) {
+      const view = basisView === 'normalized' && !res.normalizeError ? 'normalized' : 'engine';
+      html += `<div class="basis-view"><div class="seg small" role="group" aria-label="${esc(t('basis.view'))}">` +
+        ['normalized', 'engine'].map((v) => `<button type="button" data-basis-view="${v}" aria-pressed="${v === view}">${esc(t('basis.view.' + v))}</button>`).join('') + '</div>' +
+        `<span class="hint">${esc(res.normalizeError ? t('basis.normalizeFailed', {msg: res.normalizeError}) : view === 'normalized' && !res.normalized ? t('basis.normalizing') : t('basis.view.' + view + 'Hint'))}</span></div>`;
+      if (view === 'normalized' && res.normalized) groups = parseBasis(res.normalized.text).groups.map((g) => ({deg: g.deg, count: g.polys.length, polys: g.polys}));
+      else if (view === 'normalized' && !res.normalizing) {
+        res.normalizing = true;
+        normalizeInWorker(job, gbText).then((result) => { res.normalized = result; }, (error) => { res.normalizeError = error.message; })
+          .finally(() => { if (lastRendered?.res === res) renderResults(job, res); });
+      }
+    }
     html += '</div>';
-    for (const g of summary.groups) {
+    for (const g of groups) {
       html += `<section class="degree" id="basis-degree-${g.deg}"><h3><span class="d">${t(facts.weighted ? 'basis.weightedDegree' : 'basis.degree', { d: g.deg })}</span>${tn('basis.count', g.count)}</h3>`;
       if (g.polys.length < g.count) html += `<p class="caption">${t('basis.degreePreview', { shown: g.polys.length, total: g.count })}</p>`;
       html += '<div class="polynomial-groups">';
@@ -850,11 +869,8 @@ async function downloadResultsZip() {
         const archiveName=name===source.job.outputs.gb?'result.txt':name.replace(/\.(hs|pb|anick)$/i,'.$1.txt');
         entries.push({name:archiveName,blob});
         if(name===source.job.outputs.gb){
-          if(source.meta?.reduced)entries.push({name:'result-normalized.txt',blob});
-          else{
-            try{entries.push({name:'result-normalized.txt',blob:new Blob([await normalizedBasis(source.job,blob)],{type:'text/plain;charset=utf-8'})});}
-            catch(error){normalizationError=error.message;}
-          }
+          try{entries.push({name:'result-normalized.txt',blob:source.meta?.reduced?await engineNormalizedBasis(source.job,blob):new Blob([await normalizedBasis(source.job,blob)],{type:'text/plain;charset=utf-8'})});}
+          catch(error){normalizationError=error.message;}
         }
       }
       return entries;
@@ -866,42 +882,71 @@ async function downloadResultsZip() {
   }finally{zipBusy=false;els.go.disabled=wasDisabled||running;updateZipButton();}
 }
 
+// The same header for every engine, so normalized files compare directly.
+function normalizedComplete(job) {
+  return lastRendered?.job === job && lastOutcome?.state === 'complete';
+}
+function normalizedHeader(job, vars, {orderedTails = true, dropped = 0, notes = []} = {}) {
+  const outcome = lastRendered?.job === job ? lastOutcome : null;
+  const status = !outcome ? 'unknown' : outcome.state === 'complete' ? 'complete reduced Gröbner basis'
+    : outcome.state === 'conditional' ? 'complete if the imported or supplied dimensions are correct'
+    : outcome.degree ? `through degree ${outcome.degree}; higher degrees may add elements` : 'partial; the computation stopped';
+  const settingLines = job.script.split('\n').filter((line) => /^\((\w*IFY|\w*ORDER|SETORDERMATRIX|SETMODULUS|SETWEIGHTS|SETMAXDEG)\b/.test(line));
+  return [
+    `% Reduced Gröbner basis, normalized by George ${document.querySelector('.brand-version')?.textContent ?? ''}.`,
+    '% Every element is monic, and no term of an element is divisible by the leading monomial of another.',
+    `% Settings: ${settingLines.join(' ')}`,
+    `% Generators: ${vars.join(', ')}`,
+    `% Status: ${status}.`,
+    orderedTails ? '% Each element lists its leading monomial first, then its terms in decreasing monomial order.'
+      : '% Each element lists its leading monomial first, then its terms in a fixed canonical sequence.',
+    ...(dropped ? [`% ${dropped} element(s) with a redundant leading monomial were removed.`] : []),
+    ...notes.map((note) => `% Engine: ${note}`),
+  ].join('\n') + '\n';
+}
+
+// fomkyr already exports the reduced monic basis. Keep its notes, replace its
+// header and its export marker, and pass the body through without reading it.
+async function engineNormalizedBasis(job, blob) {
+  const vars = readInputFile(job.files['input.bg']).vars;
+  const notes = [];
+  let offset = 0;
+  for (const line of (await blob.slice(0, 65536).text()).split('\n')) {
+    if (!line.startsWith('%') || /^%\s*\d+\s*$/.test(line)) break;
+    notes.push(line.replace(/^%\s*/, ''));
+    offset += new TextEncoder().encode(line + '\n').length;
+  }
+  const end = blob.size - ((await blob.slice(Math.max(0, blob.size - 5)).text()) === 'Done\n' ? 5 : 0);
+  return new Blob([normalizedHeader(job, vars, {notes}), blob.slice(offset, end), normalizedComplete(job) ? 'Done\n' : ''], {type: 'text/plain;charset=utf-8'});
+}
+
 // The reduced monic basis, computed in a worker. Terms of any element that
 // another leading monomial divides are rewritten; see normal-basis.js.
 const NORMALIZE_LIMIT_BYTES = 256 * 1048576;
-async function normalizedBasis(job, blob) {
-  if (blob.size > NORMALIZE_LIMIT_BYTES) throw new Error(t('results.normalizeLarge'));
+// Larger bases stay as the engine printed them on screen; the ZIP still normalizes them.
+const DISPLAY_NORMALIZE_CHARS = 32 * 1048576;
+// Runs the normalizer worker on a basis text; see normal-basis.js.
+async function normalizeInWorker(job, text, onProgress = () => {}) {
   const vars = readInputFile(job.files['input.bg']).vars;
-  const settings = scriptSettings(job.script, vars);
-  const text = await blob.text();
   const worker = new Worker(new URL('./normal-basis-worker.js', import.meta.url), {type: 'module'});
   try {
-    const result = await new Promise((resolve, reject) => {
+    return await new Promise((resolve, reject) => {
       worker.onerror = (event) => reject(new Error(event.message || 'worker failed'));
       worker.onmessage = ({data}) => {
-        if (data.progress) els.resultsZipStatus.textContent = t('results.normalizing', {d: data.progress.degree});
+        if (data.progress) onProgress(data.progress);
         else if (data.error) reject(new Error(data.error));
         else resolve(data.result);
       };
-      worker.postMessage({text, vars, ...settings});
+      worker.postMessage({text, vars, ...scriptSettings(job.script, vars)});
     });
-    const outcome = lastRendered?.job === job ? lastOutcome : null;
-    const status = !outcome ? 'unknown' : outcome.state === 'complete' ? 'complete reduced Gröbner basis'
-      : outcome.state === 'conditional' ? 'complete if the imported or supplied dimensions are correct'
-      : outcome.degree ? `through degree ${outcome.degree}; higher degrees may add elements` : 'partial; the computation stopped';
-    const settingLines = job.script.split('\n').filter((line) => /^\((\w*IFY|\w*ORDER|SETORDERMATRIX|SETMODULUS|SETWEIGHTS|SETMAXDEG)\b/.test(line));
-    const header = [
-      `% Reduced Gröbner basis, normalized by George ${document.querySelector('.brand-version')?.textContent ?? ''}.`,
-      '% Every element is monic, and no term of an element is divisible by the leading monomial of another.',
-      `% Settings: ${settingLines.join(' ')}`,
-      `% Generators: ${vars.join(', ')}`,
-      `% Status: ${status}.`,
-      result.orderedTails ? '% Each element lists its leading monomial first, then its terms in decreasing monomial order.'
-        : '% Each element lists its leading monomial first, then its terms in a fixed canonical sequence.',
-      ...(result.dropped ? [`% ${result.dropped} element(s) with a redundant leading monomial were removed.`] : []),
-    ];
-    return header.join('\n') + '\n' + result.text + (outcome?.state === 'complete' ? 'Done\n' : '');
   } finally { worker.terminate(); }
+}
+async function normalizedBasis(job, blob) {
+  if (blob.size > NORMALIZE_LIMIT_BYTES) throw new Error(t('results.normalizeLarge'));
+  const vars = readInputFile(job.files['input.bg']).vars;
+  const cached = lastRendered?.job === job ? lastRendered.res.normalized : null;
+  const result = cached ?? await normalizeInWorker(job, await blob.text(), (progress) => { els.resultsZipStatus.textContent = t('results.normalizing', {d: progress.degree}); });
+  return normalizedHeader(job, vars, result) + result.text + (normalizedComplete(job) ? 'Done\n' : '');
 }
 
 async function downloadVerificationBundle(job,result) {
@@ -996,6 +1041,11 @@ document.addEventListener('click', (e) => {
   if (b.dataset.copy) copyText(fileContents.get(b.dataset.copy) ?? '', b);
   else if (b.dataset.download) download(b.dataset.download, fileContents.get(b.dataset.download) ?? '');
   else if (b.dataset.goto) selectTab(b.dataset.goto);
+  else if (b.dataset.basisView && lastRendered) {
+    basisView = b.dataset.basisView;
+    try { localStorage.setItem('george.basisView', basisView); } catch { /* storage unavailable */ }
+    renderResults(lastRendered.job, lastRendered.res);
+  }
   else if (b.dataset.degree && b.closest('.degree-index')) $('basis-degree-' + b.dataset.degree)?.scrollIntoView({ block: 'start', behavior: 'smooth' });
 });
 

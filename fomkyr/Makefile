@@ -12,10 +12,12 @@ NATIVE_PROFILE ?= lto
 ARCHFLAGS = $(if $(NATIVE_ARCH),-march=$(NATIVE_ARCH))
 HOST_CONFIG = $(wildcard dist/native-config.mk)
 NATIVE = native/cli.c native/host.c native/support.c native/fixture.c
-.PHONY: all check native native-pgo wasm test install clean FORCE
+.PHONY: all check analyze native native-pgo wasm test install clean FORCE
 all: native
 check:
 	bash tools/check-host.sh
+analyze:
+	python3 tools/analyze.py
 native: $(BUILD_DIR)/fomkyr
 native-pgo:
 	FOMKYR_PGO_CC="$(CC)" NATIVE_ARCH="$(NATIVE_ARCH)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" bash tools/build-native-pgo.sh

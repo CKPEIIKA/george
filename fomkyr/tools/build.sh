@@ -22,7 +22,8 @@ for bits in 32 64; do
   done
 done
 "$CLANG" "${COMMON[@]}" -fvisibility=default -fPIC -shared src/kernel.c tests/host.c -o dist/libfomkyr.so -fuse-ld=lld
-for name in fomkyr32 fomkyr64 fomkyr32-single fomkyr64-single; do cp "dist/$name.wasm" web/; done
+# The page links to dist/ rather than keeping a second copy of each binary.
+for name in fomkyr32 fomkyr64 fomkyr32-single fomkyr64-single; do ln -sfn "../dist/$name.wasm" "web/$name.wasm"; done
 python3 - <<'GEN'
 import hashlib,json
 from pathlib import Path

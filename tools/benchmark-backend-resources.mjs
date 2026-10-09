@@ -57,8 +57,6 @@ const configurations = [
   {id: 'compiled', backend: 'compiled', browser: 'chromium', label: 'C / ECL O3 + LTO'},
   ...(bergmanBaselineRoot?[{id:'compiled-previous',backend:'compiled',browser:'chromium',label:'Previous C / ECL build',bergmanRoot:path.resolve(bergmanBaselineRoot)}]:[]),
   {id: 'memory64', backend: 'memory64', browser: 'chromium', label: 'C / ECL O3 + LTO (memory64)'},
-  {id: 'native', backend: 'native', browser: 'chromium', label: 'Native NC (memory64, 4 workers)', workers: 4},
-  {id: 'native-firefox', backend: 'native', browser: 'firefox', label: 'Native NC (memory64, Firefox)', workers: 4},
   {id: 'fomkyr', backend: 'fomkyr', browser: 'chromium', label: `fomkyr ${fomkyrVersion} (memory64, Chromium, 4 workers)`, workers: 4},
   {id: 'fomkyr-firefox', backend: 'fomkyr', browser: 'firefox', label: `fomkyr ${fomkyrVersion} (memory64, Firefox, 4 workers)`, workers: 4},
   ...(baselineRoot?[
@@ -90,9 +88,7 @@ const reportFile = path.join(out, 'report.json');
 const previous = process.argv.includes('--resume') && fs.existsSync(reportFile)
   ? JSON.parse(fs.readFileSync(reportFile)) : null;
 const sha = file => crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
-const sourceFiles = ['tools/benchmark-backend-resources.mjs','tools/benchmark-environment.mjs','web/src/bergman-syntax.js','web/src/fomkyr-options.js','web/src/engine.js', 'web/engine/worker.js', 'web/engine/native/engine.js',
-  'web/engine/native/runtime.js', 'web/engine/native/george-entry.js', 'web/engine/native/storage.js',
-  'web/engine/native/george32.wasm', 'web/engine/native/george64.wasm', 'web/engine/ecl.wasm',
+const sourceFiles = ['tools/benchmark-backend-resources.mjs','tools/benchmark-environment.mjs','web/src/bergman-syntax.js','web/src/fomkyr-options.js','web/src/engine.js', 'web/engine/worker.js', 'web/engine/ecl.wasm',
   'web/engine/optimized/ecl.wasm', 'web/engine/compiled/ecl.wasm', 'web/engine/memory64/ecl.wasm', 'web/engine/ecl.data',
   ...fs.readdirSync('web/engine/fomkyr').filter(name=>/\.(?:js|wasm)$/.test(name)).map(name=>'web/engine/fomkyr/'+name)];
 if(fs.existsSync(finiteCertificateFile))sourceFiles.push(finiteCertificateFile);
@@ -248,8 +244,7 @@ async function run(config, degree, trial) {
   const job = buildJob({task: 'gb', ring: 'noncomm', order: 'degleftlex', field: '0', vars,
     rels:degree===1&&['standard','optimized','compiled','memory64'].includes(config.backend)?['0']:rels,
     maxdeg: String(degree), memoryMiB:effectiveMemoryMiB, backend: config.backend, lowterms: 'quick', nonhomog: 'degreewise',
-    monomialPruning: config.backend !== 'native', timeoutMinutes: timeoutSeconds / 60});
-  if (config.backend === 'native') job.nativeOptions = {workers: config.workers, bits: 64, resume: false};
+    monomialPruning: true, timeoutMinutes: timeoutSeconds / 60});
   if (config.backend === 'fomkyr') job.fomkyrOptions = {...job.fomkyrOptions, workers: config.workers, bits: '64', resume: false, hilbert: false};
   if(config.backend==='fomkyr'&&batchPairs!==null)job.fomkyrOptions.batchPairs=batchPairs;
   const key = `${config.id}-d${degree}-t${trial}`;

@@ -92,6 +92,7 @@ try {
    let coefficientRules;
    if(process.argv.includes('--coefficient-case')) {
     await page.locator('#engineSettings').evaluate(node=>node.open=true);
+    await page.locator('#fomkyr-advanced > summary').click();
     for(const key of ['bigRationalHeap','fastBigDivision','growingRationalHeap'])assert.equal(await page.locator('#fomkyr-'+key).isChecked(),true);
     const input=JSON.parse(fs.readFileSync('test/fixtures/coefficient-workloads/affine-q-serre-q2.json')).inputText;
     const parsed=readInputFile('(ALGFORMINPUT)\n'+input);
@@ -103,6 +104,7 @@ try {
     assert.ok(coefficient.bigRationalSuccesses>0);assert.equal(coefficient.fastBigDivision,true);assert.equal(coefficient.growingRationalHeap,true);
     assert.ok(coefficient.pairPlan.builds>0);assert.equal(coefficient.pairPlan.order,1);
     await page.locator('#fomkyr-group-scheduling').evaluate(node=>node.open=false);
+    await page.locator('#fomkyr-advanced > summary').click();
     coefficientRules=coefficient.basisSize;
     const basis=await page.locator('#filesOut .file').evaluateAll(nodes=>nodes.find(n=>n.querySelector('.name').textContent==='result.gb').querySelector('pre').textContent);
     fs.writeFileSync(path.join(output,name+'-q-serre-d14.gb'),basis);
@@ -120,9 +122,13 @@ try {
     assert.equal(await page.locator('#fomkyr-planMinDegree').inputValue(),'12');
     assert.equal(await page.locator('#monomialPruning').isChecked(),true);
     await page.locator('#engineSettings').evaluate(node=>node.open=true);
-    assert.equal(await page.locator('#fomkyrOptions > details').count(),5);
+    assert.equal(await page.locator('#fomkyr-profile').inputValue(),'large');
+    assert.equal(await page.locator('#fomkyrOptions > details').count(),1);
     assert.equal(await page.locator('#fomkyrOptions > details[open]').count(),0);
-    await page.locator('#fomkyrOptions > details').evaluateAll(nodes=>nodes.forEach(node=>node.open=true));
+    await page.locator('#fomkyr-profile').selectOption('balanced');
+    await page.locator('#fomkyr-advanced > summary').click();
+    assert.equal(await page.locator('#fomkyr-advanced > details').count(),6);
+    await page.locator('#fomkyr-advanced > details').evaluateAll(nodes=>nodes.forEach(node=>node.open=true));
     await page.locator('#memoryMiB').selectOption('3584');
     await page.locator('details.advanced').evaluate(node=>node.open=true);
     await page.locator('#fomkyr-dimensionEvidence').selectOption('off');
@@ -149,6 +155,7 @@ try {
    // Exercise assisted computation in a fresh job.
    await page.locator('#engineSettings').evaluate(node=>node.open=true);
    await page.locator('#fomkyrOptions > details').evaluateAll(nodes=>nodes.forEach(node=>node.open=true));
+   await page.locator('#fomkyr-group-storage').evaluate(node=>node.open=true);
    await page.locator('#fomkyr-resume').uncheck();
    await page.locator('#fomkyr-dimensionEvidence').selectOption('fk6-20');
    assert.equal(await page.locator('#fomkyr-hilbertSectors').isDisabled(),false);

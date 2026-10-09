@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections import Counter
 import ctypes as C,sys,time,zipfile
 from pathlib import Path
-from .util import ROOT,sha,load,json_hash,atomic_json,Invalid,Incomplete
+from .util import ROOT,sha,load,json_hash,atomic_json,Invalid,Incomplete,data_path,proof_archive
 from .records import PERMS,INDEX,compose
 sys.path.insert(0,str(ROOT/'reference'))
 from finitefk.finite_model import FiniteStar
@@ -55,14 +55,14 @@ def factors(runner,D):
  return H,E
 
 def proof_base(runner,force=False):
- proof=runner.work/'proof';proof.mkdir(exist_ok=True);legacy=proof/'legacy';key=json_hash({'archive':sha(ROOT/'proof/frontier-0.5.0.zip'),'bridge':sha(ROOT/'tools/proof_bridge.py'),'auditSource':sha(ROOT/'src/exact_quotient_audit.cpp'),'polynomial':sha(ROOT/'data/degree14-radical.json'),'library':sha(ROOT/'data/base-through13.json')});out=proof/'Q'
+ proof=runner.work/'proof';proof.mkdir(exist_ok=True);legacy=proof/'legacy';key=json_hash({'archive':sha(proof_archive()),'bridge':sha(ROOT/'tools/proof_bridge.py'),'auditSource':sha(ROOT/'src/exact_quotient_audit.cpp'),'polynomial':sha(data_path('degree14-radical.json')),'library':sha(data_path('base-through13.json'))});out=proof/'Q'
  p=out/'accepted.json'
  if not force and p.exists():
   v=load(p)
   if v.get('passed') and v.get('binding')==key and sha(out/'replay.json')==v['reportSHA256']:return v
  if not (ROOT/'bin/exact-quotient-audit').exists():raise Incomplete('GMP audit executable missing: run make proof-tools')
  runner.event('proof_base',message='Replaying inherited nonzero-Q and radical certificates')
- archive=ROOT/'proof/frontier-0.5.0.zip'
+ archive=proof_archive()
  # Exact bytes are refreshed when the archive changes; no executable in the ZIP
  # is invoked. Only the locally built audit and trusted Python tools are used.
  marker=legacy/'source.json'
@@ -77,7 +77,7 @@ def proof_base(runner,force=False):
    z.extractall(legacy)
   atomic_json(marker,{'sha256':sha(archive)})
  actual=legacy/'kircracker-frontier'
- if sha(actual/'certificates/nichols/degree14-radical.json')!=sha(ROOT/'data/degree14-radical.json') or sha(actual/'certificates/base-through13.json')!=sha(ROOT/'data/base-through13.json'):raise Invalid('inherited proof does not bind the active Q polynomial/library')
+ if sha(actual/'certificates/nichols/degree14-radical.json')!=sha(data_path('degree14-radical.json')) or sha(actual/'certificates/base-through13.json')!=sha(data_path('base-through13.json')):raise Invalid('inherited proof does not bind the active Q polynomial/library')
  last,secs=runner.run([sys.executable,ROOT/'tools/proof_bridge.py',actual,out,str(min(32,runner.jobs))],proof/'Q-replay.log')
  if not last or not last.get('passed'):raise Invalid('inherited nonzero/radical proof replay failed')
  v={'passed':True,'binding':key,'reportSHA256':sha(out/'replay.json'),'seconds':secs,'externalSpecialistReview':False,'scope':'computational checks plus the inherited written operator/Hopf/coideal arguments'};atomic_json(p,v);return v

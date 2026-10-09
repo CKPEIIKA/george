@@ -7,21 +7,22 @@ import { tutorialForm } from '../web/src/tutorials.js';
 const norm = (text, vars, options = {}) => normalizeBasis({ text, vars, ...options }).text;
 
 test('tails are interreduced and every element is made monic', () => {
+  // Degree groups follow fomkyr's export layout: a blank line, then "% d".
   // Leading monomials first, as engines print them; deg-left-lex with y > x.
-  assert.equal(norm('% 2\nx*y,\n-2*y^2-2*y*x-2*x^2,\n% 3\nx^3+x*y*x,\n', ['x', 'y']), '% 2\ny^2+y*x+x^2,\nx*y,\n% 3\nx^3,\n');
+  assert.equal(norm('% 2\nx*y,\n-2*y^2-2*y*x-2*x^2,\n% 3\nx^3+x*y*x,\n', ['x', 'y']), '\n% 2\ny^2+y*x+x^2,\nx*y,\n\n% 3\nx^3,\n');
   // c*b's tail term c*a is another leading monomial: c*b + c*a -> c*b + b*a.
-  assert.equal(norm('% 2\nc*a-b*a,\nc*b+c*a,\n', ['a', 'b', 'c']), '% 2\nc*b+b*a,\nc*a-b*a,\n');
+  assert.equal(norm('% 2\nc*a-b*a,\nc*b+c*a,\n', ['a', 'b', 'c']), '\n% 2\nc*b+b*a,\nc*a-b*a,\n');
 });
 
 test('coefficients stay exact over Q and in prime fields', () => {
-  assert.equal(norm('% 2\n3*y*x+2*x*y,\n', ['x', 'y']), '% 2\ny*x+2/3*x*y,\n');
-  assert.equal(norm('% 2\n-3*y*x+2*x*y-4,\n', ['x', 'y']), '% 2\ny*x-2/3*x*y+4/3,\n');
-  assert.equal(norm('% 2\n2*y*x+x*y,\n', ['x', 'y'], { modulus: 5 }), '% 2\ny*x+3*x*y,\n');
+  assert.equal(norm('% 2\n3*y*x+2*x*y,\n', ['x', 'y']), '\n% 2\ny*x+2/3*x*y,\n');
+  assert.equal(norm('% 2\n-3*y*x+2*x*y-4,\n', ['x', 'y']), '\n% 2\ny*x-2/3*x*y+4/3,\n');
+  assert.equal(norm('% 2\n2*y*x+x*y,\n', ['x', 'y'], { modulus: 5 }), '\n% 2\ny*x+3*x*y,\n');
 });
 
 test('commutative orders print tails in decreasing monomial order', () => {
   const vars = ['x', 'y'];
-  assert.equal(norm('% 3\nx^3,\n-x^2*y+x*y^2,\n% 4\nx*y^3,\n', vars, { ring: 'comm', order: 'degrevlex' }), '% 3\nx^3,\nx^2*y-x*y^2,\n% 4\nx*y^3,\n');
+  assert.equal(norm('% 3\nx^3,\n-x^2*y+x*y^2,\n% 4\nx*y^3,\n', vars, { ring: 'comm', order: 'degrevlex' }), '\n% 3\nx^3,\nx^2*y-x*y^2,\n\n% 4\nx*y^3,\n');
   // x*y^2's tail y^3 is not divisible by x^2*y; an order mismatch falls back to a fixed sequence.
   const result = normalizeBasis({ text: '% 3\ny^3+x^3,\n', vars, ring: 'comm', order: 'deglex' });
   assert.equal(result.orderedTails, false);
@@ -30,7 +31,7 @@ test('commutative orders print tails in decreasing monomial order', () => {
 test('redundant elements are removed', () => {
   const result = normalizeBasis({ text: '% 2\nx*y,\n% 3\nx*y*x+y^3,\ny^3,\n', vars: ['x', 'y'] });
   assert.equal(result.dropped, 1);
-  assert.equal(result.text, '% 2\nx*y,\n% 3\ny^3,\n');
+  assert.equal(result.text, '\n% 2\nx*y,\n\n% 3\ny^3,\n');
 });
 
 test('a scrambled basis normalizes to the same canonical text', () => {

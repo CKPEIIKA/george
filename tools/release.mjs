@@ -81,16 +81,19 @@ const originalNativeOnlyInputs=new Set(['fomkyr/SOURCE.json',
 const beforeCliScopeInputs=new Set([...nativeOnlyInputs].filter(file=>!['fomkyr/native/cli.c','fomkyr/tests/test_dashboard.py','fomkyr/tools/dashboard.py'].includes(file)));
 const preCliNativeOnlyInputs=new Set([...nativeOnlyInputs].filter(file=>!['fomkyr/tests/test_cli_065.py','docs/development/RELEASING.md'].includes(file)));
 function phaseInputs(hashes,name,legacy=false){
+  const upgradeLegacy=legacy==='pre-upgrade-ui-scope';
+  const nativeLegacy=upgradeLegacy?false:legacy;
   return Object.fromEntries(Object.entries(hashes).filter(([file])=>
     file!=='tools/release.mjs' && (name==='browser'||file!=='tools/validate-correction-release.mjs')
-    && (legacy===true||!independentOfNativeRunner.has(name)||file!=='tools/validate-fomkyr-native.mjs')
-    && (legacy==='pre-native-cli-scope'
+    && (upgradeLegacy||name==='upgrade'||file!=='tools/validate-fomkyr-upgrade.mjs')
+    && (nativeLegacy===true||!independentOfNativeRunner.has(name)||file!=='tools/validate-fomkyr-native.mjs')
+    && (nativeLegacy==='pre-native-cli-scope'
       ? !independentOfNativeRunner.has(name)||!beforeCliScopeInputs.has(file)
-      : legacy==='pre-fk-audit-split'
+      : nativeLegacy==='pre-fk-audit-split'
       ? !independentOfNativeRunner.has(name)||!originalNativeOnlyInputs.has(file)
-      : legacy==='pre-cli-deadline'
+      : nativeLegacy==='pre-cli-deadline'
       ? !independentOfNativeRunner.has(name)||!preCliNativeOnlyInputs.has(file)
-      : legacy||!independentOfNativeRunner.has(name)||!nativeOnlyInputs.has(file))));
+      : nativeLegacy||!independentOfNativeRunner.has(name)||!nativeOnlyInputs.has(file))));
 }
 function phaseContract(name,command,args,env,hashes=sourceHashes,legacy=false){
   return digest(stableJSON({schema:1,name,inputs:phaseInputs(hashes,name,legacy),protocol,
@@ -109,8 +112,10 @@ function borrowPhase(name,contract,evidence,validate,legacyContract){
       // Accept the former conservative contract only when its exact digest
       // matches and the newly scoped inputs match. The native runner is not
       // imported or executed by these phases; native-cli still checks it.
-      const compatibleLegacy=independentOfNativeRunner.has(name)&&previous.sourceHashes
-        &&[true,'native-runner-only','pre-fk-audit-split','pre-cli-deadline','pre-native-cli-scope'].some(mode=>row.contract===legacyContract(previous.sourceHashes,mode))
+      const compatibleLegacy=previous.sourceHashes
+        &&((independentOfNativeRunner.has(name)
+          &&[true,'native-runner-only','pre-fk-audit-split','pre-cli-deadline','pre-native-cli-scope'].some(mode=>row.contract===legacyContract(previous.sourceHashes,mode)))
+          ||row.contract===legacyContract(previous.sourceHashes,'pre-upgrade-ui-scope'))
         &&stableJSON(phaseInputs(previous.sourceHashes,name))===stableJSON(phaseInputs(sourceHashes,name));
       const compatibleInitial=!row.contract&&previous.sourceHashes?.['tools/release.mjs']===initialRunnerHash
         &&stableJSON(phaseInputs(previous.sourceHashes,name))===stableJSON(phaseInputs(sourceHashes,name));
@@ -215,17 +220,24 @@ preflight();
 if(preparation){
   assert.equal(report.state,'complete','Run release:check before preparation.');
   assert.ok(report.phases.some(row=>row.name==='sources'&&row.state==='passed'),'Run release:package before preparation.');
-  assert.equal(fileHash('web/sources/george-source.tar.gz'),report.sourceArchiveSha256,'Source archive changed since packaging.');
-  assert.equal(git(['status','--porcelain','--untracked-files=normal']),'','Commit the checked files and source archive before preparing publication.');
+  assert.equal(git(['status','--porcelain','--untracked-files=normal']),'','Commit the checked files before preparing publication.');
   await phase('prepare',process.execPath,['tools/prepare-publication.mjs','--update','--fast-forward'],{timeoutSeconds:120,reuse:false});
   console.log('Prepared. Publish with: bash build/publication/publish.sh [ssh-key]');
 }else if(packaging){
   assert.equal(report.state,'complete','Run release:check before packaging.');
+  assert.equal(git(['status','--porcelain','--untracked-files=normal']),'',
+    'Commit the checked files before packaging so the source archives match HEAD.');
   const tracked=new Set(git(['ls-files']).split('\n'));
-  assert.ok(Object.keys(sourceHashes).every(file=>tracked.has(file)), 'Stage new source files before packaging so they enter the source archive.');
+  const externalProofFiles=fs.existsSync('kircracker/SOURCE.json')
+    ? JSON.parse(fs.readFileSync('kircracker/SOURCE.json')).externalFiles ?? {} : {};
+  for(const [file,hash] of Object.entries(sourceHashes)){
+    if(tracked.has(file))continue;
+    const external=file.startsWith('kircracker/')?externalProofFiles[file.slice('kircracker/'.length)]:null;
+    assert.ok(external?.sha256===hash,
+      'Stage new source files before packaging; only hash-declared external proof inputs may remain local: '+file);
+  }
   await phase('sources','bash',['tools/package-sources.sh'],{timeoutSeconds:120,reuse:false});
-  report.sourceArchiveSha256=fileHash('web/sources/george-source.tar.gz');save();
-  console.log('Packaged. Commit the checked files, then run release:prepare.');
+  console.log('Packaged from HEAD. Run release:prepare.');
 }else{
   report.state='running';save();
   try{

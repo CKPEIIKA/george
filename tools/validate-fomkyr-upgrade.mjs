@@ -28,6 +28,7 @@ try{
       await page.goto(url);await page.locator('#engineNote.live').waitFor({timeout:30000});
       await page.locator('details.advanced').evaluate(e=>e.open=true);await page.locator('#engineSettings').evaluate(e=>e.open=true);
       await page.locator('#backend').selectOption('fomkyr');await page.locator('#memoryMiB').selectOption('512');
+      await page.locator('#fomkyr-advanced > summary').click();
       await page.locator('#vars').fill(vars.join(','));await page.locator('#rels').fill(rels.join(','));
       await page.locator('#maxdeg').fill('5');await page.locator('#nativeWorkers').fill('2');await page.locator('#fomkyr-bits').selectOption('64');
       await page.locator('#timeoutMinutes').fill('2');

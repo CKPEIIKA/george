@@ -12,6 +12,40 @@ def sha(path:Path)->str:
  with Path(path).open('rb') as f:
   for x in iter(lambda:f.read(1<<20),b''):h.update(x)
  return h.hexdigest()
+# Large inherited inputs stay out of git: the proof archive is a release asset,
+# and these data files are extracted or derived from it byte for byte on first use.
+PROOF_ARCHIVE='frontier-0.5.0.zip'
+DERIVED={
+ 'base-through13.json':('kircracker-frontier/certificates/base-through13.json','973681645854498141e517a38952f030567a3ac2b8edfaaa73668720a5b2d42c'),
+ 'degree14-radical.json':('kircracker-frontier/certificates/nichols/degree14-radical.json','f223e6cb550d6ac25f140ca608e7c918778297ae631c9026f7ba8783633cd7bc'),
+ 'star14-leading-words.json':(None,'bbf2c7fa05cd7d56abb5812313745fefa45cf639fcc3f19693f24f633eb4c5a5'),
+}
+_archive_checked=None
+def proof_archive()->Path:
+ global _archive_checked
+ p=Path(os.environ.get('KIRCRACKER_PROOF_ARCHIVE') or ROOT/'proof'/PROOF_ARCHIVE)
+ expected=json.loads((ROOT/'proof/CONTENTS.json').read_text())['archiveSha256']
+ if not p.is_file():
+  raise Invalid(f'proof archive not found: {p}. It is not stored in git; download {PROOF_ARCHIVE} (sha256 {expected}) '
+                'from the George release assets and place it there, or set KIRCRACKER_PROOF_ARCHIVE.')
+ if _archive_checked!=p:
+  if sha(p)!=expected:raise Invalid(f'proof archive {p} does not match its recorded sha256 {expected}')
+  _archive_checked=p
+ return p
+def data_path(name:str)->Path:
+ p=ROOT/'data'/name
+ if name not in DERIVED or p.exists():return p
+ import zipfile
+ member,digest=DERIVED[name];archive=proof_archive();part=p.with_name(p.name+'.part')
+ with zipfile.ZipFile(archive) as z:
+  if member:part.write_bytes(z.read(member))
+  else:
+   if str(ROOT/'tools') not in sys.path:sys.path.insert(0,str(ROOT/'tools'))
+   from derive_star14_index import MEMBER,index
+   part.write_text(json.dumps(index(z.read(MEMBER)),indent=2)+'\n')
+ if sha(part)!=digest:
+  part.unlink();raise Invalid(f'{name} prepared from {archive} does not match its recorded sha256 {digest}')
+ part.replace(p);return p
 def json_hash(value)->str:return hashlib.sha256(json.dumps(value,sort_keys=True,separators=(',',':')).encode()).hexdigest()
 def load(p):return json.loads(Path(p).read_text())
 def atomic_json(p,value):

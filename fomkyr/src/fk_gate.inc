@@ -117,48 +117,57 @@ static u32 fg_pair_group(u32 f,u32 r,u32 k){
  * is discarded here and no lower bound is invented.
  */
 static int fg_plan_replan(void){
- if(!P.active||P.mode!=4||!S.fg_sector_ready||S.fgate.degree!=S.current||P.cursor>=P.count)return 0;
- PlanPair*t=PTR(PlanPair,P.base);for(u32 g=0;g<360;g++){P.gate_pending[g]=0;P.gate_gap[g]=0;P.gate_qmass[g]=0;P.gate_cost[g]=0;P.gate_rank[g]=359;}
+ if(!P.active||P.mode!=4||!S.fg_sector_ready||S.fgate.degree!=S.current||P.cursor>P.count)return 0;
+ if(P.gate_degree!=S.current){P.gate_degree=S.current;memset(P.gate_streak,0,sizeof(P.gate_streak));memset(P.gate_attempts,0,sizeof(P.gate_attempts));memset(P.gate_successes,0,sizeof(P.gate_successes));memset(P.gate_cool_until,0,sizeof(P.gate_cool_until));P.gate_cooldowns=0;}
+ PlanPair*t=PTR(PlanPair,P.base);
+ for(u32 g=0;g<360;g++){P.gate_pending[g]=P.gate_cost[g]=P.gate_qmass[g]=0;P.gate_rank[g]=359;
+  u64 lower=fkg_class_per_grade[S.current][fkg_group_class[S.current&1][g]],upper=S.fg_sector_upper[g];P.gate_gap[g]=upper>=lower?upper-lower:UINT64_MAX;
+ }
  for(u32 i=P.cursor;i<P.count;i++){
   if(!(i&4095)&&cancelled())return GN_CANCELLED;
-  u32 g=fg_pair_group(t[i].f,t[i].g,t[i].k);t[i].group=g;P.gate_pending[g]++;
-  u64 c=(u64)rule(t[i].f)->n+rule(t[i].g)->n;if(UINT64_MAX-P.gate_cost[g]<c)P.gate_cost[g]=UINT64_MAX;else P.gate_cost[g]+=c;
+  u32 g=fg_pair_group(t[i].f,t[i].g,t[i].k);t[i].group=g;
+  if((S.pruning&&rule(t[i].f)->n==1&&rule(t[i].g)->n==1)||(S.chain_enabled&&matcher_interior(rule(t[i].f),rule(t[i].g),t[i].k))){t[i].group=UINT32_MAX;continue;}
+  P.gate_pending[g]++;u64 cost=(u64)rule(t[i].f)->n+rule(t[i].g)->n;
+  P.gate_cost[g]=UINT64_MAX-P.gate_cost[g]<cost?UINT64_MAX:P.gate_cost[g]+cost;
  }
- u32 target=UINT32_MAX;u64 best_gap=UINT64_MAX,best_avg=UINT64_MAX,best_pending=0,best_q=0;
+ for(u32 i=S.batch_committed;i<S.batch_n;i++){
+  BatchTask*task=&S.tasks[i];if(!task->rc||task->rc==UINT32_MAX)continue;
+  if((S.pruning&&rule(task->f)->n==1&&rule(task->g)->n==1)||(S.chain_enabled&&matcher_interior(rule(task->f),rule(task->g),task->k)))continue;
+  u32 g=fg_pair_group(task->f,task->g,task->k);P.gate_pending[g]++;
+  u64 cost=(u64)rule(task->f)->n+rule(task->g)->n;P.gate_cost[g]=UINT64_MAX-P.gate_cost[g]<cost?UINT64_MAX:P.gate_cost[g]+cost;
+ }
+ u32 target=UINT32_MAX;u64 best=0,best_gap=UINT64_MAX,best_avg=UINT64_MAX;
  for(u32 g=0;g<360;g++){
-  u64 lower=fkg_class_per_grade[S.current][fkg_group_class[S.current&1][g]],upper=S.fg_sector_upper[g];
-  P.gate_gap[g]=upper>=lower?upper-lower:UINT64_MAX;
-  if(P.q14_hint&&S.current>=14){u32 qd=S.current-14;if(qd<=FKG_PROFILE_DEGREE)P.gate_qmass[g]=fkg_class_per_grade[qd][fkg_group_class[qd&1][g]];}
-  /* gateword is a FINISHER, not a sector sprint. Pulling work from a sector
-   * with a large remaining deficit destroyed global word-order productivity in
-   * bounded FK6 tests. Only sectors within two missing leaders of their exact
-   * imported target are eligible for promotion. */
-  if(!P.gate_pending[g]||!P.gate_gap[g]||P.gate_gap[g]==UINT64_MAX||P.gate_gap[g]>2)continue;
-  u64 avg=P.gate_cost[g]/P.gate_pending[g];if(!avg)avg=1;u64 q=P.q14_hint?P.gate_qmass[g]:0;
-  /* Integer-only lexicographic leverage score; deliberately avoids scaled
-   * products so the freestanding wasm build needs no compiler-rt i128 helper. */
-  if(target==UINT32_MAX||P.gate_gap[g]<best_gap||
-     (P.gate_gap[g]==best_gap&&q>best_q)||
-     (P.gate_gap[g]==best_gap&&q==best_q&&avg<best_avg)||
-     (P.gate_gap[g]==best_gap&&q==best_q&&avg==best_avg&&P.gate_pending[g]>best_pending)){
-    target=g;best_gap=P.gate_gap[g];best_q=q;best_avg=avg;best_pending=P.gate_pending[g];
+  if(!P.gate_pending[g]||!P.gate_gap[g]||P.gate_gap[g]>5||P.gate_cool_until[g]>S.degree_committed)continue;
+  u64 avg=P.gate_cost[g]/P.gate_pending[g];if(!avg)avg=1;
+  u64 score=(P.gate_pending[g]*UINT64_C(65536))/(avg*P.gate_gap[g]);
+  if(target==UINT32_MAX||score>best||(score==best&&P.gate_gap[g]<best_gap)||(score==best&&P.gate_gap[g]==best_gap&&avg<best_avg)){
+   target=g;best=score;best_gap=P.gate_gap[g];best_avg=avg;
   }
  }
- /* Restore the globally productive word order.  Promotion is LOCAL: at most one
-  * candidate from the near-closed target sector is moved to the front of each
-  * 128-candidate block.  No ambiguity can jump an entire degree plan.  This
-  * preserves word-order cost locality while giving the exact sector gate a
-  * chance to finish a sector and retire its remaining candidates. */
  int rc=plan_sort(t+P.cursor,P.count-P.cursor,3);if(rc<0)return -rc;
- P.gate_target=target;P.gate_stride=128;P.gate_injected=0;
- if(target!=UINT32_MAX){
-  for(u32 block=P.cursor;block<P.count;block+=P.gate_stride){
-   u32 end=MIN(P.count,block+P.gate_stride),pick=UINT32_MAX;
-   for(u32 i=block;i<end;i++)if(t[i].group==target){pick=i;break;}
-   if(pick!=UINT32_MAX&&pick!=block){PlanPair x=t[block];t[block]=t[pick];t[pick]=x;P.gate_injected++;}
+ /* A small front burst feeds at most two dedicated lanes. Other lanes retain
+  * ordinary work. Frontier 7 preserves identities across every such promotion. */
+ P.gate_target=target;P.gate_stride=8;P.gate_injected=0;
+ if(target!=UINT32_MAX)for(u32 q=0;q<8&&P.cursor+q<P.count;q++){
+  u32 at=P.cursor+q,pick=UINT32_MAX;u64 smallest=UINT64_MAX;
+  for(u32 pass=0;pass<2&&pick==UINT32_MAX;pass++)for(u32 i=at;i<P.count;i++){
+   if(t[i].group!=target)continue;
+   if(!pass&&q){u32 duplicate=0;for(u32 j=P.cursor;j<at;j++)duplicate|=t[j].f==t[i].f;if(duplicate)continue;}
+   u64 cost=(u64)rule(t[i].f)->n+rule(t[i].g)->n;if(cost<smallest){smallest=cost;pick=i;}
   }
+  if(pick==UINT32_MAX)break;PlanPair chosen=t[pick];memmove(t+at+1,t+at,(u64)(pick-at)*sizeof(*t));t[at]=chosen;P.gate_injected++;
  }
- P.gate_ready=1;P.gate_replans++;return 0;
+ P.gate_ready=1;P.gate_replans++;P.gate_last_refresh=S.degree_committed;return 0;
+}
+static void fg_note_pair_commit(u32 f,u32 g,u32 k,u32 rules_before){
+ if(P.mode!=4||!S.fg_sector_ready||S.fgate.degree!=S.current)return;
+ u32 sector=fg_pair_group(f,g,k);P.gate_attempts[sector]++;
+ if(S.nrules>rules_before){P.gate_successes[sector]++;P.gate_streak[sector]=0;}
+ else if(P.gate_target==sector&&P.gate_gap[sector])P.gate_streak[sector]++;
+ if(P.gate_target==sector&&P.gate_streak[sector]>=32){
+  P.gate_cool_until[sector]=S.degree_committed+256;P.gate_streak[sector]=0;P.gate_cooldowns++;(void)fg_plan_replan();
+ }else if((P.gate_target==sector&&!(P.gate_attempts[sector]&7))||S.degree_committed-P.gate_last_refresh>=128)(void)fg_plan_replan();
 }
 static int fg_sector_ids(u32 f,u32 r,u32 k){
  if(!S.fg_sector_ready||S.fgate.degree!=S.current||S.certifying||S.fgate.status<FKG_ACTIVE||S.fgate.status>FKG_READY)return 0;

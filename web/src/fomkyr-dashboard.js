@@ -241,10 +241,12 @@ export class FomkyrDashboard {
 
     // Lanes
     const lanes = running ? [...(p?.activity?.lanes ?? [])].sort((a, b) => Number(b.terms) - Number(a.terms)) : [];
+    // Big-row columns appear only while some lane actually holds a big row.
+    const big = lanes.some((l) => l.bigRow?.capacity || l.bigRow?.coefficientPoolBytes);
     if (lanes.length) html += `<section class="fk-block"><h2>${esc(t('dash.lanes'))}</h2><div class="table-wrap"><table class="fk-lanes"><thead><tr>` +
-      ['dash.lane', 'dash.pair', 'dash.tier', 'dash.terms', 'dash.capacity', 'dash.pool'].map((k) => `<th scope="col">${esc(t(k))}</th>`).join('') + '</tr></thead><tbody>' +
+      ['dash.lane', 'dash.pair', 'dash.tier', 'dash.terms', ...(big ? ['dash.capacity', 'dash.pool'] : [])].map((k) => `<th scope="col">${esc(t(k))}</th>`).join('') + '</tr></thead><tbody>' +
       lanes.slice(0, 32).map((l) => `<tr><td>${l.lane}</td><td>${l.pair ? `${l.pair.leftRule}/${l.pair.rightRule}` : '—'}</td><td>${esc(l.tier ?? '')}</td>` +
-        `<td>${f(Number(l.terms))}</td><td>${f(l.bigRow?.capacity ?? 0)}</td><td>${bytes(l.bigRow?.coefficientPoolUsedBytes)} / ${bytes(l.bigRow?.coefficientPoolBytes)}</td></tr>`).join('') +
+        `<td>${f(Number(l.terms))}</td>` + (big ? `<td>${f(l.bigRow?.capacity ?? 0)}</td><td>${bytes(l.bigRow?.coefficientPoolUsedBytes)} / ${bytes(l.bigRow?.coefficientPoolBytes)}</td>` : '') + '</tr>').join('') +
       '</tbody></table></div></section>';
 
     // Engine log, collapsed by default

@@ -1,25 +1,25 @@
 {
   "kind": "frontend",
   "compilerMajor": 23,
-  "profileSha256": "bc6b04b755b267a8c86b0b6a8ef7d596421c63624d70032faebbbe196d7acdaf",
+  "profileSha256": "3fe2577dce72e27af6832761fe58a9c6c3d5be35f910faf67f8a609301962ea4",
   "sourceHashes": {
-    "src/big_rational_nf.inc": "46544f22c5739f4fe084c8475bc1407276f613113fd459f7ec5415cf6b737dcf",
-    "src/cooperative.inc": "e0bae5e1dec3dfcd7442bd9b6686f54422fcc52ad24778ac9aad26551806d7a1",
+    "src/big_rational_nf.inc": "97f9d4ecc4c6e5d882458460e33c0526096cdef39344a98b97723aef461bbb67",
+    "src/cooperative.inc": "a546137508c9a50bfd69260813341f5cf4188cd64fa29716b2f7e72352680270",
     "src/delta_commit.inc": "99923cd320ed66b800870b8619fee005e8a82244aaaa575101301a7c0d08463f",
-    "src/fk_gate.inc": "7bdce13833c28ca92e81e07aaae94d240fa3e4bf104e0f95c628182ca6a75816",
-    "src/frontier.inc": "f568419d00ddc67192cfb4de445ff5ed41770a7bb01580cfc2aacdd599ef7d38",
+    "src/fk_gate.inc": "fb83ba24346aabebdcf1aeeec3239e104c404dbc94f7dac9234fba4133f8a177",
+    "src/frontier.inc": "780134c5c9dac475d46f65310bf33bfc58693a3a1ec22c7abafffc77815b13a8",
     "src/heap_nf.inc": "faca4a49dc764adb2692a4fe5cc9a6853461ed372bb0029c92b79f3e17588cfb",
     "src/hilbert.inc": "1061a3ffe010548ca4860ce13ed069a541934745f75a1f64a91e18a08874106a",
     "src/hilbert_gate.inc": "161e31af6513d48df8de9b6a625d1feb11009033ae6b8470ee29c5e7b878ecb1",
-    "src/kernel.c": "161a76fc7748be5632a0c1e7f2fc95e7af4985132b7ca3640169abddd44b2f22",
+    "src/kernel.c": "5b73f2a03598c1f17393b2064d1d7f6861dce80154a7670b49f4b692eb093a79",
     "src/kernel.h": "1cb4cdbb9fd011aa848e15491b01e32338f9707715e7294360fecdc179d7467f",
-    "src/limb_division.inc": "21e0ce64037a12722ed2452aa47095f605755b5ab9fb19d7fb11bb09c52f673d",
+    "src/limb_division.inc": "61a60a3d3032b2ca9be5c780c8c623b4f4294442d04ceacf76be191e53c4df5c",
     "src/local_rewrites.inc": "23c0956afbff9860f7c35ccb6606576ba5247c885aef2151ac532d8d5ed64a6c",
     "src/lower_bound.inc": "9cb27bbd3845d2416aa8af2287314da19b9ef6eb1b08ca93913708faefd2c7c7",
     "src/matcher.inc": "97aa2699f03093a27f4ce2aba6d6e52dc45db55e24d04a96d4cbcab4828f301d",
     "src/nc_gm.h": "55b657a0e22e1d482670af80e3227ff0fe7d8337710c3d1c720055b2da8abcb6",
     "src/nc_gm.inc": "8374c96dc6f2aff40e65c48b540bddce0a7655912947f8e115539562fdc9c2b3",
-    "src/pair_plan.inc": "384ddce40ff2966a60582d087e99611e84ed07c8cc63bf91a05b9de9d2c0f660",
+    "src/pair_plan.inc": "740329a2241e8dcf6d9058e45262dcbc5b060abe078784dba4bf86a32a589a71",
     "src/radix_queue.inc": "c4f8827260c7e3aef28cbb7e3ae90315c731261bb2fc3e572710371798f836db",
     "src/rational_heap_nf.inc": "68756de18dc3a1b6e3bb54589209b0219caaa131ffbf0a1707526d7ed3621823",
     "src/tail_cache.inc": "85621a582f3ab13ff75c858144e3357bdd6d4070bc677dedd4e81a80c5b8d1ae",
@@ -167,7 +167,21 @@
       "basisSha256": "d01811494b51441325bc1041acd212ce7beb743ec45c2767fdc2cdad4443e64f",
       "normalization": "monic-tail-reduced",
       "reducerTailCacheBytes": 67108864
+    },
+    {
+      "fixtureSha256": "fc262ce4250ffbdaf366243b4aac1765caa97c2832313be013f82373ef6f0419",
+      "degree": 6,
+      "workers": 2,
+      "shared": true,
+      "modulus": 0,
+      "basisCount": 497,
+      "basisSha256": "a63e2d906d1cb4f0198e4f30708b8e865dc3a6a0da307f1face015927a0d792f",
+      "normalization": "monic-tail-reduced",
+      "pairOrder": "gateword",
+      "planMinDegree": 2,
+      "hilbertGate": true,
+      "frontierABI": 7
     }
   ],
-  "method": "Real Chromium Wasm branch counters from twelve independent cold jobs: shared/single FK6, rational coefficients, prime fields, FK gate, word plans, delta commits, GM filters, optional canonical reducer tails and monic tail-reduced exports. Shared modules use atomic profile counters. No native profile or host measurements are included."
+  "method": "Real Chromium Wasm branch counters from thirteen independent cold jobs: shared/single FK6, rational coefficients, prime fields, FK gate, word plans, delta commits, GM filters, optional canonical reducer tails, safe sector finishing and monic tail-reduced exports. Shared modules use atomic profile counters. No native profile or host measurements are included."
 }

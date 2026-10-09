@@ -46,7 +46,7 @@ function validateState(state) {
       if (state.backend === 'fomkyr') validateFomkyrOptions(options);
     }
   } catch { throw new Error('share.invalid'); }
-  if (['fomkyr', 'native'].includes(state.backend) && !(state.backend === 'fomkyr' && options?.execution === 'single')
+  if (state.backend === 'fomkyr' && options?.execution !== 'single'
       && (!Number.isInteger(state.nativeWorkers) || state.nativeWorkers < 0 || state.nativeWorkers > 32)) throw new Error('share.invalid');
   return state;
 }
@@ -111,6 +111,8 @@ export async function readShareLink(hash) {
   let offset = 1;
   const state = Object.fromEntries(FIELDS.map(([key, fallback], i) => [key, BigInt(mask) & (1n << BigInt(i)) ? packed[offset++] : fallback]));
   if (offset !== packed.length) throw new Error('share.invalid');
+  // Links to the retired George Native NC engine open with fomkyr.
+  if (state.backend === 'native') state.backend = 'fomkyr';
   validateState(state);
   state.fomkyrOptions = state.fomkyrOptions ? JSON.parse(state.fomkyrOptions) : {};
   return state;

@@ -29,3 +29,7 @@ start with an ordinary plan and no consumed bitmap. Binary basis records stay AB
 Migrated jobs require the patched `0.7.2-replan1` reader or a later reader supporting
 frontier version 4. Keep a pre-migration checkpoint and binary for rollback; older
 readers can reject the migrated frontier and fall back to an earlier checkpoint.
+
+For dynamic sector priorities, see [bounded sector finishing](SECTOR_FINISHER.md).
+Its version-7 frontier stores finished identities and explicit pending rows;
+word-plan and legacy bitmap formats above remain readable.

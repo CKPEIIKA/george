@@ -67,3 +67,13 @@ __pycache__/
 /kircracker/kircracker-work/
 /kircracker/.cache/
 /kircracker/.local-deps/
+
+# Kircracker's proof archive is a release asset (sha256 in kircracker/proof/CONTENTS.json);
+# these data files are extracted or derived from it on first use.
+/kircracker/proof/*.zip
+/kircracker/data/base-through13.json
+/kircracker/data/degree14-radical.json
+/kircracker/data/star14-leading-words.json
+# Built from the published commit by tools/pages-tree.mjs; ecl-source is fixed.
+/web/sources/george-source.tar.gz
+/web/sources/fomkyr-source.tar.gz

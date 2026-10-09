@@ -12,6 +12,7 @@ import {staticServer} from './serve.mjs';
 import {TUTORIALS,tutorialForm} from '../web/src/tutorials.js';
 import {EXAMPLES} from '../web/src/examples.js';
 import {algebra} from '../test/support/algebra.mjs';
+import {SOURCE_ARCHIVES} from './source-archives.mjs';
 const upstream=JSON.parse(fs.readFileSync('test/fixtures/upstream-cases.json','utf8'));
 const out=`build/validation/ui-${Date.now()}`;fs.mkdirSync(out,{recursive:true});
 const policyOnly=process.argv.includes('--policy-only');
@@ -243,6 +244,9 @@ async function mobileViewport(profile,url){
  await call('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:false},sessionId);
  await call('Page.navigate',{url},sessionId);return socket;
 }
+
+// Pages builds these archives from the published commit; serve local copies.
+for(const [name,build] of Object.entries(SOURCE_ARCHIVES))if(!fs.existsSync('web/sources/'+name))fs.writeFileSync('web/sources/'+name,build());
 
 async function run(mount,mode='desktop'){
  const server=staticServer('web',mount),serve=server.listeners('request')[0];server.removeAllListeners('request');

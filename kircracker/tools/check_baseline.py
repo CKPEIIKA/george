@@ -3,9 +3,10 @@
 from pathlib import Path
 import tempfile,zipfile,subprocess,json,hashlib,sys,time
 R=Path(__file__).resolve().parents[1];out=R/'evidence';out.mkdir(exist_ok=True)
+sys.path.insert(0,str(R));from app.util import proof_archive
 with tempfile.TemporaryDirectory(prefix='kirchecker-baseline-') as tmp:
  t=Path(tmp)
- with zipfile.ZipFile(R/'proof/frontier-0.5.0.zip') as z:
+ with zipfile.ZipFile(proof_archive()) as z:
   for n in ['common.hpp','module_builder.cpp']:(t/n).write_bytes(z.read('kircracker-frontier/src/'+n))
  subprocess.run(['g++','-std=c++17','-O3','-flto','-pthread',str(t/'module_builder.cpp'),'-o',str(t/'old')],check=True)
  lib=t/'library';subprocess.run([sys.executable,str(R/'tools/prepare_inputs.py'),str(lib)],stdout=subprocess.DEVNULL,check=True)

@@ -7,8 +7,12 @@
 static Coef limb_divmodc(Arena*z,Coef a,Coef b,int quotient){
  if(!b){z->error=GN_CORRUPT;return 0;}
  if(!(a&1)&&!(b&1)){u64 x=cabs64(a),y=cabs64(b);return csmall((i64)(quotient?x/y:x%y));}
- int cmp=magcmp(a,b);if(cmp<0)return quotient?0:clonec(z,cabs(a));if(!cmp)return quotient?2:0;
  u32 na=cn(a),nb=cn(b);
+ /* A tagged zero-length/unnormalized magnitude is invalid, rather than a
+  * zero divisor to index at nb-1. Check before clz and unsigned subtraction. */
+ if(!nb||((a&1)&&(!na||!cl(a,na-1)))||((b&1)&&!cl(b,nb-1))){z->error=GN_CORRUPT;return 0;}
+ int cmp=magcmp(a,b);if(cmp<0)return quotient?0:clonec(z,cabs(a));if(!cmp)return quotient?2:0;
+ if(na<nb){z->error=GN_CORRUPT;return 0;}
  if(nb==1){
   u64 qo=quotient?alloc_a(z,(u64)na*4):0;if(z->error)return 0;
   u32*q=quotient?PTR(u32,qo):NULL;u64 rem=0,div=cl(b,0);

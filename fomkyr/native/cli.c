@@ -22,7 +22,9 @@
 #include <ctype.h>
 #include <math.h>
 #include <time.h>
+#ifndef VERSION
 #define VERSION "0.7.4"
+#endif
 static u32 plan_order=0,plan_min=12;static u64 plan_bytes=UINT64_C(67108864);
 static u32 quantum_ms=250,lookahead=128,coop_flags=3,coop_max_window=512,cache_maxima=1,big_row_max_terms=0,cache_percent=12;
 static u64 shared_cache_bytes=UINT64_MAX;
@@ -135,6 +137,7 @@ static int restore_cp(Checkpoint*cp,u32*workers){u64 off=0;
 static char identity[65],runkey[80];static const char*run_dir;static Buffer safe_payload;static int safe_partial,quiet;
 static u64 sequence,checkpoints_written;static double checkpoint_ms=30000,last_checkpoint,started,last_log,progress_ms=5000,prior_elapsed_ms=0;
 static int telemetry_failed;static u64 telemetry_target;
+static void sector_json(Buffer*b);
 static void telemetry_save(const char *state,const char *progress,double now){
  if(!telemetry_path)return;
  Buffer b={0};
@@ -142,7 +145,7 @@ static void telemetry_save(const char *state,const char *progress,double now){
  VERSION,(long)getpid(),state,(long long)time(NULL),gn_stat(5),planned_scratch,planned_reserve,gn_stat(4),gn_stat(39),gn_stat(40),gn_stat(0),gn_stat(6),sequence,(now-last_checkpoint)/1000,(now-started)/1000,(prior_elapsed_ms+now-started)/1000,hc.enabled&&hc.assumed?"true":"false",fg_enabled?"true":"false",fg_enabled&&fg_sectors?"true":"false",progress?progress:"null");
  buf_printf(&b,",\"currentDegree\":%" PRIu64 ",\"completedThroughDegree\":%" PRIu64 ",\"workers\":%" PRIu64 ",\"largeRowWorkspaces\":%" PRIu64 ",\"activeLargeRowWorkspaces\":%" PRIu64,gn_stat(3),gn_stat(2),gn_stat(10),gn_reserve_pool_stat(0),gn_reserve_pool_stat(4));
  if(fg_enabled){u64 deficit=(u64)gn_fg_limb(2,0)|((u64)gn_fg_limb(2,1)<<32);buf_printf(&b,",\"fkGate\":{\"degree\":%" PRIu64 ",\"closedSectors\":%" PRIu64 ",\"totalSectors\":360,\"deficit\":%" PRIu64 ",\"sectorSkips\":%" PRIu64 "}",gn_fg_stat(0),gn_fg_stat(20),deficit,gn_fg_stat(8));}
- buf_printf(&b,",\"targetDegree\":%"PRIu64,telemetry_target);gm_json(&b);tail_json(&b);buf_add(&b,"}\n");
+ buf_printf(&b,",\"targetDegree\":%"PRIu64,telemetry_target);gm_json(&b);tail_json(&b);sector_json(&b);buf_add(&b,"}\n");
  char *directory=strdup(telemetry_path);if(!directory){buf_free(&b);return;}char *slash=strrchr(directory,'/');const char *name=telemetry_path;
  if(slash){name=telemetry_path+(slash-directory)+1;if(slash==directory)slash[1]=0;else *slash=0;}else strcpy(directory,".");
  int failed=write_atomic(directory,name,b.s,b.n);if(failed&&!telemetry_failed)fprintf(stderr,"Dashboard status write failed: %s (computation continues).\n",telemetry_path);telemetry_failed=failed;free(directory);buf_free(&b);
@@ -152,13 +155,20 @@ static void tail_json(Buffer*b){
  buf_printf(b,",\"reducerTailCache\":{\"requestedBytes\":%"PRIu64",\"enabled\":%s,\"capacityBytes\":%"PRIu64",\"usedBytes\":%"PRIu64",\"workspaceBytes\":%"PRIu64",\"hits\":%"PRIu64",\"misses\":%"PRIu64",\"attempts\":%"PRIu64",\"built\":%"PRIu64",\"declined\":%"PRIu64",\"savedTerms\":%"PRIu64",\"savedBytes\":%"PRIu64",\"buildMicroseconds\":%"PRIu64"}",gn_tail_cache_stat(0),gn_tail_cache_stat(1)?"true":"false",gn_tail_cache_stat(2),gn_tail_cache_stat(3),gn_tail_cache_stat(4),gn_tail_cache_stat(5),gn_tail_cache_stat(6),gn_tail_cache_stat(8),gn_tail_cache_stat(9),gn_tail_cache_stat(10),gn_tail_cache_stat(11),gn_tail_cache_stat(12),gn_tail_cache_stat(13));
 }
 static void gm_json(Buffer*b){buf_printf(b,",\"gm\":{\"mask\":%"PRIu64",\"examined\":%"PRIu64",\"multiplySkipped\":%"PRIu64",\"leadingWordSkipped\":%"PRIu64",\"backwardSkipped\":%"PRIu64",\"unavailable\":%"PRIu64",\"pendingPruned\":%"PRIu64",\"fallbackQueries\":%"PRIu64",\"counterScope\":\"session\"}",gn_gm_stat(0),gn_gm_stat(1),gn_gm_stat(2),gn_gm_stat(3),gn_gm_stat(4),gn_gm_stat(5),gn_gm_stat(6),gn_gm_stat(7));}
+static void sector_json(Buffer*b){
+ u64 target=gn_pair_plan_stat(15);int active=gn_stat(3)&&gn_pair_plan_stat(1)==4&&gn_pair_plan_stat(13)&&target<360;
+ buf_printf(b,",\"sectorFinisher\":{\"enabled\":%s,\"target\":",active?"true":"false");
+ if(active)buf_printf(b,"%"PRIu64,target);else buf_add(b,"null");
+ buf_printf(b,",\"deficit\":%"PRIu64",\"laneLimit\":%"PRIu64",\"burst\":8,\"targetAttempts\":%"PRIu64",\"targetSuccesses\":%"PRIu64",\"cooldowns\":%"PRIu64",\"rowsSelected\":%"PRIu64",\"rowsHeld\":%"PRIu64"}",gn_pair_plan_stat(23),gn_pair_plan_stat(26),gn_pair_plan_stat(20),gn_pair_plan_stat(21),gn_pair_plan_stat(22),gn_pair_plan_stat(24),gn_pair_plan_stat(25));
+ if(gn_fg_stat(16)){buf_add(b,",\"sectorDeficits\":[");for(u32 g=0;g<360;g++){u64 up=gn_fg_group(g,0),lo=gn_fg_group(g,1);buf_printf(b,"%s%"PRIu64,g?",":"",up>=lo?up-lo:UINT64_MAX);}buf_add(b,"]");}
+}
 static void capture_safe(int partial){
  /* A dimension-closed degree must be finished before publishing its frontier. */
  if(partial && (hc.enabled||fg_enabled) && gn_hilbert_gate_stat(3))return;
  Buffer b={0};buf_printf(&b,"{\"abi\":%d,\"version\":\"%s\",\"identity\":\"%s\",\"basisSize\":%" PRIu64 ",\"terms\":%" PRIu64 ",\"diskBytes\":%" PRIu64 ",\"completedThroughDegree\":%" PRIu64 ",\"currentDegree\":%" PRIu64 ",\"partial\":%s,\"hashBits\":%u,\"runKey\":\"%s\"",(fg_enabled?5:hc.enabled?4:3),VERSION,identity,gn_stat(0),gn_stat(1),gn_stat(6),gn_stat(2),gn_stat(3),partial?"true":"false",gn_frontier_hash_bits(),runkey);
  if(partial){u64 p=gn_frontier_export();u32 n=gn_frontier_size();if(!p){buf_free(&b);return;}unsigned char*t=native_pointer(p);buf_add(&b,",\"frontier\":\"");char*hex=malloc((size_t)n*2);if(!hex){buf_free(&b);return;}const char*digits="0123456789abcdef";for(u32 i=0;i<n;i++){hex[2*i]=digits[t[i]>>4];hex[2*i+1]=digits[t[i]&15];}buf_n(&b,hex,2*n);free(hex);buf_printf(&b,"\",\"retainedCommittedPairs\":%" PRIu64 ",\"resolvedOverlaps\":%" PRIu64 ",\"totalOverlaps\":%" PRIu64 ",\"pendingPairs\":%u",gn_progress_stat(2),gn_progress_stat(2)+gn_progress_stat(4)+gn_progress_stat(5),gn_progress_stat(0),gn_frontier_pending());}
  if(partial&&gn_gm_stat(0)&&!gn_pair_plan_stat(0))buf_add(&b,",\"frontierABI\":6,\"minimumReader\":\"0.7.4-gm1\"");
- if(partial&&gn_pair_plan_stat(0)){u64 pm=gn_pair_plan_stat(1);buf_printf(&b,",\"pairPlanOrder\":%"PRIu64",\"frontierABI\":%"PRIu64",\"minimumReader\":\"%s\"",pm,gn_gm_stat(0)?6:gn_pair_plan_stat(18)?5:pm>=3?pm:2,gn_gm_stat(0)?"0.7.4-gm1":gn_pair_plan_stat(18)?"0.7.4":pm==4?"0.7.3":pm==3?"0.7.1-pref4.2":"0.7.1");}
+ if(partial&&gn_pair_plan_stat(0)){u64 pm=gn_pair_plan_stat(1);buf_printf(&b,",\"pairPlanOrder\":%"PRIu64",\"frontierABI\":%"PRIu64",\"minimumReader\":\"%s\"",pm,pm==4?7:gn_gm_stat(0)?6:gn_pair_plan_stat(18)?5:pm>=3?pm:2,pm==4?"0.7.4-sector1":gn_gm_stat(0)?"0.7.4-gm1":gn_pair_plan_stat(18)?"0.7.4":pm==4?"0.7.3":pm==3?"0.7.1-pref4.2":"0.7.1");}
  closure_metadata(&b);fg_metadata(&b);reference_json(&b);buf_free(&safe_payload);safe_payload=b;safe_partial=partial;
 }
 static int save_safe(int force){if(!safe_payload.s)return 0;double now=gn_host_clock();if(!force&&!native_checkpoint&&now-last_checkpoint<checkpoint_ms)return 0;Buffer p={0},e={0};buf_n(&p,safe_payload.s,safe_payload.n);buf_printf(&p,",\"sequence\":%" PRIu64 ",\"sessionElapsedMs\":%" PRIu64 ",\"cumulativeElapsedMs\":%" PRIu64 "}",++sequence,(u64)(now-started),(u64)(prior_elapsed_ms+now-started));char hash[65];sha256_hex(p.s,p.n,hash);buf_printf(&e,"{\"schema\":2,\"payload\":%s,\"sha256\":\"%s\"}\n",p.s,hash);char name[64];snprintf(name,sizeof(name),"%s-%u.json",safe_partial?"partial":"checkpoint",safe_partial?(unsigned)(sequence%2):(unsigned)(gn_stat(2)%2));int rc=native_sync()||write_atomic(run_dir,name,e.s,e.n)?GN_IO:0;if(!rc){last_checkpoint=gn_host_clock();native_checkpoint=0;checkpoints_written++;if(!quiet)log_json(stderr,"{\"event\":\"checkpoint\",\"partial\":%s,\"sequence\":%" PRIu64 ",\"file\":\"%s\"}\n",safe_partial?"true":"false",sequence,name);}buf_free(&p);buf_free(&e);return rc;}
@@ -308,8 +318,27 @@ static void wasm_exec(int argc,char**argv){
  for(int i=1;i<argc;i++)if(strcmp(argv[i],"--wasm"))args[k++]=argv[i];args[k]=NULL;
  execvp(args[0],args);perror("node");exit(69);
 }
-static char*decimal_magnitude(const unsigned char*data,u32 limbs){u32*a=malloc((size_t)limbs*4);if(!a)return NULL;for(u32 i=0;i<limbs;i++)a[i]=rd32(data+4*i);u32*nine=NULL,count=0;while(limbs){u64 rem=0;for(u32 i=limbs;i;i--){u64 v=(rem<<32)|a[i-1];a[i-1]=(u32)(v/1000000000);rem=v%1000000000;}u32*p=realloc(nine,((size_t)count+1)*4);if(!p){free(a);free(nine);return NULL;}nine=p;nine[count++]=(u32)rem;while(limbs&&!a[limbs-1])limbs--;}
- Buffer s={0};if(!count)buf_add(&s,"0");else{buf_printf(&s,"%u",nine[count-1]);for(u32 i=count-1;i;i--)buf_printf(&s,"%09u",nine[i-1]);}free(a);free(nine);return s.s;}
+static char*decimal_magnitude(const unsigned char*data,u32 limbs){
+ if(!limbs)return strdup("0");
+ size_t limb_count=limbs;
+ if(limb_count>SIZE_MAX/sizeof(u32))return NULL;
+ u32*a=calloc(limb_count,sizeof(*a));if(!a)return NULL;
+ for(size_t i=0;i<limb_count;i++)a[i]=rd32(data+4*i);
+ u32*end=a+limb_count;
+ u32*nine=NULL;size_t count=0,capacity=0;
+ while(end!=a){
+  u64 rem=0;for(u32*cell=end;cell!=a;){--cell;u64 v=(rem<<32)|*cell;*cell=(u32)(v/1000000000);rem=v%1000000000;}
+  if(count==capacity){
+   size_t next=capacity?capacity*2:16;
+   if(next<capacity||next>SIZE_MAX/sizeof(*nine)){free(a);free(nine);return NULL;}
+   u32*p=malloc(next*sizeof(*nine));if(!p){free(a);free(nine);return NULL;}
+   if(count)memcpy(p,nine,count*sizeof(*nine));free(nine);nine=p;capacity=next;
+  }
+  nine[count++]=(u32)rem;while(end!=a&&!end[-1])--end;
+ }
+ Buffer s={0};buf_printf(&s,"%u",nine[count-1]);for(size_t i=count-1;i;i--)buf_printf(&s,"%09u",nine[i-1]);
+ free(a);free(nine);return s.s;
+}
 #include "export.h"
 static int export_hilbert(u32 degree,u64 budget){u64 left=budget-gn_stat(4);int rc=gn_hilbert(degree,left<256*MIB?left:256*MIB);if(rc)return rc;Buffer b={0};buf_add(&b,"{\"available\":true,\"coefficients\":[");u32 limbs=gn_hilbert_limbs();unsigned char*p=malloc((size_t)limbs*4);if(!p)return GN_MEMORY;for(u32 d=0;d<=degree;d++){for(u32 i=0;i<limbs;i++){u32 v=gn_hilbert_limb(d,i);for(u32 k=0;k<4;k++)p[4*i+k]=(unsigned char)(v>>(8*k));}char*s=decimal_magnitude(p,limbs);if(!s){free(p);buf_free(&b);return GN_MEMORY;}if(d)buf_add(&b,",");buf_string(&b,s);free(s);}free(p);buf_printf(&b,"],\"certifiedThroughDegree\":%u,\"modulus\":%u}",degree,gn_modulus());if(hc.enabled){b.n--;b.s[b.n]=0;closure_metadata(&b);buf_add(&b,"}");}if(fg_enabled){b.n--;b.s[b.n]=0;fg_metadata(&b);buf_add(&b,"}");}rc=write_atomic(run_dir,"hilbert.json",b.s,b.n)?GN_IO:0;buf_free(&b);return rc;}
 int main(int argc,char**argv){
@@ -414,7 +443,7 @@ int main(int argc,char**argv){
  for(u32 i=0;i<gn_memory_stat(1);i++)buf_printf(&result,"%s{\"lane\":%u,\"coefficientPoolHighWaterBytes\":%"PRIu64",\"arithmeticTempHighWaterBytes\":%"PRIu64",\"collectedLiveHighWaterBytes\":%"PRIu64"}",i?",":"",i,gn_exact_stat(i,21),gn_exact_stat(i,22),gn_exact_stat(i,23));
  buf_add(&result,"]");gm_json(&result);tail_json(&result);
  buf_printf(&result,",\"reduced\":%s,\"normalization\":\"%s\",\"normalizationSeconds\":%.6f,\"exportedTerms\":%"PRIu64,!rc&&export&&!raw_export?"true":"false",export?(raw_export?"primitive-integer":"monic-tail-reduced"):"not-exported",normalization_seconds,exported_terms);
- commit_json(&result);buf_add(&result,"}");
+ sector_json(&result);commit_json(&result);buf_add(&result,"}");
  emit_json(stdout,result.s);if(human_output){printf("Job directory: %s\n",workdir);if(!rc&&export)printf("Basis file: %s/result.gb\n",dir);if(!rc&&hilbert)printf("Hilbert coefficients: %s/hilbert.json\n",dir);}if(write_atomic(dir,"native-result.json",result.s,result.n))fprintf(stderr,"Could not save result metadata: %s\n",strerror(errno));buf_free(&result);buf_free(&safe_payload);native_close();fixture_free(&fixture);free(dir);unlock_job();
  if(!rc)return 0;if(rc==GN_CANCELLED)return native_stop?128+native_stop:124;return rc==GN_MEMORY||rc==GN_SCRATCH?75:70;
 }

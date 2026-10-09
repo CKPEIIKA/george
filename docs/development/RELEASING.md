@@ -98,16 +98,18 @@ Stage new source files so the corresponding-source archive includes them:
 
 ```sh
 git add <reviewed-source-files>
-npm run release:package
-git add web/sources/george-source.tar.gz
 git commit
+npm run release:package
 npm run release:prepare
 ```
 
-Packaging and preparation use the last completed check report automatically,
-including its full/routine profile. Preparation requires unchanged checked
-sources, the packaged archive and a clean working tree. It advances the prepared
-`publish/main` and `publish/gh-pages` refs with fast-forward checks.
+Commit before packaging: the source archives are built from `HEAD`, including
+the reviewed cleanup. Packaging and preparation use the last completed check
+report automatically, including its full/routine profile. Packaging and preparation require unchanged checked
+sources and a clean working tree. It advances `publish/main` with a fast-forward
+check and prepares `publish/gh-pages` as one parentless commit that replaces the
+site branch. Publication builds the George and fomkyr source archives from the
+commit; `release:package` writes local copies for serving and checks.
 
 Publish those prepared refs with:
 
@@ -117,6 +119,10 @@ bash build/publication/publish.sh [ssh-key]
 
 GitHub Pages deployment originates on `gh-pages`, matching its environment
 protection rules. Publication verifies the deployed bytes after pushing.
+
+The checkpoint-upgrade UI runner is bound to its own phase; editing its menu
+interaction does not rerun unchanged algebra or native checks. Reused evidence
+retains the original report and digest.
 
 Native C CLI and its dashboard test are excluded from Wasm/algebra phase inputs.
 Their edits rerun every native check that executes the CLI and rebuild its binary;

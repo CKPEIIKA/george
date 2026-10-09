@@ -6,7 +6,6 @@ export function publicationAssets(paths) {
   for (const file of required) if (!paths.includes(file)) throw Error('Missing publication asset: ' + file);
   return [...new Set([...required, ...paths.filter(file => /^src\/[^/]+\.js$/.test(file)
     || /^sources\/[^/]+\.tar\.gz$/.test(file)
-    || /^engine\/native\/(?:[^/]+\.js|george(?:32|64)\.wasm|build\.json|LICENSE\.txt)$/.test(file)
     || /^engine\/fomkyr\/(?:[^/]+\.js|fomkyr(?:32|64)(?:-single)?\.wasm|build\.json|LICENSE\.txt)$/.test(file)
     || /^engine\/fomkyr\/verification\/[^/]+\.(?:py|h|json|txt)$/.test(file)
     || /^engine\/(?:optimized\/|compiled\/|memory64\/)?(?:build\.json|ecl\.(?:js|wasm|data))$/.test(file))])];

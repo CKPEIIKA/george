@@ -174,7 +174,7 @@ export function normalizeBasis({ text, vars, ring = 'noncomm', modulus = 0, weig
   const lines = [];
   let degree = null;
   for (const g of basis) {
-    if (g.degree !== degree) { degree = g.degree; lines.push(`% ${degree}`); }
+    if (g.degree !== degree) { degree = g.degree; lines.push('', `% ${degree}`); }
     lines.push(polynomial(g) + ',');
   }
   return { text: lines.join('\n') + '\n', size: basis.length, dropped: elements.length - basis.length, orderedTails: !!compare };

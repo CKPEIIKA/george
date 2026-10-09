@@ -93,3 +93,57 @@ static int plan_check_pending(const BatchTask*t,u32 n){
  for(u32 i=0;i<P.cursor;i++){if(!(i&4095)&&cancelled())return GN_CANCELLED;u32 h=plan_hash(p[i].f,p[i].g,p[i].k);while(slots[h]){u32 j=slots[h]-1;if(p[i].f==t[j].f&&p[i].g==t[j].g&&p[i].k==t[j].k){if(found[j])return GN_CORRUPT;found[j]=1;break;}h=(h+1)&1023;}}
  for(u32 i=0;i<n;i++)if(!found[i])return GN_CORRUPT;return 0;
 }
+
+/* V7 stores finished identities, independently of any unissued permutation.
+ * Pending identities are explicit and are replayed before a freshly ranked tail.
+ * These helpers never touch task indices, arenas or an in-flight normal form. */
+static int plan_pending_prefix(const BatchTask*pending,u32 n){
+ if(n>P.count||n>BATCH_MAX)return GN_CORRUPT;
+ u32 slots[1024]={0};u8 found[BATCH_MAX]={0};PlanPair saved[BATCH_MAX];
+ for(u32 i=0;i<n;i++){
+  u32 h=plan_hash(pending[i].f,pending[i].g,pending[i].k);
+  while(slots[h]){u32 j=slots[h]-1;if(pending[j].f==pending[i].f&&pending[j].g==pending[i].g&&pending[j].k==pending[i].k)return GN_CORRUPT;h=(h+1)&1023;}
+  slots[h]=i+1;
+ }
+ PlanPair*t=PTR(PlanPair,P.base);u32 tail=0;
+ for(u32 i=0;i<P.count;i++){
+  PlanPair p=t[i];u32 h=plan_hash(p.f,p.g,p.k),match=UINT32_MAX;
+  while(slots[h]){u32 j=slots[h]-1;if(p.f==pending[j].f&&p.g==pending[j].g&&p.k==pending[j].k){match=j;break;}h=(h+1)&1023;}
+  if(match==UINT32_MAX)t[tail++]=p;
+  else{if(found[match])return GN_CORRUPT;found[match]=1;saved[match]=p;}
+ }
+ for(u32 i=0;i<n;i++)if(!found[i])return GN_CORRUPT;
+ if(tail+n!=P.count)return GN_CORRUPT;
+ memmove(t+n,t,(u64)tail*sizeof(*t));if(n)memcpy(t,saved,(u64)n*sizeof(*t));P.cursor=n;return 0;
+}
+static int plan_clear_identities(u8*bits,const BatchTask*task,u32 n,u32 limit){
+ u32 slots[1024]={0};u8 found[BATCH_MAX]={0};
+ if(n>BATCH_MAX||limit>P.count)return GN_CORRUPT;
+ for(u32 i=0;i<n;i++){
+  u32 h=plan_hash(task[i].f,task[i].g,task[i].k);
+  while(slots[h]){u32 j=slots[h]-1;if(task[j].f==task[i].f&&task[j].g==task[i].g&&task[j].k==task[i].k)return GN_CORRUPT;h=(h+1)&1023;}slots[h]=i+1;
+ }
+ PlanPair*t=PTR(PlanPair,P.base);
+ for(u32 i=0;i<limit;i++){
+  PlanPair p=t[i];if(p.ordinal>=P.total)return GN_CORRUPT;
+  u32 h=plan_hash(p.f,p.g,p.k);
+  while(slots[h]){u32 j=slots[h]-1;if(p.f==task[j].f&&p.g==task[j].g&&p.k==task[j].k){
+   if(found[j])return GN_CORRUPT;found[j]=1;bits[p.ordinal>>3]&=(u8)~(1u<<(p.ordinal&7));break;
+  }h=(h+1)&1023;}
+ }
+ for(u32 i=0;i<n;i++)if(!found[i])return GN_CORRUPT;return 0;
+}
+static int plan_completed_bitmap(u8*bits,u32 bytes,const BatchTask*pending,u32 n){
+ if(bytes!=(P.total+7)/8||P.cursor>P.count||P.anchor_seen>P.total)return GN_CORRUPT;
+ memset(bits,0,bytes);
+ if(P.excluded_bytes){if(P.excluded_bytes!=bytes)return GN_CORRUPT;memcpy(bits,PTR(u8,P.excluded_base),bytes);}
+ else{
+  memset(bits,255,(size_t)(P.anchor_seen/8));if(P.anchor_seen&7)bits[P.anchor_seen/8]=(u8)((1u<<(P.anchor_seen&7))-1);
+  int rc=plan_clear_identities(bits,P.anchor,P.anchor_n,P.count);if(rc)return rc;
+ }
+ PlanPair*t=PTR(PlanPair,P.base);
+ for(u32 i=0;i<P.cursor;i++){if(t[i].ordinal>=P.total)return GN_CORRUPT;bits[t[i].ordinal>>3]|=(u8)(1u<<(t[i].ordinal&7));}
+ int rc=plan_clear_identities(bits,pending,n,P.cursor);if(rc)return rc;
+ u64 count=0;for(u32 i=0;i<bytes;i++){u8 b=bits[i];for(;b;b&=(u8)(b-1))count++;}
+ return S.degree_seen>=n&&count==S.degree_seen-n?0:GN_CORRUPT;
+}

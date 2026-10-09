@@ -170,6 +170,8 @@ typedef struct {
  u64 base,capacity,allocated,budget,total,anchor_seen,builds,declines,adoptions,build_us,excluded_base,excluded_count;
  u32 excluded_bytes;
  u32 gate_rank[360];u64 gate_pending[360],gate_gap[360],gate_qmass[360],gate_cost[360],gate_injected;
+ u32 gate_streak[360];u64 gate_attempts[360],gate_successes[360],gate_cool_until[360],gate_cooldowns;
+ u64 gate_last_refresh;u32 gate_degree;
  BatchTask anchor[BATCH_MAX];
 } PairPlan;
 static PairPlan P;
@@ -653,6 +655,7 @@ static int fg_append_check(Poly p,int restoring);
 static int fg_append_done(Poly p,int restoring);
 static int fg_sector_ids(u32 f,u32 g,u32 k);
 static u32 fg_pair_group(u32 f,u32 g,u32 k);
+static void fg_note_pair_commit(u32 f,u32 g,u32 k,u32 rules_before);
 static int fg_sector_pair(Lane*l);
 #include "delta_commit.inc"
 static int append_rule(Poly p,u64 existing_disk,int restoring){
@@ -965,8 +968,8 @@ static int batch_commit_impl(u32 task){
  * original immutable snapshots, followed by the usual exact commit reduction. */
 API int gn_batch_commit(u32 task){
  if(task!=S.batch_committed||GN_LOAD(&S.batch_running))return GN_STATE;
- S.lanes[0].allow_repack=1;int rc=batch_commit_impl(task);S.lanes[0].allow_repack=0;
- if(!rc)S.batch_committed++;return rc;
+ u32 before=S.nrules;S.lanes[0].allow_repack=1;int rc=batch_commit_impl(task);S.lanes[0].allow_repack=0;
+ if(!rc){fg_note_pair_commit(S.tasks[task].f,S.tasks[task].g,S.tasks[task].k,before);S.batch_committed++;}return rc;
 }
 API int gn_batch_retry(u32 workers,u32 first){
  if(!S.auto_memory||!S.current||S.input_expected||GN_LOAD(&S.batch_running)||reserve_pool_busy()||!workers||workers>=S.workers||first!=S.batch_committed||first>=S.batch_n)return GN_STATE;
@@ -1226,7 +1229,12 @@ API int gn_pair_plan_reorder(void){
  S.batch_n=S.batch_first=S.batch_committed=S.batch_work_n=0;GN_STORE(&S.batch_next,0);
  S.iter_f=1;S.iter_k=1;S.iter_node=S.iter_ready=0;S.iter_done=P.count==0;P.adoptions++;return 1;
 }
-API u64 gn_pair_plan_stat(u32 key){switch(key){case 0:return P.active;case 1:return P.mode;case 2:return P.count;case 3:return P.cursor;case 4:return P.total;case 5:return P.anchor_seen;case 6:return P.anchor_n;case 7:return P.allocated;case 8:return P.builds;case 9:return P.declines;case 10:return P.adoptions;case 11:return P.build_us;case 12:return P.gate_replans;case 13:return P.gate_ready;case 14:return P.q14_hint;case 15:return P.gate_target;case 16:return P.gate_injected;case 17:return P.gate_stride;case 18:return P.excluded_bytes;case 19:return P.excluded_count;default:return 0;}}
+API u64 gn_pair_plan_stat(u32 key){switch(key){case 0:return P.active;case 1:return P.mode;case 2:return P.count;case 3:return P.cursor;case 4:return P.total;case 5:return P.anchor_seen;case 6:return P.anchor_n;case 7:return P.allocated;case 8:return P.builds;case 9:return P.declines;case 10:return P.adoptions;case 11:return P.build_us;case 12:return P.gate_replans;case 13:return P.gate_ready;case 14:return P.q14_hint;case 15:return P.gate_target;case 16:return P.gate_injected;case 17:return P.gate_stride;case 18:return P.excluded_bytes;case 19:return P.excluded_count;
+ case 20:return P.gate_target<360?P.gate_attempts[P.gate_target]:0;
+ case 21:return P.gate_target<360?P.gate_successes[P.gate_target]:0;
+ case 22:return P.gate_cooldowns;
+ case 23:return S.current&&P.gate_degree==S.current&&P.gate_target<360&&S.fg_sector_ready?S.fg_sector_upper[P.gate_target]-fkg_class_per_grade[S.current][fkg_group_class[S.current&1][P.gate_target]]:0;
+ case 24:return C.finisher_selected;case 25:return C.finisher_held;case 26:return MIN(2u,S.workers);default:return 0;}}
 API int gn_q14_hint(u32 enabled){if(enabled>1||S.current||S.input_expected||S.nrules)return GN_STATE;P.q14_hint=enabled;return 0;}
 
 API int gn_delta_commit(u32 enabled){if(enabled>1||S.nrules||S.current||S.input_expected||GN_LOAD(&S.batch_running))return GN_STATE;S.delta_commit=enabled;return 0;}

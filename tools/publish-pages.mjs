@@ -7,19 +7,18 @@ const token=process.env.GITHUB_TOKEN,repository=process.env.GITHUB_REPOSITORY;
 if(!token||!repository||!/^[-\w.]+\/[-\w.]+$/.test(repository))throw Error('Missing GitHub Actions context.');
 const git=(args,options={})=>execFileSync('git',args,{encoding:'utf8',...options}).trim();
 const source=git(['rev-parse','HEAD']),tree=pagesTree(source);
-let published;
-for(let attempt=0;attempt<3;attempt++){
-  git(['fetch','origin','gh-pages']);
-  const parent=git(['rev-parse','FETCH_HEAD']);
-  if(git(['rev-parse',`${parent}^{tree}`])===tree){
-    console.log('The exact site tree is already on gh-pages.');
-    if(process.env.GITHUB_EVENT_NAME!=='workflow_dispatch')process.exit(0);
-    published=parent;break;
-  }
+// Each publication is a single parentless commit that replaces the branch, so
+// superseded builds and their source archives do not accumulate in history.
+git(['fetch','origin','gh-pages']);
+const previous=git(['rev-parse','FETCH_HEAD']);
+let published=previous;
+if(git(['rev-parse',`${previous}^{tree}`])===tree){
+  console.log('The exact site tree is already on gh-pages.');
+  if(process.env.GITHUB_EVENT_NAME!=='workflow_dispatch')process.exit(0);
+}else{
   const env={...process.env,GIT_AUTHOR_NAME:'github-actions[bot]',GIT_AUTHOR_EMAIL:'41898282+github-actions[bot]@users.noreply.github.com',GIT_COMMITTER_NAME:'github-actions[bot]',GIT_COMMITTER_EMAIL:'41898282+github-actions[bot]@users.noreply.github.com'};
-  const commit=git(['commit-tree',tree,'-p',parent],{env,input:`Publish George site from ${source}\n`});
-  try{git(['push','origin',`${commit}:refs/heads/gh-pages`]);published=commit;break;}
-  catch(error){if(attempt===2)throw error;}
+  published=git(['commit-tree',tree],{env,input:`Publish George site from ${source}\n`});
+  git(['push',`--force-with-lease=refs/heads/gh-pages:${previous}`,'origin',`${published}:refs/heads/gh-pages`]);
 }
 console.log(`Published site commit ${published} on gh-pages.`);
 // GITHUB_TOKEN pushes do not trigger another push workflow. Dispatch the

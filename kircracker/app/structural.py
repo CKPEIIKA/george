@@ -7,7 +7,7 @@ future degrees require differential construction, not Euler cancellation alone.
 from __future__ import annotations
 import json, math
 from pathlib import Path
-from .util import ROOT, Invalid, atomic_json, sha
+from .util import ROOT, Invalid, atomic_json, sha, data_path
 
 
 def _proofkit():
@@ -19,7 +19,7 @@ def _proofkit():
 
 
 def _leaders():
-    p=ROOT/'data/star14-leading-words.json'
+    p=data_path('star14-leading-words.json')
     with open(p) as f: d=json.load(f)
     return [tuple(r['leadingWord']) for r in d['rows']], d
 
@@ -80,7 +80,7 @@ def support_anick(k:int,D:int,seconds:float=0,max_terms:int=5_000_000):
       'exactSupportChainCounts':[[str(x) for x in row] for row in exact],
       'aggregateChainCount':sum(map(sum,exact)),'subsetAggregateCounts':subsets,
       'fullNormalWordCounts':r['normalWordCounts'],'fullEulerCheck':r['eulerCheck'],
-      'basisSHA256':sha(ROOT/'data/star14-leading-words.json'),
+      'basisSHA256':sha(data_path('star14-leading-words.json')),
       'scope':'Exact support partition of Anick chain ranks for the supplied fixed-order degree-14 star leading ideal; not Tor dimensions or differential ranks.',
       'important':'No S5 invariance of the fixed lex Groebner basis is assumed; support masks are tracked on actual chain words.',
       'QEffect':'For internal degree <14, S and T=S/(Q) have the same algebra/bar homology. At degree >=14 quotient-specific differential/leading data are required for T.'

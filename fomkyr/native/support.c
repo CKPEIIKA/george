@@ -10,10 +10,17 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/stat.h>
-static void need(Buffer*b,size_t add){if(add>SIZE_MAX-b->n-1){fprintf(stderr,"buffer size overflow\n");exit(70);}size_t n=b->n+add+1;if(n<=b->cap)return;size_t cap=b->cap?b->cap:256;while(cap<n){if(cap>SIZE_MAX/2){cap=n;break;}cap*=2;}char*s=realloc(b->s,cap);if(!s){perror("realloc");exit(71);}b->s=s;b->cap=cap;}
-void buf_n(Buffer*b,const char*s,size_t n){need(b,n);memcpy(b->s+b->n,s,n);b->n+=n;b->s[b->n]=0;}
+static void need(Buffer*b,size_t add){if(add>SIZE_MAX-b->n-1){fprintf(stderr,"buffer size overflow\n");exit(70);}size_t n=b->n+add+1;if(n<=b->cap&&b->s)return;size_t cap=b->cap?b->cap:256;while(cap<n){if(cap>SIZE_MAX/2){cap=n;break;}cap*=2;}char*s=realloc(b->s,cap);if(!s){perror("realloc");exit(71);}b->s=s;b->cap=cap;}
+void buf_n(Buffer*b,const char*s,size_t n){need(b,n);if(n)memcpy(b->s+b->n,s,n);b->n+=n;b->s[b->n]=0;}
 void buf_add(Buffer*b,const char*s){buf_n(b,s,strlen(s));}
-void buf_printf(Buffer*b,const char*f,...){va_list ap,cp;va_start(ap,f);va_copy(cp,ap);int n=vsnprintf(NULL,0,f,cp);va_end(cp);if(n<0){va_end(ap);exit(70);}need(b,(size_t)n);vsnprintf(b->s+b->n,(size_t)n+1,f,ap);b->n+=(size_t)n;va_end(ap);}
+void buf_printf(Buffer*b,const char*f,...){
+ va_list ap;va_start(ap,f);
+ int n=vsnprintf(NULL,0,f,ap);va_end(ap);
+ if(n<0)exit(70);
+ need(b,(size_t)n);va_start(ap,f);
+ vsnprintf(b->s+b->n,(size_t)n+1,f,ap);va_end(ap);
+ b->n+=(size_t)n;
+}
 void buf_string(Buffer*b,const char*s){buf_add(b,"\"");for(;*s;s++){unsigned char c=(unsigned char)*s;if(c=='"'||c=='\\'){buf_n(b,"\\",1);buf_n(b,s,1);}else if(c<32)buf_printf(b,"\\u%04x",c);else buf_n(b,s,1);}buf_add(b,"\"");}
 void buf_free(Buffer*b){free(b->s);memset(b,0,sizeof(*b));}
 static uint32_t rr(uint32_t x,unsigned n){return(x>>n)|(x<<(32-n));}
@@ -54,13 +61,27 @@ int json_key(Json*j,int obj,const char*key){if(obj<0||j->t[obj].type!='{')return
 char*json_string(Json*j,int t){if(t<0||t>=j->n)return NULL;Token*v=&j->t[t];const char*p=j->text+v->start;size_t n=(size_t)(v->end-v->start);if(v->type=='"'){p++;n-=2;/* Native schema values are plain ASCII, no escaped variable/path interpretation. */for(size_t i=0;i<n;i++)if(p[i]=='\\')return NULL;}char*s=malloc(n+1);if(s){memcpy(s,p,n);s[n]=0;}return s;}
 uint64_t json_u64(Json*j,int t,int*ok){char*s=json_string(j,t);if(!s||!*s){free(s);*ok=0;return 0;}for(char*p=s;*p;p++)if(!isdigit((unsigned char)*p)){free(s);*ok=0;return 0;}errno=0;char*e;unsigned long long n=strtoull(s,&e,10);if(errno||*e)*ok=0;free(s);return(uint64_t)n;}
 char*json_compact(const char*s,size_t n){char*r=malloc(n+1);if(!r)return NULL;size_t k=0;int string=0,escape=0;for(size_t i=0;i<n;i++){char c=s[i];if(string||!isspace((unsigned char)c))r[k++]=c;if(string){if(escape)escape=0;else if(c=='\\')escape=1;else if(c=='"')string=0;}else if(c=='"')string=1;}r[k]=0;return r;}
-char*read_file(const char*path,size_t cap,size_t*length){FILE*f=!strcmp(path,"-")?stdin:fopen(path,"rb");if(!f)return NULL;Buffer b={0};char buf[65536];size_t n;while((n=fread(buf,1,sizeof(buf),f))){if(n>cap-b.n){errno=EFBIG;buf_free(&b);if(f!=stdin)fclose(f);return NULL;}buf_n(&b,buf,n);}int err=ferror(f);if(f!=stdin)fclose(f);if(err){buf_free(&b);return NULL;}if(!b.s)buf_add(&b,"");if(length)*length=b.n;return b.s;}
-char*path_join(const char*a,const char*b){Buffer r={0};buf_printf(&r,"%s/%s",a,b);return r.s;}
+char*read_file(const char*path,size_t cap,size_t*length){
+ int owned=strcmp(path,"-")!=0;FILE*f=owned?fopen(path,"rb"):stdin;if(!f)return NULL;
+ Buffer b={0};char buf[65536];int err=0,saved=0;
+ for(;;){
+  size_t n=fread(buf,1,sizeof(buf),f);
+  if(n){
+   if(b.n>cap||n>cap-b.n){err=1;saved=EFBIG;break;}
+   buf_n(&b,buf,n);
+  }
+  if(n<sizeof(buf)){err=ferror(f);if(err)saved=errno?errno:EIO;break;}
+ }
+ if(owned)fclose(f);
+ if(err){buf_free(&b);errno=saved;return NULL;}
+ if(!b.s)buf_add(&b,"");if(length)*length=b.n;return b.s;
+}
+char*path_join(const char*a,const char*b){Buffer r={0};buf_printf(&r,"%s/%s",a,b);if(!r.s){errno=ENOMEM;exit(71);}return r.s;}
 int mkdir_tree(const char*path){char*p=strdup(path);if(!p)return -1;for(char*q=p+1;*q;q++)if(*q=='/'){*q=0;if(mkdir(p,0700)&&errno!=EEXIST){free(p);return -1;}*q='/';}int rc=mkdir(p,0700);if(rc&&errno==EEXIST)rc=0;free(p);return rc;}
 int write_atomic(const char*dir,const char*name,const void*data,size_t size){
- Buffer tmp={0};buf_printf(&tmp,"%s/.%s.tmp.%ld",dir,name,(long)getpid());char*dest=path_join(dir,name);int fd=open(tmp.s,O_WRONLY|O_CREAT|O_TRUNC,0600),rc=-1;if(fd<0)goto end;
+ Buffer tmp={0};buf_printf(&tmp,"%s/.%s.tmp.%ld",dir,name,(long)getpid());char*dest=path_join(dir,name);int rc=-1;if(!dest){buf_free(&tmp);errno=ENOMEM;return -1;}int fd=open(tmp.s,O_WRONLY|O_CREAT|O_TRUNC,0600);if(fd<0)goto end;
  size_t at=0;while(at<size){ssize_t n=write(fd,(const char*)data+at,size-at);if(n<0&&errno==EINTR)continue;if(n<=0)goto close_file;at+=(size_t)n;}
- if(fsync(fd))goto close_file;if(close(fd)){fd=-1;goto end;}fd=-1;if(rename(tmp.s,dest))goto end;
+ if(fsync(fd))goto close_file;if(close(fd))goto end;fd=-1;if(rename(tmp.s,dest))goto end;
  {int dfd=open(dir,O_RDONLY);if(dfd<0)goto end;rc=fsync(dfd);int saved=errno;close(dfd);errno=saved;}
 close_file:if(fd>=0)close(fd);
 end:if(rc)unlink(tmp.s);free(dest);buf_free(&tmp);return rc;

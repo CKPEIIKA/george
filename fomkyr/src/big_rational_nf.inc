@@ -10,8 +10,19 @@ static BCoef bcopy(Arena*t,BCoef a){return(BCoef){clonec(t,a.n),clonec(t,a.d)};}
 static BCoef bmake(Arena*t,Coef n,Coef d){
  if(t->error)return(BCoef){0,2};
  if(!d){t->error=GN_CORRUPT;return(BCoef){0,2};}if(!n)return(BCoef){0,2};
+ if(n&1){u32 count=cn(n);if(!count||!cl(n,count-1)){t->error=GN_CORRUPT;return(BCoef){0,2};}}
+ if(d&1){u32 count=cn(d);if(!count||!cl(d,count-1)){t->error=GN_CORRUPT;return(BCoef){0,2};}}
  if(csign(d)<0){n=cneg(n);d=cneg(d);}if(d==2)return(BCoef){clonec(t,n),2};
- Coef g=gcdc(t,n,d);return(BCoef){exactdiv(t,n,g),exactdiv(t,d,g)};
+ /* Own the fraction operands before using the shared arithmetic arena. */
+ n=clonec(t,n);d=clonec(t,d);if(t->error)return(BCoef){0,2};
+ /* Keep the GCD root across both explicitly sequenced divisions. */
+ Coef g=gcdc(t,n,d);if(t->error)return(BCoef){0,2};
+ if((g&1)&&!cn(g)){t->error=GN_CORRUPT;return(BCoef){0,2};}
+ g=clonec(t,g);if(t->error)return(BCoef){0,2};
+ if(!g){t->error=GN_CORRUPT;return(BCoef){0,2};}
+ Coef numerator=exactdiv(t,n,g);if(t->error)return(BCoef){0,2};
+ Coef denominator=exactdiv(t,d,g);if(t->error)return(BCoef){0,2};
+ return(BCoef){numerator,denominator};
 }
 static BCoef badd(Arena*t,BCoef a,BCoef b){
  if(t->error)return(BCoef){0,2};
@@ -147,7 +158,7 @@ static int brow_grow(BRow*r){
  l->big_growths++;brow_report(r);return 0;
 }
 static int brow_add(BRow*r,Word w,BCoef delta){
- if(r->temp.error){r->lane->big_arena_misses++;return r->temp.error==GN_CANCELLED?GN_CANCELLED:HEAP_MISS;}
+ if(r->temp.error){if(r->temp.error!=GN_SCRATCH)return r->temp.error;r->lane->big_arena_misses++;return HEAP_MISS;}
  if(!delta.n)return 0;
  u32 skip=r->lane->skip_rule;int protected_leader=skip&&r->degree==rule(skip)->degree&&weq(w,rule(skip)->lm);
  if(!protected_leader&&eager_zero(w,r->degree,r->lane))return 0;
@@ -155,7 +166,7 @@ static int brow_add(BRow*r,Word w,BCoef delta){
  while(id&&!weq(r->nodes[id-1].w,w)){link=&r->nodes[id-1].next;id=*link;}
  if(id){BNode*n=&r->nodes[id-1];if(!n->pos)return HEAP_MISS;
   BCoef value=badd(&r->temp,n->c,delta);
-  if(r->temp.error){r->lane->big_arena_misses++;return r->temp.error==GN_CANCELLED?GN_CANCELLED:HEAP_MISS;}
+  if(r->temp.error){if(r->temp.error!=GN_SCRATCH)return r->temp.error;r->lane->big_arena_misses++;return HEAP_MISS;}
   /* The lookup already found the predecessor. Arithmetic scratch cannot move
    * this table; unlink a cancellation without hashing and walking it again. */
   if(!value.n){bheap_remove(r,id);*link=n->next;n->pos=UINT32_MAX;n->next=r->free_head;r->free_head=id;return 0;}
