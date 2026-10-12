@@ -1,6 +1,6 @@
 # Optional FK6 dimension profile
 
-Fomkyr 0.7.0 can use imported dimensions over Q through degree 17 for the
+Fomkyr 0.7.5 can use imported dimensions over Q through degree 20 for the
 original FK6 presentation and generator order. Enable `--fk-gate` in the native
 CLI, or **Accept imported FK6 dimension profile** in George’s mathematical settings.
 The option is off in general settings and enabled by the dedicated FK6 preset.
@@ -27,10 +27,15 @@ Private artifact names are omitted; artifact digests and the original provenance
 checksum are retained. The current upstream authority identity and both prior 0.3.0 identities remain
 accepted on resume. All prior dimensions through degree 16 are unchanged; the
 0.3.1 profile adds degree 17 with total dimension 4,735,557,180. Matching profile opt-in is required
-before a dependent job can be resumed. Existing external Hilbert dependencies
+before a dependent job can be resumed. The 0.7.5 profile extends the same values
+through degree 20, using the separately stored external project profile. Existing external Hilbert dependencies
 also remain required. Basis records stay ABI 3. Keep a copy before any downgrade.
 
 ```sh
 ./dist/fomkyr --resume fk6-job -d 14 -j 4 --memory auto \
   --fk-gate --export --human
 ```
+
+For five-generator star inputs and explicitly supplied individual S6 sectors,
+see [the 0.7.5 policy format](RELEASE_075.md). Scalar star targets are derived
+external assumptions; star sectors require graded group-convolution inversion.

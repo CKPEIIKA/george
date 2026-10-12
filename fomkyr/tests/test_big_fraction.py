@@ -29,4 +29,16 @@ for i in range(4000):
  if rng.randrange(2):b=-b
  op=i%2;got=run(op,a,b);expected=a+b if not op else a*b
  assert got==expected,(i,a,b,got,expected)
-print(json.dumps({'passed':True,'exactFractionCases':4000,'seconds':time.perf_counter()-t}))
+# Mixed integer/fraction operations must keep canonical denominators, with
+# cancellation against an integer sharing factors of the denominator.
+mixed=0
+for bits in [1,31,32,63,64,127,256,1024,4096]:
+ for i in range(24):
+  denominator=(rng.getrandbits(bits) or 1)*315
+  a=F(rng.getrandbits(bits) or 1,denominator)
+  integer=F(315*(rng.getrandbits(bits) or 1))
+  for x,y in [(a,integer),(integer,a),(-a,integer),(a,-integer)]:
+   for op in [0,1]:
+    assert run(op,x,y)==(x+y if not op else x*y),(op,x,y)
+    mixed+=1
+print(json.dumps({'passed':True,'exactFractionCases':4000+mixed,'mixedIntegerFractionCases':mixed,'seconds':time.perf_counter()-t}))

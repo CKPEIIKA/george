@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // A shared, bounded linear memory. No Emscripten/MEMFS and no full-heap JS view.
 export const HARD_BYTES = 15_000_000_000;
-export const ERRORS = Object.freeze({1:'MEMORY_BUDGET',2:'SCRATCH_BUDGET',3:'INVALID_INPUT',4:'IO_ERROR',5:'CANCELLED',6:'CORRUPT_RECORD',7:'STATE_ERROR',8:'BATCH_OUTPUT_FULL',9:'REPRESENTATION_LIMIT',10:'CANDIDATE_REJECTED',11:'DEFERRED_ROW',12:'WORKSPACE_PRESSURE'});
+export const ERRORS = Object.freeze({1:'MEMORY_BUDGET',2:'SCRATCH_BUDGET',3:'INVALID_INPUT',4:'IO_ERROR',5:'CANCELLED',6:'CORRUPT_RECORD',7:'STATE_ERROR',8:'BATCH_OUTPUT_FULL',9:'REPRESENTATION_LIMIT',10:'CANDIDATE_REJECTED',11:'DEFERRED_ROW',12:'WORKSPACE_PRESSURE',13:'COOPERATIVE_YIELD',14:'ROW_WORKSPACE_LIMIT'});
 export function checked(rc) {
   if (rc) { const e = new Error(`fomkyr: ${ERRORS[Math.abs(rc)] || rc}`); e.code = ERRORS[Math.abs(rc)] || 'KERNEL'; throw e; }
 }

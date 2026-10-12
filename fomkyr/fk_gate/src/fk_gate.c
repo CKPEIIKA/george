@@ -17,13 +17,17 @@ int fkg_bind(FkgGate*g,const char id[64],uint32_t n,uint32_t p){
  }return FKG_UNAVAILABLE;
 }
 int fkg_covers(const FkgGate*g,uint32_t d){return g&&g->abi==FKG_ABI&&g->presentation_ok&&!g->field&&d&&d<=g->bound;}
-int fkg_begin(FkgGate*g,uint32_t d,uint32_t completed,uint64_t rules,FkgCount upper,int quiet){
+int fkg_begin_lower(FkgGate*g,uint32_t d,uint32_t completed,uint64_t rules,FkgCount upper,FkgCount lower,int quiet){
  if(!quiet)return FKG_NONQUIESCENT;
  g->status=FKG_UNAVAILABLE;g->degree=d;if(!fkg_covers(g,d))return FKG_UNAVAILABLE;
  if(completed!=d-1)return g->status=FKG_BAD_STATE;
  g->previous_complete=completed;g->initial_rules=g->observed_rules=rules;g->accepted_leaders=0;
- g->initial_upper=g->upper=upper;g->lower=fkg_from_u64(fkg_fk6_q_lower[d]);
+ g->initial_upper=g->upper=upper;g->lower=lower;
  int cmp=fkg_compare(upper,g->lower);return g->status=cmp<0?FKG_BAD_COUNT:cmp?FKG_ACTIVE:FKG_READY;
+}
+int fkg_begin(FkgGate*g,uint32_t d,uint32_t completed,uint64_t rules,FkgCount upper,int quiet){
+ if(d>FKG_PROFILE_DEGREE)return FKG_UNAVAILABLE;
+ return fkg_begin_lower(g,d,completed,rules,upper,fkg_from_u64(fkg_fk6_q_lower[d]),quiet);
 }
 int fkg_observe(FkgGate*g,uint32_t d,uint32_t completed,uint64_t rules,int valid,int quiet){
  if(!quiet)return FKG_NONQUIESCENT;if(!g||g->abi!=FKG_ABI)return FKG_BAD_STATE;

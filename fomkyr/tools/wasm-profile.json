@@ -1,18 +1,22 @@
 {
   "kind": "frontend",
   "compilerMajor": 23,
-  "profileSha256": "3fe2577dce72e27af6832761fe58a9c6c3d5be35f910faf67f8a609301962ea4",
+  "profileSha256": "0ce797e7019589c4ad8e5a64ff3ed7bae30bd38e94b3989c1f1f7e2e8daeeeef",
   "sourceHashes": {
-    "src/big_rational_nf.inc": "97f9d4ecc4c6e5d882458460e33c0526096cdef39344a98b97723aef461bbb67",
-    "src/cooperative.inc": "a546137508c9a50bfd69260813341f5cf4188cd64fa29716b2f7e72352680270",
+    "src/big_rational_nf.inc": "f0a931b05ecfdb74fb2f10802450f4a41105180ee0a9816ac38a9f1b216e2f4c",
+    "src/cooperative.inc": "8f26d97dd9e3a0e3c2222d0248fdda8b0d78644db01082f65122755e6c1f6ac6",
     "src/delta_commit.inc": "99923cd320ed66b800870b8619fee005e8a82244aaaa575101301a7c0d08463f",
-    "src/fk_gate.inc": "fb83ba24346aabebdcf1aeeec3239e104c404dbc94f7dac9234fba4133f8a177",
+    "src/external_sectors.inc": "5b5f94169efbb0b6a1ec877ff9e1034379805f8e0891a67df8734a1869d23a52",
+    "src/fk_gate.inc": "19624e517731e2b3fa8b93c4fb165c358efeb6edfdee91be14e42cd8f056eabe",
     "src/frontier.inc": "780134c5c9dac475d46f65310bf33bfc58693a3a1ec22c7abafffc77815b13a8",
     "src/heap_nf.inc": "faca4a49dc764adb2692a4fe5cc9a6853461ed372bb0029c92b79f3e17588cfb",
     "src/hilbert.inc": "1061a3ffe010548ca4860ce13ed069a541934745f75a1f64a91e18a08874106a",
     "src/hilbert_gate.inc": "161e31af6513d48df8de9b6a625d1feb11009033ae6b8470ee29c5e7b878ecb1",
-    "src/kernel.c": "5b73f2a03598c1f17393b2064d1d7f6861dce80154a7670b49f4b692eb093a79",
-    "src/kernel.h": "1cb4cdbb9fd011aa848e15491b01e32338f9707715e7294360fecdc179d7467f",
+    "src/integer_exact_division.inc": "d8e93296133a0a70ca6dd4b9adb9871e313f9145a855c4f302c46ef9b453e719",
+    "src/integer_gcd.inc": "8a227b9a8062acf16f3ea6f9248fbf1b42ab15833e2394ef7c221d7de9e41fb1",
+    "src/integer_limbs.inc": "7c704222bba79df5f06eb0f5031854036c3f14331b088c65f3aab3b750bfc9f5",
+    "src/kernel.c": "3ca593f7f1baaa111d4efbbef978be364d9fd99a4f37e5728ec7eb92a82b7535",
+    "src/kernel.h": "6c9df515aa0493cb999d6fc21fa3f4d180c11519162cba79c6817a6b78156bd9",
     "src/limb_division.inc": "61a60a3d3032b2ca9be5c780c8c623b4f4294442d04ceacf76be191e53c4df5c",
     "src/local_rewrites.inc": "23c0956afbff9860f7c35ccb6606576ba5247c885aef2151ac532d8d5ed64a6c",
     "src/lower_bound.inc": "9cb27bbd3845d2416aa8af2287314da19b9ef6eb1b08ca93913708faefd2c7c7",
@@ -21,16 +25,18 @@
     "src/nc_gm.inc": "8374c96dc6f2aff40e65c48b540bddce0a7655912947f8e115539562fdc9c2b3",
     "src/pair_plan.inc": "740329a2241e8dcf6d9058e45262dcbc5b060abe078784dba4bf86a32a589a71",
     "src/radix_queue.inc": "c4f8827260c7e3aef28cbb7e3ae90315c731261bb2fc3e572710371798f836db",
-    "src/rational_heap_nf.inc": "68756de18dc3a1b6e3bb54589209b0219caaa131ffbf0a1707526d7ed3621823",
+    "src/rational_heap_nf.inc": "258b824bb2ce5faddfe56f3b3d4ebf06e4a3c104c079bdd79038ce6bb8aad30b",
+    "src/reserve_workspaces.inc": "f5fb0c28377598eac73985bb9026ad86336e4977fd4a741089f52b043567d643",
     "src/tail_cache.inc": "85621a582f3ab13ff75c858144e3357bdd6d4070bc677dedd4e81a80c5b8d1ae",
-    "fk_gate/src/fk_gate.c": "d30393da5c103b82ef8ace19b3a673fcedd77b2fafc0a20ae8d14133ccd4d18b",
-    "fk_gate/src/fk_gate.h": "1d104a129b0d6a035031a30f3b805fb54a384a34dc44ece1ba1692e215223033",
+    "fk_gate/src/fk_gate.c": "b4576789e7532c4d89c342265c1403e40ed28b684c09f8da5000bf68374f7dc5",
+    "fk_gate/src/fk_gate.h": "8fedd677901be64ef92db33f729116683872728373f2bdfc843c6f14a1f4726c",
     "fk_gate/adapters/fomkyr065.inc": "dcd9bcdfc24bf3cc5412d729068c8ccedf76bf5fb503d6ef712b0a4595e4a872",
     "fk_gate/adapters/native_host.h": "5dce47626b3c55713922dd0bcb2310be871dee6b9152ccacb4f89e85fdbf6de6",
-    "fk_gate/adapters/sector_counter.inc": "114188c554128ccd21292e03878332c63f0aee97c794ad03ccd80fae57edd020",
-    "fk_gate/profiles/fk6_q.h": "d26ea19b27ae3a91f2ac35e0ce4e2cfcb1274e100248a327a0a06fcc465863ef",
-    "fk_gate/profiles/fk6_sectors.h": "f60e9f313521b9058db712f3e3d741b9ce49a36142f3d877d1953fc91c8df3fe",
-    "fk_gate/profiles/runtime-identity.h": "0e1df5c3e682a5029f04b60775310c77c29d4fe1089ebde4434a97b24fd4a4e2"
+    "fk_gate/adapters/sector_counter.inc": "58ef976bd41c045d9c534b43616318a4283a17e1e0cfceceb3a148a9f7171ffb",
+    "fk_gate/profiles/fk6_q.h": "47dce9c1dea81660b7431f8f4dfd2c68e2644fa6ff3838c29e098112b259e3f0",
+    "fk_gate/profiles/fk6_sectors.h": "9ace1de7181388afa431c1b60a6b02976370e930f4cdc9797c21b8e8aff0d036",
+    "fk_gate/profiles/generator-edges.h": "842f90d437d5d78c47e2566d758da3f2ad1102d70499059925d3a80b1f7fa4f7",
+    "fk_gate/profiles/runtime-identity.h": "178eb6dd65cc09d9bdee5bed0090b6e1e11e00382acb0d1628f65a22b41b9b81"
   },
   "compatibleTargets": [
     "wasm32-shared",
@@ -181,7 +187,21 @@
       "planMinDegree": 2,
       "hilbertGate": true,
       "frontierABI": 7
+    },
+    {
+      "fixtureSha256": "a2a7234dbdc5f9336624238cd9b7d2047425b40ca64cd50ca6e866bbf341ef76",
+      "degree": 5,
+      "workers": 2,
+      "shared": true,
+      "modulus": 0,
+      "basisCount": 65,
+      "basisSha256": "3daa486d02fcbb72451e9ce0be6c4dd9aa982f7f4c1263df0015cba439096281",
+      "normalization": "monic-tail-reduced",
+      "sectorGate": true,
+      "pairOrder": "gateword",
+      "planMinDegree": 2,
+      "sectorPolicy": "derived-star-T-through20"
     }
   ],
-  "method": "Real Chromium Wasm branch counters from thirteen independent cold jobs: shared/single FK6, rational coefficients, prime fields, FK gate, word plans, delta commits, GM filters, optional canonical reducer tails, safe sector finishing and monic tail-reduced exports. Shared modules use atomic profile counters. No native profile or host measurements are included."
+  "method": "Real Chromium Wasm branch counters from fourteen independent cold jobs: shared/single FK6, rational coefficients, prime fields, FK gate, word plans, delta commits, GM filters, optional canonical reducer tails, safe sector finishing, external five-generator sector policies and monic tail-reduced exports. Shared modules use atomic profile counters. No native profile or host measurements are included."
 }

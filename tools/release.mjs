@@ -72,19 +72,34 @@ const git=args=>execFileSync('git',args,{encoding:'utf8',maxBuffer:16*1024*1024}
 // Retain the original report and its hashes when borrowing a completed phase.
 const initialRunnerHash='5b8c1faf9d665b003e2323c8137e2ea41b4c2086f9411d8a74944783360e6d2b';
 const independentOfNativeRunner=new Set(['row-growth','exact','matrix','published','fk6-prefixes','browser','static-chromium','static-firefox','upgrade']);
-const nativeOnlyInputs=new Set(['fomkyr/SOURCE.json','fomkyr/native/cli.c','fomkyr/tests/test_dashboard.py','fomkyr/tools/dashboard.py',
+const nativeOnlyInputs=new Set(['fomkyr/tests/test_fk_gate_cli_068.py','fomkyr/tests/test_fk_profile_identity_068.py','fomkyr/SOURCE.json','fomkyr/native/cli.c','fomkyr/tests/test_dashboard.py','fomkyr/tools/dashboard.py',
   'fomkyr/tests/test_cooperative_pressure_067.mjs','fomkyr/tests/test_cooperative_reserve_067.mjs',
   'fomkyr/tests/test_fk_gate_wasm_068.mjs','fomkyr/tests/audit_fk_gate_wasm_068.py',
   'fomkyr/tests/test_cli_065.py','fomkyr/tests/test_fk_gate_068.py','fomkyr/tools/test_gate_ubsan_068.sh','docs/development/RELEASING.md']);
+// The rendered standalone README has no role in solver or native checks.
+const independentOfManual=new Set(['kircracker','row-growth','exact','matrix','published','fk6-prefixes','native-cli']);
 const originalNativeOnlyInputs=new Set(['fomkyr/SOURCE.json',
   'fomkyr/tests/test_cooperative_pressure_067.mjs','fomkyr/tests/test_cooperative_reserve_067.mjs']);
 const beforeCliScopeInputs=new Set([...nativeOnlyInputs].filter(file=>!['fomkyr/native/cli.c','fomkyr/tests/test_dashboard.py','fomkyr/tools/dashboard.py'].includes(file)));
 const preCliNativeOnlyInputs=new Set([...nativeOnlyInputs].filter(file=>!['fomkyr/tests/test_cli_065.py','docs/development/RELEASING.md'].includes(file)));
+function phaseProtocol(value,name){
+  if(name==='upgrade')return value;
+  const {previousEngine,...remaining}=value;return remaining;
+}
 function phaseInputs(hashes,name,legacy=false){
   const upgradeLegacy=legacy==='pre-upgrade-ui-scope';
-  const nativeLegacy=upgradeLegacy?false:legacy;
+  const manualLegacy=legacy==='pre-manual-scope';
+  const identityLegacy=legacy==='pre-profile-identity-scope';
+  const cliProfileLegacy=legacy==='pre-profile-cli-scope';
+  const profileTestsLegacy=legacy==='pre-profile-tests-scope';
+  const protocolLegacy=legacy==='pre-upgrade-protocol-scope';
+  const scopedNativeInputs=cliProfileLegacy?new Set([...nativeOnlyInputs].filter(file=>file!=='fomkyr/tests/test_fk_gate_cli_068.py')):identityLegacy?new Set([...nativeOnlyInputs].filter(file=>file!=='fomkyr/tests/test_fk_profile_identity_068.py')):nativeOnlyInputs;
+  const nativeLegacy=upgradeLegacy||manualLegacy||identityLegacy||cliProfileLegacy||profileTestsLegacy||protocolLegacy?false:legacy;
   return Object.fromEntries(Object.entries(hashes).filter(([file])=>
-    file!=='tools/release.mjs' && (name==='browser'||file!=='tools/validate-correction-release.mjs')
+    file!=='tools/release.mjs'
+    && (manualLegacy||!independentOfManual.has(name)||file!=='web/fomkyr/index.html')
+    && (profileTestsLegacy||!independentOfNativeRunner.has(name)||!/^fomkyr\/fk_gate\/(?:tests\/|tools\/verify_profile\.py$)/.test(file))
+    && (name==='browser'||file!=='tools/validate-correction-release.mjs')
     && (upgradeLegacy||name==='upgrade'||file!=='tools/validate-fomkyr-upgrade.mjs')
     && (nativeLegacy===true||!independentOfNativeRunner.has(name)||file!=='tools/validate-fomkyr-native.mjs')
     && (nativeLegacy==='pre-native-cli-scope'
@@ -93,10 +108,10 @@ function phaseInputs(hashes,name,legacy=false){
       ? !independentOfNativeRunner.has(name)||!originalNativeOnlyInputs.has(file)
       : nativeLegacy==='pre-cli-deadline'
       ? !independentOfNativeRunner.has(name)||!preCliNativeOnlyInputs.has(file)
-      : nativeLegacy||!independentOfNativeRunner.has(name)||!nativeOnlyInputs.has(file))));
+      : nativeLegacy||!independentOfNativeRunner.has(name)||!scopedNativeInputs.has(file))));
 }
-function phaseContract(name,command,args,env,hashes=sourceHashes,legacy=false){
-  return digest(stableJSON({schema:1,name,inputs:phaseInputs(hashes,name,legacy),protocol,
+function phaseContract(name,command,args,env,hashes=sourceHashes,legacy=false,earlierProtocol=protocol){
+  return digest(stableJSON({schema:1,name,inputs:phaseInputs(hashes,name,legacy),protocol:legacy?earlierProtocol:phaseProtocol(earlierProtocol,name),
     command,args:args.map(value=>String(value).replaceAll(out,'<release-directory>')),env}));
 }
 function borrowPhase(name,contract,evidence,validate,legacyContract){
@@ -105,7 +120,7 @@ function borrowPhase(name,contract,evidence,validate,legacyContract){
     const directory=path.resolve('local/releases',entry.name),file=path.join(directory,'report.json');
     if(directory===out||!fs.existsSync(file))continue;
     const previous=JSON.parse(fs.readFileSync(file));
-    if(stableJSON(previous.protocol)!==stableJSON(protocol))continue;
+    if(stableJSON(phaseProtocol(previous.protocol,name))!==stableJSON(phaseProtocol(protocol,name)))continue;
     const row=previous.phases?.find(row=>row.name===name&&row.state==='passed');
     if(!row)continue;
     if(row.contract!==contract){
@@ -115,7 +130,12 @@ function borrowPhase(name,contract,evidence,validate,legacyContract){
       const compatibleLegacy=previous.sourceHashes
         &&((independentOfNativeRunner.has(name)
           &&[true,'native-runner-only','pre-fk-audit-split','pre-cli-deadline','pre-native-cli-scope'].some(mode=>row.contract===legacyContract(previous.sourceHashes,mode)))
-          ||row.contract===legacyContract(previous.sourceHashes,'pre-upgrade-ui-scope'))
+          ||row.contract===legacyContract(previous.sourceHashes,'pre-upgrade-ui-scope')
+          ||row.contract===legacyContract(previous.sourceHashes,'pre-manual-scope')
+          ||row.contract===legacyContract(previous.sourceHashes,'pre-profile-identity-scope')
+          ||row.contract===legacyContract(previous.sourceHashes,'pre-profile-cli-scope')
+          ||row.contract===legacyContract(previous.sourceHashes,'pre-profile-tests-scope')
+          ||row.contract===legacyContract(previous.sourceHashes,'pre-upgrade-protocol-scope',previous.protocol))
         &&stableJSON(phaseInputs(previous.sourceHashes,name))===stableJSON(phaseInputs(sourceHashes,name));
       const compatibleInitial=!row.contract&&previous.sourceHashes?.['tools/release.mjs']===initialRunnerHash
         &&stableJSON(phaseInputs(previous.sourceHashes,name))===stableJSON(phaseInputs(sourceHashes,name));
@@ -133,6 +153,11 @@ function borrowPhase(name,contract,evidence,validate,legacyContract){
 }
 
 function preflight(){
+  if(protocol.previousEngine){
+    const previousManifest=JSON.parse(fs.readFileSync(path.join(protocol.previousEngine.directory,'build.json')));
+    for(const [name,record] of Object.entries(previousManifest.files))
+      assert.equal(fileHash(path.join(protocol.previousEngine.directory,name)),record.sha256,'Invalid saved previous-engine asset: '+name+'; materialize validated binaries before release checks.');
+  }
   const lock=JSON.parse(fs.readFileSync('package-lock.json'));
   assert.equal(lock.version,appVersion);assert.equal(lock.packages[''].version,appVersion);
   const index=fs.readFileSync('web/index.html','utf8');
@@ -167,7 +192,7 @@ async function phase(name,command,args,{evidence,validate,timeoutSeconds=900,env
   }
   if(reuse){
     const borrowed=borrowPhase(name,contract,evidence,validate,
-      (hashes,legacy=true)=>phaseContract(name,command,args,env,hashes,legacy));
+      (hashes,legacy=true,earlierProtocol=protocol)=>phaseContract(name,command,args,env,hashes,legacy,earlierProtocol));
     if(borrowed){report.phases.push(borrowed);save();console.log(name+' reused: checked inputs unchanged ('+borrowed.reusedElapsedSeconds.toFixed(1)+' s recorded)');return;}
   }
   const row={name,contract,attempt:report.phases.filter(row=>row.name===name).length+1,startedAt:new Date().toISOString(),state:'running'};

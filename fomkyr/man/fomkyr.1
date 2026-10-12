@@ -1,4 +1,4 @@
-.TH FOMKYR 1 "October 2026" "fomkyr 0.7.4-gm1"
+.TH FOMKYR 1 "October 2026" "fomkyr 0.7.6-gm1"
 .SH NAME
 fomkyr \- fast pure C engine for exact homogeneous noncommutative Groebner bases
 .SH SYNOPSIS
@@ -159,7 +159,7 @@ No guarantee of termination, available physical memory, or bounded cancellation
 latency. Active polynomial state is not serialized. Linux/x86-64 GCC/Clang execution
 was tested; native records require a little-endian host in this release.
 .SH SEE ALSO
-The distributed README.md and docs/HILBERT_CLOSURE.md.
+The distributed README.md, docs/HILBERT_CLOSURE.md, and docs/COOPERATIVE_RESOURCES.md.
 
 .SH SCHEDULING
 The default cooperative scheduler preserves unfinished exact reductions across
@@ -213,7 +213,7 @@ with additional work when long reductions occupy the current window.
 Keep the pending window fixed at the initial lookahead.
 .TP
 .B --no-sector-priority
-Disable FK Gate component-deficit ordering of substantial input rows. The
+Disable FK Gate component-deficit ordering, including cheap helper turns. The
 default prioritizes nearly closed components, then smaller estimated input rows,
 when component dimensions and cost scheduling are active.
 .TP
@@ -221,13 +221,27 @@ when component dimensions and cost scheduling are active.
 Disable cached exact bucket maxima.
 .TP
 .B --no-helper-rows
-Disable bounded helper calculations while primary rows wait for the shared
-exceptional reserve. Helpers are enabled by default when their independent
+Disable scheduled cheap-work turns and helper calculations during reserve waits. Helpers are enabled by default when their independent
 arenas fit within the memory budget. Unfinished primary rows retain their state.
 .TP
 .B --large-row-workspaces auto|N
 Admit independent full-sized overflow arenas when rows wait and the total
 allocation budget has room. Default auto; 1 retains one arena, 2 through 33
-cap the admitted count. Additional arenas preserve the original reserve size
-and leave at least 1/32 of the budget for growing solver metadata. Each lease
+cap the admitted count. Additional arenas initially use the configured row size. Individual rows can
+grow at joined barriers; reused ranges remain within the total memory budget.
+The private commit lease is additional to this worker-lease limit. Each lease
 survives timed yields. Checkpoints store unfinished task descriptors for replay.
+
+.TP
+.BI "--commit-row-reserve " "auto|SIZE"
+Private workspace for cooperative commit reductions. Automatic sizing uses the
+smaller of the initial row reserve and one thirty-second of the memory budget.
+An explicit zero enables shared-reserve behavior. This workspace counts toward
+the configured memory allowance.
+
+.TP
+.B --assume-sectors FILE
+Explicitly trust identity-bound external S6 permutation-sector dimensions.
+Requires characteristic zero, a distinct generator-to-edge map, and consecutive
+degrees through at most 30. Results depend on this authority. Resume requires
+the same policy. See docs/RELEASE_075.md for the schema and star fixtures.

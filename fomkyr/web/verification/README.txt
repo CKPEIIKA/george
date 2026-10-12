@@ -21,7 +21,7 @@ and a solver recount alone do not certify a Groebner basis. The independent
 check starts with status not-run. Only a successful full checker report sets
 independentGroebnerCertificate to true.
 
-The optional FK6 profile contains dimensions through degree 17 and the digest
+The optional FK6 profile contains dimensions through degree 20 and the digest
 of its external computational proof. That proof archive is not included or
 replayed here. A full independent basis check does not rely on these dimensions.
 The Python checker is intended for independent auditing; its scalability differs

@@ -4,6 +4,19 @@
  */
 #include "../src/kernel.c"
 #define REQUIRE(x) do{if(!(x))return __LINE__;}while(0)
+API int test_sector_retained_priority(void){
+ C.finisher_order=1;C.sector_order=1;C.fair_order=1;
+ C.finisher_tag[0]=1;C.finisher_tag[1]=0;
+ C.work_gap[0]=C.work_gap[1]=1;C.work_cost[0]=100;C.work_cost[1]=10;
+ REQUIRE(coop_before(0,1)&&!coop_before(1,0));
+ /* Cheap fairness still applies between ordinary descriptors. */
+ C.finisher_tag[0]=0;
+ REQUIRE(!coop_before(0,1)&&coop_before(1,0));
+ C.work_gap[0]=1;C.work_gap[1]=2;
+ REQUIRE(coop_before(0,1)&&!coop_before(1,0));
+ C.finisher_order=C.sector_order=C.fair_order=0;
+ return 0;
+}
 static int seed(u32 workers,u32 cooperative,u32 mask){
  REQUIRE(gn_init(15,5,workers,256u<<20,64u<<20,10,0,0)==0);
  REQUIRE(gn_optimize(4,0)==0&&gn_tune(0,0,16)==0&&gn_local_rewrites(0,0,1)==0);

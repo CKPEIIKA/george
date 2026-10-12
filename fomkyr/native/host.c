@@ -20,6 +20,12 @@
 static unsigned char *base;static u64 capacity;static int disk=-1;
 volatile sig_atomic_t native_stop=0,native_checkpoint=0;
 static void(*pulse)(double);static pthread_t coordinator;
+#ifdef FOMKYR_TRACE_CORRUPT
+void gn_host_corrupt(const char*file,u32 line,u32 degree,u32 rules){
+ fprintf(stderr,"FOMKYR_CORRUPT_SITE file=%s line=%u degree=%u rules=%u\n",file,line,degree,rules);
+ fflush(stderr);
+}
+#endif
 void native_set_pulse(void(*fn)(double)){pulse=fn;coordinator=pthread_self();}
 int native_open(u64 bytes,const char*path){
  if(bytes>SIZE_MAX||!bytes){errno=EOVERFLOW;return 0;}

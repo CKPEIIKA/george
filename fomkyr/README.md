@@ -8,7 +8,9 @@ FOMKYR(1)                     Fomkyr Manual                     FOMKYR(1)
 
 ## VERSION
 
-**0.7.4**, [MIT license](LICENSE). Fomkyr is a standalone C engine and a
+[0.7.6 release notes](docs/RELEASE_076.md) · [Arithmetic details](docs/INTEGER_ARITHMETIC.md)
+
+**0.7.6**, [MIT license](LICENSE). Fomkyr is a standalone C engine and a
 subproject of [George](../README.md). George also runs this kernel through
 WebAssembly; its engine chooser marks that integration experimental.
 
@@ -42,6 +44,8 @@ continue the saved calculation or inspect its checkpoint:
 A C11 compiler, make and POSIX threads are sufficient for native execution.
 Node.js and Python are used by optional Wasm tools and test utilities.
 `make install PREFIX=/desired/prefix` installs the executable and manual page.
+See [exact integer arithmetic](docs/INTEGER_ARITHMETIC.md) for the GCD algorithms
+and their independent validation.
 
 The optional multiply, leading-word and backward Gröbner criteria are available
 through `--gm`. See [exact filtering and checkpoint compatibility](docs/NC_GM.md).
@@ -80,11 +84,16 @@ before changing versions. See [planning and resume](docs/PAIR_PLANNING_071.md).
 
 ## OPTIONAL FK6 DIMENSION PROFILE
 
-Version 0.7.0 adds an opt-in product-permutation shortcut for the original FK6
-presentation over Q through degree 17. Use `--fk-gate`, or accept the profile
+Version 0.7.5 extends the opt-in product-permutation shortcut for the original FK6
+presentation over Q through degree 20. Use `--fk-gate`, or accept the profile
 in George’s mathematical settings. Results depend on imported dimensions; the
 external proof package is not replayed here. See [FK6 profile](docs/FK_GATE.md)
 for applicability, counting workspace and checkpoint requirements.
+
+The separate five-generator star and star/(Q) inputs, derived scalar profiles,
+and generic external sector-policy interface are described in the
+[0.7.5 notes](docs/RELEASE_075.md). Imported dimensions remain an explicit
+dependency of calculations closed by those profiles.
 
 ## DESCRIPTION
 
@@ -487,3 +496,5 @@ pairs from the last safe checkpoint. Ordinary records remain ABI 3. One expensiv
 row, ordered rule insertion, indivisible arithmetic and workspace pressure can
 still limit parallel execution. Imported dimension profiles remain explicit
 assumptions; these scheduling changes do not certify them.
+
+[Cooperative row resources](docs/COOPERATIVE_RESOURCES.md) describes memory waits, fair helper turns, and the private commit reserve.

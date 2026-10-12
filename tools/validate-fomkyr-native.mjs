@@ -25,7 +25,7 @@ const report=prior??{state:'running',version:VERSION,suite,sourceHashes,engineHa
  scope:suite==='regression'
   ?'Production C properties, cached radix Wasm parity, worker telemetry, native CLI/frontier edges, profile authority, human output and small verification bundles. Long cooperative recovery and multi-runtime Hilbert audits are in the extended profile. No Singular reruns.'
   :'Production C sources and George Wasm adapter; standalone pthread CLI, partial checkpoints, cross-runtime resume, exact independent small-case oracles and optional Hilbert authority rejection. Serial checks; individual calculations retain their deadlines. Multi-job CLI recovery suites have a 600-second aggregate cap; other process groups have a 120-second cap. No Singular reruns.'};
-const reusableInputs=new Set(['tools/release.mjs','tools/validate-correction-release.mjs','fomkyr/native/cli.c','fomkyr/tests/test_dashboard.py','fomkyr/tools/dashboard.py','tools/validate-fomkyr-native.mjs','fomkyr/SOURCE.json',
+const reusableInputs=new Set(['fomkyr/fk_gate/tests/test_core.c','fomkyr/fk_gate/tests/test_frontier.c','fomkyr/fk_gate/tests/test_profile.py','fomkyr/fk_gate/tools/verify_profile.py','fomkyr/tests/test_fk_gate_cli_068.py','fomkyr/tests/test_fk_profile_identity_068.py','web/fomkyr/index.html','tools/release.mjs','tools/validate-correction-release.mjs','fomkyr/native/cli.c','fomkyr/tests/test_dashboard.py','fomkyr/tools/dashboard.py','tools/validate-fomkyr-native.mjs','fomkyr/SOURCE.json',
  'fomkyr/tests/test_cooperative_pressure_067.mjs','fomkyr/tests/test_cooperative_reserve_067.mjs',
  'fomkyr/tests/test_fk_gate_wasm_068.mjs','fomkyr/tests/audit_fk_gate_wasm_068.py',
  'fomkyr/tests/test_cli_065.py','fomkyr/tests/test_fk_gate_068.py','fomkyr/tools/test_gate_ubsan_068.sh','docs/development/RELEASING.md']);
@@ -53,6 +53,10 @@ if(!prior&&reuseFile){
  assert.ok(changed.every(file=>allowed.has(file)),'Core or shared inputs changed; completed native checks cannot be reused.');
  const cliChanged=changed.includes('fomkyr/native/cli.c');
  const excluded=new Set([
+  ...(changed.includes('fomkyr/tests/test_fk_profile_identity_068.py')?['fk-profile-identity']:[]),
+  ...(changed.includes('fomkyr/tests/test_fk_gate_cli_068.py')?['fk-gate-cli']:[]),
+  ...(changed.some(file=>file.startsWith('fomkyr/fk_gate/tests/'))?['certified-profile-subsystem']:[]),
+  ...(changed.includes('fomkyr/fk_gate/tools/verify_profile.py')?['certified-profile-totals']:[]),
   ...(cliChanged?['native-build','planner-cross','planner-budget','stream-audit','fk-gate-cli','cli-resume','cli-edges','human-cli','verification-bundle','workspace-cli-dashboard','hilbert-authority']:[]),
   ...(changed.some(file=>['fomkyr/tests/test_dashboard.py','fomkyr/tools/dashboard.py'].includes(file))?['workspace-cli-dashboard']:[]),
   ...(changed.includes('fomkyr/tests/test_cooperative_pressure_067.mjs')?['cooperative-pressure']:[]),
@@ -91,6 +95,7 @@ const checks=[
  ['audit-tool-build','make',['audit-tools']],
  ['stream-audit','python3',['tests/test_stream_canonical.py']],
  ['fk-profile-identity','python3',['tests/test_fk_profile_identity_068.py']],
+ ['web-bindings',process.execPath,['tests/test_web_bindings.mjs']],
  ['fk-gate-native','python3',['tests/test_fk_gate_068.py']],
  ['fk-gate-wasm',process.execPath,['--experimental-wasm-memory64','tests/test_fk_gate_wasm_068.mjs']],
  ['fk-gate-cli','python3',['tests/test_fk_gate_cli_068.py']],

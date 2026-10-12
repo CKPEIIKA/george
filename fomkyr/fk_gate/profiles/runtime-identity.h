@@ -1,5 +1,7 @@
-/* SPDX-License-Identifier: MIT. Prior authorities have identical values through degree 16. */
-#define FKG_AUTHORITY_ID "a59b8f4d976066f4fd8619dcdaa194454f5c6c8aaad9f1df924b0fb5d5b99cd1"
+/* SPDX-License-Identifier: MIT. Prior authorities agree on their overlapping certified degrees. */
+#define FKG_AUTHORITY_ID "912695feee89836a27d1c2c6b3c9c1e38eb23ed283b9fb6b72736c49d9942ee3"
 #define FKG_UPSTREAM_AUTHORITY_ID "5660d53b16742ee43ce3c8fde48cc29df2812a0d8372197998adebadc841db24"
 #define FKG_LEGACY_AUTHORITY_ID_0 "76147ad7ff9d662a6cf568f4590e131095de157d5d6d09342b74993c2e08f76f"
 #define FKG_LEGACY_AUTHORITY_ID_1 "a8d7ec405a7aa566c995b075d45de463dc83940db86891545ee6ea26da665314"
+
+#define FKG_LEGACY_AUTHORITY_ID_2 "a59b8f4d976066f4fd8619dcdaa194454f5c6c8aaad9f1df924b0fb5d5b99cd1"

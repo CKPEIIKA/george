@@ -2,7 +2,7 @@
 import {identityOf,sha256} from './storage.js';
 import {blobSHA256} from './sha256-stream.js';
 import {FK_GATE_PROFILE_ID,FK_GATE_INPUT_ID,sameFkGateProfile} from './fk-gate.js';
-export const VERIFICATION_ASSETS=['verify.py','README.txt','LICENSE.txt','fk6-exact-through17.json','fk6_sectors.h','fk6_q.h','proof-provenance.json'];
+export const VERIFICATION_ASSETS=['verify.py','README.txt','LICENSE.txt','fk6-exact-through17.json','fk6-exact-through20.json','fk6_sectors.h','fk6_q.h','proof-provenance.json'];
 const jsonBlob=value=>new Blob([JSON.stringify(value,null,2)+'\n'],{type:'application/json'});
 export function verificationAvailable(result){return result?.complete===true&&result.storage==='opfs'&&result.completedThroughDegree>0&&!!result.runKey;}
 export async function verificationEntries({fixture,result,openFile,fetchAsset=async name=>{
@@ -21,12 +21,18 @@ export async function verificationEntries({fixture,result,openFile,fetchAsset=as
   const asset=name=>entries.find(e=>e.name===name).blob;
   // The authority binds exactly the same three files as the compiled consumer.
   if(await blobSHA256(new Blob([asset('fk6_q.h'),asset('fk6_sectors.h'),asset('proof-provenance.json')]))!==FK_GATE_PROFILE_ID)throw Error('Gate profile byte binding failed');
-  const profile=JSON.parse(await asset('fk6-exact-through17.json').text()),provenance=JSON.parse(await asset('proof-provenance.json').text());
+  const profile=JSON.parse(await asset('fk6-exact-through20.json').text()),provenance=JSON.parse(await asset('proof-provenance.json').text());
+  let policy=null;if(result.hilbertEvidenceId){
+    const blob=await openFile('hilbert-evidence.json');policy=JSON.parse(await blob.text());
+    if(await sha256(JSON.stringify(policy))!==result.hilbertEvidenceId)throw Error('Saved Hilbert policy byte binding failed');
+    entries.push({name:'hilbert-evidence.json',blob});
+  }
   const gate=result.fkGate??{},eventClosed=gate.status===3&&gate.degree===degree&&gate.upper===gate.lower&&gate.deficit==='0';
-  const coefficients=result.hilbert?.coefficients,expected=identity===FK_GATE_INPUT_ID&&degree<=profile.throughDegree?String(profile.dimensions[degree]):null;
+  const policyEntry=policy?.entries?.find(e=>e.degree===degree);
+  const coefficients=result.hilbert?.coefficients,expected=policyEntry!=null?String(policyEntry.dimension):(identity===FK_GATE_INPUT_ID&&degree<=profile.throughDegree?String(profile.dimensions[degree]):null);
   const recounted=eventClosed?gate.upper:coefficients?.[degree]!=null?String(coefficients[degree]):null;
   if(expected!==null&&recounted!==null&&expected!==recounted)throw Error('Final Hilbert count disagrees with the gate profile');
   const files={};for(const entry of entries){onProgress?.(entry.name);files[entry.name]={bytes:entry.blob.size,sha256:await blobSHA256(entry.blob)};}
-  const manifest={schema:1,kind:'fomkyr-computation-verification-bundle',engineVersion:result.version,field:result.modulus===0?'Q':`F_${result.modulus}`,modulus:result.modulus,order:result.order,completedThroughDegree:degree,presentationSHA256:identity,basisSHA256:files['basis.gnb'].sha256,basisSize:result.basisSize,unrestrictedBasisComplete:result.unrestrictedBasisComplete===true,settings:{workers:result.workers,bits:result.bits,executionMode:result.executionMode,memoryPlan:result.memoryPlan,scheduler:result.scheduler},gateProfileId:result.fkGateProfileId??null,gateProfileThroughDegree:result.certifiedProfileThroughDegree??null,gateCertificateSHA256:result.fkGateProfileId?provenance.proofBundleDigestSHA256:null,finalScalarRecount:{degree,value:recounted,expected,passed:recounted!==null&&(expected===null||recounted===expected),source:eventClosed?'gate fresh scalar recount':recounted!==null?'completed-basis Hilbert calculation':'not requested'},verification:{fileIntegrity:'SHA-256 for every payload',independentGroebnerCertificate:false,independentCheckStatus:'not-run',profileProofReplayedHere:false,conditionalOnImportedFkDimensions:result.conditionalOnImportedFkDimensions===true,conditionalOnExternalDimensions:result.conditionalOnExternalDimensions===true},files};
+  const manifest={schema:1,kind:'fomkyr-computation-verification-bundle',engineVersion:result.version,field:result.modulus===0?'Q':`F_${result.modulus}`,modulus:result.modulus,order:result.order,completedThroughDegree:degree,presentationSHA256:identity,basisSHA256:files['basis.gnb'].sha256,basisSize:result.basisSize,unrestrictedBasisComplete:result.unrestrictedBasisComplete===true,settings:{workers:result.workers,bits:result.bits,executionMode:result.executionMode,memoryPlan:result.memoryPlan,scheduler:result.scheduler},gateProfileId:result.fkGateProfileId??null,gateProfileThroughDegree:result.certifiedProfileThroughDegree??null,gateCertificateSHA256:result.fkGateProfileId?(result.externalSectorPolicy?result.hilbertEvidenceId:provenance.proofBundleDigestSHA256):null,finalScalarRecount:{degree,value:recounted,expected,passed:recounted!==null&&(expected===null||recounted===expected),source:eventClosed?'gate fresh scalar recount':recounted!==null?'completed-basis Hilbert calculation':'not requested'},verification:{fileIntegrity:'SHA-256 for every payload',independentGroebnerCertificate:false,independentCheckStatus:'not-run',profileProofReplayedHere:false,conditionalOnImportedFkDimensions:result.conditionalOnImportedFkDimensions===true,conditionalOnExternalDimensions:result.conditionalOnExternalDimensions===true},files};
   entries.unshift({name:'manifest.json',blob:jsonBlob(manifest)});return entries;
 }

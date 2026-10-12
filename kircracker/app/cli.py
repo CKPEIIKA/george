@@ -38,6 +38,28 @@ def parser():
  d=s.add_parser('nichols',help='study the transposition Nichols algebra B6 independently of original FK6')
  common(d);d.add_argument('action',choices=['run','upper','search','verify','export']);d.add_argument('degree',type=int);d.add_argument('--upper-seconds',type=float,default=0);d.add_argument('--block-seconds',type=float,default=0);d.add_argument('--dual-mode',choices=['auto','prepend','both'],default='auto');d.add_argument('--force-replay',action='store_true');d.add_argument('--grade');d.add_argument('-o','--out',type=Path)
  d=s.add_parser('check',help='run package tests (including actual native resume and exact verifier)');d.add_argument('--quick',action='store_true',help='omit longer integration checks');
+ for name in ('nichols-star-low','nichols-star-candidate','relative-upper-reference','quotient-check','sector-orbits','sector-projectors'):
+  d=s.add_parser(name,help={
+   'nichols-star-low':'independent full-braiding integer symmetrizer oracle, degrees 2..4',
+   'nichols-star-candidate':'bounded exact Nichols vanishing check, degree <=7; no novelty claim',
+   'relative-upper-reference':'bounded Python relative quotient upper oracle, degrees 0..14',
+   'quotient-check':'replay relative upper/lower certificates; degree-wise FK6/(Q) comparison',
+   'sector-orbits':'S4 grade orbits, stabilizers and inverse-grade mapping',
+   'sector-projectors':'exact stabilizer projectors and optional bounded candidate-word projection'}[name])
+  d.add_argument('-o','--out',type=Path)
+  if name=='nichols-star-low':d.add_argument('--degree',type=int,choices=(2,3,4),default=4);d.add_argument('--prime',type=int,default=1000003)
+  elif name=='nichols-star-candidate':d.add_argument('input',type=Path)
+  elif name=='relative-upper-reference':
+   d.add_argument('--degree',type=int,choices=range(15),required=True);d.add_argument('--prime',type=int,default=1000003);d.add_argument('--with-q',action='store_true')
+   d.add_argument('--seconds',type=float,default=120)
+  elif name=='quotient-check':
+   d.add_argument('--upper',type=Path,required=True);d.add_argument('--lower',type=Path,required=True);d.add_argument('--diagnostic',action='store_true',help='read counts only; never marks equality certified');d.add_argument('--max-entries',type=int,default=2000000);d.add_argument('--seconds',type=float,default=120)
+  elif name=='sector-orbits':d.add_argument('--degree',type=int,choices=range(31),required=True)
+  elif name=='sector-projectors':
+   d.add_argument('--grade',required=True,help='six-digit permutation, e.g. 123456');d.add_argument('--words',type=Path);d.add_argument('--prime',type=int);d.add_argument('--max-terms',type=int,default=100000)
+  if name in ('relative-upper-reference','quotient-check'):
+   d.add_argument('--max-candidates',type=int,default=250000);d.add_argument('--max-relation-rows',type=int,default=2000000)
+   d.add_argument('--memory',type=bytes_arg,default=1024**3,metavar='1GiB')
  return p
 
 def ready():
@@ -102,6 +124,9 @@ def exported(runner,a):
 
 def main(argv=None):
  a=parser().parse_args(argv)
+ if a.command in ('nichols-star-low','nichols-star-candidate','relative-upper-reference','quotient-check','sector-orbits','sector-projectors'):
+  from .alternative import entry as alternative_entry
+  return alternative_entry(a)
  if a.command=='build':
   if a.jobs<1 or a.jobs>32:raise Invalid('build jobs must be 1..32')
   if a.native:subprocess.run(['make','clean'],cwd=ROOT,check=True)

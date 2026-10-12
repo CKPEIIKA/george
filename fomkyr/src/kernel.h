@@ -20,7 +20,7 @@ typedef uint64_t u64; typedef int64_t i64; typedef uint32_t u32; typedef uint8_t
 /* Native offsets follow the host address range, not a browser cap. */
 #define GN_HARD_BYTES ((u64)PTRDIFF_MAX & ~UINT64_C(65535))
 #endif
-enum { GN_OK=0, GN_MEMORY=1, GN_SCRATCH=2, GN_INPUT=3, GN_IO=4, GN_CANCELLED=5, GN_CORRUPT=6, GN_STATE=7, GN_BATCH_FULL=8, GN_LIMIT=9, GN_REJECTED=10, GN_DEFERRED=11, GN_REPACK=12, GN_YIELD=13 };
+enum { GN_OK=0, GN_MEMORY=1, GN_SCRATCH=2, GN_INPUT=3, GN_IO=4, GN_CANCELLED=5, GN_CORRUPT=6, GN_STATE=7, GN_BATCH_FULL=8, GN_LIMIT=9, GN_REJECTED=10, GN_DEFERRED=11, GN_REPACK=12, GN_YIELD=13, GN_ROW_WAIT=14 };
 #ifdef __wasm__
 #define API __attribute__((visibility("default")))
 #define HOST(name) __attribute__((import_module("host"),import_name(name)))
@@ -43,6 +43,8 @@ API u64 gn_local_rule(u32 key); /* idle-boundary serialized identity for audit *
 API int gn_pin_cache(u64 bytes);
 API int gn_radix_queue(u32 enabled);
 API int gn_row_reserve(u64 bytes);
+API int gn_commit_row_reserve(u64 bytes); /* private commit lease; 0 disables */
+API int gn_coop_resource_status(void); /* 14: all usable work waits on memory */
 API int gn_reserve_pool(u32 count); /* 0: automatic, 1: original single reserve */
 API u64 gn_reserve_pool_stat(u32 key);
 API int gn_reserve_growth(u32 enabled);
@@ -135,6 +137,12 @@ API int gn_radix_cache(u32 enabled);
 /* Optional imported FK6/Q profile. Host must explicitly authorize provenance.
  * Bind before input/restore. Rebuild actual counts at each degree/restore. */
 API int gn_fg_bind(u32 length);
+/* Explicit external permutation-grade policy. Load in degree/group order,
+ * then seal before input or restore. Every generator labels an S6 edge. */
+API int gn_fg_external_bind(u32 through_degree);
+API int gn_fg_external_edge(u32 generator,u32 fk6_edge_index);
+API int gn_fg_external_lower(u32 degree,u32 group,u64 dimension);
+API int gn_fg_external_seal(void);
 API int gn_fg_sector_mode(u32 enabled);
 API int gn_fg_begin(u64 budget);
 API int gn_fg_poll(void);

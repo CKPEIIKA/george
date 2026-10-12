@@ -4,7 +4,7 @@ import path from 'node:path';
 const assets={
   'verify.py':'fomkyr/tools/verify-computation.py',
   'LICENSE.txt':'fomkyr/LICENSE',
-  ...Object.fromEntries(['fk6-exact-through17.json','fk6_q.h','fk6_sectors.h','proof-provenance.json'].map(name=>[name,'fomkyr/fk_gate/profiles/'+name])),
+  ...Object.fromEntries(['fk6-exact-through17.json','fk6-exact-through20.json','fk6_q.h','fk6_sectors.h','proof-provenance.json'].map(name=>[name,'fomkyr/fk_gate/profiles/'+name])),
 };
 const readme=`Fomkyr computation verification bundle
 
@@ -29,7 +29,7 @@ and a solver recount alone do not certify a Groebner basis. The independent
 check starts with status not-run. Only a successful full checker report sets
 independentGroebnerCertificate to true.
 
-The optional FK6 profile contains dimensions through degree 17 and the digest
+The optional FK6 profile contains dimensions through degree 20 and the digest
 of its external computational proof. That proof archive is not included or
 replayed here. A full independent basis check does not rely on these dimensions.
 The Python checker is intended for independent auditing; its scalability differs

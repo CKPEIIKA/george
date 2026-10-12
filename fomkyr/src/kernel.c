@@ -55,6 +55,10 @@ typedef struct {
   u64 delta_queries,delta_hits,delta_probes;
   u32 slice_enabled,resume_tier,resume_capacity,reserve_retry,resume_slot,no_reserve,reserve_waiting; double slice_end;
   Arena reserve_saved; GN_ATOMIC(u64) slice_yields,slice_resumes;
+  u32 memory_wait,is_commit,reserve_direct,output_extra_index,memory_detail,coefficient_extra_slot,coefficient_extra_retired,output_extra_retired;u64 memory_need,row_growths;
+  u64 coefficient_extra_base,coefficient_extra_bytes;
+  Arena output_saved;u64 output_extra_base,output_extra_bytes;
+  u64 out_original_base,out_original_size,out_extra_base,out_extra_bytes;
   u64 reductions,pruned,reads,read_bytes,pairs,peak;
   u64 hash_probes,matcher_queries,matcher_characters,redcache_hits,heap_attempts,heap_successes,heap_fallbacks;
   u64 insertion_prunes,commuting_prunes,quadratic_swaps;
@@ -72,17 +76,23 @@ typedef struct __attribute__((aligned(64))) {
  GN_ATOMIC(u64) tier,exact_fallbacks,left_rule,right_rule,overlap;
  GN_ATOMIC(u64) big_growths,big_peak_terms,big_capacity,big_reserved,big_coefficient_live,big_coefficient_bytes,big_capacity_misses,big_pool_misses,big_arena_misses,big_fallbacks,big_reserve_waits;
  GN_ATOMIC(u64) big_pool_high_water,big_arithmetic_high_water,big_collected_live_high_water;
+  GN_ATOMIC(u64) memory_wait,memory_need,row_growths;
 } LiveLane;
 
 typedef struct {
   FkgGate fgate;
   u32 fg_sector_enabled,fg_sector_ready,fg_closed,fg_sector_error,fg_sector_nodes;
+  u32 fg_external,fg_external_through,fg_external_filled,fg_external_edges;
+  u32 fg_edge_map[16];u64 fg_external_base,fg_external_totals;
   u64 fg_sector_upper[360],fg_poll_calls,fg_skipped,fg_recounts,fg_sector_peak;
   GN_ATOMIC(u64) fg_sector_skipped,fg_parked_skipped,fg_commit_skipped;
   double fg_count_ms,fg_sector_ms;
-  u64 reserve_base,reserve_bytes;u32 reserve_growth,radix_enabled,radix_cache_enabled;
+  u64 reserve_base,reserve_bytes,reserve_initial_bytes;u32 reserve_growth,radix_enabled,radix_cache_enabled;
   u32 coop_ms,coop_lookahead;u64 helper_base,helper_bytes;GN_ATOMIC(u32) reserve_lock;
   u64 reserve_extra_base[GN_RESERVE_SLOTS-1];GN_ATOMIC(u32) reserve_extra_lock[GN_RESERVE_SLOTS-1];
+  u64 reserve_extra_bytes[GN_RESERVE_SLOTS-1];
+  u64 commit_reserve_base,commit_reserve_bytes;GN_ATOMIC(u32) commit_reserve_lock;u32 commit_reserve_configured;
+  u64 spare_base[2*GN_RESERVE_SLOTS],spare_bytes[2*GN_RESERVE_SLOTS];u32 spare_count;
   u32 reserve_extra_count,reserve_pool_limit,reserve_pool_denied;GN_ATOMIC(u32) reserve_pool_requested;
   u64 reserve_pool_admissions,reserve_pool_declines;
   GN_ATOMIC(u32) batch_next,batch_running;
@@ -119,6 +129,11 @@ typedef struct {
   Lane lanes[GN_MAX_WORKERS];
 } State;
 static State S;
+#if defined(FOMKYR_TRACE_CORRUPT) && !defined(__wasm__)
+/* Optional native error-path tracing; ordinary and Wasm builds incur no cost. */
+extern void gn_host_corrupt(const char*,u32,u32,u32);
+#define GN_CORRUPT (gn_host_corrupt(__FILE__,__LINE__,S.current,S.nrules),6)
+#endif
 #define TAIL_REQUESTS 256u
 typedef struct {
  u64 base,capacity,used,workspace,workspace_bytes,requested_bytes;
@@ -129,39 +144,7 @@ typedef struct {
 } TailCache;
 static TailCache T;
 static int tail_cache_prepare(void);
-/* Extra arenas are admitted only between worker waves. Every arena has the
- * original reserve's size; its live row keeps an exclusive lease across yields.
- * Worker threads only acquire/release leases and request later admission. */
-static u32 reserve_pool_limit(void){return S.reserve_pool_limit?S.reserve_pool_limit:MIN(GN_RESERVE_SLOTS,S.workers+(S.coop_ms?1u:0u));}
-static u32 reserve_pool_busy(void){
- u32 n=!!GN_LOAD(&S.reserve_lock);for(u32 i=0;i<S.reserve_extra_count;i++)n+=!!GN_LOAD(&S.reserve_extra_lock[i]);return n;
-}
-static u64 reserve_lease_base(Lane*l){return l->reserve_slot==1?S.reserve_base:S.reserve_extra_base[l->reserve_slot-2];}
-static int reserve_acquire(Lane*l){
- if(l->no_reserve||l->reserve_slot)return 0;
- u32 count=MIN(1+S.reserve_extra_count,reserve_pool_limit());
- for(u32 i=0;i<count;i++){
-  GN_ATOMIC(u32)*lock=i?&S.reserve_extra_lock[i-1]:&S.reserve_lock;
-  if(GN_TRY_LOCK(lock)){l->reserve_slot=i+1;return 1;}
- }
- if(!S.reserve_pool_denied&&count<reserve_pool_limit())GN_STORE(&S.reserve_pool_requested,1);
- return 0;
-}
-static void reserve_release(Lane*l){
- u32 slot=l->reserve_slot;if(!slot)return;
- if(slot==1)GN_UNLOCK(&S.reserve_lock);else GN_UNLOCK(&S.reserve_extra_lock[slot-2]);l->reserve_slot=0;
-}
-static void reserve_pool_admit(void){
- if(!GN_LOAD(&S.reserve_pool_requested)||GN_LOAD(&S.batch_running))return;
- GN_STORE(&S.reserve_pool_requested,0);
- if(!S.reserve_base||S.reserve_pool_denied||1+S.reserve_extra_count>=reserve_pool_limit())return;
- u64 headroom=MAX(UINT64_C(1048576),S.budget/32);
- if(S.bump>S.budget||headroom>S.budget-S.bump||S.reserve_bytes>S.budget-S.bump-headroom||!gn_host_ensure(S.bump+S.reserve_bytes)){
-  S.reserve_pool_denied=1;S.reserve_pool_declines++;return;
- }
- u32 i=S.reserve_extra_count;S.reserve_extra_base[i]=S.bump;GN_STORE(&S.reserve_extra_lock[i],0);
- S.bump+=S.reserve_bytes;S.allocated_peak=MAX(S.allocated_peak,S.bump);S.reserve_extra_count++;S.reserve_pool_admissions++;
-}
+#include "reserve_workspaces.inc"
 /* A bounded whole-degree ambiguity plan. Working polynomials remain per-lane. */
 typedef struct {u32 f,g,k,ordinal,group;} PlanPair;
 typedef struct {
@@ -202,6 +185,7 @@ static void publish_lane(Lane*l,u64 terms,u32 force){
  GN_STORE(&v->big_capacity_misses,l->big_capacity_misses);GN_STORE(&v->big_pool_misses,l->big_pool_misses);
  GN_STORE(&v->big_arena_misses,l->big_arena_misses);GN_STORE(&v->big_fallbacks,l->general_fallbacks);GN_STORE(&v->big_reserve_waits,l->big_reserve_waits);
  GN_STORE(&v->big_pool_high_water,l->big_pool_high_water);GN_STORE(&v->big_arithmetic_high_water,l->big_arithmetic_high_water);GN_STORE(&v->big_collected_live_high_water,l->big_collected_live_high_water);
+ GN_STORE(&v->memory_wait,l->memory_wait);GN_STORE(&v->memory_need,l->memory_need);GN_STORE(&v->row_growths,l->row_growths);
  GN_FETCH_ADD(&v->sequence,1);
  /* The existing clock import can notify the UI while this Wasm call is still
   * running. Only the coordinator invokes its reporting callback. No new ABI
@@ -283,7 +267,7 @@ static Coef pc(Poly p,u32 i){return resolved(PTR(Term,p.off)[i].c,p.origin);}
 static Coef makec(Arena*a,const u32*v,u32 n,int sign){while(n&&!v[n-1])--n;if(!n)return 0;if(n<=2){u64 z=v[0]|(n==2?(u64)v[1]<<32:0);if(z<=(u64)SMALL_MAX)return csmall(sign<0?-(i64)z:(i64)z);}u64 off=alloc_a(a,8+(u64)n*4);if(!off)return 0;PTR(u32,off)[0]=n;PTR(u32,off)[1]=0;memcpy(PTR(u32,off+8),v,(size_t)n*4);return off|1|(sign<0?2:0);}
 static Coef clonec(Arena*a,Coef c){if(!(c&1))return c;return makec(a,PTR(u32,c_bigoff(c)+8),cn(c),csign(c));}
 static int magcmp(Coef a,Coef b){u32 na=cn(a),nb=cn(b);if(na!=nb)return na>nb?1:-1;for(u32 i=na;i;i--){u32 x=cl(a,i-1),y=cl(b,i-1);if(x!=y)return x>y?1:-1;}return 0;}
-static Coef addc(Arena*z,Coef a,Coef b){
+static Coef addc_base(Arena*z,Coef a,Coef b){
  if(z->error)return 0;
  if(!a)return clonec(z,b);if(!b)return clonec(z,a);
  if(!(a&1)&&!(b&1)){i64 x=cvalue(a)+cvalue(b);if(x>=-SMALL_MAX&&x<=SMALL_MAX)return csmall(x);}
@@ -292,7 +276,7 @@ static Coef addc(Arena*z,Coef a,Coef b){
  else{int cmp=magcmp(a,b);if(!cmp)return 0;if(cmp<0){Coef q=a;a=b;b=q;sg=sb;}u64 borrow=0;for(u32 i=0;i<n;i++){u64 x=cl(a,i),y=(u64)cl(b,i)+borrow;v[i]=(u32)(x-y);borrow=x<y;} }
  return makec(z,v,n,sg);
 }
-static Coef mulc(Arena*z,Coef a,Coef b){
+static Coef mulc_base(Arena*z,Coef a,Coef b){
  if(z->error)return 0;
  if(!a||!b)return 0;if(a==csmall(1))return clonec(z,b);if(b==csmall(1))return clonec(z,a);
  if(a==csmall(-1))return cneg(clonec(z,b));if(b==csmall(-1))return cneg(clonec(z,a));
@@ -301,6 +285,7 @@ static Coef mulc(Arena*z,Coef a,Coef b){
  for(u32 i=0;i<na;i++){if((u64)na*nb>16384&&!(i&15)&&cancelled()){z->error=GN_CANCELLED;return 0;}u64 carry=0;for(u32 j=0;j<nb;j++){u64 q=(u64)cl(a,i)*cl(b,j)+v[i+j]+carry;v[i+j]=(u32)q;carry=q>>32;}v[i+nb]=(u32)carry;}
  return makec(z,v,na+nb,csign(a)*csign(b));
 }
+#include "integer_limbs.inc"
 static Coef legacy_divmodc(Arena*z,Coef a,Coef b,int quotient){
  if(!b){z->error=GN_CORRUPT;return 0;}if(!(a&1)&&!(b&1)){u64 x=cabs64(a),y=cabs64(b);return csmall((i64)(quotient?x/y:x%y));}
  if(magcmp(a,b)<0)return quotient?0:clonec(z,cabs(a));
@@ -337,7 +322,7 @@ static Coef gcd_slot(u64 off,Coef c){
  if(!(c&1))return c;u64 bytes=8+(u64)cn(c)*4;
  memmove(PTR(u8,off),PTR(u8,c_bigoff(c)),(size_t)bytes);return off|1;
 }
-static Coef gcdc(Arena*z,Coef a,Coef b){
+static Coef gcdc_euclid(Arena*z,Coef a,Coef b){
  if(z->error)return 0;u64 mark=z->pos;a=cabs(a);b=cabs(b);
  if(a==2||b==2)return 2;
  if(!a)return clonec(z,b);if(!b)return clonec(z,a);
@@ -353,7 +338,9 @@ static Coef gcdc(Arena*z,Coef a,Coef b){
  }
  z->pos=work;return compactc(z,mark,clonec(z,a));
 }
-static Coef exactdiv(Arena*z,Coef a,Coef b){if(z->error)return 0;if(!a)return 0;if(b==2)return clonec(z,a);Coef q=divmodc(z,a,b,1);return csign(a)*csign(b)<0?cneg(q):q;}
+#include "integer_gcd.inc"
+static Coef exactdiv_base(Arena*z,Coef a,Coef b){if(z->error)return 0;if(!a)return 0;if(b==2)return clonec(z,a);Coef q=divmodc(z,a,b,1);return csign(a)*csign(b)<0?cneg(q):q;}
+#include "integer_exact_division.inc"
 static u32 fpow(u32 a,u32 b){u64 r=1;while(b){if(b&1)r=r*a%S.modulus;a=(u32)((u64)a*a%S.modulus);b>>=1;}return(u32)r;}
 static Coef addf(Arena*a,Coef x,Coef y){return S.modulus?csmall((cvalue(x)+cvalue(y))%S.modulus):addc(a,x,y);}
 static Coef mulf(Arena*a,Coef x,Coef y){return S.modulus?csmall((i64)((u64)cvalue(x)*(u64)cvalue(y)%S.modulus)):mulc(a,x,y);}
@@ -572,18 +559,27 @@ static void quadratic_precondition(Word*w,u32 degree,i64*c,Lane*l){
 static int reserve_nf(Lane*l,Poly p,u32 active,u32 snapshot){
  if(l->no_reserve)return GN_DEFERRED;
  if(!l->reserve_retry){
-  if(!S.reserve_base||S.reserve_bytes<=l->a[active^1].end-l->a[active^1].base)return HEAP_MISS;
-  if(!reserve_acquire(l)){l->reserve_busy++;l->reserve_waiting=1;return GN_DEFERRED;}
+  if(!(l->is_commit&&S.commit_reserve_base?S.commit_reserve_base:S.reserve_base))return HEAP_MISS;
+  if(!l->reserve_slot&&!reserve_acquire(l)){
+   l->reserve_busy++;l->reserve_waiting=1;
+   if(l->slice_enabled){l->reserve_direct=1;l->resume_tier=5;l->memory_wait=ROW_WAIT_RESERVE;return GN_ROW_WAIT;}
+   return GN_DEFERRED;
+  }
   l->reserve_attempts++;l->reserve_saved=l->a[active^1];l->reserve_retry=1;
-  u64 base=reserve_lease_base(l);l->a[active^1]=(Arena){base,base,base+S.reserve_bytes,0,0};
+  u64 base=reserve_lease_base(l),bytes=reserve_lease_bytes(l);l->a[active^1]=(Arena){base,base,base+bytes,0,0};
   l->rational_maxed=0;
  }
- int rc=HEAP_MISS;
- if(l->resume_tier==4){l->reduction_tier=6;rc=big_rational_nf(l,p,active,snapshot);}
- else if(S.rational_enabled){l->reduction_tier=5;u64 steps=l->reductions;rc=rational_nf(l,p,active,snapshot);l->rational_steps+=l->reductions-steps;}
- if(rc<0&&S.big_rational_enabled){l->resume_tier=0;l->reduction_tier=6;rc=big_rational_nf(l,p,active,snapshot);}
+ int rc=HEAP_MISS,attempted_big=0;
+ if(l->resume_tier==4){attempted_big=1;l->reduction_tier=6;rc=big_rational_nf(l,p,active,snapshot);}
+ else if(S.rational_enabled&&!l->reserve_direct){l->reduction_tier=5;u64 steps=l->reductions;rc=rational_nf(l,p,active,snapshot);l->rational_steps+=l->reductions-steps;}
+ /* A resumed big-rational row already used this reserve. Retrying it from the
+  * original polynomial at the same capacity loses its exact partial state;
+  * if that retry yields, every later capacity miss repeats the same search.
+  * Propagate exhaustion to the caller's memory adaptation instead. A compact
+  * rational miss may still promote to big-rational arithmetic once. */
+ if(rc<0&&S.big_rational_enabled&&!attempted_big){l->resume_tier=0;l->reduction_tier=6;rc=big_rational_nf(l,p,active,snapshot);}
  
- if(rc==GN_YIELD)return rc;
+ if(rc==GN_YIELD||rc==GN_ROW_WAIT)return rc;
  l->resume_tier=0;l->reserve_peak=MAX(l->reserve_peak,l->a[active^1].peak);
  l->a[active^1]=l->reserve_saved;l->reserve_retry=0;
  if(!rc)l->reserve_successes++;else if(rc<0)l->reserve_misses++;
@@ -592,11 +588,12 @@ static int reserve_nf(Lane*l,Poly p,u32 active,u32 snapshot){
 typedef struct {Poly p;u32 active,scan,tried;u64 steps;} NResume;
 static NResume nresume[GN_RESUME_SLOTS];
 static int nf(Lane*l,u32 snapshot){
+ if(l->memory_wait)return GN_ROW_WAIT;
  l->tail_snapshot=snapshot;if(!l->resume_tier)l->tail_generation=T.generation;
  u32 active=l->active;Poly p=l->result;u64 steps=0;u32 scan=0,heap_tried=0;
  u64 capacity_mark=l->big_capacity_misses+l->big_pool_misses+l->big_arena_misses;
  if(l->resume_tier){heap_tried=1;l->slice_resumes++;
-  if(l->reserve_retry)goto resume_reserve;
+  if(l->reserve_retry||l->resume_tier==5)goto resume_reserve;
   if(l->resume_tier==1)goto resume_integer;
   if(l->resume_tier==2)goto resume_rational;
   if(l->resume_tier==4)goto resume_big;
@@ -613,23 +610,29 @@ resume_integer:;
   if(S.rational_enabled&&!S.modulus){l->rational_attempts++;
 resume_rational:;
    u64 prev=l->reductions;l->reduction_tier=2;int rr=rational_nf(l,p,active,snapshot);l->rational_steps+=l->reductions-prev;
-   if(rr==GN_YIELD)return rr;l->resume_tier=0;if(rr>=0){if(!rr)l->rational_successes++;return rr;}l->rational_fallbacks++;
+   if(rr==GN_YIELD)return rr;
+   if(rr==GN_DEFERRED&&l->slice_enabled&&!l->no_reserve){l->reserve_direct=1;l->resume_tier=5;l->memory_wait=ROW_WAIT_RESERVE;return GN_ROW_WAIT;}
+   l->resume_tier=0;if(rr>=0){if(!rr)l->rational_successes++;return rr;}l->rational_fallbacks++;
   }
   if(S.big_rational_enabled&&!S.modulus){l->big_attempts++;
 resume_big:;
    l->reduction_tier=4;int br=big_rational_nf(l,p,active,snapshot);
-   if(br==GN_YIELD)return br;l->resume_tier=0;if(br>=0){if(!br)l->big_successes++;return br;}l->big_fallbacks++;
+   if(br==GN_YIELD||br==GN_ROW_WAIT)return br;l->resume_tier=0;if(br>=0){if(!br)l->big_successes++;return br;}l->big_fallbacks++;
   }
   if(!S.modulus&&(l->rational_maxed||S.big_rational_enabled)){
 resume_reserve:;
-   int rr=reserve_nf(l,p,active,snapshot);if(rr==GN_YIELD)return rr;l->resume_tier=0;if(rr>=0)return rr;
+   int rr=reserve_nf(l,p,active,snapshot);if(rr==GN_YIELD||rr==GN_ROW_WAIT)return rr;l->resume_tier=0;if(rr>=0)return rr;
   }
+  /* Inline exact rows must never restart in the whole-row-copy reducer after
+   * sparse exhaustion. Cooperative state is parked; other callers get a limit. */
+  if(S.big_rational_enabled)return GN_SCRATCH;
   if(S.auto_memory&&l->allow_repack&&S.workers>1&&(l->rational_maxed||l->big_capacity_misses+l->big_pool_misses+l->big_arena_misses>capacity_mark))return GN_REPACK;
  }
  if(heap_tried)l->general_fallbacks++;
  l->reduction_tier=3;
 general:
  for(;;){
+ if(p.n>=4096&&p.degree>GN_INLINE_DEGREE)return GN_LIMIT;
  if(!heap_tried&&S.heap_enabled&&p.degree<=GN_INLINE_DEGREE&&p.n>=S.heap_threshold){l->result=p;l->active=active;goto start_optimized;}
 if(l->a[active].error)return l->a[active].error;if((steps&255)==0){publish_lane(l,p.n,0);if(cancelled())return GN_CANCELLED;
   if(slice_expired(l)){NResume*sv=&nresume[l->resume_slot];*sv=(NResume){p,active,scan,heap_tried,steps};l->resume_tier=3;l->slice_yields++;return GN_YIELD;}}
@@ -651,6 +654,9 @@ static int reserve_slots(u32 nmore){if(S.nrules==UINT32_MAX||nmore>UINT32_MAX-S.
  u64*rp=PTR(u64,S.rule_pages),*pp=PTR(u64,S.prefix_pages);if(!rp[rpage]){u64 o=alloc_p(PAGE_N*sizeof(Rule));if(!o)return S.error;rp[rpage]=o;}
  if(nmore)for(u32 i=pfirst;i<=plast;i++)if(!pp[i]){u64 o=alloc_p(PAGE_N*sizeof(Prefix));if(!o)return S.error;pp[i]=o;}return 0;
 }
+static u32 fg_step(u32 parity,u32 group,u32 generator);
+static u64 fg_lower_group(u32 degree,u32 group);
+static int fg_poly_homogeneous(Poly p);
 static int fg_append_check(Poly p,int restoring);
 static int fg_append_done(Poly p,int restoring);
 static int fg_sector_ids(u32 f,u32 g,u32 k);
@@ -724,12 +730,12 @@ static int layout_workers(u32 workers,int preserve){
   layout_one(l,S.scratch_base+bytes*i,bytes);
  }
  if(S.coop_ms){
-  memset(&coop_coordinator,0,sizeof(coop_coordinator));coop_coordinator.resume_slot=GN_MAX_WORKERS;layout_one(&coop_coordinator,S.scratch_base+bytes*workers,bytes);
+  memset(&coop_coordinator,0,sizeof(coop_coordinator));coop_coordinator.resume_slot=GN_MAX_WORKERS;coop_coordinator.is_commit=1;layout_one(&coop_coordinator,S.scratch_base+bytes*workers,bytes);
   /* Optional helper arenas use at most 1/64 of the configured total budget.
    * Primary scratch and the exceptional reserve keep their original sizes.
    * Admission is optional: retain room for persistent rules and never fail
    * the calculation merely because helpers cannot fit. */
-  if(workers>1&&!S.helper_base){
+  if(!S.helper_base){
    u64 wanted=S.budget/64,each=(wanted/workers)&~UINT64_C(65535),total=each*workers;
    if(each>=1048576&&S.bump<=S.budget&&total<=(S.budget-S.bump)/4&&gn_host_ensure(S.bump+total)){
     S.helper_base=S.bump;S.helper_bytes=total;S.bump+=total;S.allocated_peak=MAX(S.allocated_peak,S.bump);
@@ -794,7 +800,7 @@ API u64 gn_live_stat(u32 lane,u32 key){
  case 14:return GN_LOAD(&v->big_capacity);case 15:return GN_LOAD(&v->big_reserved);case 16:return GN_LOAD(&v->big_peak_terms);
  case 17:return GN_LOAD(&v->big_coefficient_live);case 18:return GN_LOAD(&v->big_coefficient_bytes);case 19:return GN_LOAD(&v->big_growths);
  case 20:return GN_LOAD(&v->big_capacity_misses);case 21:return GN_LOAD(&v->big_pool_misses);case 22:return GN_LOAD(&v->big_arena_misses);
- case 23:return GN_LOAD(&v->big_fallbacks);case 24:return GN_LOAD(&v->big_reserve_waits);case 25:return GN_LOAD(&v->big_pool_high_water);case 26:return GN_LOAD(&v->big_arithmetic_high_water);case 27:return GN_LOAD(&v->big_collected_live_high_water);default:return 0;}
+ case 23:return GN_LOAD(&v->big_fallbacks);case 24:return GN_LOAD(&v->big_reserve_waits);case 25:return GN_LOAD(&v->big_pool_high_water);case 26:return GN_LOAD(&v->big_arithmetic_high_water);case 27:return GN_LOAD(&v->big_collected_live_high_water);case 28:return GN_LOAD(&v->memory_wait);case 29:return GN_LOAD(&v->memory_need);case 30:return GN_LOAD(&v->row_growths);default:return 0;}
 }
 API u64 gn_progress_stat(u32 key){
  switch(key){case 0:return S.degree_total;case 1:return S.degree_seen;
@@ -821,7 +827,7 @@ API u64 gn_lane_stat(u32 lane,u32 key){if(lane>=S.lane_slots)return 0;Lane*l=&S.
  case 9:return l->matcher_queries;case 10:return l->matcher_characters;case 11:return l->redcache_hits;
  case 12:return l->heap_attempts;case 13:return l->heap_successes;case 14:return l->heap_fallbacks;case 15:return l->insertion_prunes;case 16:return l->commuting_prunes;case 17:return l->quadratic_swaps;default:return 0;}}
 API u32 gn_result_count(u32 lane){return lane<S.workers?S.lanes[lane].result.n:0;}
-API int gn_input_begin(u32 degree,u32 terms){if(S.current||(!S.certifying&&degree!=S.completed+1)||degree<1||degree>S.target||!terms||S.input_expected)return GN_STATE;Lane*l=&S.lanes[0];reset_a(&l->a[0]);reset_a(&l->a[1]);l->error=0;l->active=0;u64 off=alloc_a(&l->a[0],(u64)terms*sizeof(Term));if(!off)return GN_SCRATCH;l->result=(Poly){off,terms,degree,0};S.input_degree=degree;S.input_expected=terms;S.input_used=0;return 0;}
+API int gn_input_begin(u32 degree,u32 terms){if(S.fg_external==1||S.current||(!S.certifying&&degree!=S.completed+1)||degree<1||degree>S.target||!terms||S.input_expected)return GN_STATE;Lane*l=&S.lanes[0];reset_a(&l->a[0]);reset_a(&l->a[1]);l->error=0;l->active=0;u64 off=alloc_a(&l->a[0],(u64)terms*sizeof(Term));if(!off)return GN_SCRATCH;l->result=(Poly){off,terms,degree,0};S.input_degree=degree;S.input_expected=terms;S.input_used=0;return 0;}
 API int gn_input_term(u64 lo,u64 hi,i64 coefficient){if(!S.input_expected||S.input_used>=S.input_expected||coefficient>SMALL_MAX||coefficient< -SMALL_MAX||!coefficient)return GN_INPUT;Word w={lo,hi};if(S.input_degree>GN_INLINE_DEGREE)return GN_INPUT;if(!weq(maskw(w,S.input_degree),w))return GN_INPUT;for(u32 i=0;i<S.input_degree;i++)if(part(w,S.input_degree,i,1).lo>=S.generators)return GN_INPUT;Lane*l=&S.lanes[0];Coef c;if(S.modulus){i64 z=coefficient%(i64)S.modulus;if(z<0)z+=S.modulus;c=csmall(z);}else c=csmall(coefficient);PTR(Term,l->result.off)[S.input_used++]=(Term){w,c};return 0;}
 API int gn_input_bytes(u32 length,i64 coefficient){
  if(!S.input_expected||S.input_used>=S.input_expected||length!=S.input_degree||length<=GN_INLINE_DEGREE||!coefficient||coefficient>SMALL_MAX||coefficient< -SMALL_MAX)return GN_INPUT;
@@ -831,7 +837,7 @@ API int gn_input_bytes(u32 length,i64 coefficient){
  i64 c=coefficient;if(S.modulus){c%=(i64)S.modulus;if(c<0)c+=S.modulus;}
  PTR(Term,l->result.off)[S.input_used++]=(Term){{off,WORD_LONG|length},csmall(c)};return 0;
 }
-API int gn_input_end(void){if(S.input_used!=S.input_expected||!S.input_expected)return GN_STATE;S.input_expected=0;Lane*l=&S.lanes[0];Term*t=PTR(Term,l->result.off);u32 n=l->result.n;/* Inputs are small; insertion sort avoids library allocation. */
+API int gn_input_end(void){if(S.input_used!=S.input_expected||!S.input_expected)return GN_STATE;S.input_expected=0;Lane*l=&S.lanes[0];if(S.fg_external&&!fg_poly_homogeneous(l->result))return GN_INPUT;Term*t=PTR(Term,l->result.off);u32 n=l->result.n;/* Inputs are small; insertion sort avoids library allocation. */
  for(u32 i=1;i<n;i++){Term x=t[i];u32 j=i;while(j&&wcmp(t[j-1].w,x.w)<0){t[j]=t[j-1];--j;}t[j]=x;}
  u32 k=0;for(u32 i=0;i<n;i++){if(k&&weq(t[k-1].w,t[i].w)){t[k-1].c=addf(&l->a[0],t[k-1].c,t[i].c);if(!t[k-1].c)--k;}else if(t[i].c)t[k++]=t[i];}l->result.n=k;if(l->a[0].error)return l->a[0].error;int rc=normalise(&l->result,&l->a[0]);if(!rc)rc=nf(l,S.nrules);if(!rc)rc=S.certifying?(l->result.n?GN_REJECTED:0):append_rule(l->result,0,0);return rc;}
 #include "tail_cache.inc"
@@ -881,7 +887,7 @@ API int gn_next_pair(u32 lane){if(lane>=S.workers||!S.current)return -GN_STATE;i
  }
  S.iter_done=1;return 0;
 }
-static int reduce_pair_impl(u32 lane){if(lane>=S.workers)return GN_INPUT;Lane*l=&S.lanes[lane];l->normal_valid=0;l->delta_floor=0;l->error=0;reset_a(&l->a[0]);reset_a(&l->a[1]);l->active=0;l->result=(Poly){0};l->pairs++;l->tail_generation=T.generation;l->tail_snapshot=l->snapshot;
+static int reduce_pair_impl(u32 lane){if(lane>=S.workers)return GN_INPUT;Lane*l=&S.lanes[lane];l->normal_valid=0;l->delta_floor=0;l->memory_wait=0;l->memory_need=0;l->memory_detail=0;l->reserve_direct=0;l->error=0;reset_a(&l->a[0]);reset_a(&l->a[1]);l->active=0;l->result=(Poly){0};l->pairs++;l->tail_generation=T.generation;l->tail_snapshot=l->snapshot;
  if(pair_replay_filter(l->f,l->g,l->k))return 0;
  if(fg_sector_pair(l))return 0;
  Rule*f=rule(l->f),*g=rule(l->g);u32 nr=g->degree-l->k;Word suffix=part(g->lm,g->degree,l->k,nr),left=part(f->lm,f->degree,0,f->degree-l->k);Poly fp=load_rule(l->f,l);if(l->error)return l->error;
@@ -1120,9 +1126,9 @@ API int gn_legacy_big_division(u32 enabled){if(enabled>1)return GN_INPUT;if(S.nr
  * the existing I/O buffer; no host pointers or decimal rounding are involved. */
 API int gn_test_big(u32 op,u32 na,u32 nb,int sa,int sb){
  Lane*l=&S.lanes[0];Arena*a=&l->a[0];reset_a(a);
- if(op>4||!na||!nb||sa*sa!=1||sb*sb!=1||(u64)(na+nb)*4>l->io_size)return -GN_INPUT;
+ if(op>5||!na||!nb||(sa!=1&&sa!=-1)||(sb!=1&&sb!=-1)||((u64)na+nb)*4>l->io_size)return -GN_INPUT;
  Coef x=makec(a,PTR(u32,l->io_base),na,sa),y=makec(a,PTR(u32,l->io_base)+na,nb,sb),r=0;
- if(op==0)r=addc(a,x,y);else if(op==1)r=mulc(a,x,y);else if(op==2)r=divmodc(a,x,y,1);else if(op==3)r=divmodc(a,x,y,0);else r=gcdc(a,x,y);
+ if(op==0)r=addc(a,x,y);else if(op==1)r=mulc(a,x,y);else if(op==2)r=divmodc(a,x,y,1);else if(op==3)r=divmodc(a,x,y,0);else if(op==4)r=gcdc(a,x,y);else r=exactdiv(a,x,y);
  if(a->error)return -(int)a->error;u32 n=cn(r);if(8+(u64)n*4>l->io_size)return -GN_SCRATCH;
  PTR(u32,l->io_base)[0]=n;PTR(i64,l->io_base)[0]=(i64)n|((u64)(csign(r)<0)<<32);
  for(u32 i=0;i<n;i++)PTR(u32,l->io_base+8)[i]=cl(r,i);return 0;
@@ -1152,7 +1158,14 @@ API int gn_row_reserve(u64 bytes){
  if(S.current||S.input_expected||S.nrules||S.reserve_base)return GN_STATE;
  bytes&=~UINT64_C(7);if(!bytes||S.modulus)return 0;
  if(bytes>S.budget-S.bump||!gn_host_ensure(S.bump+bytes))return 0;
- S.reserve_base=S.bump;S.reserve_bytes=bytes;S.bump+=bytes;S.allocated_peak=MAX(S.allocated_peak,S.bump);return 0;
+ S.reserve_base=S.bump;S.reserve_bytes=bytes;S.reserve_initial_bytes=bytes;S.bump+=bytes;S.allocated_peak=MAX(S.allocated_peak,S.bump);return 0;
+}
+API int gn_commit_row_reserve(u64 bytes){
+ if(S.current||S.input_expected||S.nrules||S.commit_reserve_configured)return GN_STATE;
+ S.commit_reserve_configured=1;bytes&=~UINT64_C(65535);
+ if(!bytes||S.modulus)return 0;
+ u64 base=workspace_take(&bytes);if(!base)return GN_MEMORY;
+ S.commit_reserve_base=base;S.commit_reserve_bytes=bytes;return 0;
 }
 API int gn_reserve_pool(u32 count){
  if(count>GN_RESERVE_SLOTS)return GN_INPUT;
@@ -1160,10 +1173,13 @@ API int gn_reserve_pool(u32 count){
  S.reserve_pool_limit=count;return 0;
 }
 API u64 gn_reserve_pool_stat(u32 key){
- switch(key){case 0:return S.reserve_base?1+S.reserve_extra_count:0;case 1:return reserve_pool_limit();
- case 2:return S.reserve_bytes*(S.reserve_base?1+S.reserve_extra_count:0);case 3:return S.reserve_bytes*S.reserve_extra_count;
+ u64 total=S.reserve_base?S.reserve_bytes:0;
+ for(u32 i=0;i<S.reserve_extra_count;i++)total+=S.reserve_extra_bytes[i];
+ switch(key){case 0:return (S.reserve_base?1+S.reserve_extra_count:0)+(S.commit_reserve_base?1:0);case 1:return reserve_pool_limit()+(S.commit_reserve_base?1:0);
+ case 2:return total+S.commit_reserve_bytes;case 3:return total-(S.reserve_base?S.reserve_bytes:0);
  case 4:return reserve_pool_busy();case 5:return S.reserve_pool_admissions;case 6:return S.reserve_pool_declines;
- case 7:return GN_LOAD(&S.reserve_pool_requested);default:return 0;}
+ case 7:return GN_LOAD(&S.reserve_pool_requested);case 8:return S.commit_reserve_bytes;
+ case 9:return GN_LOAD(&S.commit_reserve_lock);default:return 0;}
 }
 API u64 gn_reserve_stat(u32 lane,u32 key){
  if(key==0)return S.reserve_bytes;if(lane>=S.lane_slots)return 0;Lane*l=&S.lanes[lane];
@@ -1233,7 +1249,7 @@ API u64 gn_pair_plan_stat(u32 key){switch(key){case 0:return P.active;case 1:ret
  case 20:return P.gate_target<360?P.gate_attempts[P.gate_target]:0;
  case 21:return P.gate_target<360?P.gate_successes[P.gate_target]:0;
  case 22:return P.gate_cooldowns;
- case 23:return S.current&&P.gate_degree==S.current&&P.gate_target<360&&S.fg_sector_ready?S.fg_sector_upper[P.gate_target]-fkg_class_per_grade[S.current][fkg_group_class[S.current&1][P.gate_target]]:0;
+ case 23:return S.current&&P.gate_degree==S.current&&P.gate_target<360&&S.fg_sector_ready?S.fg_sector_upper[P.gate_target]-fg_lower_group(S.current,P.gate_target):0;
  case 24:return C.finisher_selected;case 25:return C.finisher_held;case 26:return MIN(2u,S.workers);default:return 0;}}
 API int gn_q14_hint(u32 enabled){if(enabled>1||S.current||S.input_expected||S.nrules)return GN_STATE;P.q14_hint=enabled;return 0;}
 

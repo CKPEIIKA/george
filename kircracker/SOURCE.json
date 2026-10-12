@@ -15,20 +15,24 @@
       "sha256": "a8d83476011c2002e16b3155c3dad68e7ac2f25cafb1aabace0ff11ccf8e8aab"
     },
     "README.md": {
-      "bytes": 5651,
-      "sha256": "67b4f0e5c067ae7ccda618f6402938af45951be353983808de820362475a6647"
+      "bytes": 5905,
+      "sha256": "493a91f69570e783108c46b3bc5afbfda3e93b6edc76b8b1cbb3f31efabbc095"
     },
     "app/__init__.py": {
       "bytes": 20,
       "sha256": "62ac515087b741ae4932baade864c127f8729bcad7ea0c3a84e2ca3310cb9c88"
+    },
+    "app/alternative.py": {
+      "bytes": 3574,
+      "sha256": "e469a8b90c851b470860f7fdfa6a397847141ddf7e5d5b70a9adfc7257d4bd12"
     },
     "app/assembly.py": {
       "bytes": 8650,
       "sha256": "91d8764450eb835da758bc7b456a995547f70b5f5dc2241452d06276deb4a458"
     },
     "app/cli.py": {
-      "bytes": 14825,
-      "sha256": "5423c36ca207a008d14e48058dd26b38b9d65ed7dc9b6afc3ce0aa33cb5da2b1"
+      "bytes": 17259,
+      "sha256": "3f8e661005bac7fc5f4118cc366ce9af8fec6889dbfc6e860f418ed90f4a410f"
     },
     "app/lower.py": {
       "bytes": 10609,
@@ -1442,6 +1446,10 @@
       "bytes": 2945660,
       "sha256": "91b3830116a38ed6faffa5fdab2ac5dc506b89b1e34d722695be0dcfbf7c9171"
     },
+    "data/starQ-seed.json": {
+      "bytes": 246280,
+      "sha256": "a3a1fccc3d907f1bcd4b2c0deed13f1e9a8047284cd515eccdd63cd7a743dd94"
+    },
     "docs/INHERITED_PROOF.md": {
       "bytes": 15109,
       "sha256": "afd3a55304218507570459af34454164576538e62aed2ff16e4b71da23bf5be8"
@@ -1461,6 +1469,10 @@
     "docs/PROOFKIT_CORRECTNESS.md": {
       "bytes": 8240,
       "sha256": "b43024daa14709122fb84ecd7592c8c7462bef572c6e89153959007fe5127da6"
+    },
+    "docs/RELATIVE_QUOTIENT_CHECK.md": {
+      "bytes": 5748,
+      "sha256": "e4007326e1a7b3f8814bbe54f42998f41c6343656a0d2a268ce7e406434a8b7c"
     },
     "docs/SUPPORT_HOMOLOGY.md": {
       "bytes": 1072,
@@ -1582,9 +1594,37 @@
       "bytes": 11397,
       "sha256": "4ebd72188bf11921dc1bcea0d220034afe811ee0237e47175369729898f4802a"
     },
+    "reference/kircracker/grade_orbits06.py": {
+      "bytes": 3006,
+      "sha256": "3ad6356f7d4e35dca5f569a21510ca19faee69eb9d56e157705fc4a4f81bcf3e"
+    },
+    "reference/kircracker/nichols_star07.py": {
+      "bytes": 10142,
+      "sha256": "b114f2696fb04be0cc5f9493cfdadaf9f9fa9e85585192872e08fd492404a83d"
+    },
+    "reference/kircracker/rank_sandwich06.py": {
+      "bytes": 6485,
+      "sha256": "d8673fd4fb6b7ad23e761d9f4315a9e9a88624c546f9c20d18728b35faa73b32"
+    },
+    "reference/kircracker/relative_upper06.py": {
+      "bytes": 10820,
+      "sha256": "aeeb11f96fb556eab1f13bb005eae8c07d4fc5db8ef3b51276f9e1e127a62abf"
+    },
+    "reference/kircracker/representation_blocks.py": {
+      "bytes": 9815,
+      "sha256": "02e057143d8525a5a6506c9f97ed35a158562def96b9e82a8d6d6cae141c90db"
+    },
+    "reference/kircracker/sector_pairing06.py": {
+      "bytes": 7156,
+      "sha256": "3d73f3c0eb882e78cf38b5d0cf4db1b998e0b7a1c8bdaf7f9315e00e38a3b214"
+    },
     "reference/kircracker/sectors.py": {
       "bytes": 7226,
       "sha256": "788ceeb43ce8840c8629eec7e3c881c87327d2ecf308f0636aa6221bfca1bd49"
+    },
+    "reference/kircracker/stabilizer_blocks.py": {
+      "bytes": 5543,
+      "sha256": "f31e54f3aae40079c38209f069a235d7fb307313b6a89d1b153398951869d297"
     },
     "src/checkpoint_io.hpp": {
       "bytes": 3334,
@@ -1629,6 +1669,10 @@
     "tests/test_030_structural.py": {
       "bytes": 1119,
       "sha256": "2b61a3929f397f450b1b52c471c51fab6ce3343d368577e2a69044809722b5b3"
+    },
+    "tests/test_alternative_reference.py": {
+      "bytes": 3623,
+      "sha256": "32ee591ff4fc5ae7020ce1329dc31cde3102a191649a2567f364a1e668785190"
     },
     "tests/test_cli.py": {
       "bytes": 9905,
@@ -1712,7 +1756,23 @@
     "nativeNFKernelAdded": true,
     "nicholsGracefulSignalHandling": true,
     "priorCuratedProofMembersByteIdenticalToNewArchive": true,
-    "supportedAuditedDegree": 22
+    "supportedAuditedDegree": 22,
+    "alternativeReference": {
+      "sourceArchiveSHA256": "5694622c30115f4ff2b896d349fb84f28e91c1ec79a4992a0cbe75d298bc710a",
+      "sourceBranchVersion": "0.6.1-dev",
+      "nativeHighDegreeKernelsChanged": false,
+      "capabilities": [
+        "full-braiding Nichols oracle degrees 2-4",
+        "bounded Nichols candidate vanishing degree <=7",
+        "relative upper/reference sandwich comparison",
+        "S4 grade inversion and rejection controls",
+        "exact sector stabilizer projectors",
+        "bounded complete-basis representation reference"
+      ],
+      "seedSHA256": "a3a1fccc3d907f1bcd4b2c0deed13f1e9a8047284cd515eccdd63cd7a743dd94",
+      "comparisonProofScope": "degree-wise equality conditional on relator membership and structural/Q proof dependencies",
+      "nativeProjectedRankAccelerationMeasured": false
+    }
   },
   "externalFiles": {
     "proof/frontier-0.5.0.zip": {

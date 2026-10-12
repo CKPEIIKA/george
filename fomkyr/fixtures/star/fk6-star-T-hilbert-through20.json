@@ -1,0 +1,117 @@
+{
+  "schema": 1,
+  "kind": "external-dimensions",
+  "identity": "b67ff9ca3c22b770e7d2cfe51a8d088380f8c0c260f74caff827a58b3e5776f0",
+  "modulus": 0,
+  "source": "Scalar series division of the imported FK6 profile by [4]^4 [5]^2 [6]^4; T uses (1-t^14) H_S.",
+  "derivation": "A = S tensor FK5; Q is regular, degree 14.",
+  "independentComputation": false,
+  "proofStatus": "external-theorem-dependent; proof is not replayed by the runtime",
+  "sourceProfileSHA256": "ec5b85bfd6ff117bd17a94cf740f4f480864759b72e51237c14cc604408d016d",
+  "throughDegree": 20,
+  "dimensions": [
+    1,
+    5,
+    20,
+    70,
+    220,
+    640,
+    1751,
+    4560,
+    11386,
+    27425,
+    64015,
+    145330,
+    321843,
+    696960,
+    1478886,
+    3080185,
+    6306397,
+    12708925,
+    25237690,
+    49435100,
+    95598099
+  ],
+  "entries": [
+    {
+      "degree": 1,
+      "dimension": "5"
+    },
+    {
+      "degree": 2,
+      "dimension": "20"
+    },
+    {
+      "degree": 3,
+      "dimension": "70"
+    },
+    {
+      "degree": 4,
+      "dimension": "220"
+    },
+    {
+      "degree": 5,
+      "dimension": "640"
+    },
+    {
+      "degree": 6,
+      "dimension": "1751"
+    },
+    {
+      "degree": 7,
+      "dimension": "4560"
+    },
+    {
+      "degree": 8,
+      "dimension": "11386"
+    },
+    {
+      "degree": 9,
+      "dimension": "27425"
+    },
+    {
+      "degree": 10,
+      "dimension": "64015"
+    },
+    {
+      "degree": 11,
+      "dimension": "145330"
+    },
+    {
+      "degree": 12,
+      "dimension": "321843"
+    },
+    {
+      "degree": 13,
+      "dimension": "696960"
+    },
+    {
+      "degree": 14,
+      "dimension": "1478886"
+    },
+    {
+      "degree": 15,
+      "dimension": "3080185"
+    },
+    {
+      "degree": 16,
+      "dimension": "6306397"
+    },
+    {
+      "degree": 17,
+      "dimension": "12708925"
+    },
+    {
+      "degree": 18,
+      "dimension": "25237690"
+    },
+    {
+      "degree": 19,
+      "dimension": "49435100"
+    },
+    {
+      "degree": 20,
+      "dimension": "95598099"
+    }
+  ]
+}

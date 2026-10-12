@@ -36,6 +36,7 @@ with tempfile.TemporaryDirectory(prefix='fomkyr-bundle-') as temporary:
     assert report['independentGroebnerCertificate'] and not report['verificationDependsOnImportedDimensions']
     with zipfile.ZipFile(out) as z:
         manifest=json.loads(z.read('manifest.json'))
-        assert manifest['gateProfileThroughDegree']==17
+        profile=json.loads((ROOT/'fk_gate/profiles/fk6-exact-through20.json').read_text())
+        assert manifest['gateProfileThroughDegree']==profile['throughDegree']
         assert not manifest['verification']['profileProofReplayedHere']
     print('Q/F2/F101 native exports, gated FK6, independent certificates and payload tampering: PASS')

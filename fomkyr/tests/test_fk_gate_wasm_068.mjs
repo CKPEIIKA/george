@@ -3,12 +3,13 @@ import fs from 'node:fs';import path from 'node:path';import assert from 'node:a
 import {setup} from './node-host.mjs';import {FomkyrEngine} from '../web/engine.js';
 import {FK_GATE_PROFILE_ID,FK_GATE_UPSTREAM_PROFILE_ID,FK_GATE_LEGACY_PROFILE_IDS} from '../web/fk-gate.js';
 const root=path.resolve('results/0.6.8/gate-wasm');fs.rmSync(root,{recursive:true,force:true});fs.mkdirSync(root,{recursive:true});setup(root);
+const profile=JSON.parse(fs.readFileSync('fk_gate/profiles/proof-provenance.json'));
 const fixture=JSON.parse(fs.readFileSync('fixtures/fk6.json'));const reports=[];
 const base={budgetBytes:256*1048576,workers:4,spill:true,hilbert:true,exportText:false,progress:false,timeoutMs:120000,resume:false,quantumMs:1,lookahead:64,hilbertGate:true,hilbertSectors:true,gateBudgetBytes:64*1048576};
 for(const [bits,execution] of [[32,'multicore'],[64,'multicore'],[32,'single'],[64,'single']]){
  const runKey=`fk6-${bits}-${execution}`;const e=new FomkyrEngine({...base,bits,execution,runKey});let r;
  try{r=await e.compute(fixture,6,0);}finally{await e.close();}
- assert.equal(r.fkGateProfileVersion,'0.3.1');assert.equal(r.certifiedProfileThroughDegree,17);assert.equal(r.completeDimensionThroughDegree,17);assert.equal(r.completedThroughDegree,6);assert.equal(r.fkGate.status,3);assert.equal(r.fkGateProfileId,FK_GATE_PROFILE_ID);assert(r.conditionalOnImportedFkDimensions);assert(r.fkGate.sectorSkips>0);assert.equal(r.hilbert.coefficients[6],'64432');
+ assert.equal(r.fkGateProfileVersion,profile.version);assert.equal(r.certifiedProfileThroughDegree,profile.profileThroughDegree);assert.equal(r.completeDimensionThroughDegree,profile.profileThroughDegree);assert.equal(r.completedThroughDegree,6);assert.equal(r.fkGate.status,3);assert.equal(r.fkGateProfileId,FK_GATE_PROFILE_ID);assert(r.conditionalOnImportedFkDimensions);assert(r.fkGate.sectorSkips>0);assert.equal(r.hilbert.coefficients[6],'64432');
  const record=path.join(root,'fomkyr',runKey,'basis.gnb');reports.push({bits,execution,record,result:r});console.log('FK GATE WASM PASS',bits,execution,r.fkGate);
 }
 // Profile use cannot become an unconditional cache hit simply by unchecking it.

@@ -7,6 +7,7 @@ static int human_output;
 
 static const char *human_phase(const char *phase) {
  if(!phase)return "Computing";
+ if(!strcmp(phase,"waiting-memory"))return "Waiting for row workspace";
  if(!strcmp(phase,"waiting-workers"))return "Waiting for workers";
  if(!strcmp(phase,"committing"))return "Committing results";
  if(!strcmp(phase,"reducing"))return "Reducing pairs";
@@ -70,6 +71,8 @@ static void emit_json(FILE *out, const char *payload) {
      else if(human_number(&j,entry,"batchTask",&task))fprintf(out,"; commit task %" PRIu64,task);
      int row=json_key(&j,entry,"bigRow");u64 cap=0,growths=0,misses=0;
      if(row>=0&&human_number(&j,row,"capacity",&cap)&&cap){human_number(&j,row,"growths",&growths);human_number(&j,row,"capacityMisses",&misses);fprintf(out,"; table capacity %" PRIu64 ", growths %" PRIu64 ", capacity misses %" PRIu64,cap,growths,misses);}
+     u64 memory_reason=0,request=0;
+     if(human_number(&j,entry,"memoryWaitReason",&memory_reason)&&memory_reason){human_number(&j,entry,"requestedWorkspaceBytes",&request);fprintf(out,"; waiting for workspace (reason %" PRIu64 ", %.2f GiB requested)",memory_reason,(double)request/1073741824.0);}
      fputs(".\n",out);
     }
     free(tier);int end=j.t[entry].end;i++;while(i<j.n&&j.t[i].start<end)i++;

@@ -27,19 +27,29 @@ for s in range(2):
   assert classes[s][i]==classid[tuple(cycle(g))]
   for c,(a,b) in enumerate(edges):
    h=list(g);h[a-1],h[b-1]=h[b-1],h[a-1];assert steps[s][i][c]==ix[s^1][tuple(h)];n+=1
-assert len(per)==len(whole)==len(p['totals'])==18
+active=json.loads((R/'profiles'/prov['profileFile']).read_text())
+assert hashlib.sha256((R/'profiles'/prov['profileFile']).read_bytes()).hexdigest()==prov['profileFileSHA256']
+bound=active['throughDegree']
+assert len(per)==len(whole)==len(active['dimensions'])==bound+1
+assert p['classes']==active['classes'] and p['classSizes']==active['classSizes']
+assert per==[[int(v) for v in row] for row in active['dimensionsPerClass']]
 for d,row in enumerate(per):
- assert whole[d]==[x*y for x,y in zip(row,p['classSizes'])]
- assert sum(whole[d])==p['totals'][d]
- assert row==interval['degrees'][d]['lowerPerClass']==interval['degrees'][d]['upperPerClass']
- assert interval['degrees'][d]['exactGrades']==360
-assert p['completeDimensionThrough']==17
-assert p['proofBundleDigestSHA256']==interval['proofBundleDigestSHA256']==prov['proofBundleDigestSHA256']
+ assert whole[d]==[x*y for x,y in zip(row,active['classSizes'])]
+ assert sum(whole[d])==int(active['dimensions'][d])
+ if d<=p['completeDimensionThrough']:
+  assert row==p['perGradeDimensions'][d]
+  assert sum(whole[d])==p['totals'][d]
+  assert row==interval['degrees'][d]['lowerPerClass']==interval['degrees'][d]['upperPerClass']
+  assert interval['degrees'][d]['exactGrades']==360
+assert p['completeDimensionThrough']==interval['completeDimensionThrough']==17
+assert p['proofBundleDigestSHA256']==interval['proofBundleDigestSHA256']==prov['previousThrough17Provenance']['proofBundleDigestSHA256']
+assert bound==prov['profileThroughDegree']==prov['exactTotalThroughDegree']
 assert prov['proofBundleDigestSHA256'] in Q
 for name in ['adapters/fomkyr065.inc','adapters/sector_counter.inc']:
- text=(R/name).read_text();assert 'degree>13' not in text and 'FKG_PROFILE_DEGREE' in text
+ text=(R/name).read_text();assert 'degree>13' not in text
+ assert ('degree>S.fgate.bound' in text if name.endswith('sector_counter.inc') else 'FKG_PROFILE_DEGREE' in text)
 js=(R/'js/fk_gate.js').read_text();assert 'certifiedProfileThroughDegree:13' not in js and 'profileBoundKind:"exact-dimension"' in js
-report={'passed':True,'allSignedInputGradeTransitions':n,'allParityClassAssignments':720,'headerAndProfileValuesAgree':True,'noLiteralDegree13GateCap':True,'completeDimensionMetadataExactThrough17':True}
+report={'passed':True,'allSignedInputGradeTransitions':n,'allParityClassAssignments':720,'headerAndProfileValuesAgree':True,'noLiteralDegree13GateCap':True,'activeImportedProfileThroughDegree':bound,'historicalThrough17PrefixPreserved':True}
 (R/'evidence').mkdir(exist_ok=True)
 (R/'evidence/current-profile-tests.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report))
 

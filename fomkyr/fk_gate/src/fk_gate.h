@@ -33,6 +33,7 @@ uint32_t fkg_exact_total_degree(void);
 int fkg_begin(FkgGate*,uint32_t degree,uint32_t completed,uint64_t rule_count,FkgCount upper,int quiescent);
 /* Batch event must be proven: all appended leaders are DISTINCT, degree d,
  * and previously irreducible. Kernel adapter enforces this from actual words. */
+int fkg_begin_lower(FkgGate*,uint32_t degree,uint32_t completed,uint64_t rule_count,FkgCount upper,FkgCount lower,int quiescent);
 int fkg_observe(FkgGate*,uint32_t degree,uint32_t completed,uint64_t rule_count,int admissible_additions,int quiescent);
 /* Optional recomputed upper catches stale snapshots. No coefficient guessing. */
 int fkg_close(FkgGate*,FkgCount recomputed_upper,int quiescent);

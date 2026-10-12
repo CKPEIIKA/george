@@ -57,6 +57,11 @@ then both-sided candidates if a verified gap remains. See
 Support through degree 22 does not guarantee exact closure: unresolved intervals
 remain `BOUNDS_ONLY`.
 
+Independent low-degree Nichols oracles, sector stabilizer projectors and an
+explicit relative quotient rank comparison are available. See
+[relative quotient checks](docs/RELATIVE_QUOTIENT_CHECK.md) for commands,
+certificate formats and resource limits.
+
 A closed profile has status `EXACT_IN_PROJECT_PROOF_CHAIN`. The proof chain
 includes inherited computational evidence and written operator, Hopf and coideal
 arguments described in [INHERITED_PROOF.md](docs/INHERITED_PROOF.md). Those

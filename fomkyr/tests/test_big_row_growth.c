@@ -42,8 +42,8 @@ API int test_big_row_growth(u32 large){
  r.pivot=bcopy(&r.pool[0],(BCoef){big,2});r.pending_kind=2;r.pending_rule=7;r.pending_tail=19;
  root=bheap_top(&r);bheap_remove(&r,root);r.normal[r.normal_n++]=root;
  S.reserve_base=8u<<20;S.reserve_bytes=1u<<20;S.reserve_growth=1;l->slice_enabled=1;GN_STORE(&S.reserve_lock,1);
- REQUIRE(brow_add(&r,(Word){129,0},(BCoef){big,2})==GN_YIELD);
- REQUIRE(r.used==128&&r.normal_n==1&&r.pending_tail==19);REQUIRE(!l->big_capacity_misses);
+ REQUIRE(brow_add(&r,(Word){129,0},(BCoef){big,2})==HEAP_MISS);
+ REQUIRE(r.used==128&&r.normal_n==1&&r.pending_tail==19);REQUIRE(l->big_capacity_misses==1);
  GN_STORE(&S.reserve_lock,0);u64 rewrites=l->reductions;
  REQUIRE(brow_add(&r,(Word){129,0},(BCoef){big,2})==0);
  REQUIRE(l->reserve_owned&&r.capacity==256&&r.heap_n==128&&r.normal_n==1);
@@ -68,43 +68,55 @@ API int test_big_row_growth(u32 large){
  REQUIRE(gn_big_row_limit(128)==0);S.reserve_base=0;
  REQUIRE(brow_layout(&r,l,&small,128,128,4)==0);memset(r.heads,0,128*8);
  for(u32 i=0;i<128;i++)REQUIRE(brow_add(&r,(Word){i+1,0},(BCoef){2,2})==0);
- REQUIRE(brow_add(&r,(Word){129,0},(BCoef){2,2})==HEAP_MISS);
- REQUIRE(l->big_capacity_misses==1&&r.used==128&&r.heap_n==128);
+ u64 misses_before=l->big_capacity_misses;
+ REQUIRE(brow_add(&r,(Word){129,0},(BCoef){2,2})==GN_LIMIT);
+ REQUIRE(l->big_capacity_misses==misses_before+1&&r.used==128&&r.heap_n==128);
  /* Exercise a real exact normal form parked halfway through a rule tail.
   * The pivot rewrite must not repeat after the reserve becomes available. */
  REQUIRE(gn_init(16,3,1,64u<<20,32u<<20,8,0,0)==0);
  REQUIRE(gn_tune(0,12,16)==0);REQUIRE(gn_rational_rewrites(0)==0);
- S.completed=2;REQUIRE(gn_input_begin(3,301)==0);REQUIRE(gn_input_term(4095,0,1)==0);
- for(u32 i=1;i<=300;i++)REQUIRE(gn_input_term(i,0,1)==0);
+ S.completed=2;REQUIRE(gn_input_begin(3,301)==0);REQUIRE(gn_input_term(4095,0,7)==0);
+ for(u32 i=1;i<=300;i++)REQUIRE(gn_input_term(i,0,2)==0);
  REQUIRE(gn_input_end()==0&&S.nrules==1);
  l=&S.lanes[0];l->a[0]=(Arena){48u<<20,48u<<20,49u<<20,0,0};
  l->a[1]=(Arena){46u<<20,46u<<20,(46u<<20)+20480,0,0};
  Poly original={alloc_a(&l->a[0],2*sizeof(Term)),2,3,0};
- PTR(Term,original.off)[0]=(Term){{4095,0},2};PTR(Term,original.off)[1]=(Term){{350,0},2};
+ PTR(Term,original.off)[0]=(Term){{4095,0},csmall(19)};PTR(Term,original.off)[1]=(Term){{350,0},2};
  S.reserve_base=60u<<20;S.reserve_bytes=1u<<20;S.reserve_growth=1;l->slice_enabled=1;l->slice_end=1e30;
  GN_STORE(&S.reserve_lock,1);
- REQUIRE(big_rational_nf(l,original,0,1)==GN_YIELD);REQUIRE(l->resume_tier==4);
+ REQUIRE(big_rational_nf(l,original,0,1)==GN_ROW_WAIT);REQUIRE(l->resume_tier==4);
  REQUIRE(saved_BRow[0].row.pending_kind==2&&saved_BRow[0].row.pending_tail>1);
+#ifndef FOMKYR_RATIONAL_TAIL_RATIO_BASELINE
+ REQUIRE(saved_BRow[0].row.pivot_scaled&&saved_BRow[0].row.pivot.n==csmall(19)&&saved_BRow[0].row.pivot.d==csmall(7));
+#endif
  REQUIRE(l->reductions==1&&PTR(Term,original.off)[0].w.lo==4095);
  u32 tail=saved_BRow[0].row.pending_tail;u64 previous_steps=saved_BRow[0].steps;
- REQUIRE(big_rational_nf(l,original,0,1)==GN_YIELD);
+ REQUIRE(big_rational_nf(l,original,0,1)==GN_ROW_WAIT);
  REQUIRE(saved_BRow[0].row.pending_tail==tail&&saved_BRow[0].steps==previous_steps&&l->reductions==1);
  GN_STORE(&S.reserve_lock,0);
+ /* End-of-wave resource status must grant the free lease before reporting
+  * a terminal wait. No helper/ready task can mask this all-parked state. */
+ memset(&C,0,sizeof(C));S.batch_n=1;S.iter_done=1;
+ S.tasks[0]=(BatchTask){1,1,1,1,GN_ROW_WAIT,0,0};C.assigned[0]=1;
+ REQUIRE(gn_coop_resource_status()==0&&!l->memory_wait);
+ REQUIRE(saved_BRow[0].row.pending_tail==tail&&l->reductions==1);
+ S.batch_n=0;C.assigned[0]=0;
  /* A large rule tail also has a timed safe point. Recreate its exact live
   * prefix through term 255, expire the slice, and verify the same pivot/cursor
   * survives that timed yield before finishing the normal form. */
  BRow*parked=&saved_BRow[0].row;
  Poly tail_rule=load_rule(1,l);REQUIRE(!l->error);
  while(parked->pending_tail<256){u32 j=parked->pending_tail;reset_a(&parked->temp);
-  REQUIRE(brow_add(parked,pw(tail_rule,j),(BCoef){csmall(-1),2})==0);parked->pending_tail++;
+  REQUIRE(brow_add(parked,pw(tail_rule,j),(BCoef){csmall(-38),csmall(7)})==0);parked->pending_tail++;
  }
  l->slice_end=gn_host_clock()-1;previous_steps=saved_BRow[0].steps;
  REQUIRE(big_rational_nf(l,original,0,1)==GN_YIELD);
- REQUIRE(saved_BRow[0].row.pending_tail==256&&saved_BRow[0].steps==previous_steps&&l->reductions==1);
+ /* A resumed expired tail must advance, even after an expensive record load. */
+ REQUIRE(saved_BRow[0].row.pending_tail>256&&saved_BRow[0].steps>=previous_steps&&l->reductions==1);
  l->slice_end=1e30;REQUIRE(big_rational_nf(l,original,0,1)==0);
  REQUIRE(l->reductions==1&&l->result.n==301&&!l->reserve_owned&&!GN_LOAD(&S.reserve_lock));
- REQUIRE(pw(l->result,0).lo==350&&pc(l->result,0)==2);
- for(u32 i=1;i<=300;i++)REQUIRE(pw(l->result,i).lo==301-i&&pc(l->result,i)==csmall(-1));
+ REQUIRE(pw(l->result,0).lo==350&&pc(l->result,0)==csmall(7));
+ for(u32 i=1;i<=300;i++)REQUIRE(pw(l->result,i).lo==301-i&&pc(l->result,i)==csmall(-38));
  return 0;
 }
 #include "deep_rows.inc"
@@ -127,9 +139,9 @@ API int test_coop_helpers(u32 radix){
  reset_a(&l->a[0]);Poly p={alloc_a(&l->a[0],2*sizeof(Term)),2,3,0};
  PTR(Term,p.off)[0]=(Term){{4095,0},2};PTR(Term,p.off)[1]=(Term){{350,0},2};l->result=p;l->active=0;
  l->slice_enabled=1;l->slice_end=1e30;GN_STORE(&S.reserve_lock,1);
- REQUIRE(big_rational_nf(l,p,0,2)==GN_YIELD);REQUIRE(l->reserve_waiting&&l->resume_tier==4);
+ REQUIRE(big_rational_nf(l,p,0,2)==GN_ROW_WAIT);REQUIRE(l->reserve_waiting&&l->resume_tier==4);
  u32 tail=saved_BRow[0].row.pending_tail;u64 steps=saved_BRow[0].steps;
- S.tasks[0]=(BatchTask){2,2,1,2,GN_YIELD,0,0};S.tasks[1]=(BatchTask){1,1,1,2,GN_STATE,0,0};S.batch_n=2;
+ S.tasks[0]=(BatchTask){2,2,1,2,GN_ROW_WAIT,0,0};S.tasks[1]=(BatchTask){1,1,1,2,GN_STATE,0,0};S.batch_n=2;
  GN_STORE(&C.assigned[0],1);coop_order();REQUIRE(gn_coop_reduce(0)==0);
  REQUIRE(GN_LOAD(&C.helper_finished)==1&&GN_LOAD(&C.assigned[0])==1);
  REQUIRE(saved_BRow[0].row.pending_tail==tail&&saved_BRow[0].steps==steps);
@@ -146,7 +158,10 @@ API int test_coop_helpers(u32 radix){
  coop_order();REQUIRE(gn_coop_reduce(0)==0&&GN_LOAD(&C.helper_deferred)==1);
  REQUIRE(saved_BRow[0].row.pending_tail==tail&&saved_BRow[0].steps==steps);
  coop_helpers[0].io_size=io;
- GN_STORE(&S.reserve_lock,0);coop_order();REQUIRE(gn_coop_reduce(0)==0);
+ GN_STORE(&S.reserve_lock,0);
+ REQUIRE(brow_service_wait(l)==1);
+ REQUIRE(saved_BRow[0].row.pending_tail==tail&&saved_BRow[0].steps==steps);
+ coop_order();REQUIRE(gn_coop_reduce(0)==0);
  REQUIRE(!GN_LOAD(&C.assigned[0])&&!l->resume_tier&&S.tasks[0].bytes);
  REQUIRE(PTR(Record,S.tasks[0].output)->n==rule(2)->n);
  Term*first=PTR(Term,S.tasks[0].output+sizeof(Record));REQUIRE(first->w.lo==350&&first->c==2);
@@ -178,14 +193,14 @@ API int test_multi_reserves(u32 radix){
   original[i]=(Poly){alloc_a(&l->a[0],2*sizeof(Term)),2,3,0};
   PTR(Term,original[i].off)[0]=(Term){{4095,0},2};PTR(Term,original[i].off)[1]=(Term){{350,0},2};
   l->result=original[i];l->active=0;l->slice_enabled=1;l->slice_end=1e30;
-  REQUIRE(big_rational_nf(l,original[i],0,2)==GN_YIELD&&l->resume_tier==4);
+  REQUIRE(big_rational_nf(l,original[i],0,2)==GN_ROW_WAIT&&l->resume_tier==4);
   tails[i]=saved_BRow[i].row.pending_tail;steps[i]=saved_BRow[i].steps;
  }
- REQUIRE(gn_reserve_pool_stat(0)==1&&gn_reserve_pool_stat(7)==1);
+ REQUIRE(gn_reserve_pool_stat(0)==2&&gn_reserve_pool_stat(7)==1);
  /* Reader waves cannot mutate the global bump allocator. */
  GN_STORE(&S.batch_running,1);u64 bump=S.bump;reserve_pool_admit();
- REQUIRE(S.bump==bump&&gn_reserve_pool_stat(0)==1);GN_STORE(&S.batch_running,0);
- reserve_pool_admit();REQUIRE(gn_reserve_pool_stat(0)==2&&S.bump==bump+S.reserve_bytes);
+ REQUIRE(S.bump==bump&&gn_reserve_pool_stat(0)==2);GN_STORE(&S.batch_running,0);
+ reserve_pool_admit();REQUIRE(gn_reserve_pool_stat(0)==3&&S.bump==bump+S.reserve_bytes);
  REQUIRE(gn_reserve_pool_stat(3)==S.reserve_bytes&&S.bump<=S.budget);
  GN_UNLOCK(&S.reserve_lock);
  for(u32 i=0;i<2;i++){
@@ -213,9 +228,10 @@ API int test_multi_reserves(u32 radix){
  REQUIRE(reserve_acquire(&S.lanes[0])&&reserve_acquire(&S.lanes[1]));
  S.lanes[0].reserve_owned=S.lanes[1].reserve_owned=1;
  gn_cancel(1);gn_coop_discard();REQUIRE(!reserve_pool_busy());gn_cancel(0);
- /* Tight budgets leave the original reserve and allocator state intact. */
+ /* Tight budgets can explicitly share the worker reserve; an additional
+  * worker lease is refused without changing the allocator. */
  REQUIRE(gn_init(2,4,2,16u<<20,4u<<20,8,0,0)==0&&gn_row_reserve(6u<<20)==0);
- REQUIRE(gn_cooperative(1,16)==0);bump=S.bump;GN_STORE(&S.reserve_pool_requested,1);reserve_pool_admit();
+ REQUIRE(gn_commit_row_reserve(0)==0&&gn_cooperative(1,16)==0);bump=S.bump;GN_STORE(&S.reserve_pool_requested,1);reserve_pool_admit();
  REQUIRE(S.bump==bump&&gn_reserve_pool_stat(0)==1&&gn_reserve_pool_stat(6)==1&&!S.error);
  REQUIRE(gn_reserve_pool(1)==0);GN_STORE(&S.reserve_pool_requested,1);reserve_pool_admit();
  REQUIRE(gn_reserve_pool_stat(0)==1);

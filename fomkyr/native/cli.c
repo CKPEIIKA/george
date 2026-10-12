@@ -23,13 +23,13 @@
 #include <math.h>
 #include <time.h>
 #ifndef VERSION
-#define VERSION "0.7.4"
+#define VERSION "0.7.6"
 #endif
 static u32 plan_order=0,plan_min=12;static u64 plan_bytes=UINT64_C(67108864);
 static u32 quantum_ms=250,lookahead=128,coop_flags=3,coop_max_window=512,cache_maxima=1,big_row_max_terms=0,cache_percent=12;
 static u64 shared_cache_bytes=UINT64_MAX;
 static u32 helper_rows=1,large_row_workspaces=0,family_diversity=1,q14_hint=0;
-static const char *scratch_arg="auto",*reserve_arg="auto",*telemetry_path;
+static const char *scratch_arg="auto",*reserve_arg="auto",*commit_reserve_arg="auto",*telemetry_path;
 static u64 planned_scratch,planned_reserve;
 static int raw_export;
 static double normalization_seconds;
@@ -41,7 +41,7 @@ static u32 normalization_workers;
 #ifndef FOMKYR_DATADIR
 #define FOMKYR_DATADIR "/usr/local/share/fomkyr"
 #endif
-static const char*errors[]={"OK","MEMORY_BUDGET","SCRATCH_BUDGET","INVALID_INPUT","IO_ERROR","CANCELLED","CORRUPT_RECORD","STATE_ERROR","BATCH_OUTPUT_FULL","REPRESENTATION_LIMIT","CANDIDATE_REJECTED","DEFERRED_ROW","WORKSPACE_PRESSURE"};
+static const char*errors[]={"OK","MEMORY_BUDGET","SCRATCH_BUDGET","INVALID_INPUT","IO_ERROR","CANCELLED","CORRUPT_RECORD","STATE_ERROR","BATCH_OUTPUT_FULL","REPRESENTATION_LIMIT","CANDIDATE_REJECTED","DEFERRED_ROW","WORKSPACE_PRESSURE","COOPERATIVE_YIELD","ROW_WORKSPACE_LIMIT"};
 static const char*ename(int rc){if(rc<0)rc=-rc;return(unsigned)rc<sizeof(errors)/sizeof(*errors)?errors[rc]:"UNKNOWN_ERROR";}
 static void die(const char*s){fprintf(stderr,"fomkyr: %s\n",s);exit(2);}
 static u64 parse_u64(const char*s){if(!s||!*s||*s=='-')die("expected a nonnegative integer");errno=0;char*e;unsigned long long n=strtoull(s,&e,10);if(errno||*e)die("invalid integer");return n;}
@@ -110,7 +110,7 @@ static int cp_read(Checkpoint*c,const char*dir,const char*name,const char*identi
   free(pp);}
  u64 abi=json_u64(&j,json_key(&j,payload,"abi"),&ok);c->rules=json_u64(&j,json_key(&j,payload,"basisSize"),&ok);c->bytes=json_u64(&j,json_key(&j,payload,"diskBytes"),&ok);
  u64 completed=json_u64(&j,json_key(&j,payload,"completedThroughDegree"),&ok);if(!ok||(abi!=2&&abi!=3&&abi!=4&&abi!=5)||c->rules>UINT32_MAX||completed>GN_INDEX_MAX||c->bytes>filebytes||c->rules>c->bytes/56){free(compact);goto end;}c->completed=(u32)completed;
- if(abi==5){char*dep=json_string(&j,json_key(&j,payload,"fkGateProfileId"));if(!dep||!fg_enabled||(strcmp(dep,FKG_AUTHORITY_ID)&&strcmp(dep,FKG_UPSTREAM_AUTHORITY_ID)&&strcmp(dep,FKG_LEGACY_AUTHORITY_ID_0)&&strcmp(dep,FKG_LEGACY_AUTHORITY_ID_1))){fg_dependency_error=1;free(dep);free(compact);goto end;}free(dep);}
+ if(abi==5){char*dep=json_string(&j,json_key(&j,payload,"fkGateProfileId"));if(!dep||!fg_enabled||(strcmp(dep,fg_host_profile_id())&&(fg_external_requested||(strcmp(dep,FKG_UPSTREAM_AUTHORITY_ID)&&strcmp(dep,FKG_LEGACY_AUTHORITY_ID_0)&&strcmp(dep,FKG_LEGACY_AUTHORITY_ID_1)&&strcmp(dep,FKG_LEGACY_AUTHORITY_ID_2))))){fg_dependency_error=1;free(dep);free(compact);goto end;}free(dep);}
  if(abi==4||(abi==5&&json_key(&j,payload,"hilbertEvidenceId")>=0)){char*dep=json_string(&j,json_key(&j,payload,"hilbertEvidenceId"));if(!dep||!hc.enabled||strcmp(dep,hc.key)){closure_dependency_error=1;free(dep);free(compact);goto end;}free(dep);}
  char*elapsed=json_string(&j,json_key(&j,payload,"cumulativeElapsedMs"));if(elapsed){char*end;double v=strtod(elapsed,&end);if(!*end&&isfinite(v)&&v>=0)c->elapsed_ms=v;free(elapsed);}
  int seq=json_key(&j,payload,"sequence");c->sequence=seq<0?0:json_u64(&j,seq,&ok);char*partial=json_string(&j,json_key(&j,payload,"partial"));c->partial=partial&&!strcmp(partial,"true");free(partial);
@@ -122,7 +122,7 @@ static int cp_better(const Checkpoint*a,const Checkpoint*b){if(a->completed!=b->
 static int nib(char c){if(c>='0'&&c<='9')return c-'0';if(c>='a'&&c<='f')return c-'a'+10;return -1;}
 static u32 rd32(const unsigned char*p){return(u32)p[0]|((u32)p[1]<<8)|((u32)p[2]<<16)|((u32)p[3]<<24);}
 static u64 rd64(const unsigned char*p){return(u64)rd32(p)|((u64)rd32(p+4)<<32);}
-static int restore_cp(Checkpoint*cp,u32*workers){u64 off=0;
+static int restore_cp(Checkpoint*cp,u32*workers){u64 off=0;u32 requested_workers=*workers;
  for(u64 i=0;i<cp->rules;i++){
   if(off+32>cp->bytes||!gn_host_read(off,gn_import_buffer(),32))return GN_CORRUPT;
   u32 size=rd32((unsigned char*)native_pointer(gn_import_buffer())+4);if(size<56||size>cp->bytes-off)return GN_CORRUPT;
@@ -131,6 +131,10 @@ static int restore_cp(Checkpoint*cp,u32*workers){u64 off=0;
   int rc=gn_restore_rule(size,off);if(rc)return rc;off+=size;
  }
  if(off!=cp->bytes)return GN_CORRUPT;
+ /* Large frozen records may need a wider import buffer while no reductions
+  * are active. Restore the requested layout before importing the frontier;
+  * temporary record-loading capacity must not lower execution concurrency. */
+ if(*workers!=requested_workers){int rc=gn_workers(requested_workers);if(rc)return rc;*workers=requested_workers;}
  if(cp->partial){size_t n=strlen(cp->frontier)/2;if(n>gn_import_capacity())return GN_SCRATCH;unsigned char*b=native_pointer(gn_import_buffer());for(size_t i=0;i<n;i++){int a=nib(cp->frontier[2*i]),c=nib(cp->frontier[2*i+1]);if(a<0||c<0)return GN_CORRUPT;b[i]=(unsigned char)((a<<4)|c);}return gn_frontier_restore((u32)n);}
  return gn_restored_through(cp->completed);
 }
@@ -145,7 +149,7 @@ static void telemetry_save(const char *state,const char *progress,double now){
  VERSION,(long)getpid(),state,(long long)time(NULL),gn_stat(5),planned_scratch,planned_reserve,gn_stat(4),gn_stat(39),gn_stat(40),gn_stat(0),gn_stat(6),sequence,(now-last_checkpoint)/1000,(now-started)/1000,(prior_elapsed_ms+now-started)/1000,hc.enabled&&hc.assumed?"true":"false",fg_enabled?"true":"false",fg_enabled&&fg_sectors?"true":"false",progress?progress:"null");
  buf_printf(&b,",\"currentDegree\":%" PRIu64 ",\"completedThroughDegree\":%" PRIu64 ",\"workers\":%" PRIu64 ",\"largeRowWorkspaces\":%" PRIu64 ",\"activeLargeRowWorkspaces\":%" PRIu64,gn_stat(3),gn_stat(2),gn_stat(10),gn_reserve_pool_stat(0),gn_reserve_pool_stat(4));
  if(fg_enabled){u64 deficit=(u64)gn_fg_limb(2,0)|((u64)gn_fg_limb(2,1)<<32);buf_printf(&b,",\"fkGate\":{\"degree\":%" PRIu64 ",\"closedSectors\":%" PRIu64 ",\"totalSectors\":360,\"deficit\":%" PRIu64 ",\"sectorSkips\":%" PRIu64 "}",gn_fg_stat(0),gn_fg_stat(20),deficit,gn_fg_stat(8));}
- buf_printf(&b,",\"targetDegree\":%"PRIu64,telemetry_target);gm_json(&b);tail_json(&b);sector_json(&b);buf_add(&b,"}\n");
+ buf_printf(&b,",\"targetDegree\":%"PRIu64,telemetry_target);gm_json(&b);tail_json(&b);sector_json(&b);buf_printf(&b,",\"memoryWaitingRows\":%"PRIu64",\"rowWorkspaceGrowths\":%"PRIu64",\"fairHelperTurns\":%"PRIu64",\"commitRowWorkspaceBytes\":%"PRIu64",\"commitReserveActive\":%s",gn_coop_stat(31),gn_coop_stat(30),gn_coop_stat(29),gn_reserve_pool_stat(8),gn_reserve_pool_stat(9)?"true":"false");buf_add(&b,"}\n");
  char *directory=strdup(telemetry_path);if(!directory){buf_free(&b);return;}char *slash=strrchr(directory,'/');const char *name=telemetry_path;
  if(slash){name=telemetry_path+(slash-directory)+1;if(slash==directory)slash[1]=0;else *slash=0;}else strcpy(directory,".");
  int failed=write_atomic(directory,name,b.s,b.n);if(failed&&!telemetry_failed)fprintf(stderr,"Dashboard status write failed: %s (computation continues).\n",telemetry_path);telemetry_failed=failed;free(directory);buf_free(&b);
@@ -178,21 +182,22 @@ static void commit_json(Buffer*b){
 }
 static void log_pulse(double now){
  if((quiet&&!telemetry_path)||now-last_log<progress_ms)return;last_log=now;
- u64 steps=0,terms=0,reserve_waits=0;u32 parked=0,active=0,committing=0,slots=(u32)gn_memory_stat(1);
+ u64 steps=0,terms=0,reserve_waits=0;u32 parked=0,active=0,listed=0,committing=0,slots=(u32)gn_memory_stat(1);
  const char*tiers[]={"unknown","compact-integer","compact-rational","fraction-free","big-rational","reserve-rational","reserve-big-rational"};
  Buffer lanes={0};buf_add(&lanes,"[");
  for(u32 i=0;i<slots;i++){
   u64 rewrites=gn_live_stat(i,0);steps+=rewrites;
-  u64 busy=gn_live_stat(i,7);reserve_waits+=gn_live_stat(i,24);if(!busy){if(gn_coop_stat(500+i))parked++;continue;}
+  u64 busy=gn_live_stat(i,7);reserve_waits+=gn_live_stat(i,24);if(!busy){if(gn_coop_stat(500+i))parked++;if(!gn_live_stat(i,28))continue;}
   u64 row_terms=gn_live_stat(i,4),tier=gn_live_stat(i,9);if(row_terms>terms)terms=row_terms;
   if(busy==2)committing=1;
-  if(active++)buf_add(&lanes,",");
-  buf_printf(&lanes,"{\"lane\":%u,\"stage\":\"%s\",\"reductionTier\":\"%s\",\"sampledRewrites\":%" PRIu64 ",\"activeTerms\":%" PRIu64 ",\"exactFallbacks\":%" PRIu64,i,busy==2?"committing":"reducing",tiers[tier<7?tier:0],rewrites,row_terms,gn_live_stat(i,10));
+  if(busy)active++;if(listed++)buf_add(&lanes,",");
+  buf_printf(&lanes,"{\"lane\":%u,\"stage\":\"%s\",\"reductionTier\":\"%s\",\"sampledRewrites\":%" PRIu64 ",\"activeTerms\":%" PRIu64 ",\"exactFallbacks\":%" PRIu64,i,!busy?"waiting-memory":busy==2?"committing":"reducing",tiers[tier<7?tier:0],rewrites,row_terms,gn_live_stat(i,10));
   buf_printf(&lanes,",\"bigRow\":{\"capacity\":%" PRIu64 ",\"reservedCapacity\":%" PRIu64 ",\"peakTerms\":%" PRIu64 ",\"coefficientPoolUsedBytes\":%" PRIu64 ",\"coefficientPoolBytes\":%" PRIu64 ",\"growths\":%" PRIu64 ",\"capacityMisses\":%" PRIu64 ",\"coefficientPoolMisses\":%" PRIu64 ",\"arithmeticWorkspaceMisses\":%" PRIu64 ",\"generalFallbacks\":%" PRIu64 ",\"reserveWaits\":%" PRIu64 "}",gn_live_stat(i,14),gn_live_stat(i,15),gn_live_stat(i,16),gn_live_stat(i,17),gn_live_stat(i,18),gn_live_stat(i,19),gn_live_stat(i,20),gn_live_stat(i,21),gn_live_stat(i,22),gn_live_stat(i,23),gn_live_stat(i,24));
+  buf_printf(&lanes,",\"memoryWaitReason\":%"PRIu64",\"requestedWorkspaceBytes\":%"PRIu64",\"workspaceGrowths\":%"PRIu64,gn_live_stat(i,28),gn_live_stat(i,29),gn_live_stat(i,30));
   buf_printf(&lanes,",\"coefficientPoolHighWaterBytes\":%"PRIu64",\"arithmeticTempHighWaterBytes\":%"PRIu64",\"collectedLiveHighWaterBytes\":%"PRIu64,gn_live_stat(i,25),gn_live_stat(i,26),gn_live_stat(i,27));
   /* A commit can re-reduce a stored row whose last lane descriptor belongs
    * to another pair. Report the ordered task index in that phase. */
-  if(busy==1)buf_printf(&lanes,",\"leftRule\":%" PRIu64 ",\"rightRule\":%" PRIu64 ",\"overlap\":%" PRIu64,gn_live_stat(i,11),gn_live_stat(i,12),gn_live_stat(i,13));
+  if(busy==1||(!busy&&gn_live_stat(i,28)))buf_printf(&lanes,",\"leftRule\":%" PRIu64 ",\"rightRule\":%" PRIu64 ",\"overlap\":%" PRIu64,gn_live_stat(i,11),gn_live_stat(i,12),gn_live_stat(i,13));
   else {u32 task=commit_task?commit_task:(u32)gn_coop_stat(18);if(task)buf_printf(&lanes,",\"batchTask\":%u",task-1);}
   buf_add(&lanes,"}");
  }
@@ -214,24 +219,22 @@ static int execute_cooperative(u32*workers,u32 limit){
   capture_safe(1);int rc=save_safe(0);if(rc)return rc;
   rc=pool_reduce(*workers);if(rc)return rc;
   rc=gn_coop_commit();
-  if((rc==GN_SCRATCH||rc==GN_BATCH_FULL||rc==GN_REPACK)&&*workers>1){
-   u32 after=*workers/2;int rr=gn_coop_retry(after);if(rr)return rr;*workers=after;
-   if(!quiet)log_json(stderr,"{\"event\":\"memory-adaptation\",\"workers\":%u,\"replay\":\"uncommitted descriptors only\"}\n",after);
-   capture_safe(1);rr=save_safe(0);if(rr)return rr;continue;
-  }
+  /* Cooperative pressure belongs to its retained row. Global worker halving
+   * discards every other unfinished reduction at this barrier. */
   if(rc)return rc;
   if(hc.enabled||fg_enabled){rc=closure_try();if(rc)return rc;if(gn_hilbert_gate_stat(3)){gn_coop_discard();return 0;}}
   capture_safe(1);rc=save_safe(0);if(rc)return rc;
+  rc=gn_coop_resource_status();if(rc)return rc;
  }
 }
 static int configure(Fixture*f,u32 target,u32 workers,u64 budget,u64 scratch,u64 reserve,u32 hashbits,u32 prime,int radix){int rc=gn_init(f->nv,target,workers,budget,scratch,hashbits,prime,1);if(rc)return rc;
 #define SET(call) do{rc=(call);if(rc)return rc;}while(0)
- SET(gn_memory_policy(1));SET(gn_gm_config(gm_mask));SET(gn_delta_commit(delta_commit));SET(gn_q14_hint(q14_hint));SET(gn_pair_plan_config(plan_order,plan_min,plan_bytes));SET(gn_rational_heap(1));SET(gn_big_rational_heap(1));SET(gn_big_row_limit(big_row_max_terms));SET(gn_growing_rational(1));SET(gn_rational_rewrites(1));SET(gn_radix_queue((u32)radix));SET(gn_reserve_growth(1));SET(gn_pin_cache(shared_cache_bytes==UINT64_MAX?budget/16:shared_cache_bytes));SET(gn_local_rewrites(4,budget/16<8*MIB?budget/16:8*MIB,8));SET(gn_optimize(no_chain?61:63,budget/16<64*MIB?budget/16:64*MIB));SET(gn_tune(3,cache_percent,16));SET(gn_word_cache(word_cache_entries));SET(gn_row_reserve(reserve));SET(gn_batch_mode(1));SET(gn_radix_cache(cache_maxima));SET(gn_cooperative(quantum_ms,lookahead));SET(gn_coop_policy(coop_flags,coop_max_window));SET(gn_coop_helper_mode(helper_rows));SET(gn_coop_family_mode(family_diversity));SET(gn_reserve_pool(large_row_workspaces));SET(gn_tail_cache_config(tail_cache_bytes));SET(fg_host_bind(identity));
+ SET(gn_memory_policy(1));SET(gn_gm_config(gm_mask));SET(gn_delta_commit(delta_commit));SET(gn_q14_hint(q14_hint));SET(gn_pair_plan_config(plan_order,plan_min,plan_bytes));SET(gn_rational_heap(1));SET(gn_big_rational_heap(1));SET(gn_big_row_limit(big_row_max_terms));SET(gn_growing_rational(1));SET(gn_rational_rewrites(1));SET(gn_radix_queue((u32)radix));SET(gn_reserve_growth(1));SET(gn_pin_cache(shared_cache_bytes==UINT64_MAX?budget/16:shared_cache_bytes));SET(gn_local_rewrites(4,budget/16<8*MIB?budget/16:8*MIB,8));SET(gn_optimize(no_chain?61:63,budget/16<64*MIB?budget/16:64*MIB));SET(gn_tune(3,cache_percent,16));SET(gn_word_cache(word_cache_entries));SET(gn_row_reserve(reserve));if(strcmp(commit_reserve_arg,"auto"))SET(gn_commit_row_reserve(parse_bytes(commit_reserve_arg)));SET(gn_batch_mode(1));SET(gn_radix_cache(cache_maxima));SET(gn_cooperative(quantum_ms,lookahead));SET(gn_coop_policy(coop_flags,coop_max_window));SET(gn_coop_helper_mode(helper_rows));SET(gn_coop_family_mode(family_diversity));SET(gn_reserve_pool(large_row_workspaces));SET(gn_tail_cache_config(tail_cache_bytes));SET(fg_host_bind(identity));
 #undef SET
  if(quantum_ms&&!gn_coop_stat(0)&&!quiet)fprintf(stderr,"Cooperative scheduler disabled: workspace cannot fit a separate commit arena; using the legacy exact scheduler.\n");
  return 0;}
 static void help(void){puts(
-"fomkyr 0.7.4 - exact homogeneous noncommutative Groebner bases\n"
+"fomkyr 0.7.6 - exact homogeneous noncommutative Groebner bases\n"
 "Usage: fomkyr -i input.bg -d 14 -j 8 --workdir fk14 [options]\n"
 "  -i, --input FILE           JSON fixture or expanded George vars/polynomial form\n"
 "  -d, --degree N             Inclusive degree bound; 0 means no user bound\n"
@@ -246,6 +249,7 @@ static void help(void){puts(
 "      --telemetry FILE    Atomic native dashboard status JSON\n"
 "      --commit-reduction MODE full (default) or exact same-degree delta commit\n"
 "      --scheduler MODE      cooperative (default) or barrier (legacy)\n"
+"      --commit-row-reserve SIZE Private commit reserve; auto = min(row reserve, budget/32)\n"
 "      --quantum-ms N        Soft exact-row timeslice, default 250 ms\n"
 "      --big-row-max-terms N  Big-rational term ceiling: auto/0 (default), or power of two\n"
 "      --cache-percent N     Worker record cache share, 0..40 (default 12)\n"
@@ -282,6 +286,7 @@ static void help(void){puts(
 "      --hilbert             Export completed-degree Hilbert coefficients\n"
 "      --hilbert-certificate FILE  Replay exact integer-dual lower bounds\n"
 "      --assume-hilbert FILE  Explicitly trust external dimensions (conditional output)\n"
+"      --assume-sectors FILE  Explicit external S6 sectors for a labelled presentation\n"
 "      --hilbert-fixed-batch Do not bound speculation near Hilbert equality\n"
 "      --export              Stream result.gb after completion\n"
 "      --no-radix            Retain the binary-queue ablation\n"
@@ -345,8 +350,8 @@ int main(int argc,char**argv){
  {const u32 endian=1;if(*(const unsigned char*)&endian!=1)die("This release requires a little-endian native host for ABI-3 records");}
  for(int i=1;i<argc;i++)if(!strcmp(argv[i],"--wasm"))wasm_exec(argc,argv);
  const char*input=NULL,*workdir="fomkyr-job",*mem="auto",*hilbert_file=NULL;int hilbert_assumed=0;u32 target=20,workers=native_cpus(),prime=0,batch=128,hashbits=18;int fresh=0,status=0,dry=0,dump=0,wasmlimit=0,hilbert=0,export=0,radix=1,prime_set=0,resume_requested=0,compat_072=0,family_override=-1;double time_limit=0;
- static const struct option opts[]={{"input",1,0,'i'},{"degree",1,0,'d'},{"workers",1,0,'j'},{"workdir",1,0,1000},{"resume",1,0,1001},{"fresh",0,0,1002},{"memory",1,0,1003},{"wasm-limit",0,0,1004},{"checkpoint-seconds",1,0,1005},{"time-limit",1,0,1006},{"batch-pairs",1,0,1007},{"field",1,0,1008},{"hilbert",0,0,1009},{"export",0,0,1010},{"no-radix",0,0,1011},{"status",0,0,1012},{"dry-run",0,0,1013},{"dump-fixture",0,0,1014},{"version",0,0,1015},{"hilbert-certificate",1,0,1016},{"assume-hilbert",1,0,1017},{"hilbert-fixed-batch",0,0,1018},{"scheduler",1,0,1019},{"quantum-ms",1,0,1020},{"lookahead",1,0,1021},{"no-radix-cache",0,0,1022},{"fk-gate",0,0,1023},{"fk-total-only",0,0,1024},{"fk-gate-memory",1,0,1025},{"human",0,0,1026},{"big-row-max-terms",1,0,1027},{"cache-percent",1,0,1028},{"shared-cache",1,0,1029},{"max-lookahead",1,0,1030},{"no-elastic-window",0,0,1031},{"no-sector-priority",0,0,1032},{"no-helper-rows",0,0,1033},{"large-row-workspaces",1,0,1034},{"scratch",1,0,1035},{"row-reserve",1,0,1036},{"progress-seconds",1,0,1037},{"telemetry",1,0,1038},{"pair-order",1,0,1039},{"plan-min-degree",1,0,1040},{"pair-plan-memory",1,0,1041},{"commit-reduction",1,0,1042},{"no-family-diversity",0,0,1043},{"fk-q14-hint",0,0,1044},{"resume-072-compat",0,0,1045},{"family-diversity",0,0,1046},{"raw-export",0,0,1053},{"replan-remaining",0,0,1052},{"no-chain",0,0,1051},{"word-cache-entries",1,0,1054},{"reducer-tail-cache",1,0,1055},{"gm",1,0,1050},{"quiet",0,0,'q'},{"help",0,0,'h'},{0,0,0,0}};
- int ch;while((ch=getopt_long(argc,argv,"i:d:j:qh",opts,NULL))!=-1){u64 n;switch(ch){case'i':input=optarg;break;case'd':n=parse_u64(optarg);if(n>GN_INDEX_MAX)die("degree index exceeds uint32 representation");target=(u32)n;break;case'j':n=parse_u64(optarg);if(!n||n>32)die("workers must be 1..32");workers=(u32)n;break;case'q':quiet=1;break;case 1039:if(!strcmp(optarg,"legacy"))plan_order=0;else if(!strcmp(optarg,"overlap"))plan_order=1;else if(!strcmp(optarg,"sparse"))plan_order=2;else if(!strcmp(optarg,"word"))plan_order=3;else if(!strcmp(optarg,"gateword"))plan_order=4;else die("pair-order must be legacy, overlap, sparse, word or gateword");break;case 1040:n=parse_u64(optarg);if(!n||n>GN_INDEX_MAX)die("plan-min-degree out of range");plan_min=(u32)n;break;case 1041:plan_bytes=parse_bytes(optarg);break;case 1042:if(!strcmp(optarg,"full"))delta_commit=0;else if(!strcmp(optarg,"delta"))delta_commit=1;else die("commit-reduction must be full or delta");break;case 1043:family_override=0;break;case 1044:q14_hint=1;break;case 1045:compat_072=1;break;case 1046:family_override=1;break;case 1053:raw_export=1;break;case 1052:replan_remaining=1;break;case 1051:no_chain=1;break;case 1054:n=parse_u64(optarg);if(n<256||n>1048576||(n&(n-1)))die("word-cache-entries must be a power of two, 256..1048576");word_cache_entries=(u32)n;break;case 1055:tail_cache_bytes=!strcmp(optarg,"off")?0:parse_bytes(optarg);if(tail_cache_bytes&&tail_cache_bytes<16*MIB)die("reducer-tail-cache must be off/0 or at least 16M");break;case 1050:if(!strcmp(optarg,"off"))gm_mask=0;else if(!strcmp(optarg,"multiply"))gm_mask=1;else if(!strcmp(optarg,"leading-word"))gm_mask=2;else if(!strcmp(optarg,"backward"))gm_mask=4;else if(!strcmp(optarg,"all"))gm_mask=7;else die("gm must be off, multiply, leading-word, backward or all");break;case'h':help();return 0;case 1000:workdir=optarg;break;case 1001:workdir=optarg;resume_requested=1;break;case 1002:fresh=1;break;case 1003:mem=optarg;break;case 1004:wasmlimit=1;break;case 1005:checkpoint_ms=parse_seconds(optarg)*1000;break;case 1006:time_limit=parse_seconds(optarg);break;case 1007:n=parse_u64(optarg);if(!n||n>512)die("batch-pairs must be 1..512");batch=(u32)n;break;case 1008:n=parse_u64(optarg);if(n>2147483647)die("characteristic too large");prime=(u32)n;prime_set=1;break;case 1009:hilbert=1;break;case 1010:export=1;break;case 1011:radix=0;break;case 1012:status=1;break;case 1013:dry=1;break;case 1014:dump=1;break;case 1015:puts(VERSION);return 0;case 1016:case 1017:if(hilbert_file)die("choose only one Hilbert authority");hilbert_file=optarg;hilbert_assumed=ch==1017;break;case 1018:closure_adaptive=0;break;
+ static const struct option opts[]={{"input",1,0,'i'},{"degree",1,0,'d'},{"workers",1,0,'j'},{"workdir",1,0,1000},{"resume",1,0,1001},{"fresh",0,0,1002},{"memory",1,0,1003},{"wasm-limit",0,0,1004},{"checkpoint-seconds",1,0,1005},{"time-limit",1,0,1006},{"batch-pairs",1,0,1007},{"field",1,0,1008},{"hilbert",0,0,1009},{"export",0,0,1010},{"no-radix",0,0,1011},{"status",0,0,1012},{"dry-run",0,0,1013},{"dump-fixture",0,0,1014},{"version",0,0,1015},{"hilbert-certificate",1,0,1016},{"assume-hilbert",1,0,1017},{"hilbert-fixed-batch",0,0,1018},{"scheduler",1,0,1019},{"quantum-ms",1,0,1020},{"lookahead",1,0,1021},{"no-radix-cache",0,0,1022},{"fk-gate",0,0,1023},{"fk-total-only",0,0,1024},{"fk-gate-memory",1,0,1025},{"human",0,0,1026},{"big-row-max-terms",1,0,1027},{"cache-percent",1,0,1028},{"shared-cache",1,0,1029},{"max-lookahead",1,0,1030},{"no-elastic-window",0,0,1031},{"no-sector-priority",0,0,1032},{"no-helper-rows",0,0,1033},{"large-row-workspaces",1,0,1034},{"scratch",1,0,1035},{"row-reserve",1,0,1036},{"progress-seconds",1,0,1037},{"telemetry",1,0,1038},{"pair-order",1,0,1039},{"plan-min-degree",1,0,1040},{"pair-plan-memory",1,0,1041},{"commit-reduction",1,0,1042},{"no-family-diversity",0,0,1043},{"fk-q14-hint",0,0,1044},{"resume-072-compat",0,0,1045},{"family-diversity",0,0,1046},{"commit-row-reserve",1,0,1056},{"assume-sectors",1,0,1057},{"raw-export",0,0,1053},{"replan-remaining",0,0,1052},{"no-chain",0,0,1051},{"word-cache-entries",1,0,1054},{"reducer-tail-cache",1,0,1055},{"gm",1,0,1050},{"quiet",0,0,'q'},{"help",0,0,'h'},{0,0,0,0}};
+ int ch;while((ch=getopt_long(argc,argv,"i:d:j:qh",opts,NULL))!=-1){u64 n;switch(ch){case'i':input=optarg;break;case'd':n=parse_u64(optarg);if(n>GN_INDEX_MAX)die("degree index exceeds uint32 representation");target=(u32)n;break;case'j':n=parse_u64(optarg);if(!n||n>32)die("workers must be 1..32");workers=(u32)n;break;case'q':quiet=1;break;case 1039:if(!strcmp(optarg,"legacy"))plan_order=0;else if(!strcmp(optarg,"overlap"))plan_order=1;else if(!strcmp(optarg,"sparse"))plan_order=2;else if(!strcmp(optarg,"word"))plan_order=3;else if(!strcmp(optarg,"gateword"))plan_order=4;else die("pair-order must be legacy, overlap, sparse, word or gateword");break;case 1040:n=parse_u64(optarg);if(!n||n>GN_INDEX_MAX)die("plan-min-degree out of range");plan_min=(u32)n;break;case 1041:plan_bytes=parse_bytes(optarg);break;case 1042:if(!strcmp(optarg,"full"))delta_commit=0;else if(!strcmp(optarg,"delta"))delta_commit=1;else die("commit-reduction must be full or delta");break;case 1043:family_override=0;break;case 1044:q14_hint=1;break;case 1045:compat_072=1;break;case 1046:family_override=1;break;case 1056:commit_reserve_arg=optarg;break;case 1053:raw_export=1;break;case 1052:replan_remaining=1;break;case 1051:no_chain=1;break;case 1054:n=parse_u64(optarg);if(n<256||n>1048576||(n&(n-1)))die("word-cache-entries must be a power of two, 256..1048576");word_cache_entries=(u32)n;break;case 1055:tail_cache_bytes=!strcmp(optarg,"off")?0:parse_bytes(optarg);if(tail_cache_bytes&&tail_cache_bytes<16*MIB)die("reducer-tail-cache must be off/0 or at least 16M");break;case 1057:if(hilbert_file)die("choose one Hilbert/sector policy file");hilbert_file=optarg;hilbert_assumed=1;fg_external_requested=1;break;case 1050:if(!strcmp(optarg,"off"))gm_mask=0;else if(!strcmp(optarg,"multiply"))gm_mask=1;else if(!strcmp(optarg,"leading-word"))gm_mask=2;else if(!strcmp(optarg,"backward"))gm_mask=4;else if(!strcmp(optarg,"all"))gm_mask=7;else die("gm must be off, multiply, leading-word, backward or all");break;case'h':help();return 0;case 1000:workdir=optarg;break;case 1001:workdir=optarg;resume_requested=1;break;case 1002:fresh=1;break;case 1003:mem=optarg;break;case 1004:wasmlimit=1;break;case 1005:checkpoint_ms=parse_seconds(optarg)*1000;break;case 1006:time_limit=parse_seconds(optarg);break;case 1007:n=parse_u64(optarg);if(!n||n>512)die("batch-pairs must be 1..512");batch=(u32)n;break;case 1008:n=parse_u64(optarg);if(n>2147483647)die("characteristic too large");prime=(u32)n;prime_set=1;break;case 1009:hilbert=1;break;case 1010:export=1;break;case 1011:radix=0;break;case 1012:status=1;break;case 1013:dry=1;break;case 1014:dump=1;break;case 1015:puts(VERSION);return 0;case 1016:case 1017:if(hilbert_file)die("choose only one Hilbert authority");hilbert_file=optarg;hilbert_assumed=ch==1017;break;case 1018:closure_adaptive=0;break;
  case 1019:if(!strcmp(optarg,"barrier"))quantum_ms=0;else if(!strcmp(optarg,"cooperative")){if(!quantum_ms)quantum_ms=250;}else die("scheduler must be cooperative or barrier");break;
  case 1020:n=parse_u64(optarg);if(n<1||n>10000)die("quantum-ms must be 1..10000");quantum_ms=(u32)n;break;
  case 1021:n=parse_u64(optarg);if(!n||n>512)die("lookahead must be 1..512");lookahead=(u32)n;break;
@@ -361,7 +366,7 @@ int main(int argc,char**argv){
  if(jobtext&&(resume_requested||!input)){Json j={0};if(!json_parse(&j,jobtext)){int ok=1;u64 v=json_u64(&j,json_key(&j,0,"modulus"),&ok);if(!ok||v>2147483647)die("invalid saved job characteristic");if(!prime_set)prime=(u32)v;saved_identity=json_string(&j,json_key(&j,0,"identity"));}else die("invalid saved job metadata");json_free(&j);}free(jobtext);
  char*inferred=NULL;if(!input){inferred=path_join(workdir,"fixture.json");input=inferred;}
  Fixture fixture;char error[512];if(fixture_read(&fixture,input,error,sizeof(error)))die(error);free(inferred);
- if(dump){puts(fixture.canonical);fixture_free(&fixture);return 0;}fixture_identity(&fixture,prime,identity);if(resume_requested&&saved_identity&&strcmp(saved_identity,identity))die("resume input/field differs from the saved job; use a separate workdir for a different algebra");free(saved_identity);snprintf(runkey,sizeof(runkey),"alg-%s",identity);closure_load(hilbert_file,hilbert_assumed,&fixture,prime);fg_enabled=fg_requested&&!prime&&fixture.nv==15&&!strcmp(identity,"17c5a3b13bbae1fd6e03ece75139f297d437bda2ae062b093d77a92f091b88bf");if(fg_requested&&!fg_enabled&&!quiet)fprintf(stderr,"FK Gate unavailable for this identity/field; ordinary exact completion retained.\n");
+ if(dump){puts(fixture.canonical);fixture_free(&fixture);return 0;}fixture_identity(&fixture,prime,identity);if(resume_requested&&saved_identity&&strcmp(saved_identity,identity))die("resume input/field differs from the saved job; use a separate workdir for a different algebra");free(saved_identity);snprintf(runkey,sizeof(runkey),"alg-%s",identity);closure_load(hilbert_file,hilbert_assumed,&fixture,prime);if(fg_external_requested&&(prime||fg_requested))die("--assume-sectors requires Q and cannot be combined with --fk-gate/--fk-total-only");fg_host_prepare(&fixture);if(!fg_external_requested)fg_enabled=fg_requested&&!prime&&fixture.nv==15&&!strcmp(identity,"17c5a3b13bbae1fd6e03ece75139f297d437bda2ae062b093d77a92f091b88bf");if(fg_requested&&!fg_enabled&&!quiet)fprintf(stderr,"FK Gate unavailable for this identity/field; ordinary exact completion retained.\n");
  u64 available=native_available(),budget=!strcmp(mem,"auto")?(available/5*4)&~(PAGE-1):parse_bytes(mem)&~(PAGE-1);
  if(wasmlimit&&budget>GN_WASM_HARD_BYTES)budget=GN_WASM_HARD_BYTES&~(PAGE-1);
  if(budget<16*MIB||budget>GN_HARD_BYTES)die("memory ceiling must be >=16 MiB and fit native address representation");
@@ -379,7 +384,7 @@ int main(int argc,char**argv){
  if(status){struct stat st;if(!stat(basis,&st))filebytes=(u64)st.st_size;}else{if(mkdir_tree(dir))die("cannot create algebra directory");if(!native_open(budget,basis)){perror("native mmap/open");return 71;}filebytes=native_size();}free(basis);
  const char*names[]={"checkpoint-0.json","checkpoint-1.json","partial-0.json","partial-1.json"};Checkpoint cps[4]={{0}};u32 count=0;int preserve_newer_partial=0;
  if(!fresh)for(u32 i=0;i<4;i++){Checkpoint c={0};if(cp_read(&c,dir,names[i],identity,filebytes)){if(!status&&target&&c.partial&&target<=c.completed){preserve_newer_partial=1;cp_free(&c);continue;}cps[count++]=c;}}
- if(fg_dependency_error&&!fresh)die("checkpoint depends on FK Gate profile; explicitly supply --fk-gate or --fk-total-only (data retained)");
+ if(fg_dependency_error&&!fresh)die("checkpoint depends on FK Gate profile; explicitly supply the SAME --assume-sectors policy, or --fk-gate/--fk-total-only for the built-in profile (data retained)");
  if(closure_dependency_error&&!fresh)die("checkpoint depends on Hilbert evidence; explicitly supply the SAME policy file/mode (data retained)");
  for(u32 i=0;i<count;i++)for(u32 j=i+1;j<count;j++)if(cp_better(&cps[j],&cps[i])){Checkpoint t=cps[i];cps[i]=cps[j];cps[j]=t;}
  if(!status&&!fresh&&matching_partial_current&&(!count||
@@ -445,5 +450,5 @@ int main(int argc,char**argv){
  buf_printf(&result,",\"reduced\":%s,\"normalization\":\"%s\",\"normalizationSeconds\":%.6f,\"exportedTerms\":%"PRIu64,!rc&&export&&!raw_export?"true":"false",export?(raw_export?"primitive-integer":"monic-tail-reduced"):"not-exported",normalization_seconds,exported_terms);
  sector_json(&result);commit_json(&result);buf_add(&result,"}");
  emit_json(stdout,result.s);if(human_output){printf("Job directory: %s\n",workdir);if(!rc&&export)printf("Basis file: %s/result.gb\n",dir);if(!rc&&hilbert)printf("Hilbert coefficients: %s/hilbert.json\n",dir);}if(write_atomic(dir,"native-result.json",result.s,result.n))fprintf(stderr,"Could not save result metadata: %s\n",strerror(errno));buf_free(&result);buf_free(&safe_payload);native_close();fixture_free(&fixture);free(dir);unlock_job();
- if(!rc)return 0;if(rc==GN_CANCELLED)return native_stop?128+native_stop:124;return rc==GN_MEMORY||rc==GN_SCRATCH?75:70;
+ if(!rc)return 0;if(rc==GN_CANCELLED)return native_stop?128+native_stop:124;return rc==GN_MEMORY||rc==GN_SCRATCH||rc==GN_ROW_WAIT?75:70;
 }

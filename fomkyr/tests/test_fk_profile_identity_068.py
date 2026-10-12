@@ -8,7 +8,15 @@ digest=hashlib.sha256(b''.join((p/x).read_bytes() for x in files)).hexdigest()
 native=re.search(r'#define FKG_AUTHORITY_ID "([a-f0-9]{64})"',(p/'runtime-identity.h').read_text()).group(1)
 js=re.search(r"FK_GATE_PROFILE_ID='([a-f0-9]{64})'",(R/'web/fk-gate.js').read_text()).group(1)
 assert native==js==digest,(native,js,digest)
-proof=json.loads((p/'proof-provenance.json').read_text());assert 'pending' in proof['proofStatus']
+proof=json.loads((p/'proof-provenance.json').read_text())
+assert proof['externalSpecialistReview'] is False
+assert proof['runtimeUsesProofSearch'] is False
+assert isinstance(proof['proofStatus'],str) and proof['proofStatus']
+profile=p/proof['profileFile']
+assert hashlib.sha256(profile.read_bytes()).hexdigest()==proof['profileFileSHA256']
+bound=json.loads(profile.read_text())['throughDegree']
+native_bound=int(re.search(r'#define FKG_PROFILE_DEGREE (\d+)u',(p/'fk6_q.h').read_text()).group(1))
+assert native_bound==bound==proof['profileThroughDegree']==proof['exactTotalThroughDegree']
 assert proof['presentationIdentity']=='17c5a3b13bbae1fd6e03ece75139f297d437bda2ae062b093d77a92f091b88bf'
 report={'passed':True,'byteBinding':digest,'files':files,'proofBundleReplayed':False,'upstreamProofStatus':proof['proofStatus']}
 o=R/'results/0.6.8/profile-identity.json';o.parent.mkdir(parents=True,exist_ok=True);o.write_text(json.dumps(report,indent=2));print(json.dumps(report))

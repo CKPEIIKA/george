@@ -1,5 +1,14 @@
 # Release history
 
+## 0.7.6
+
+- Updated Fomkyr exact integer arithmetic and shared rational rewrite factors.
+- Refreshed O3/LTO and source-bound native/browser PGO builds.
+- Included retained-row resource fixes, star fixtures, optional external sector
+  profiles and required source dependencies.
+- Added edge-table parity and non-monic pause/relocation regressions.
+
+
 ## 0.7.4
 
 - Updated Fomkyr with exact pending-pair filtering, matcher fallback and an

@@ -45,7 +45,10 @@ with tempfile.TemporaryDirectory() as temporary:
         if manual:
             assert status['ordinaryScratchBytes'] == 6 << 20
             assert status['rowReserveBytes'] == 64 << 20
-            assert report['largeRowPool']['workspaces'] == 3
+            # Pool telemetry includes the dedicated commit reserve.
+            assert report['largeRowPool']['workspaces'] == 4
+            assert report['largeRowPool']['limit'] == 4
+            assert status['commitRowWorkspaceBytes'] > 0
         before = telemetry.read_bytes()
         dashboard = subprocess.run([str(root / 'fomkyr-dashboard.sh'), str(telemetry), '--once'],
                                    cwd=root, text=True, capture_output=True, timeout=5)

@@ -17,11 +17,12 @@ typedef struct {
  GN_ATOMIC(u64) slice_us[GN_MAX_WORKERS],max_slice_us[GN_MAX_WORKERS];
  GN_ATOMIC(u32) exhausted[GN_MAX_WORKERS];
  u64 ready_peak,parked_peak; GN_ATOMIC(u64) reserve_deferrals;
- u32 policy,max_window,window,window_degree;u64 window_expansions,sector_orderings;
- u64 work_gap[BATCH_MAX],work_cost[BATCH_MAX];u32 sector_order;
+ u32 policy,max_window,window,window_degree,force_expand;u64 window_expansions,sector_orderings;
+ u64 work_gap[BATCH_MAX],work_cost[BATCH_MAX];u32 sector_order,fair_order;
  u8 finisher_tag[BATCH_MAX];u32 finisher_order;u64 finisher_selected,finisher_held;
  u32 commit_task,commit_snapshot;u64 commit_yields,commit_resumes;
  u32 commit_ready,commit_error;u64 prepared_slices;
+ GN_ATOMIC(u64) fair_helper_turns;u64 resource_growths;
 } Cooperative;
 static Cooperative C;
 /* A completed NF retained in its lane while earlier output records await commit.
@@ -32,6 +33,9 @@ API int gn_radix_cache(u32 enabled){if(enabled>1||S.current||S.input_expected)re
 API int gn_cooperative(u32 quantum_ms,u32 lookahead){
  if(quantum_ms>10000||lookahead<1||lookahead>BATCH_MAX||S.current||S.input_expected||S.nrules||GN_LOAD(&S.batch_running))return GN_STATE;
  memset(&C,0,sizeof(C));C.policy=3;C.max_window=BATCH_MAX;C.helpers_enabled=1;C.family_diversity=1;S.coop_ms=quantum_ms;S.coop_lookahead=lookahead;
+ if(quantum_ms&&S.reserve_base&&!S.modulus&&!S.commit_reserve_configured){
+  int private_rc=gn_commit_row_reserve(MIN(S.reserve_bytes,S.budget/32));if(private_rc)return private_rc;
+ }
  int rc=layout_workers(S.workers,0);
  if(rc==GN_MEMORY&&quantum_ms){S.coop_ms=0;return layout_workers(S.workers,0);}
  return rc;
@@ -52,7 +56,27 @@ API int gn_coop_family_mode(u32 enabled){
 static void coop_release_lane(Lane*l){
  if(l->reserve_retry){l->a[l->active^1]=l->reserve_saved;l->reserve_retry=0;reserve_release(l);}
  if(l->reserve_owned){l->reserve_owned=0;reserve_release(l);}
- l->resume_tier=0;l->normal_valid=0;l->delta_floor=0;l->slice_enabled=0;l->error=0;l->busy=0;l->reserve_waiting=0;
+ /* A reserve can be acquired at a barrier before its row migrates/starts. */
+ reserve_release(l);
+ /* This path also runs on workers for certificate-closed sectors. Only mark
+  * private ranges retired here; the shared free list is coordinator-owned. */
+ if(l->coefficient_extra_base)l->coefficient_extra_retired=1;
+ if(l->output_extra_base){l->a[l->output_extra_index]=l->output_saved;l->output_extra_retired=1;}
+ l->resume_tier=0;l->normal_valid=0;l->delta_floor=0;l->slice_enabled=0;l->error=0;l->busy=0;l->reserve_waiting=0;l->memory_wait=0;l->memory_need=0;l->reserve_direct=0;l->memory_detail=0;
+}
+static void coop_collect_lane(Lane*l){
+ if(l->coefficient_extra_retired){workspace_return(l->coefficient_extra_base,l->coefficient_extra_bytes);l->coefficient_extra_base=l->coefficient_extra_bytes=0;l->coefficient_extra_retired=0;}
+ if(l->output_extra_retired){workspace_return(l->output_extra_base,l->output_extra_bytes);l->output_extra_base=l->output_extra_bytes=0;l->output_extra_retired=0;}
+}
+static int coop_grow_output(Lane*l){
+ if(l->memory_wait!=ROW_WAIT_BATCH)return 0;
+ u64 bytes=l->memory_need,base=workspace_take(&bytes);if(!base)return 0;
+ u64 old=l->out_base;memcpy(PTR(u8,base),PTR(u8,old),(size_t)l->out_used);
+ for(u32 i=0;i<S.batch_n;i++)if(S.tasks[i].bytes&&S.tasks[i].output>=old&&S.tasks[i].output<old+l->out_size)S.tasks[i].output=base+S.tasks[i].output-old;
+ if(l->out_extra_base)workspace_return(l->out_extra_base,l->out_extra_bytes);
+ else{l->out_original_base=old;l->out_original_size=l->out_size;}
+ l->out_extra_base=base;l->out_extra_bytes=bytes;l->out_base=base;l->out_size=bytes;
+ l->memory_wait=0;l->memory_need=0;l->row_growths++;return 1;
 }
 static void coop_clear_lane(u32 lane){
  coop_release_lane(&S.lanes[lane]);GN_STORE(&C.assigned[lane],0);
@@ -64,11 +88,23 @@ API void gn_coop_discard(void){
  if(C.commit_task){Lane saved=S.lanes[0];S.lanes[0]=coop_coordinator;coop_clear_lane(0);coop_coordinator=S.lanes[0];S.lanes[0]=saved;C.commit_task=0;}
  C.commit_ready=C.commit_error=0;
  for(u32 i=0;i<S.batch_n;i++){S.tasks[i].rc=GN_STATE;S.tasks[i].output=0;S.tasks[i].bytes=0;}
+ for(u32 i=0;i<S.workers;i++)for(u32 j=0;j<2;j++){
+  Lane*l=j?&coop_helpers[i]:&S.lanes[i];
+  coop_collect_lane(l);
+  if(l->out_extra_base){workspace_return(l->out_extra_base,l->out_extra_bytes);l->out_base=l->out_original_base;l->out_size=l->out_original_size;l->out_used=0;l->out_extra_base=l->out_extra_bytes=0;}
+ }
+ coop_collect_lane(&coop_coordinator);
 }
 static int coop_before(u32 a,u32 b){
  if(C.finisher_order){
   if(C.finisher_tag[a]!=C.finisher_tag[b])return C.finisher_tag[a]>C.finisher_tag[b];
   if(C.finisher_tag[a])return C.work_cost[a]<=C.work_cost[b];
+ }
+ /* The selected target lanes keep their priority while primary rows are
+  * retained. Cheap-work fairness orders the remaining ordinary descriptors. */
+ if(C.fair_order){
+  if(C.sector_order&&C.work_gap[a]!=C.work_gap[b])return C.work_gap[a]<C.work_gap[b];
+  return C.work_cost[a]<=C.work_cost[b];
  }
  if(C.sector_order){
   /* A small remaining component deficit makes a cheap new leader especially
@@ -83,16 +119,18 @@ static void coop_order(void){
  for(u32 i=0;i<S.batch_n;i++)if(S.tasks[i].rc==GN_STATE||S.tasks[i].rc==GN_DEFERRED||S.tasks[i].rc==COOP_HELPER_DEFERRED)S.batch_order[S.batch_work_n++]=i;
  C.sector_order=!!(C.policy&2)&&S.fg_sector_ready&&S.fgate.degree==S.current&&
   !S.certifying&&S.fgate.status>=FKG_ACTIVE&&S.fgate.status<=FKG_READY;
+ C.fair_order=0;
+ if(C.helpers_enabled&&S.helper_base)for(u32 lane=0;lane<S.workers;lane++)if(C.assigned[lane]){C.fair_order=1;break;}
  for(u32 j=0;j<S.batch_work_n;j++){
   u32 i=S.batch_order[j];C.work_cost[i]=batch_weight(i);
   if(C.sector_order){BatchTask*t=&S.tasks[i];u32 group=fg_pair_group(t->f,t->g,t->k);
-   u64 lower=fkg_class_per_grade[S.current][fkg_group_class[S.current&1][group]];
+   u64 lower=fg_lower_group(S.current,group);
    C.work_gap[i]=S.fg_sector_upper[group]>=lower?S.fg_sector_upper[group]-lower:UINT64_MAX;
   }
  }
  /* Short rows already finish within a wave. Component closure ordering targets
   * substantial input records; ordinary rows retain the established cost order. */
- if(C.sector_order){u64 largest=0;for(u32 j=0;j<S.batch_work_n;j++)largest=MAX(largest,C.work_cost[S.batch_order[j]]);if(largest<65536)C.sector_order=0;}
+ if(C.sector_order&&!C.fair_order){u64 largest=0;for(u32 j=0;j<S.batch_work_n;j++)largest=MAX(largest,C.work_cost[S.batch_order[j]]);if(largest<65536)C.sector_order=0;}
  C.finisher_order=P.mode==4&&P.gate_ready&&P.gate_target<360&&S.fg_sector_ready&&(C.policy&2);
  memset(C.finisher_tag,0,sizeof(C.finisher_tag));
  if(C.finisher_order){
@@ -115,7 +153,7 @@ static void coop_order(void){
  }
  /* Stable cost ordering within the bounded ready queue; running tasks are not
   * re-enqueued. The already parked task of each lane receives every next wave. */
- if((S.cost_scheduling||C.finisher_order)&&S.workers>1)for(u32 span=1;span<S.batch_work_n;span*=2){
+ if((S.cost_scheduling||C.finisher_order||C.fair_order)&&S.workers>1)for(u32 span=1;span<S.batch_work_n;span*=2){
   for(u32 left=0;left<S.batch_work_n;left+=2*span){u32 mid=MIN(left+span,S.batch_work_n),end=MIN(left+2*span,S.batch_work_n),i=left,j=mid,k=left;
    while(i<mid||j<end){int first=j==end||(i<mid&&coop_before(S.batch_order[i],S.batch_order[j]));S.batch_sort[k++]=first?S.batch_order[i++]:S.batch_order[j++];}}
   memcpy(S.batch_order,S.batch_sort,(size_t)S.batch_work_n*4);
@@ -132,7 +170,7 @@ static void coop_order(void){
    for(u32 j=pos+1;j<S.batch_work_n;j++){
     u32 cand=S.batch_order[j],f=S.tasks[cand].f,seen=0;
     for(u32 q=0;q<pos;q++)seen|=S.tasks[S.batch_order[q]].f==f;
-    if(!seen&&(!C.finisher_order||C.finisher_tag[S.batch_order[pos]]==C.finisher_tag[cand])){u32 tmp=S.batch_order[pos];S.batch_order[pos]=cand;S.batch_order[j]=tmp;C.family_swaps++;break;}
+    if(!seen&&(!C.fair_order||!C.sector_order||C.work_gap[S.batch_order[pos]]==C.work_gap[cand])&&(!C.finisher_order||C.finisher_tag[S.batch_order[pos]]==C.finisher_tag[cand])){u32 tmp=S.batch_order[pos];S.batch_order[pos]=cand;S.batch_order[j]=tmp;C.family_swaps++;break;}
    }
   }
  }
@@ -140,18 +178,43 @@ static void coop_order(void){
  C.ready_peak=MAX(C.ready_peak,S.batch_work_n);
  if(C.sector_order&&S.batch_work_n)C.sector_orderings++;
 }
+/* Service retained rows only with every worker joined. A status decision at
+ * the end of a wave must offer newly parked rows their free/resizable leases
+ * before declaring that no work can progress. Exact cursors remain unchanged. */
+static int coop_service_memory(void){
+ reserve_pool_admit();
+ /* Serve the commit lane first. Growing one row cannot reset another lane. */
+ {
+  Lane*l=&coop_coordinator;
+  coop_collect_lane(l);
+  if(!C.commit_task&&l->output_extra_base){workspace_return(l->output_extra_base,l->output_extra_bytes);l->a[l->output_extra_index]=l->output_saved;l->output_extra_base=l->output_extra_bytes=0;}
+ }
+ if(C.commit_task){Lane saved=S.lanes[0];S.lanes[0]=coop_coordinator;int grown=brow_service_wait(&S.lanes[0]);coop_coordinator=S.lanes[0];S.lanes[0]=saved;if(grown<0)return grown;C.resource_growths+=grown;}
+ for(u32 i=0;i<S.workers;i++){
+  Lane*l=&S.lanes[i];
+  coop_collect_lane(l);coop_collect_lane(&coop_helpers[i]);
+  if(!C.assigned[i]&&l->output_extra_base){workspace_return(l->output_extra_base,l->output_extra_bytes);l->a[l->output_extra_index]=l->output_saved;l->output_extra_base=l->output_extra_bytes=0;}
+  C.resource_growths+=coop_grow_output(l);int grown=l->memory_wait==ROW_WAIT_BATCH?0:brow_service_wait(l);if(grown<0)return grown;C.resource_growths+=grown;
+  C.resource_growths+=coop_grow_output(&coop_helpers[i]);
+  for(u32 j=0;j<2;j++){
+   Lane*o=j?&coop_helpers[i]:l;u32 assigned=j?C.helper_assigned[i]:C.assigned[i];
+   if(!assigned&&!o->out_used&&o->out_extra_base){workspace_return(o->out_extra_base,o->out_extra_bytes);o->out_base=o->out_original_base;o->out_size=o->out_original_size;o->out_extra_base=o->out_extra_bytes=0;}
+  }
+ }
+ return 0;
+}
 API int gn_coop_fill(u32 limit){
  if(!S.coop_ms||!S.batch_enabled||!S.current||GN_LOAD(&S.batch_running)||!limit||limit>BATCH_MAX)return -GN_STATE;
  if(cancelled())return -GN_CANCELLED;
  int tc=tail_cache_prepare();if(tc)return -tc;
- reserve_pool_admit();
+ int memory_rc=coop_service_memory();if(memory_rc)return memory_rc;
  /* An existing persisted legacy prefix may have first/committed offsets. This
   * reader starts with an uncommitted compact descriptor array after restore. */
  if(S.batch_committed)return -GN_STATE;
  limit=MIN(limit,S.coop_lookahead);
  if(C.window_degree!=S.current){C.window=limit;C.window_degree=S.current;}
  if((C.policy&1)&&limit==S.coop_lookahead&&S.workers>1){
-  u32 idle=0,parked=!!C.commit_task;
+  u32 idle=C.force_expand,parked=!!C.commit_task;C.force_expand=0;
   for(u32 i=0;i<S.workers;i++){idle+=!!GN_LOAD(&C.exhausted[i]);parked+=!!GN_LOAD(&C.assigned[i])+!!GN_LOAD(&C.helper_assigned[i]);}
   /* Expand only when retained work occupies the current window and a lane
    * exhausted ready descriptors early. Ordinary fast waves keep the base size.
@@ -177,20 +240,22 @@ static void coop_copy_counters(Lane*to,Lane*from){
  to->big_capacity=capacity;to->big_reserved=reserved;to->big_coefficient_live=live;to->big_coefficient_bytes=pool;
  GN_STORE(&to->slice_yields,GN_LOAD(&from->slice_yields));GN_STORE(&to->slice_resumes,GN_LOAD(&from->slice_resumes));to->publications=from->publications;
 }
-static void coop_execute(u32 lane,GN_ATOMIC(u32)*assigned,int helper,double begin){
+static void coop_execute(u32 lane,GN_ATOMIC(u32)*assigned,int helper){
  Lane*l=&S.lanes[lane];l->slice_enabled=1;l->allow_repack=!helper;l->reserve_waiting=0;
  for(;;){
   if(cancelled())break;
   u32 index;
   if(GN_LOAD(assigned))index=GN_LOAD(assigned)-1;
-  else {u32 next=GN_FETCH_ADD(&S.batch_next,1);if(next>=S.batch_work_n){if(gn_host_clock()-begin<S.coop_ms/2.0)GN_STORE(&C.exhausted[lane],1);break;}index=S.batch_order[next];
+  else {u32 next=GN_FETCH_ADD(&S.batch_next,1);if(next>=S.batch_work_n){GN_STORE(&C.exhausted[lane],1);break;}index=S.batch_order[next];
    /* A helper never repeatedly restarts a row that exceeded its budget.
     * The ordinary lanes can still claim that pending descriptor later. */
    if(helper&&(S.tasks[index].rc==COOP_HELPER_DEFERRED||batch_weight(index)>l->io_size)){
     if(S.tasks[index].rc!=COOP_HELPER_DEFERRED){S.tasks[index].rc=COOP_HELPER_DEFERRED;GN_FETCH_ADD(&C.helper_deferred,1);}continue;
    }
-   GN_STORE(assigned,index+1);GN_FETCH_ADD(&C.started,1);if(helper)GN_FETCH_ADD(&C.helper_started,1);l->resume_tier=0;l->error=0;
-   BatchTask*t=&S.tasks[index];l->f=t->f;l->g=t->g;l->k=t->k;l->snapshot=t->snapshot;}
+   GN_STORE(assigned,index+1);GN_FETCH_ADD(&C.started,1);if(helper)GN_FETCH_ADD(&C.helper_started,1);l->resume_tier=0;l->error=0;l->reserve_direct=0;
+   /* This task has no retained row yet: use all currently committed rules.
+    * A suspended task keeps its exact original snapshot throughout its tail. */
+   BatchTask*t=&S.tasks[index];t->snapshot=S.nrules;l->f=t->f;l->g=t->g;l->k=t->k;l->snapshot=t->snapshot;}
   BatchTask*t=&S.tasks[index];int rc;
   if(t->rc==COOP_OUTPUT_WAIT){
    if(fg_sector_pair(l)){l->result=(Poly){0};GN_FETCH_ADD(&S.fg_parked_skipped,1);}rc=0;
@@ -202,19 +267,26 @@ static void coop_execute(u32 lane,GN_ATOMIC(u32)*assigned,int helper,double begi
   else rc=gn_reduce_pair(lane);
   if(!rc){l->normal_valid=1;l->normal_snapshot=t->snapshot;l->normal_degree=S.current;}
   t->rc=(u32)rc;
-  if(rc==GN_YIELD)break;
+  if(rc==GN_YIELD||rc==GN_ROW_WAIT)break;
   if(rc==GN_DEFERRED)GN_FETCH_ADD(&C.reserve_deferrals,1);
   l->resume_tier=0;GN_STORE(assigned,0);
   if(!rc&&l->result.n){
    if(S.certifying)t->rc=GN_REJECTED;
-   else {u64 bytes=record_bytes(l->result);if(bytes>l->out_size||bytes>UINT32_MAX)t->rc=GN_BATCH_FULL;
-    else if(bytes>l->out_size-l->out_used){t->rc=COOP_OUTPUT_WAIT;GN_STORE(assigned,index+1);break;}
+   else {u64 bytes=record_bytes(l->result);if(bytes>UINT32_MAX)t->rc=GN_LIMIT;
+    else if(bytes>l->out_size){l->memory_wait=ROW_WAIT_BATCH;l->memory_need=MAX(bytes,l->out_size*2);t->rc=COOP_OUTPUT_WAIT;GN_STORE(assigned,index+1);break;}
+    else if(bytes>l->out_size-l->out_used){l->memory_wait=ROW_WAIT_BATCH;l->memory_need=MAX(bytes+l->out_used,l->out_size*2);t->rc=COOP_OUTPUT_WAIT;GN_STORE(assigned,index+1);break;}
     else{t->output=l->out_base+l->out_used;t->bytes=(u32)bytes;t->rc=(u32)write_record(l->result,t->output,bytes);if(!t->rc)l->out_used+=A8(bytes);}}
   }
   if(helper&&(t->rc==GN_SCRATCH||t->rc==GN_BATCH_FULL||t->rc==GN_REPACK||t->rc==GN_DEFERRED)){
    t->rc=COOP_HELPER_DEFERRED;t->output=0;t->bytes=0;GN_FETCH_ADD(&C.helper_deferred,1);
   }
   if(!t->rc){GN_FETCH_ADD(&C.finished,1);if(helper)GN_FETCH_ADD(&C.helper_finished,1);}
+  /* The result is now serialized, or this descriptor has no live row.
+   * Retire extended result storage before another descriptor can use the
+   * opposite arena. Returning it later while that next row still references
+   * it can corrupt retained coefficients and cached normal-form state. */
+  coop_release_lane(l);
+  l->slice_enabled=1;l->allow_repack=!helper;
   if(rc==GN_CANCELLED||gn_host_clock()>=l->slice_end)break;
  }
  l->slice_enabled=0;l->allow_repack=0;l->busy=0;publish_lane(l,0,0);
@@ -223,12 +295,16 @@ API int gn_coop_reduce(u32 lane){
  if(!S.coop_ms||lane>=S.workers||!S.current)return GN_STATE;
  Lane*l=&S.lanes[lane];double begin=gn_host_clock(),end=begin+S.coop_ms;
  int pending=!!GN_LOAD(&C.helper_assigned[lane]);
- l->slice_end=pending?begin+S.coop_ms/2.0:end;GN_STORE(&C.exhausted[lane],0);
- GN_FETCH_ADD(&S.batch_running,1);coop_execute(lane,&C.assigned[lane],0,begin);
+ int fair=C.helpers_enabled&&coop_helpers[lane].io_size&&(pending||S.batch_work_n>GN_LOAD(&S.batch_next));
+ l->slice_end=fair?begin+S.coop_ms*0.75:end;GN_STORE(&C.exhausted[lane],0);
+ GN_FETCH_ADD(&S.batch_running,1);coop_execute(lane,&C.assigned[lane],0);
  int waiting=l->reserve_waiting||(GN_LOAD(&C.assigned[lane])&&S.tasks[GN_LOAD(&C.assigned[lane])-1].rc==COOP_OUTPUT_WAIT);
- if(C.helpers_enabled&&coop_helpers[lane].io_size&&(waiting||pending)&&!cancelled()&&gn_host_clock()<end){
+ if(C.helpers_enabled&&coop_helpers[lane].io_size&&(waiting||pending||fair)&&!cancelled()){
   Lane primary=*l;coop_copy_counters(&coop_helpers[lane],l);*l=coop_helpers[lane];l->slice_end=end;
-  coop_execute(lane,&C.helper_assigned[lane],1,begin);
+  /* Give cheap work actual time even when an uninterruptible primary rewrite
+   * overshoots its slice. No additional thread or primary state is created. */
+  l->slice_end=MAX(end,gn_host_clock()+MAX(1.0,S.coop_ms*0.25));GN_FETCH_ADD(&C.fair_helper_turns,1);
+  coop_execute(lane,&C.helper_assigned[lane],1);
   coop_copy_counters(&primary,l);coop_helpers[lane]=*l;*l=primary;publish_lane(l,0,0);
  }
  double elapsed=(gn_host_clock()-begin)*1000;u64 use=elapsed>0?(u64)elapsed:0;C.slice_us[lane]+=use;C.max_slice_us[lane]=MAX(C.max_slice_us[lane],use);
@@ -242,7 +318,7 @@ API int gn_coop_prepare_commit(void){
  l->busy=2;publish_lane(l,l->result.n,0);
  u64 before=l->reductions;int rc=C.commit_snapshot!=S.nrules?GN_STATE:commit_nf(l,C.commit_snapshot);
  C.commit_steps+=l->reductions-before;C.commit_resumes++;C.prepared_slices++;
- if(rc==GN_YIELD)C.commit_yields++;
+ if(rc==GN_YIELD||rc==GN_ROW_WAIT)C.commit_yields++;
  else if(!rc)C.commit_ready=1;
  else if(rc!=GN_DEFERRED)C.commit_error=(u32)rc;
  l->busy=0;l->slice_enabled=0;l->allow_repack=0;publish_lane(l,0,0);
@@ -257,12 +333,18 @@ API int gn_coop_commit(void){
  u32 keep[BATCH_MAX],map[BATCH_MAX],count=0;memset(keep,0,sizeof(keep));
  int rc=0,blocked=0;Lane saved=S.lanes[0];S.lanes[0]=coop_coordinator;
  double slice_end=gn_host_clock()+S.coop_ms;
+ /* Zero rows can be retired without changing a parked commit's snapshot. */
+ for(u32 i=0;i<S.batch_n;i++)if(C.commit_task!=i+1&&!S.tasks[i].rc&&!S.tasks[i].bytes){
+  S.tasks[i].rc=UINT32_MAX;S.commit_zero++;S.degree_committed++;C.committed++;
+  fg_note_pair_commit(S.tasks[i].f,S.tasks[i].g,S.tasks[i].k,S.nrules);
+ }
  for(u32 i=0;i<S.batch_n;i++){
   /* The parked commit retains the exact updated-basis snapshot. Finish it
    * before appending any other rule; worker waves remain read-only meanwhile. */
   if(C.commit_task&&C.commit_task!=i+1)continue;
   u32 st=S.tasks[i].rc;
-  if(st==GN_STATE||st==GN_YIELD||st==GN_DEFERRED||st==COOP_OUTPUT_WAIT||st==COOP_HELPER_DEFERRED){keep[i]=1;blocked=1;continue;}
+  if(st==UINT32_MAX)continue;
+  if(st==GN_STATE||st==GN_YIELD||st==GN_ROW_WAIT||st==GN_DEFERRED||st==COOP_OUTPUT_WAIT||st==COOP_HELPER_DEFERRED){keep[i]=1;blocked=1;continue;}
   if(st){rc=(int)st;break;}
   Lane*l=&S.lanes[0];l->error=0;l->slice_enabled=1;l->slice_end=slice_end;l->allow_repack=1;
   u64 before=l->reductions;u32 rules_before=S.nrules;
@@ -279,10 +361,13 @@ API int gn_coop_commit(void){
    rc=batch_commit_impl(i);
   }
   C.commit_steps+=l->reductions-before;l->allow_repack=0;l->slice_enabled=0;
-  if(rc==GN_YIELD){C.commit_task=i+1;C.commit_snapshot=S.nrules;C.commit_yields++;rc=0;break;}
+  if(rc==GN_YIELD||rc==GN_ROW_WAIT){C.commit_task=i+1;C.commit_snapshot=S.nrules;C.commit_yields++;rc=0;break;}
   if(rc==GN_DEFERRED){keep[i]=1;blocked=1;rc=0;continue;}
   if(rc)break;
   fg_note_pair_commit(S.tasks[i].f,S.tasks[i].g,S.tasks[i].k,rules_before);
+  /* Several exact commits may finish in one barrier. A later commit must not
+   * inherit the preceding row's extended output arena or retirement metadata. */
+  coop_release_lane(l);
   C.commit_task=C.commit_ready=C.commit_error=0;
   C.committed++;if(blocked)C.nonprefix_commits++;
   S.tasks[i].rc=UINT32_MAX; /* committed; remove even if a later task fails */
@@ -319,6 +404,25 @@ API int gn_coop_retry(u32 workers){
  C.replays+=S.batch_n;gn_coop_discard();int rc=layout_workers(workers,1);if(rc)return rc;
  S.memory_retries++;S.memory_replayed_pairs+=S.batch_n;coop_order();return 0;
 }
+API int gn_coop_resource_status(void){
+ if(GN_LOAD(&S.batch_running))return GN_STATE;
+ int memory_rc=coop_service_memory();if(memory_rc)return -memory_rc;
+ u32 waiting=!!coop_coordinator.memory_wait,usable=0,idle=0;
+ if(C.commit_task&&!coop_coordinator.memory_wait)return 0;
+ for(u32 lane=0;lane<S.workers;lane++){
+  waiting+=!!S.lanes[lane].memory_wait+!!coop_helpers[lane].memory_wait;idle+=!C.assigned[lane];
+  if((C.assigned[lane]&&!S.lanes[lane].memory_wait)||(C.helper_assigned[lane]&&!coop_helpers[lane].memory_wait))usable=1;
+ }
+ if(!waiting)return 0;
+ for(u32 i=0;i<S.batch_n;i++){
+  BatchTask*t=&S.tasks[i];
+  if(!t->rc&&(!t->bytes||!C.commit_task||!coop_coordinator.memory_wait))return 0;
+  if((t->rc==GN_STATE||t->rc==GN_DEFERRED)&&(idle||(C.helpers_enabled&&S.helper_base)))usable=1;
+ }
+ if(usable)return 0;
+ if((C.policy&1)&&C.helpers_enabled&&S.helper_base&&!S.iter_done&&C.window<C.max_window){C.force_expand=1;return 0;}
+ return GN_ROW_WAIT;
+}
 API u64 gn_coop_stat(u32 key){
  switch(key){case 0:return S.coop_ms;case 1:return C.epochs;case 2:return GN_LOAD(&C.started);case 3:return GN_LOAD(&C.finished);
  case 4:return C.committed;case 5:return C.nonprefix_commits;case 6:return C.replays;
@@ -328,6 +432,8 @@ API u64 gn_coop_stat(u32 key){
  case 21:return C.prepared_slices;
  case 22:return GN_LOAD(&C.helper_started);case 23:return GN_LOAD(&C.helper_finished);case 24:return GN_LOAD(&C.helper_deferred);
  case 25:return S.helper_bytes;case 26:return C.helpers_enabled;case 27:return C.family_diversity;case 28:return C.family_swaps;
+ case 29:return GN_LOAD(&C.fair_helper_turns);case 30:return C.resource_growths;
+ case 31:{u64 n=!!coop_coordinator.memory_wait;for(u32 i=0;i<S.workers;i++)n+=!!S.lanes[i].memory_wait+!!coop_helpers[i].memory_wait;return n;}
  default:break;}
  if(key>=100&&key<100+GN_MAX_WORKERS)return C.slice_us[key-100];
  if(key>=200&&key<200+GN_MAX_WORKERS)return C.max_slice_us[key-200];

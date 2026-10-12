@@ -44,7 +44,10 @@ install: native
 	cp package.json $(DESTDIR)$(PREFIX)/share/fomkyr/
 	install -d $(DESTDIR)$(PREFIX)/share/fomkyr/tools $(DESTDIR)$(PREFIX)/share/fomkyr/fk_gate/profiles
 	install -m 644 tools/verify-computation.py tools/export-verification.py $(DESTDIR)$(PREFIX)/share/fomkyr/tools/
-	install -m 644 fk_gate/profiles/fk6-exact-through17.json fk_gate/profiles/fk6_q.h fk_gate/profiles/fk6_sectors.h fk_gate/profiles/proof-provenance.json $(DESTDIR)$(PREFIX)/share/fomkyr/fk_gate/profiles/
+	install -m 644 fk_gate/profiles/fk6-exact-through17.json fk_gate/profiles/fk6-exact-through20.json fk_gate/profiles/fk5-exact-grades-through20.json fk_gate/profiles/generator-edges.h fk_gate/profiles/fk6_q.h fk_gate/profiles/fk6_sectors.h fk_gate/profiles/proof-provenance.json $(DESTDIR)$(PREFIX)/share/fomkyr/fk_gate/profiles/
+	install -d $(DESTDIR)$(PREFIX)/share/fomkyr/fixtures/star
+	install -m 644 fixtures/star/*.json $(DESTDIR)$(PREFIX)/share/fomkyr/fixtures/star/
+	install -m 644 tools/derive-star-sectors.py $(DESTDIR)$(PREFIX)/share/fomkyr/tools/
 	install -m 644 LICENSE $(DESTDIR)$(PREFIX)/share/fomkyr/
 	install -m 644 man/fomkyr.1 $(DESTDIR)$(PREFIX)/share/man/man1/fomkyr.1
 clean:

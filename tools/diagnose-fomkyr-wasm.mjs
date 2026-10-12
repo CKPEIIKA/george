@@ -123,7 +123,8 @@ async function run(config,trial) {
   const profile=path.join(root,'profile');fs.mkdirSync(profile);
   const url=`http://127.0.0.1:${server.address().port}/__diagnostic/page`;
   const args=config.browser==='firefox'?['-headless','--no-remote','-profile',profile,url]
-    :['--headless=new','--no-sandbox','--disable-dev-shm-usage','--disable-background-networking','--no-first-run',`--user-data-dir=${profile}`,
+    :['--headless=new','--no-sandbox','--disable-dev-shm-usage','--disable-background-networking','--no-first-run',
+      '--password-store=basic','--use-mock-keychain','--disable-component-update',`--user-data-dir=${profile}`,
       ...((config.noLiftoff||config.profile)?[`--js-flags=${config.noLiftoff?'--no-liftoff ':''}${config.profile?`--prof --logfile=${path.join(root,'v8.log')}`:''}`]:[]),url];
   if(config.browser==='firefox')fs.writeFileSync(path.join(profile,'user.js'),'user_pref("datareporting.policy.dataSubmissionEnabled", false);\nuser_pref("toolkit.telemetry.enabled", false);\n');
   browser=spawn(config.browser==='firefox'?path.resolve('build/playwright-browsers/firefox-1543/firefox/firefox'):'/usr/bin/chromium',args,{stdio:['ignore','ignore','pipe'],detached:true});active=browser;

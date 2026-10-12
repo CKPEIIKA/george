@@ -35,7 +35,8 @@ API int test_deep_rows(u32 radix){
  C.sector_order=1;C.work_gap[0]=UINT64_C(4735557180);C.work_gap[1]=61;
  C.work_cost[0]=10;C.work_cost[1]=100;REQUIRE(!coop_before(0,1)&&coop_before(1,0));
  C.work_gap[0]=61;REQUIRE(coop_before(0,1)&&!coop_before(1,0));
- C.sector_order=0;REQUIRE(!coop_before(0,1)&&coop_before(1,0));
+ C.sector_order=0;C.fair_order=0;REQUIRE(!coop_before(0,1)&&coop_before(1,0));
+ C.fair_order=1;REQUIRE(coop_before(0,1)&&!coop_before(1,0));C.fair_order=0;
  gn_coop_discard();
  for(u32 degree=16;degree<=17;degree++){
   Lane*l=&S.lanes[0];S.radix_enabled=radix;S.radix_cache_enabled=1;S.eager_pruning=0;

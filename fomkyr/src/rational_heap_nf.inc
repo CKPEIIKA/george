@@ -5,7 +5,13 @@
  * The row is converted to primitive integer form ONCE, after reduction.
  */
 typedef struct {i64 n;u64 d;} RCoef;
-static u64 rgcd(u64 a,u64 b){if(a==1||b==1)return 1;while(b){u64 q=a%b;a=b;b=q;}return a;}
+static u64 rgcd(u64 a,u64 b){
+#ifdef FOMKYR_GCD_EUCLID
+ if(a==1||b==1)return 1;while(b){u64 q=a%b;a=b;b=q;}return a;
+#else
+ return integer_gcd64(a,b);
+#endif
+}
 static u64 rabs(i64 n){return n<0?(u64)-n:(u64)n;}
 static int rload(Coef c,RCoef*out){if(c&1)return 0;*out=(RCoef){cvalue(c),1};return 1;}
 static int rmulint(i64 a,u64 b,i64*out){if(b&&rabs(a)>(u64)SMALL_MAX/b)return 0;*out=a*(i64)b;return 1;}
@@ -63,7 +69,9 @@ static int rrow_grow(RRow*r){
   u32 available=128;while(available<(1u<<26)&&(u64)available*2*item<=S.reserve_bytes)available*=2;
   if(available<=r->reserved)return HEAP_FULL;
   if(!reserve_acquire(l)){l->reserve_busy++;l->reserve_waiting=1;return GN_DEFERRED;}
-  u64 base=reserve_lease_base(l),p=base;
+  u64 base=reserve_lease_base(l),bytes=reserve_lease_bytes(l),p=base;
+  available=128;while(available<(1u<<26)&&(u64)available*2*item<=bytes)available*=2;
+  if(available<=r->reserved){reserve_release(l);return HEAP_FULL;}
   RNode*nodes=PTR(RNode,p);p+=(u64)available*sizeof(RNode);
   u32*heads=PTR(u32,p);p+=(u64)available*8;
   u32*heap=PTR(u32,p);p+=(u64)available*4;

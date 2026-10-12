@@ -1,4 +1,4 @@
-import {FkGate,FK_GATE_PROFILE_ID} from './fk-gate.js';
+import {FkGate} from './fk-gate.js';
 import {prepareHilbertClosure,replayHilbertCertificate,hilbertMetadata,beginHilbertClosure,tryHilbertClosure,hilbertGap,closureBatchLimit} from './hilbert-closure.js';
 import {planMemory,chooseMemoryPolicy,sharedCacheAllowance} from './memory-policy.js';
 // SPDX-License-Identifier: MIT
@@ -75,7 +75,7 @@ export class FomkyrEngine {
         this.module=await loadKernel(bits,o.wasmURL,!this.shared);
         this.host=hostFor(this.memory,bits,this.budget,null,Infinity,true);
         this.e=(await WebAssembly.instantiate(this.module,this.host.imports)).exports;
-        if(this.e.gn_abi()!==3||typeof this.e.gn_tail_cache_config!=='function'||typeof this.e.gn_tail_cache_stat!=='function'||typeof this.e.gn_tail_cache_prepare!=='function'||typeof this.e.gn_optimize!=='function'||typeof this.e.gn_word_cache!=='function'||typeof this.e.gn_progress_stat!=='function'||typeof this.e.gn_candidate_check!=='function'||typeof this.e.gn_local_rewrites!=='function'||typeof this.e.gn_pin_cache!=='function'||typeof this.e.gn_rational_rewrites!=='function'||typeof this.e.gn_modulus!=='function'||typeof this.e.gn_big_rational_heap!=='function'||typeof this.e.gn_legacy_big_division!=='function'||typeof this.e.gn_growing_rational!=='function'||typeof this.e.gn_row_reserve!=='function'||typeof this.e.gn_reserve_growth!=='function'||typeof this.e.gn_radix_queue!=='function'||typeof this.e.gn_memory_policy!=='function'||typeof this.e.gn_batch_retry!=='function'||typeof this.e.gn_frontier_export!=='function'||typeof this.e.gn_hilbert_gate_begin!=='function'||typeof this.e.gn_pair_plan_config!=='function'||typeof this.e.gn_pair_plan_modes!=='function'||typeof this.e.gn_pair_plan_adopt!=='function'||typeof this.e.gn_q14_hint!=='function'||typeof this.e.gn_coop_family_mode!=='function')throw new Error('Kernel/host API mismatch. Deploy matching fomkyr JS and WASM together.');
+        if(this.e.gn_abi()!==3||typeof this.e.gn_coop_resource_status!=='function'||typeof this.e.gn_commit_row_reserve!=='function'||typeof this.e.gn_tail_cache_config!=='function'||typeof this.e.gn_tail_cache_stat!=='function'||typeof this.e.gn_tail_cache_prepare!=='function'||typeof this.e.gn_optimize!=='function'||typeof this.e.gn_word_cache!=='function'||typeof this.e.gn_progress_stat!=='function'||typeof this.e.gn_candidate_check!=='function'||typeof this.e.gn_local_rewrites!=='function'||typeof this.e.gn_pin_cache!=='function'||typeof this.e.gn_rational_rewrites!=='function'||typeof this.e.gn_modulus!=='function'||typeof this.e.gn_big_rational_heap!=='function'||typeof this.e.gn_legacy_big_division!=='function'||typeof this.e.gn_growing_rational!=='function'||typeof this.e.gn_row_reserve!=='function'||typeof this.e.gn_reserve_growth!=='function'||typeof this.e.gn_radix_queue!=='function'||typeof this.e.gn_memory_policy!=='function'||typeof this.e.gn_batch_retry!=='function'||typeof this.e.gn_frontier_export!=='function'||typeof this.e.gn_hilbert_gate_begin!=='function'||typeof this.e.gn_pair_plan_config!=='function'||typeof this.e.gn_pair_plan_modes!=='function'||typeof this.e.gn_pair_plan_adopt!=='function'||typeof this.e.gn_q14_hint!=='function'||typeof this.e.gn_coop_family_mode!=='function')throw new Error('Kernel/host API mismatch. Deploy matching fomkyr JS and WASM together.');
         break;
       }catch(error){
         if(bits!==64||o.strictCapabilities||o.wasmURL)throw error;
@@ -213,6 +213,7 @@ export class FomkyrEngine {
     const maxLookahead=this.options.maxLookahead??512;
     if(!Number.isInteger(maxLookahead)||maxLookahead<1||(this.options.elasticWindow!==false&&maxLookahead<lookahead)||maxLookahead>512)throw new Error('maxLookahead must be between lookahead and 512 when elastic scheduling is enabled');
     if(this.e.gn_radix_cache)checked(this.e.gn_radix_cache(this.options.radixMaxCache===false?0:1));
+    if(this.options.commitReserveBytes!==undefined)checked(this.e.gn_commit_row_reserve(BigInt(this.options.commitReserveBytes)));
     if(this.e.gn_cooperative){checked(this.e.gn_cooperative(this.cooperative?quantum:0,lookahead));if(this.cooperative&&!Number(this.e.gn_coop_stat(0))){this.cooperative=false;this.emit('scheduler-fallback',{reason:'Workspace too small for a separate commit arena; retaining the legacy exact scheduler',scheduler:'barrier'});}}
     if(this.e.gn_coop_policy)checked(this.e.gn_coop_policy((this.options.elasticWindow===false?0:1)|(this.options.sectorPriority===false?0:2),maxLookahead));
     if(this.e.gn_coop_helper_mode)checked(this.e.gn_coop_helper_mode(this.options.helperRows===false?0:1));
@@ -371,7 +372,7 @@ export class FomkyrEngine {
   cooperativeStats(){
     if(!this.e?.gn_coop_stat)return null;const get=k=>Number(this.e.gn_coop_stat(k));
     const reserve=k=>Number(this.e.gn_reserve_pool_stat?.(k)??0);
-    return {largeRowPool:{workspaces:reserve(0),limit:reserve(1),workspaceBytes:reserve(2),active:reserve(4),admissions:reserve(5),declines:reserve(6)},quantumMs:get(0),epochs:get(1),started:get(2),finished:get(3),committed:get(4),nonprefixCommits:get(5),capacityReplayPairs:get(6),pending:get(7),commitRewrites:get(8),reserveDeferredAttempts:get(12),window:get(13),windowExpansions:get(14),sectorOrderings:get(15),policyFlags:get(16),maxWindow:get(17),parkedCommit:get(18),commitYields:get(19),commitResumes:get(20),preparedCommitSlices:get(21),helperStarted:get(22),helperFinished:get(23),helperDeferred:get(24),helperWorkspaceBytes:get(25),helpersEnabled:!!get(26),familyDiversity:!!get(27),familySwaps:get(28),
+    return {largeRowPool:{workspaces:reserve(0),limit:reserve(1),workspaceBytes:reserve(2),active:reserve(4),admissions:reserve(5),declines:reserve(6)},quantumMs:get(0),epochs:get(1),started:get(2),finished:get(3),committed:get(4),nonprefixCommits:get(5),capacityReplayPairs:get(6),pending:get(7),commitRewrites:get(8),reserveDeferredAttempts:get(12),window:get(13),windowExpansions:get(14),sectorOrderings:get(15),policyFlags:get(16),maxWindow:get(17),parkedCommit:get(18),commitYields:get(19),commitResumes:get(20),preparedCommitSlices:get(21),helperStarted:get(22),helperFinished:get(23),helperDeferred:get(24),helperWorkspaceBytes:get(25),helpersEnabled:!!get(26),familyDiversity:!!get(27),familySwaps:get(28),fairHelperTurns:get(29),rowWorkspaceGrowths:get(30),memoryWaitingRows:get(31),commitReserveBytes:reserve(8),commitReserveActive:!!reserve(9),
       lanes:Array.from({length:Number(this.e.gn_memory_stat(1))},(_,i)=>({activeMicroseconds:get(100+i),maxSliceMicroseconds:get(200+i),yields:get(300+i),resumes:get(400+i),parkedTask:get(500+i),helperTask:get(600+i)}))};
   }
   async completeCooperativeDegree(){
@@ -386,12 +387,11 @@ export class FomkyrEngine {
       checked(local);checked(prepared);remote.forEach(checked);this.scheduler.reduceMs+=performance.now()-start;
       this.setPhase('committing',false);const commitStart=performance.now(),rc=this.e.gn_coop_commit();
       this.scheduler.commitMs+=performance.now()-commitStart;
-      if([2,8,12].includes(rc)&&this.autoMemory&&this.workers>1){
-        const before=this.workers;this.workers=Math.max(1,Math.floor(before/2));checked(this.e.gn_coop_retry(this.workers));
-        this.emit('memory-adaptation',{reason:'cooperative active-row capacity',previousWorkers:before,workers:this.workers,replay:'uncommitted-descriptors-only',budgetBytes:this.budget});
-      }else checked(rc);
+      // Retained row pressure must not replay every lane by halving workers.
+      checked(rc);
       if((this.hilbertClosure||this.fkGate?.enabled)&&this.checkHilbertClosure()){this.e.gn_coop_discard();return;}
       this.captureSafePoint();await this.persistSafePoint();this.publishProgress(false);
+      if(this.e.gn_coop_resource_status)checked(this.e.gn_coop_resource_status());
       await this.yieldControl();
     }
   }
@@ -445,11 +445,11 @@ export class FomkyrEngine {
       if(!Number.isInteger(modulus)||modulus<0||modulus>2147483647)throw new Error('Invalid coefficient characteristic');
       const identity=await identityOf(fixture,modulus);this.identityHash=identity;
       this.hilbertClosure=await prepareHilbertClosure(this.options.hilbertClosure,identity,modulus);
-      this.fkGate=new FkGate(this.options,identity,modulus);
+      this.fkGate=new FkGate(this.options,identity,modulus,this.hilbertClosure,fixture.variables.length);
       if(this.options.hilbertGate&&!this.fkGate.enabled)this.emit('warning',{message:'FK Gate is unavailable for this input/order/field; ordinary exact completion retained.'});
       if(!this.options.runKey)this.options.runKey=`alg-${identity}`;
       if(!this.e)await this.open();
-      const allCandidates=this.directory&&this.options.resume!==false?await checkpointCandidates(this.directory,identity,this.handle.getSize(),this.hilbertClosure?.key,this.fkGate?.enabled?FK_GATE_PROFILE_ID:null):[];
+      const allCandidates=this.directory&&this.options.resume!==false?await checkpointCandidates(this.directory,identity,this.handle.getSize(),this.hilbertClosure?.key,this.fkGate?.enabled?this.fkGate.profileId:null):[];
       const preserveNewerPartial=allCandidates.some(cp=>cp.partial&&target!==null&&target<cp.currentDegree);
       const candidates=allCandidates.filter(cp=>!cp.partial||target===null||target>=cp.currentDegree);
       this.restoreHashBits=candidates[0]?.partial?candidates[0].hashBits:null;
@@ -507,7 +507,7 @@ export class FomkyrEngine {
         }
         this.hilbertReference=beginReference(this.e,identity,this.options.referenceProgress!==false,Math.min(256*MiB,Math.max(0,this.budget-Number(this.e.gn_stat(4)))));
         if(this.hilbertReference)this.emit('hilbert-reference',referenceSnapshot(this.e,this.hilbertReference));
-        const gate=beginHilbertClosure(this.e,this.hilbertClosure,this.budget);
+        const gate=this.fkGate?.external?null:beginHilbertClosure(this.e,this.hilbertClosure,this.budget);
         if(gate?.declined)this.emit('warning',{message:'Hilbert closure capacity declined; ordinary exact completion continues.'});
         this.fkGate?.begin();
         if(this.fkGate?.enabled)this.emit('fk-gate-state',this.fkGate.snapshot());
@@ -590,7 +590,7 @@ export class FomkyrEngine {
     try {
       emit(`% fomkyr; completed through degree ${Number(e.gn_stat(2))}; reduced:${normalized}; normalization:${normalized?'monic-tail-reduced':'primitive-integer'}; not a claim of a finite complete GB\n`);
       if(this.hilbertClosure)emit(`% Hilbert evidence ${this.hilbertClosure.key}; ${this.hilbertClosure.assumed?'CONDITIONAL ON EXTERNAL DIMENSIONS':'exact integer-dual witnesses replayed'}\n`);
-      if(this.fkGate?.enabled)emit(`% FK Gate ${FK_GATE_PROFILE_ID}; CONDITIONAL ON IMPORTED FK DIMENSIONS; proof not replayed here\n`);
+      if(this.fkGate?.enabled)emit(`% FK Gate ${this.fkGate.profileId}; CONDITIONAL ON IMPORTED FK DIMENSIONS; proof not replayed here\n`);
       // Each lane owns one row; no full-basis JS map or additional polynomial
       // queue is needed. Join all readers before surfacing errors/cancellation.
       for(let first=1;first<=total;){
