@@ -125,14 +125,18 @@ static int brow_layout(BRow*r,Lane*l,Arena*a,u32 reserved,u32 capacity,u32 degre
 }
 static void brow_report(BRow*r){
  brow_pressure(r);Lane*l=r->lane;if(l->reserve_owned||l->reserve_retry)l->reduction_tier=6;l->big_capacity=r->capacity;l->big_reserved=r->reserved;
+ l->row_workspace_bytes=r->workspace_bytes;
  l->big_peak_terms=MAX(l->big_peak_terms,(u64)r->heap_n+r->normal_n);
  l->big_coefficient_live=r->pool[r->pool_active].pos-r->pool[r->pool_active].base;
  l->big_coefficient_bytes=r->pool[r->pool_active].end-r->pool[r->pool_active].base;
 }
 /* Reader-free relocation. The old row remains authoritative until every live
  * fraction and the pivot have been copied; no reduction or cursor is replayed. */
-static int brow_relocate(BRow*r,Lane*l,u64 base,u64 bytes){
- u32 reserved=brow_budget_capacity(bytes);if(reserved<r->capacity)return HEAP_MISS;
+static int brow_relocate_capacity(BRow*r,Lane*l,u64 base,u64 bytes,u32 reserved){
+ if(reserved<r->capacity)return HEAP_MISS;
+ /* External relocation must never overwrite its own roots or node array. */
+ if(PTR(u8,base)<(u8*)r->nodes+r->workspace_bytes&&PTR(u8,base+bytes)>(u8*)r->nodes)return HEAP_MISS;
+ for(u32 i=0;i<2;i++)if(base<r->pool[i].end&&base+bytes>r->pool[i].base)return HEAP_MISS;
  Arena a={base,base,base+bytes,0,0};BRow next;int rc=brow_layout(&next,l,&a,reserved,r->capacity,r->degree);
  u64 need=bbytes(r->pivot);
  if(!rc)for(u32 i=0;i<r->used;i++)if(r->nodes[i].pos!=UINT32_MAX){u64 n=bbytes(r->nodes[i].c);if(n>next.pool[0].end-next.pool[0].base||need>next.pool[0].end-next.pool[0].base-n){rc=HEAP_MISS;break;}need+=n;}
@@ -152,6 +156,8 @@ static int brow_relocate(BRow*r,Lane*l,u64 base,u64 bytes){
  for(u32 i=0;i<r->used;i++)if(r->nodes[i].pos!=UINT32_MAX){u32 h=rrow_hash(r->nodes[i].w,r->mask);r->nodes[i].next=r->heads[h];r->heads[h]=i+1;}
  return 0;
 }
+static int brow_relocate(BRow*r,Lane*l,u64 base,u64 bytes){return brow_relocate_capacity(r,l,base,bytes,brow_budget_capacity(bytes));}
+#include "big_row_relayout.inc"
 static int brow_promote(BRow*r){
  brow_pressure(r);Lane*l=r->lane;
   if(l->no_reserve)return GN_DEFERRED;
@@ -311,6 +317,7 @@ static int big_rational_nf_inner(Lane*l,Poly original,u32 active,u32 snapshot){
  wait_growth:
  l->memory_wait=l->reserve_slot?ROW_WAIT_GROW:ROW_WAIT_RESERVE;
  l->memory_need=MAX(UINT64_C(1048576),r.workspace_bytes*2);
+ l->row_layout_attempted=0;l->memory_live_bytes=l->memory_minimum_bytes=0;
  wait_row:
  if(!l->slice_enabled||l->no_reserve){l->memory_wait=0;return GN_SCRATCH;}
  brow_report(&r);saved_BRow[l->resume_slot]=(BRowResume){r,steps};l->resume_tier=4;return GN_ROW_WAIT;
@@ -342,13 +349,23 @@ static int brow_service_wait(Lane*l){
  if(l->resume_tier!=4)return -GN_STATE;
  if(!S.reserve_growth)return 0;
  BRow*r=&saved_BRow[l->resume_slot].row;r->lane=l;
- if(!l->reserve_slot&& !reserve_acquire(l))return 0;
+ if(!l->row_layout_attempted){
+  l->row_layout_attempted=1;int changed=brow_inplace_layout(r,l);
+  if(changed<0)return changed;
+  if(changed){
+   if(l->coefficient_extra_slot){GN_UNLOCK(reserve_slot_lock(l->coefficient_extra_slot));l->coefficient_extra_slot=0;}
+   if(l->coefficient_extra_base){workspace_return(l->coefficient_extra_base,l->coefficient_extra_bytes);l->coefficient_extra_base=l->coefficient_extra_bytes=0;l->coefficient_extra_retired=0;}
+   l->memory_wait=0;l->memory_need=0;l->memory_detail=0;l->row_growths++;l->row_relayouts++;brow_report(r);publish_lane(l,(u64)r->heap_n+r->normal_n,1);return 1;
+  }
+  l->memory_minimum_bytes=brow_required_workspace(r,l);l->memory_need=l->memory_minimum_bytes;
+  publish_lane(l,(u64)r->heap_n+r->normal_n,1);
+ }
  /* Expand coefficient semispaces while retaining the node table. Move roots to one new pool, then combine the two adjacent old pools
   * into the other. This can borrow an idle worker lease within the same budget. */
  if(l->memory_detail==1&&!l->coefficient_extra_base&&!l->coefficient_extra_slot&&
     (r->pool[0].end==r->pool[1].base||r->pool[1].end==r->pool[0].base)){
   u64 begin=MIN(r->pool[0].base,r->pool[1].base),end=MAX(r->pool[0].end,r->pool[1].end),bytes=end-begin;
-  u32 other=0;u64 base=reserve_growth_target(l,&bytes,&other);
+  u32 other=0;u64 base=l->reserve_slot?reserve_growth_target(l,&bytes,&other):workspace_take(&bytes);
   if(base){
    u64 tempbytes=MAX(UINT64_C(65536),r->temp.peak);
    u64 poolbytes=bytes>tempbytes?MIN(r->temp.end-begin,bytes-tempbytes):0;
@@ -366,13 +383,14 @@ static int brow_service_wait(Lane*l){
    reserve_growth_cancel(base,bytes,other);
   }
  }
+ if(!l->reserve_slot&&!reserve_acquire_sized(l,l->memory_need))return 0;
  u64 base=reserve_lease_base(l),bytes=reserve_lease_bytes(l);u32 other=0,replace=0;
- if(bytes<l->memory_need){
+ if(bytes<l->memory_need||PTR(BNode,base)==r->nodes){
   bytes=l->memory_need;base=reserve_growth_target(l,&bytes,&other);replace=1;
   if(!base)return 0;
  }
- int rc=brow_relocate(r,l,base,bytes);
- if(rc){if(replace)reserve_growth_cancel(base,bytes,other);if(rc==HEAP_MISS){l->memory_need=MIN(S.budget,bytes>S.budget/2?S.budget:bytes*2);return 0;}return -rc;}
+ int rc=brow_relocate_capacity(r,l,base,bytes,brow_target_capacity(r,l));
+ if(rc){if(replace)reserve_growth_cancel(base,bytes,other);if(rc==HEAP_MISS)return 0;return -rc;}
  if(replace)reserve_growth_commit(l,base,bytes,other);
  /* A full relocation no longer references its old overflow coefficient pool. */
  if(l->coefficient_extra_slot){GN_UNLOCK(reserve_slot_lock(l->coefficient_extra_slot));l->coefficient_extra_slot=0;}

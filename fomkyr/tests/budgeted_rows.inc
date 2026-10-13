@@ -1,0 +1,62 @@
+/* Joined-wave row growth must reuse structural slack and admit small leases
+ * when a second initial-sized reserve would exceed the engine budget. */
+API int test_budgeted_row_layout(u32 radix){
+ memset(&S,0,sizeof(S));S.budget=64u<<20;S.bump=60u<<20;S.workers=S.lane_slots=1;
+ S.radix_enabled=radix;S.reserve_base=16u<<20;S.reserve_bytes=12u<<20;S.reserve_growth=1;S.reserve_pool_limit=1;
+ GN_STORE(&S.reserve_lock,1);Lane*l=&S.lanes[0];l->resume_slot=0;l->reserve_owned=1;l->reserve_slot=1;l->slice_enabled=1;l->reductions=7;
+ Arena arena={16u<<20,16u<<20,28u<<20,0,0};BRow r;
+ REQUIRE(!brow_layout(&r,l,&arena,131072,128,4));memset(r.heads,0,128*8);
+ Arena input={4u<<20,4u<<20,8u<<20,0,0};u32 limbs[4096]={0};limbs[4095]=1;
+ Coef big=makec(&input,limbs,4096,1);REQUIRE(!input.error);u32 n=0;int rc=0;
+ for(;n<128;n++){reset_a(&r.temp);rc=brow_add(&r,(Word){n+10001,0},(BCoef){big,2});if(rc)break;}
+ REQUIRE(rc==HEAP_MISS&&l->memory_detail==1&&n>0);
+ u32 top=bheap_top(&r);bheap_remove(&r,top);r.normal[r.normal_n++]=top;
+ r.pivot=r.nodes[0].c;r.pending_kind=2;r.pending_rule=7;r.pending_tail=19;
+ saved_BRow[0]=(BRowResume){r,23};l->resume_tier=4;l->memory_wait=ROW_WAIT_GROW;l->memory_need=24u<<20;
+ u64 bump=S.bump;BNode*nodes=r.nodes;Word expected=r.nodes[bheap_top(&r)-1].w;
+ REQUIRE(brow_service_wait(l)==1);BRow*after=&saved_BRow[0].row;
+ REQUIRE(S.bump==bump&&after->nodes==nodes&&after->workspace_bytes==(12u<<20));
+ REQUIRE(after->reserved==1024&&after->capacity==128&&l->row_relayouts==1&&!l->memory_wait);
+ REQUIRE(after->pending_kind==2&&after->pending_tail==19&&after->pending_rule==7&&saved_BRow[0].steps==23&&l->reductions==7);
+ REQUIRE(after->normal_n==1&&after->normal[0]==top&&weq(after->nodes[bheap_top(after)-1].w,expected));
+ REQUIRE(magcmp(after->pivot.n,big)==0);
+ for(u32 i=0;i<after->used;i++)REQUIRE(magcmp(after->nodes[i].c.n,big)==0);
+ reset_a(&after->temp);REQUIRE(!brow_add(after,(Word){n+1,0},(BCoef){big,2}));
+ /* Grow the table after shrinking structural reserve. Root staging to the
+  * higher semispace protects coefficients while arrays expand in place. */
+ for(u32 i=n+1;i<1024;i++)REQUIRE(!brow_add(after,(Word){i+1,0},(BCoef){2,2}));
+ REQUIRE(after->used==1024&&after->capacity==1024);
+ REQUIRE(brow_add(after,(Word){1025,0},(BCoef){2,2})==HEAP_MISS&&l->memory_detail==2);
+ l->memory_wait=ROW_WAIT_GROW;l->memory_need=24u<<20;l->row_layout_attempted=0;
+ REQUIRE(brow_service_wait(l)==1&&S.bump==bump&&after->reserved==2048&&l->row_relayouts==2);
+ REQUIRE(after->pending_tail==19&&saved_BRow[0].steps==23&&l->reductions==7&&after->normal[0]==top);
+ for(u32 i=0;i<=n;i++)REQUIRE(magcmp(after->nodes[i].c.n,big)==0);
+ REQUIRE(!brow_add(after,(Word){1025,0},(BCoef){2,2})&&after->capacity==2048);
+ REQUIRE(!brow_collect(after)&&magcmp(after->pivot.n,big)==0);
+ coop_release_lane(l);coop_collect_lane(l);REQUIRE(!reserve_pool_busy());return 0;
+}
+API int test_small_row_admission(u32 mode){
+ memset(&S,0,sizeof(S));S.budget=(mode&2)?(30u<<20):(32u<<20);S.bump=28u<<20;
+ S.workers=S.lane_slots=1;S.radix_enabled=mode&1;S.reserve_base=16u<<20;S.reserve_bytes=S.reserve_initial_bytes=12u<<20;
+ S.reserve_growth=1;S.reserve_pool_limit=2;S.reserve_pool_denied=1;GN_STORE(&S.reserve_lock,1);
+ Lane*l=&S.lanes[0];l->resume_slot=0;l->slice_enabled=1;l->reductions=9;
+ Arena arena={8u<<20,8u<<20,10u<<20,0,0};BRow r;
+ REQUIRE(!brow_layout(&r,l,&arena,16384,16384,4));memset(r.heads,0,16384*8);
+ for(u32 i=0;i<16384;i++)REQUIRE(!brow_add(&r,(Word){i+1,0},(BCoef){2,2}));
+ REQUIRE(brow_add(&r,(Word){16385,0},(BCoef){2,2})==HEAP_MISS&&l->memory_detail==2);
+ r.pending_kind=2;r.pending_rule=7;r.pending_tail=23;saved_BRow[0]=(BRowResume){r,31};l->resume_tier=4;l->memory_wait=ROW_WAIT_RESERVE;l->memory_need=4u<<20;
+ u64 bump=S.bump;int rc=brow_service_wait(l);
+ if(mode&2){
+  REQUIRE(!rc&&S.bump==bump&&!S.reserve_extra_count&&!l->reserve_slot&&l->memory_wait);
+  REQUIRE(saved_BRow[0].row.pending_tail==23&&saved_BRow[0].steps==31&&l->reductions==9);
+  S.budget=32u<<20;rc=brow_service_wait(l);
+ }
+ REQUIRE(rc==1&&l->reserve_slot==2&&l->reserve_owned&&S.reserve_extra_count==1&&S.reserve_pool_admissions==1);
+ REQUIRE(S.reserve_extra_bytes[0]<(3u<<20)&&S.bump<=S.budget&&S.bump>bump);
+ REQUIRE(GN_LOAD(&S.reserve_lock)==1&&GN_LOAD(&S.reserve_extra_lock[0])==1);
+ BRow*after=&saved_BRow[0].row;REQUIRE(after->reserved==32768&&after->used==16384&&after->heap_n==16384);
+ REQUIRE(after->pending_tail==23&&saved_BRow[0].steps==31&&l->reductions==9);
+ for(u32 i=0;i<after->used;i++)REQUIRE(after->nodes[i].w.lo==i+1&&after->nodes[i].c.n==2);
+ REQUIRE(!brow_add(after,(Word){16385,0},(BCoef){2,2})&&after->capacity==32768);
+ coop_release_lane(l);coop_collect_lane(l);REQUIRE(!GN_LOAD(&S.reserve_extra_lock[0])&&GN_LOAD(&S.reserve_lock)==1);return 0;
+}

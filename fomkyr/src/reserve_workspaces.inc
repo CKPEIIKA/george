@@ -70,6 +70,18 @@ static u64 workspace_take(u64*bytes){
  if(S.bump>S.budget||headroom>S.budget-S.bump||need>S.budget-S.bump-headroom||!gn_host_ensure(S.bump+need))return 0;
  u64 base=S.bump;S.bump+=need;S.allocated_peak=MAX(S.allocated_peak,S.bump);*bytes=need;return base;
 }
+/* Joined-wave admission uses this row's requirement. Failure to admit the
+ * initial large reserve does not forbid a smaller, budgeted worker lease. */
+static int reserve_acquire_sized(Lane*l,u64 bytes){
+ if(l->reserve_slot)return 1;
+ if(reserve_acquire(l))return 1;
+ if(l->no_reserve||GN_LOAD(&S.batch_running)||!S.reserve_base||
+    (l->is_commit&&S.commit_reserve_base)||1+S.reserve_extra_count>=reserve_pool_limit())return 0;
+ u64 base=workspace_take(&bytes);if(!base)return 0;
+ u32 i=S.reserve_extra_count++;S.reserve_extra_base[i]=base;S.reserve_extra_bytes[i]=bytes;
+ GN_STORE(&S.reserve_extra_lock[i],1);l->reserve_slot=i+2;
+ S.reserve_pool_admissions++;S.reserve_pool_denied=0;GN_STORE(&S.reserve_pool_requested,0);return 1;
+}
 static void reserve_pool_admit(void){
  if(!GN_LOAD(&S.reserve_pool_requested)||GN_LOAD(&S.batch_running))return;
  GN_STORE(&S.reserve_pool_requested,0);

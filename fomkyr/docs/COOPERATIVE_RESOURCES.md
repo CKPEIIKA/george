@@ -11,6 +11,19 @@ working. At the next joined barrier, the coordinator can grow that row's storage
 within the configured budget. A larger idle worker lease can be exchanged with
 a smaller lease; released allocation ranges are reused.
 
+Before requesting another whole arena, a packed-word row can reuse its current
+arena. The coordinator sizes its node reserve to the current table and growth
+headroom, moves initialized queue indices through operation scratch, and copies
+coefficient roots into reclaimed space. Every copy is checked for capacity and
+source overlap before the layout changes. Table expansion can first stage roots
+in the existing higher coefficient semispace. The pivot and unfinished tail
+cursor stay attached to the same exact row.
+
+An additional worker lease can be admitted at the waiting row's estimated
+replacement size. Refusing another lease at the initial large-reserve size does
+not prevent admitting a smaller lease that fits. Both admission and layout
+changes occur with all workers joined and remain within the memory budget.
+
 For coefficient pressure, the coordinator can copy the live coefficient roots
 into an overflow arena and combine the original coefficient pools. The node
 table and pending rewrite remain in place. This avoids allocating a second large
@@ -78,6 +91,20 @@ Wait reasons are `1` for a reserve lease, `2` for sparse-row growth, `3` for
 normal-form output space, and `4` for a serialized batch-output buffer.
 Workspace totals include the private commit reserve. The configured worker
 reserve limit applies to worker leases; the private commit lease is additional.
+
+Native per-row diagnostics also expose `memoryPressureKind` (`1` coefficients,
+`2` table capacity, `3` arithmetic scratch), `rowWorkspaceBytes`,
+`liveCoefficientRootBytes`, `minimumRowWorkspaceBytes`, and `rowRelayouts`.
+The coefficient and minimum-workspace fields describe the most recent pressure
+check. The latter estimates a replacement layout with growth headroom; it is
+not a lower bound on the memory needed by the current row. Overflow coefficient
+buffers are accounted separately from `rowWorkspaceBytes`. Before discarding
+live rows after a workspace-limit stop, the native host saves these diagnostics
+to `row-workspace-limit.json` beside its checkpoints.
+
+`npm run test:fomkyr:row-growth` checks in-place coefficient growth, subsequent
+table expansion, smaller-lease admission, budget refusal, and exact cursor/queue
+preservation under binary and radix queues, natively and in all Wasm variants.
 
 Durable frontiers still save pending pair descriptors. In-memory row retention
 does not extend across a process restart. Accepted rules and completed-pair

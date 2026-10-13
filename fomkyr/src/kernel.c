@@ -57,12 +57,14 @@ typedef struct {
   Arena reserve_saved; GN_ATOMIC(u64) slice_yields,slice_resumes;
   u32 memory_wait,is_commit,reserve_direct,output_extra_index,memory_detail,coefficient_extra_slot,coefficient_extra_retired,output_extra_retired;u64 memory_need,row_growths;
   u64 coefficient_extra_base,coefficient_extra_bytes;
+  u64 row_workspace_bytes,memory_live_bytes,memory_minimum_bytes;u32 row_layout_attempted;
   Arena output_saved;u64 output_extra_base,output_extra_bytes;
   u64 out_original_base,out_original_size,out_extra_base,out_extra_bytes;
   u64 reductions,pruned,reads,read_bytes,pairs,peak;
   u64 hash_probes,matcher_queries,matcher_characters,redcache_hits,heap_attempts,heap_successes,heap_fallbacks;
   u64 insertion_prunes,commuting_prunes,quadratic_swaps;
   u64 reserve_attempts,reserve_successes,reserve_busy,reserve_misses,reserve_peak,reserve_promotions;u32 reserve_owned,reserve_slot;
+  u64 row_relayouts;
   u32 allow_repack;u32 rational_maxed,rational_full_capacity;u64 rational_table_growths;u64 big_attempts,big_successes,big_fallbacks,big_steps,big_compactions,big_pool_misses,big_capacity_misses,big_arena_misses;
   u64 big_growths,big_peak_terms,big_capacity,big_reserved,big_coefficient_live,big_coefficient_bytes,big_reserve_waits,general_fallbacks;
   u64 big_pool_high_water,big_arithmetic_high_water,big_collected_live_high_water;
@@ -77,6 +79,7 @@ typedef struct __attribute__((aligned(64))) {
  GN_ATOMIC(u64) big_growths,big_peak_terms,big_capacity,big_reserved,big_coefficient_live,big_coefficient_bytes,big_capacity_misses,big_pool_misses,big_arena_misses,big_fallbacks,big_reserve_waits;
  GN_ATOMIC(u64) big_pool_high_water,big_arithmetic_high_water,big_collected_live_high_water;
   GN_ATOMIC(u64) memory_wait,memory_need,row_growths;
+  GN_ATOMIC(u64) memory_detail,row_workspace_bytes,memory_live_bytes,memory_minimum_bytes,row_relayouts;
 } LiveLane;
 
 typedef struct {
@@ -186,6 +189,7 @@ static void publish_lane(Lane*l,u64 terms,u32 force){
  GN_STORE(&v->big_arena_misses,l->big_arena_misses);GN_STORE(&v->big_fallbacks,l->general_fallbacks);GN_STORE(&v->big_reserve_waits,l->big_reserve_waits);
  GN_STORE(&v->big_pool_high_water,l->big_pool_high_water);GN_STORE(&v->big_arithmetic_high_water,l->big_arithmetic_high_water);GN_STORE(&v->big_collected_live_high_water,l->big_collected_live_high_water);
  GN_STORE(&v->memory_wait,l->memory_wait);GN_STORE(&v->memory_need,l->memory_need);GN_STORE(&v->row_growths,l->row_growths);
+ GN_STORE(&v->memory_detail,l->memory_detail);GN_STORE(&v->row_workspace_bytes,l->row_workspace_bytes);GN_STORE(&v->memory_live_bytes,l->memory_live_bytes);GN_STORE(&v->memory_minimum_bytes,l->memory_minimum_bytes);GN_STORE(&v->row_relayouts,l->row_relayouts);
  GN_FETCH_ADD(&v->sequence,1);
  /* The existing clock import can notify the UI while this Wasm call is still
   * running. Only the coordinator invokes its reporting callback. No new ABI
@@ -800,7 +804,7 @@ API u64 gn_live_stat(u32 lane,u32 key){
  case 14:return GN_LOAD(&v->big_capacity);case 15:return GN_LOAD(&v->big_reserved);case 16:return GN_LOAD(&v->big_peak_terms);
  case 17:return GN_LOAD(&v->big_coefficient_live);case 18:return GN_LOAD(&v->big_coefficient_bytes);case 19:return GN_LOAD(&v->big_growths);
  case 20:return GN_LOAD(&v->big_capacity_misses);case 21:return GN_LOAD(&v->big_pool_misses);case 22:return GN_LOAD(&v->big_arena_misses);
- case 23:return GN_LOAD(&v->big_fallbacks);case 24:return GN_LOAD(&v->big_reserve_waits);case 25:return GN_LOAD(&v->big_pool_high_water);case 26:return GN_LOAD(&v->big_arithmetic_high_water);case 27:return GN_LOAD(&v->big_collected_live_high_water);case 28:return GN_LOAD(&v->memory_wait);case 29:return GN_LOAD(&v->memory_need);case 30:return GN_LOAD(&v->row_growths);default:return 0;}
+ case 23:return GN_LOAD(&v->big_fallbacks);case 24:return GN_LOAD(&v->big_reserve_waits);case 25:return GN_LOAD(&v->big_pool_high_water);case 26:return GN_LOAD(&v->big_arithmetic_high_water);case 27:return GN_LOAD(&v->big_collected_live_high_water);case 28:return GN_LOAD(&v->memory_wait);case 29:return GN_LOAD(&v->memory_need);case 30:return GN_LOAD(&v->row_growths);case 31:return GN_LOAD(&v->memory_detail);case 32:return GN_LOAD(&v->row_workspace_bytes);case 33:return GN_LOAD(&v->memory_live_bytes);case 34:return GN_LOAD(&v->memory_minimum_bytes);case 35:return GN_LOAD(&v->row_relayouts);default:return 0;}
 }
 API u64 gn_progress_stat(u32 key){
  switch(key){case 0:return S.degree_total;case 1:return S.degree_seen;

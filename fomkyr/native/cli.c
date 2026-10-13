@@ -194,6 +194,7 @@ static void log_pulse(double now){
   buf_printf(&lanes,"{\"lane\":%u,\"stage\":\"%s\",\"reductionTier\":\"%s\",\"sampledRewrites\":%" PRIu64 ",\"activeTerms\":%" PRIu64 ",\"exactFallbacks\":%" PRIu64,i,!busy?"waiting-memory":busy==2?"committing":"reducing",tiers[tier<7?tier:0],rewrites,row_terms,gn_live_stat(i,10));
   buf_printf(&lanes,",\"bigRow\":{\"capacity\":%" PRIu64 ",\"reservedCapacity\":%" PRIu64 ",\"peakTerms\":%" PRIu64 ",\"coefficientPoolUsedBytes\":%" PRIu64 ",\"coefficientPoolBytes\":%" PRIu64 ",\"growths\":%" PRIu64 ",\"capacityMisses\":%" PRIu64 ",\"coefficientPoolMisses\":%" PRIu64 ",\"arithmeticWorkspaceMisses\":%" PRIu64 ",\"generalFallbacks\":%" PRIu64 ",\"reserveWaits\":%" PRIu64 "}",gn_live_stat(i,14),gn_live_stat(i,15),gn_live_stat(i,16),gn_live_stat(i,17),gn_live_stat(i,18),gn_live_stat(i,19),gn_live_stat(i,20),gn_live_stat(i,21),gn_live_stat(i,22),gn_live_stat(i,23),gn_live_stat(i,24));
   buf_printf(&lanes,",\"memoryWaitReason\":%"PRIu64",\"requestedWorkspaceBytes\":%"PRIu64",\"workspaceGrowths\":%"PRIu64,gn_live_stat(i,28),gn_live_stat(i,29),gn_live_stat(i,30));
+  buf_printf(&lanes,",\"memoryPressureKind\":%"PRIu64",\"rowWorkspaceBytes\":%"PRIu64",\"liveCoefficientRootBytes\":%"PRIu64",\"minimumRowWorkspaceBytes\":%"PRIu64",\"rowRelayouts\":%"PRIu64,gn_live_stat(i,31),gn_live_stat(i,32),gn_live_stat(i,33),gn_live_stat(i,34),gn_live_stat(i,35));
   buf_printf(&lanes,",\"coefficientPoolHighWaterBytes\":%"PRIu64",\"arithmeticTempHighWaterBytes\":%"PRIu64",\"collectedLiveHighWaterBytes\":%"PRIu64,gn_live_stat(i,25),gn_live_stat(i,26),gn_live_stat(i,27));
   /* A commit can re-reduce a stored row whose last lane descriptor belongs
    * to another pair. Report the ordered task index in that phase. */
@@ -428,7 +429,16 @@ int main(int argc,char**argv){
    capture_safe(1);rc=save_safe(0);if(rc)break;rc=execute_batch((u32)n,&workers);if(rc)break;
   }if(rc)break;if(fg_enabled&&gn_fg_status()==FKG_ACTIVE){rc=GN_REJECTED;break;}rc=gn_finish_degree();if(rc)break;capture_safe(0);rc=save_safe(1);if(rc)break;
  }
- if(rc){if(gn_coop_stat(0)){gn_coop_discard();capture_safe(1);}int saved=save_safe(1);if(saved)fprintf(stderr,"Checkpoint save failed: %s (previous durable checkpoint retained)\n",ename(saved));}
+ if(rc){
+  if(rc==GN_ROW_WAIT){
+   Buffer failure={0};buf_printf(&failure,"{\"code\":\"ROW_WORKSPACE_LIMIT\",\"budgetBytes\":%"PRIu64",\"allocatedBytes\":%"PRIu64",\"rows\":[",budget,gn_stat(4));u32 listed=0;
+   for(u32 i=0;i<gn_memory_stat(1);i++)if(gn_live_stat(i,28)){
+    buf_printf(&failure,"%s{\"lane\":%u,\"leftRule\":%"PRIu64",\"rightRule\":%"PRIu64",\"overlap\":%"PRIu64",\"pressureKind\":%"PRIu64",\"workspaceBytes\":%"PRIu64",\"requestedBytes\":%"PRIu64",\"liveCoefficientBytes\":%"PRIu64",\"minimumWorkspaceBytes\":%"PRIu64",\"capacity\":%"PRIu64",\"reservedCapacity\":%"PRIu64"}",listed++?",":"",i,gn_live_stat(i,11),gn_live_stat(i,12),gn_live_stat(i,13),gn_live_stat(i,31),gn_live_stat(i,32),gn_live_stat(i,29),gn_live_stat(i,33),gn_live_stat(i,34),gn_live_stat(i,14),gn_live_stat(i,15));
+   }
+   buf_add(&failure,"]}\n");if(write_atomic(run_dir,"row-workspace-limit.json",failure.s,failure.n))fprintf(stderr,"Could not save workspace diagnostics\n");buf_free(&failure);
+  }
+  if(gn_coop_stat(0)){gn_coop_discard();capture_safe(1);}int saved=save_safe(1);if(saved)fprintf(stderr,"Checkpoint save failed: %s (previous durable checkpoint retained)\n",ename(saved));
+ }
  else {gn_deadline(0);native_set_pulse(NULL);if(hilbert)rc=export_hilbert(target?target:(u32)gn_stat(2),budget);if(!rc&&export)rc=export_basis(&fixture);}
  last_log=0;log_pulse(gn_host_clock());telemetry_save(rc?"stopped":"complete",NULL,gn_host_clock());
  double elapsed=(gn_host_clock()-started)/1000;native_set_pulse(NULL);pool_close();struct rusage usage;getrusage(RUSAGE_SELF,&usage);u64 rss=(u64)usage.ru_maxrss;

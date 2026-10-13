@@ -120,6 +120,7 @@ API int test_big_row_growth(u32 large){
  return 0;
 }
 #include "deep_rows.inc"
+#include "budgeted_rows.inc"
 /* A real reserve wait with a partially emitted exact rewrite must not occupy
  * the only execution context of its worker. Exercise helper output commit,
  * descriptor remapping, budget deferral and cancellation under both queues. */
