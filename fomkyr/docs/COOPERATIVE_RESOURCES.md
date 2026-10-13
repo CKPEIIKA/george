@@ -102,9 +102,11 @@ buffers are accounted separately from `rowWorkspaceBytes`. Before discarding
 live rows after a workspace-limit stop, the native host saves these diagnostics
 to `row-workspace-limit.json` beside its checkpoints.
 
-`npm run test:fomkyr:row-growth` checks in-place coefficient growth, subsequent
-table expansion, smaller-lease admission, budget refusal, and exact cursor/queue
-preservation under binary and radix queues, natively and in all Wasm variants.
+From the George repository root, `npm run test:fomkyr:row-growth` checks in-place
+coefficient growth, subsequent table expansion, smaller-lease admission, budget
+refusal, and exact cursor/queue preservation under binary and radix queues,
+natively and in all Wasm variants. It also completes a suspended normal form
+with large exact coefficients and checks every resulting term.
 
 Durable frontiers still save pending pair descriptors. In-memory row retention
 does not extend across a process restart. Accepted rules and completed-pair

@@ -60,3 +60,29 @@ API int test_small_row_admission(u32 mode){
  REQUIRE(!brow_add(after,(Word){16385,0},(BCoef){2,2})&&after->capacity==32768);
  coop_release_lane(l);coop_collect_lane(l);REQUIRE(!GN_LOAD(&S.reserve_extra_lock[0])&&GN_LOAD(&S.reserve_lock)==1);return 0;
 }
+/* Complete a genuine suspended normal form after in-place coefficient growth.
+ * Every tail coefficient has 4096 limbs; its exact expected result is explicit. */
+API int test_inplace_normal_form(u32 radix){
+ REQUIRE(!gn_init(16,3,1,96u<<20,32u<<20,8,0,0));
+ REQUIRE(!gn_tune(0,12,16)&&!gn_radix_queue(radix)&&!gn_rational_rewrites(0));
+ S.completed=2;REQUIRE(!gn_input_begin(3,251)&&!gn_input_term(4095,0,2));
+ for(u32 i=1;i<=250;i++)REQUIRE(!gn_input_term(i,0,2));
+ REQUIRE(!gn_input_end()&&S.nrules==1);
+ Lane*l=&S.lanes[0];l->a[0]=(Arena){48u<<20,48u<<20,56u<<20,0,0};l->a[1]=(Arena){16u<<20,16u<<20,28u<<20,0,0};
+ Arena input={88u<<20,88u<<20,92u<<20,0,0};u32 limbs[4096]={0};limbs[4095]=1;
+ Coef big=makec(&input,limbs,4096,1);REQUIRE(!input.error);
+ Poly original={alloc_a(&l->a[0],2*sizeof(Term)),2,3,0};
+ PTR(Term,original.off)[0]=(Term){{4095,0},big};PTR(Term,original.off)[1]=(Term){{350,0},csmall(19)};
+ S.reserve_base=72u<<20;S.reserve_bytes=12u<<20;S.bump=92u<<20;S.reserve_growth=1;S.reserve_pool_limit=1;
+ GN_STORE(&S.reserve_lock,1);l->slice_enabled=1;l->slice_end=1e30;
+ REQUIRE(big_rational_nf(l,original,0,1)==GN_ROW_WAIT&&l->memory_detail==1&&l->resume_tier==4);
+ u32 tail=saved_BRow[0].row.pending_tail;u64 steps=saved_BRow[0].steps,bump=S.bump;
+ REQUIRE(tail>1&&tail<251&&l->reductions==1);
+ REQUIRE(brow_service_wait(l)==1&&l->row_relayouts==1&&S.bump==bump);
+ REQUIRE(saved_BRow[0].row.pending_tail==tail&&saved_BRow[0].steps==steps&&l->reductions==1);
+ REQUIRE(big_rational_nf(l,original,0,1)==0&&l->reductions==1&&l->result.n==251);
+ REQUIRE(pw(l->result,0).lo==350&&pc(l->result,0)==csmall(19));
+ for(u32 i=1;i<=250;i++)REQUIRE(pw(l->result,i).lo==251-i&&csign(pc(l->result,i))==-1&&magcmp(pc(l->result,i),big)==0);
+ REQUIRE(S.bump==bump&&GN_LOAD(&S.reserve_lock)==1&&!l->reserve_slot);
+ coop_release_lane(l);coop_collect_lane(l);return 0;
+}
