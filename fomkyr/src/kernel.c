@@ -46,6 +46,7 @@ typedef struct {u32 id,bytes;u64 offset;} Cache;
 typedef struct {Word w;u32 version,degree,id,pos;} RedCache;
 typedef struct {
   Arena a[2]; u64 io_base,io_size,cache_base,cache_slot;
+  u64 io_extra_base,io_extra_bytes;
   u64 out_base,out_size,out_used;
   u64 cache_data,cache_capacity,cache_used,cache_hits;
   u32 cache_epoch,cache_mask; RedCache red[RED_CACHE_N];
@@ -118,7 +119,7 @@ typedef struct {
   u32 iter_f,iter_k,iter_node,iter_ready,iter_done,input_degree,input_expected,input_used;
   GN_ATOMIC(u32) cancel;
   u64 base,bump,budget,scratch_base,scratch_size,stack_base,lm_heads,prefix_heads,rule_pages,prefix_pages;
-  u64 disk_end,terms,pair_count,zero_pairs,commit_zero,allocated_peak;
+  u64 disk_end,terms,pair_count,zero_pairs,commit_zero,allocated_peak,largest_rule_bytes;
   u32 matcher_enabled,chain_enabled,telemetry_enabled,matcher_snapshot,gm_mask,gm_requested;
  GN_ATOMIC(u64) gm_examined,gm_skipped[3],gm_unavailable,gm_pending,chain_fallback_queries;
   u32 eager_pruning,quadratic_rewrite,square_mask,commute_mask[16];i64 swap_factor[256];
@@ -387,6 +388,18 @@ static int validate_record(u64 off,u32 bytes){
 /* Variable-size immutable reducer cache. A generation-tagged ring uses the
  * byte budget for actual records, not sixteen equally oversized fixed slots.
  * No borrowed record pointer survives the next load_rule on the same lane. */
+/* Rule I/O has its own budgeted lease. Resize only with readers joined; retained
+ * exact rows own their coefficients and never borrow this transient buffer.
+ * Helpers retain small buffers and defer records they cannot read. */
+static int ensure_rule_io(Lane*l,u64 minimum){
+ if(minimum<=l->io_size)return 0;
+ if(minimum>UINT32_MAX)return GN_LIMIT;
+ if(l->no_reserve||GN_LOAD(&S.batch_running))return GN_SCRATCH;
+ u64 bytes=minimum,base=workspace_take(&bytes);if(!base)return GN_MEMORY;
+ if(l->io_extra_base)workspace_return(l->io_extra_base,l->io_extra_bytes);
+ l->io_extra_base=base;l->io_extra_bytes=bytes;l->io_base=base;l->io_size=bytes;
+ return 0;
+}
 static Poly load_rule(u32 id,Lane*l){
  Rule*r=rule(id);u64 off=r->location;
  if(T.base&&!S.certifying&&id<=T.floor&&l->tail_snapshot>=r->tail_snapshot){
@@ -403,7 +416,7 @@ static Poly load_rule(u32 id,Lane*l){
   Cache*c=PTR(Cache,l->cache_base)+(id&l->cache_mask);
   if(S.cache_percent&&c->id==id&&c->bytes==l->cache_epoch){off=c->offset;l->cache_hits++;}
   else{
-   if(r->bytes>l->io_size){l->error=GN_SCRATCH;return(Poly){0};}
+   if(r->bytes>l->io_size){int rc=ensure_rule_io(l,r->bytes);if(rc){l->error=rc;return(Poly){0};}}
    int keep=S.cache_percent&&r->bytes<=l->cache_capacity;
    if(keep){
     if(r->bytes>l->cache_capacity-l->cache_used){
@@ -679,7 +692,7 @@ static int append_rule(Poly p,u64 existing_disk,int restoring){
  if(exact_rule(leading,p.degree,S.nrules))return GN_STATE;
  int gate_rc=fg_append_check(p,restoring);if(gate_rc)return gate_rc;
  int rc=reserve_slots(p.degree-1);if(rc)return rc;u64 size=record_bytes(p),location=0;Lane*l=&S.lanes[0];
- if(S.spill){location=restoring?existing_disk:S.disk_end;if(!restoring){rc=write_record(p,l->io_base,l->io_size);if(rc)return rc;if(!gn_host_write(location,l->io_base,(u32)size))return GN_IO;}S.disk_end=MAX(S.disk_end,location+size);}
+ if(S.spill){location=restoring?existing_disk:S.disk_end;if(!restoring){rc=ensure_rule_io(l,size);if(rc)return rc;rc=write_record(p,l->io_base,l->io_size);if(rc)return rc;if(!gn_host_write(location,l->io_base,(u32)size))return GN_IO;}S.disk_end=MAX(S.disk_end,location+size);}
  else{location=alloc_p(size);if(!location)return S.error;rc=write_record(p,location,size);if(rc)return rc;}
  if(wlong(leading)){u64 owned=alloc_p(p.degree);if(!owned)return S.error;memcpy(PTR(u8,owned),PTR(u8,leading.lo),p.degree);leading.lo=owned;}
  u32 id=++S.nrules,b=hash(leading,p.degree);Rule*r=rule(id);*r=(Rule){leading,location,(u32)size,p.n,p.degree,PTR(u32,S.lm_heads)[b],0,0,0,0,0};PTR(u32,S.lm_heads)[b]=id;
@@ -705,7 +718,7 @@ static int append_rule(Poly p,u64 existing_disk,int restoring){
   else{int prc=write_record(p,dest,size);if(prc)return prc;}
   r->pinned=dest;S.pin_used+=A8(size);
  }
- S.terms+=p.n;return fg_append_done(p,restoring);
+ S.largest_rule_bytes=MAX(S.largest_rule_bytes,size);S.terms+=p.n;return fg_append_done(p,restoring);
 }
 API u32 gn_abi(void){return GN_ABI;}
 API u64 gn_heap_base(void){
@@ -730,9 +743,10 @@ static void layout_one(Lane*l,u64 begin,u64 bytes){
  l->out_base=begin;l->out_size=S.batch_enabled?l->a[0].base+bytes-begin:0;
 }
 static int layout_workers(u32 workers,int preserve){
- if(!workers||workers>GN_MAX_WORKERS)return GN_INPUT;
+ if(!workers||workers>GN_MAX_WORKERS)return GN_INPUT;if(GN_LOAD(&S.batch_running))return GN_STATE;
  u64 bytes=(S.scratch_size/(workers+(S.coop_ms?1:0)))&~UINT64_C(65535);
  if(bytes<1024*1024)return GN_MEMORY;S.workers=workers;S.lane_slots=MAX(S.lane_slots,workers);
+ for(u32 i=0;i<S.lane_slots;i++)if(S.lanes[i].io_extra_base){workspace_return(S.lanes[i].io_extra_base,S.lanes[i].io_extra_bytes);S.lanes[i].io_extra_base=S.lanes[i].io_extra_bytes=0;}
  for(u32 i=0;i<workers;i++){
   Lane*l=&S.lanes[i];if(!preserve){memset(l,0,sizeof(*l));memset(&S.live[i],0,sizeof(LiveLane));}
   else{l->result=(Poly){0};l->error=0;l->active=0;l->out_used=0;l->skip_rule=0;l->busy=0;l->allow_repack=0;l->reserve_owned=0;memset(l->red,0,sizeof(l->red));}
@@ -740,6 +754,7 @@ static int layout_workers(u32 workers,int preserve){
   layout_one(l,S.scratch_base+bytes*i,bytes);
  }
  if(S.coop_ms){
+  if(coop_coordinator.io_extra_base)workspace_return(coop_coordinator.io_extra_base,coop_coordinator.io_extra_bytes);
   memset(&coop_coordinator,0,sizeof(coop_coordinator));coop_coordinator.resume_slot=GN_MAX_WORKERS;coop_coordinator.is_commit=1;layout_one(&coop_coordinator,S.scratch_base+bytes*workers,bytes);
   /* Optional helper arenas use at most 1/64 of the configured total budget.
    * Primary scratch and the exceptional reserve keep their original sizes.
@@ -932,6 +947,7 @@ static void order_batch(void){
 }
 API int gn_batch_fill(u32 limit){
  if(!S.batch_enabled||!S.current||!limit||limit>BATCH_MAX)return -GN_STATE;
+ if(S.spill)for(u32 i=0;i<S.workers;i++){int rc=ensure_rule_io(&S.lanes[i],S.largest_rule_bytes);if(rc)return -rc;}
  int tc=tail_cache_prepare();if(tc)return -tc;
  reserve_pool_admit();
  S.batch_n=0;S.batch_first=0;S.batch_committed=0;GN_STORE(&S.batch_next,0);
@@ -1000,7 +1016,7 @@ API int gn_batch_fallback(void){S.batch_spills++;return gn_batch_mode(0);}
 API int gn_finish_degree(void){if(!S.current||!S.iter_done)return GN_STATE;
  if(!S.gate_closed&&(S.degree_committed!=S.degree_scheduled||(S.degree_total_known&&S.degree_seen!=S.degree_total)))return GN_STATE;S.completed=S.current;S.current=0;S.gate_active=0;return 0;}
 API u64 gn_rule_stat(u32 id,u32 key){if(!id||id>S.nrules)return 0;Rule*r=rule(id);switch(key){case 0:return r->lm.lo;case 1:return r->lm.hi;case 2:return r->degree;case 3:return r->n;case 4:return r->bytes;case 5:return r->location;default:return 0;}}
-API u64 gn_export_rule(u32 id){if(!id||id>S.nrules)return 0;Lane*l=&S.lanes[0];l->error=0;Rule*r=rule(id);if(S.spill){if(r->bytes>l->io_size||!gn_host_read(r->location,l->io_base,r->bytes)){l->error=r->bytes>l->io_size?GN_SCRATCH:GN_IO;return 0;}if(validate_record(l->io_base,r->bytes)){l->error=GN_CORRUPT;return 0;}return l->io_base;}
+API u64 gn_export_rule(u32 id){if(!id||id>S.nrules)return 0;Lane*l=&S.lanes[0];l->error=0;Rule*r=rule(id);if(S.spill){int rc=ensure_rule_io(l,r->bytes);if(rc){l->error=rc;return 0;}if(!gn_host_read(r->location,l->io_base,r->bytes)){l->error=GN_IO;return 0;}if(validate_record(l->io_base,r->bytes)){l->error=GN_CORRUPT;return 0;}return l->io_base;}
  Poly p={r->location+sizeof(Record),r->n,r->degree,r->location};if(write_record(p,l->io_base,l->io_size)){l->error=GN_SCRATCH;return 0;}return l->io_base;}
 API u32 gn_export_size(void){return PTR(Record,S.lanes[0].io_base)->bytes;}
 API u64 gn_import_buffer(void){return S.lanes[0].io_base;}

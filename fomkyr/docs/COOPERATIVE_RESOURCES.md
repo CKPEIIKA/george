@@ -117,6 +117,18 @@ with large exact coefficients and checks every resulting term.
 The lease-sharing checks also overwrite returned storage and complete an exact
 normal form after shrinking and subsequently regrowing its table.
 
+## Large reducer records
+
+The rule-read buffer grows independently of row arithmetic scratch. Before each
+cooperative wave, primary and commit buffers must hold the largest accepted
+record, including records loaded from a checkpoint. Growth uses the same memory
+budget and occurs with every reader joined. It preserves retained row state.
+Small helper buffers remain bounded and defer reducers they cannot read.
+
+This prevents a checkpoint restored with a temporary smaller worker count from
+failing after returning to the requested concurrency. An actual budget refusal
+is reported as `MEMORY_BUDGET`; it preserves the old buffer and saved frontier.
+
 Durable frontiers still save pending pair descriptors. In-memory row retention
 does not extend across a process restart. Accepted rules and completed-pair
 identities remain durable.

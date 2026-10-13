@@ -233,6 +233,12 @@ static int coop_service_memory(void){
 API int gn_coop_fill(u32 limit){
  if(!S.coop_ms||!S.batch_enabled||!S.current||GN_LOAD(&S.batch_running)||!limit||limit>BATCH_MAX)return -GN_STATE;
  if(cancelled())return -GN_CANCELLED;
+ /* Restoring records can temporarily use fewer, larger lanes. Restoring the
+  * requested worker count must not leave buffers smaller than those records. */
+ if(S.spill){
+  for(u32 i=0;i<S.workers;i++){int rc=ensure_rule_io(&S.lanes[i],S.largest_rule_bytes);if(rc)return -rc;}
+  int io_rc=ensure_rule_io(&coop_coordinator,S.largest_rule_bytes);if(io_rc)return -io_rc;
+ }
  int tc=tail_cache_prepare();if(tc)return -tc;
  int memory_rc=coop_service_memory();if(memory_rc)return memory_rc;
  /* An existing persisted legacy prefix may have first/committed offsets. This
