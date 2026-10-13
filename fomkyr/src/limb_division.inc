@@ -7,24 +7,25 @@
 static Coef limb_divmodc(Arena*z,Coef a,Coef b,int quotient){
  if(!b){z->error=GN_CORRUPT;return 0;}
  if(!(a&1)&&!(b&1)){u64 x=cabs64(a),y=cabs64(b);return csmall((i64)(quotient?x/y:x%y));}
- u32 na=cn(a),nb=cn(b);
+ u32 na=cn(a),nb=cn(b),as[2],bs[2];
+ const u32*av=coefficient_limbs(a,as),*bv=coefficient_limbs(b,bs);
  /* A tagged zero-length/unnormalized magnitude is invalid, rather than a
   * zero divisor to index at nb-1. Check before clz and unsigned subtraction. */
- if(!nb||((a&1)&&(!na||!cl(a,na-1)))||((b&1)&&!cl(b,nb-1))){z->error=GN_CORRUPT;return 0;}
+ if(!nb||((a&1)&&(!na||!av[na-1]))||((b&1)&&!bv[nb-1])){z->error=GN_CORRUPT;return 0;}
  int cmp=magcmp(a,b);if(cmp<0)return quotient?0:clonec(z,cabs(a));if(!cmp)return quotient?2:0;
  if(na<nb){z->error=GN_CORRUPT;return 0;}
  if(nb==1){
   u64 qo=quotient?alloc_a(z,(u64)na*4):0;if(z->error)return 0;
-  u32*q=quotient?PTR(u32,qo):NULL;u64 rem=0,div=cl(b,0);
-  for(u32 j=na;j--;){u64 v=(rem<<32)|cl(a,j);if(q)q[j]=(u32)(v/div);rem=v%div;}
+  u32*q=quotient?PTR(u32,qo):NULL;u64 rem=0,div=bv[0];
+  for(u32 j=na;j--;){u64 v=(rem<<32)|av[j];if(q)q[j]=(u32)(v/div);rem=v%div;}
   return quotient?makec(z,q,na,1):csmall((i64)rem);
  }
- u32 m=na-nb,s=(u32)__builtin_clz(cl(b,nb-1));
+ u32 m=na-nb,s=(u32)__builtin_clz(bv[nb-1]);
  u64 vo=alloc_a(z,(u64)nb*4),uo=alloc_a(z,((u64)na+1)*4),qo=quotient?alloc_a(z,((u64)m+1)*4):0;
  if(z->error)return 0;
  u32*v=PTR(u32,vo),*u=PTR(u32,uo),*q=quotient?PTR(u32,qo):NULL;u64 carry=0;
- for(u32 i=0;i<nb;i++){u64 x=((u64)cl(b,i)<<s)|carry;v[i]=(u32)x;carry=x>>32;}
- carry=0;for(u32 i=0;i<na;i++){u64 x=((u64)cl(a,i)<<s)|carry;u[i]=(u32)x;carry=x>>32;}u[na]=(u32)carry;
+ for(u32 i=0;i<nb;i++){u64 x=((u64)bv[i]<<s)|carry;v[i]=(u32)x;carry=x>>32;}
+ carry=0;for(u32 i=0;i<na;i++){u64 x=((u64)av[i]<<s)|carry;u[i]=(u32)x;carry=x>>32;}u[na]=(u32)carry;
  const u64 base=UINT64_C(1)<<32;
  for(u32 jj=m+1;jj--;){
   u32 j=jj;

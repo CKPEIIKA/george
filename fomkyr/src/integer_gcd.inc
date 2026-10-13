@@ -17,12 +17,24 @@ static Coef gcd_machine(Arena*z,Coef a,Coef b){
  u64 g=integer_gcd64(x,y);u32 limbs[2]={(u32)g,(u32)(g>>32)};
  return makec(z,limbs,2,1);
 }
+/* Both operands use the same bit window. A partly filled highest limb must
+ * include bits from the third limb to retain 62 significant bits of a. */
+static u64 gcd_lehmer_window(Coef c,u64 shift){
+ u32 word=(u32)(shift/32),bits=(u32)(shift%32);
+ u64 v=(u64)cl(c,word)|((u64)cl(c,word+1)<<32);
+ return bits?(v>>bits)|((u64)cl(c,word+2)<<(64-bits)):v;
+}
 /* Signed entries are bounded to one 30-bit magnitude. With the input window
  * shifted down to 62 bits, every signed addition and q*entry fits in i64. */
 static u32 gcd_lehmer_matrix(Coef a,Coef b,i64 matrix[4]){
  u32 n=cn(a);if(n<3||cn(b)!=n)return 0;
+#ifdef FOMKYR_LEHMER_WINDOW_BASELINE
  i64 x=(i64)(((u64)cl(a,n-1)<<32|cl(a,n-2))>>2);
  i64 y=(i64)(((u64)cl(b,n-1)<<32|cl(b,n-2))>>2);
+#else
+ u64 shift=(u64)(n-1)*32+(32u-(u32)__builtin_clz(cl(a,n-1)))-62;
+ i64 x=(i64)gcd_lehmer_window(a,shift),y=(i64)gcd_lehmer_window(b,shift);
+#endif
  i64 A=1,B=0,C=0,D=1;u32 steps=0;
  const i64 bound=INT64_C(1)<<30;
  while(y&&steps<64){

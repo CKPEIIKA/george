@@ -43,6 +43,10 @@ for n in [0,1,2,3]:
 for n in [0,1]:
  code=x.test_inplace_normal_form(n);assert not code,code
  rows.append(dict(property='in-place-exact-normal-form',mode=n,code=code))
+for name in ['test_trimmed_row_loan','test_trimmed_normal_form']:
+ for n in [0,1]:
+  code=getattr(x,name)(n);assert not code,(name,n,code)
+  rows.append(dict(property=name,mode=n,code=code))
 print(json.dumps(rows))`;
 rows.push({runtime:'native-ubsan',tests:JSON.parse(run('python3',['-c',python,native]))});
 console.log('native-ubsan passed');
@@ -59,7 +63,9 @@ async function properties(url,bits,shared){
  let code=e.test_commit_slices();if(code)throw Error(`Commit-slice property failure at C line ${code}`);tests.push({property:'commit-slices',code});
  code=e.test_output_wait();if(code)throw Error(`Output-backpressure property failure at C line ${code}`);tests.push({property:'output-backpressure',code});
  for(const mode of [0,1]){code=e.test_coop_helpers(mode);if(code)throw Error(`Helper property failure at C line ${code}`);tests.push({property:'reserve-wait-helpers',queue:mode?'radix':'binary',code});}
- for(const mode of [0,1]){code=e.test_multi_reserves(mode);if(code)throw Error(`Multiple-reserve property failure at C line ${code}`);tests.push({property:'multiple-large-row-reserves',queue:mode?'radix':'binary',code});}for(const mode of [0,1]){const code=e.test_budgeted_row_layout(mode);if(code)throw Error('In-place layout failure '+code+', mode '+mode);tests.push({property:'in-place-row-layout',mode,code});}for(const mode of [0,1,2,3]){const code=e.test_small_row_admission(mode);if(code)throw Error('Small-row admission failure '+code+', mode '+mode);tests.push({property:'small-row-admission',mode,code});}for(const mode of [0,1]){const code=e.test_inplace_normal_form(mode);if(code)throw Error('In-place normal-form failure '+code+', mode '+mode);tests.push({property:'in-place-exact-normal-form',mode,code});}return tests;
+ for(const mode of [0,1]){code=e.test_multi_reserves(mode);if(code)throw Error(`Multiple-reserve property failure at C line ${code}`);tests.push({property:'multiple-large-row-reserves',queue:mode?'radix':'binary',code});}for(const mode of [0,1]){const code=e.test_budgeted_row_layout(mode);if(code)throw Error('In-place layout failure '+code+', mode '+mode);tests.push({property:'in-place-row-layout',mode,code});}for(const mode of [0,1,2,3]){const code=e.test_small_row_admission(mode);if(code)throw Error('Small-row admission failure '+code+', mode '+mode);tests.push({property:'small-row-admission',mode,code});}for(const mode of [0,1]){const code=e.test_inplace_normal_form(mode);if(code)throw Error('In-place normal-form failure '+code+', mode '+mode);tests.push({property:'in-place-exact-normal-form',mode,code});}
+ for(const name of ['test_trimmed_row_loan','test_trimmed_normal_form'])for(const mode of [0,1]){const code=e[name](mode);if(code)throw Error(name+' failure '+code+', mode '+mode);tests.push({property:name,mode,code});}
+ return tests;
 }
 const server=staticServer('.', '/', {isolate:true}),serve=server.listeners('request')[0];server.removeAllListeners('request');
 let reportBrowser;

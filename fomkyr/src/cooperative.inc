@@ -23,6 +23,7 @@ typedef struct {
  u32 commit_task,commit_snapshot;u64 commit_yields,commit_resumes;
  u32 commit_ready,commit_error;u64 prepared_slices;
  GN_ATOMIC(u64) fair_helper_turns;u64 resource_growths;
+ u64 trim_retry_epoch[GN_MAX_WORKERS];
 } Cooperative;
 static Cooperative C;
 /* A completed NF retained in its lane while earlier output records await commit.
@@ -199,6 +200,32 @@ static int coop_service_memory(void){
   for(u32 j=0;j<2;j++){
    Lane*o=j?&coop_helpers[i]:l;u32 assigned=j?C.helper_assigned[i]:C.assigned[i];
    if(!assigned&&!o->out_used&&o->out_extra_base){workspace_return(o->out_extra_base,o->out_extra_bytes);o->out_base=o->out_original_base;o->out_size=o->out_original_size;o->out_extra_base=o->out_extra_bytes=0;}
+  }
+ }
+ /* A parked row may need only a few more bytes than budget headroom, while a
+  * different live reserve owns a much larger arena. Repack that owner's exact
+  * row before lending its unused suffix, then retry the waiting leases. */
+ u64 wanted=UINT64_MAX;
+ if(C.commit_task&&coop_coordinator.memory_wait&&coop_coordinator.memory_need)wanted=coop_coordinator.memory_need;
+ for(u32 i=0;i<S.workers;i++)for(u32 j=0;j<2;j++){
+  Lane*l=j?&coop_helpers[i]:&S.lanes[i];if(l->memory_wait&&l->memory_need)wanted=MIN(wanted,l->memory_need);
+ }
+ if(wanted!=UINT64_MAX){
+  int trimmed=0;
+  for(u32 i=0;i<S.workers&&!trimmed;i++){
+   if(C.epochs<C.trim_retry_epoch[i])continue;
+   int rc=brow_trim_workspace(&S.lanes[i],wanted);if(rc<0)return rc;trimmed=rc;
+   C.trim_retry_epoch[i]=rc?0:C.epochs+12;
+  }
+  if(trimmed){
+   C.resource_growths++;
+   if(C.commit_task){Lane saved=S.lanes[0];S.lanes[0]=coop_coordinator;int rc=brow_service_wait(&S.lanes[0]);coop_coordinator=S.lanes[0];S.lanes[0]=saved;if(rc<0)return rc;C.resource_growths+=rc;}
+   for(u32 i=0;i<S.workers;i++){
+    Lane*l=&S.lanes[i];
+    C.resource_growths+=coop_grow_output(l);
+    int rc=l->memory_wait==ROW_WAIT_BATCH?0:brow_service_wait(l);if(rc<0)return rc;C.resource_growths+=rc;
+    C.resource_growths+=coop_grow_output(&coop_helpers[i]);
+   }
   }
  }
  return 0;

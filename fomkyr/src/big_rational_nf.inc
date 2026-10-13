@@ -6,7 +6,7 @@
  * The original polynomial remains untouched until a complete exact result exists.
  */
 typedef struct { Coef n,d; } BCoef;
-static BCoef bcopy(Arena*t,BCoef a){return(BCoef){clonec(t,a.n),clonec(t,a.d)};}
+static BCoef bcoef_copy(Arena*t,BCoef a){return(BCoef){clonec(t,a.n),clonec(t,a.d)};}
 static BCoef bmake(Arena*t,Coef n,Coef d){
  if(t->error)return(BCoef){0,2};
  if(!d){t->error=GN_CORRUPT;return(BCoef){0,2};}if(!n)return(BCoef){0,2};
@@ -26,7 +26,7 @@ static BCoef bmake(Arena*t,Coef n,Coef d){
 }
 static BCoef badd(Arena*t,BCoef a,BCoef b){
  if(t->error)return(BCoef){0,2};
- if(!a.n)return bcopy(t,b);if(!b.n)return bcopy(t,a);
+ if(!a.n)return bcoef_copy(t,b);if(!b.n)return bcoef_copy(t,a);
  if(a.d==2&&b.d==2)return(BCoef){addc(t,a.n,b.n),2};
  if(a.d==b.d||magcmp(a.d,b.d)==0)return bmake(t,addc(t,a.n,b.n),a.d);
  Coef g=gcdc(t,a.d,b.d),ad=exactdiv(t,a.d,g),bd=exactdiv(t,b.d,g);
@@ -37,8 +37,8 @@ static BCoef bmul(Arena*t,BCoef a,BCoef b){
  if(t->error)return(BCoef){0,2};
  if(!a.n||!b.n)return(BCoef){0,2};
  if(a.d==2&&b.d==2)return(BCoef){mulc(t,a.n,b.n),2};
- if(a.d==2&&(a.n==2||a.n==csmall(-1))){BCoef r=bcopy(t,b);if(csign(a.n)<0)r.n=cneg(r.n);return r;}
- if(b.d==2&&(b.n==2||b.n==csmall(-1))){BCoef r=bcopy(t,a);if(csign(b.n)<0)r.n=cneg(r.n);return r;}
+ if(a.d==2&&(a.n==2||a.n==csmall(-1))){BCoef r=bcoef_copy(t,b);if(csign(a.n)<0)r.n=cneg(r.n);return r;}
+ if(b.d==2&&(b.n==2||b.n==csmall(-1))){BCoef r=bcoef_copy(t,a);if(csign(b.n)<0)r.n=cneg(r.n);return r;}
  Coef g=gcdc(t,a.n,b.d),h=gcdc(t,b.n,a.d);
  return(BCoef){mulc(t,exactdiv(t,a.n,g),exactdiv(t,b.n,h)),mulc(t,exactdiv(t,a.d,h),exactdiv(t,b.d,g))};
 }
@@ -85,8 +85,8 @@ static int brow_collect(BRow*r){
  Arena*out=&r->pool[r->pool_active^1];reset_a(out);u64 need=bbytes(r->pivot);
  for(u32 i=0;i<r->used;i++)if(r->nodes[i].pos!=UINT32_MAX){u64 n=bbytes(r->nodes[i].c);if(n>out->end-out->base||need>out->end-out->base-n)return HEAP_MISS;need+=n;}
  if(need>out->end-out->base)return HEAP_MISS;
- for(u32 i=0;i<r->used;i++){if((i&1023)==0&&cancelled())return GN_CANCELLED;if(r->nodes[i].pos!=UINT32_MAX)r->nodes[i].c=bcopy(out,r->nodes[i].c);}
- r->pivot=bcopy(out,r->pivot);if(out->error)return HEAP_MISS;r->lane->big_collected_live_high_water=MAX(r->lane->big_collected_live_high_water,need);r->pool_active^=1;r->lane->big_compactions++;return 0;
+ for(u32 i=0;i<r->used;i++){if((i&1023)==0&&cancelled())return GN_CANCELLED;if(r->nodes[i].pos!=UINT32_MAX)r->nodes[i].c=bcoef_copy(out,r->nodes[i].c);}
+ r->pivot=bcoef_copy(out,r->pivot);if(out->error)return HEAP_MISS;r->lane->big_collected_live_high_water=MAX(r->lane->big_collected_live_high_water,need);r->pool_active^=1;r->lane->big_compactions++;return 0;
 }
 /* The source is always in operation scratch or stable input/cache memory, never
  * a borrowed semispace root. Collection may relocate the pivot and live nodes. */
@@ -97,7 +97,7 @@ static int brow_store(BRow*r,BCoef c,BCoef*out){
   if(rc||need>p->end-p->pos){rc=brow_promote(r);if(rc){if(rc!=GN_YIELD)r->lane->big_pool_misses++;r->lane->memory_detail=1;return rc;}p=&r->pool[r->pool_active];}
  }
  if(need>p->end-p->pos){r->lane->big_pool_misses++;r->lane->memory_detail=1;return HEAP_MISS;}
- *out=bcopy(p,c);return p->error?HEAP_MISS:0;
+ *out=bcoef_copy(p,c);return p->error?HEAP_MISS:0;
 }
 /* Reserve structural address ranges once. Only initialized slots become live;
  * doubling rehashes their indices, leaving the exact reduction state intact.
@@ -146,9 +146,9 @@ static int brow_relocate_capacity(BRow*r,Lane*l,u64 base,u64 bytes,u32 reserved)
  if(r->radix_enabled)memcpy(next.radix.previous,r->radix.previous,(size_t)r->used*4);
  for(u32 i=0;i<r->used;i++)if(r->nodes[i].pos!=UINT32_MAX){
   if(!(i&1023)&&cancelled())return GN_CANCELLED;
-  next.nodes[i].c=bcopy(&next.pool[0],r->nodes[i].c);
+  next.nodes[i].c=bcoef_copy(&next.pool[0],r->nodes[i].c);
  }
- BCoef pivot=bcopy(&next.pool[0],r->pivot);if(next.pool[0].error)return HEAP_MISS;
+ BCoef pivot=bcoef_copy(&next.pool[0],r->pivot);if(next.pool[0].error)return HEAP_MISS;
  r->nodes=next.nodes;r->heads=next.heads;r->heap=next.heap;r->normal=next.normal;r->reserved=reserved;
  if(r->radix_enabled){r->radix.next=r->heap;r->radix.previous=next.radix.previous;}
  r->pool[0]=next.pool[0];r->pool[1]=next.pool[1];r->pool_active=0;r->temp=next.temp;r->pivot=pivot;r->workspace_bytes=bytes;r->lane=l;
@@ -157,6 +157,8 @@ static int brow_relocate_capacity(BRow*r,Lane*l,u64 base,u64 bytes,u32 reserved)
  return 0;
 }
 static int brow_relocate(BRow*r,Lane*l,u64 base,u64 bytes){return brow_relocate_capacity(r,l,base,bytes,brow_budget_capacity(bytes));}
+typedef struct {BRow row;u64 steps;} BRowResume;
+static BRowResume saved_BRow[GN_RESUME_SLOTS];
 #include "big_row_relayout.inc"
 static int brow_promote(BRow*r){
  brow_pressure(r);Lane*l=r->lane;
@@ -180,8 +182,8 @@ static int brow_promote(BRow*r){
   memcpy(next.nodes,r->nodes,(size_t)r->used*sizeof(BNode));
   memcpy(next.heap,r->heap,(size_t)(r->radix_enabled?r->used:r->heap_n)*4);memcpy(next.normal,r->normal,(size_t)r->normal_n*4);
   if(r->radix_enabled)memcpy(next.radix.previous,r->radix.previous,(size_t)r->used*4);
-  for(u32 i=0;i<r->used;i++)if(r->nodes[i].pos!=UINT32_MAX)next.nodes[i].c=bcopy(&next.pool[0],r->nodes[i].c);
-  BCoef pivot=bcopy(&next.pool[0],r->pivot);
+  for(u32 i=0;i<r->used;i++)if(r->nodes[i].pos!=UINT32_MAX)next.nodes[i].c=bcoef_copy(&next.pool[0],r->nodes[i].c);
+  BCoef pivot=bcoef_copy(&next.pool[0],r->pivot);
   /* Preserve cursor, free-list and normal prefix; only storage moves. */
   r->nodes=next.nodes;r->heads=next.heads;r->heap=next.heap;r->normal=next.normal;r->reserved=available;
   if(r->radix_enabled){r->radix.next=r->heap;r->radix.previous=next.radix.previous;}
@@ -224,8 +226,6 @@ static int brow_add(BRow*r,Word w,BCoef delta){
  else{r->heap[r->heap_n++]=id;bheap_up(r,r->heap_n-1);}
  r->lane->big_peak_terms=MAX(r->lane->big_peak_terms,(u64)r->heap_n+r->normal_n);return 0;
 }
-typedef struct {BRow row;u64 steps;} BRowResume;
-static BRowResume saved_BRow[GN_RESUME_SLOTS];
 static int big_rational_nf_inner(Lane*l,Poly original,u32 active,u32 snapshot){
  BRow r;u64 steps=0;u32 resume_rule=0,resume_tail=UINT32_MAX;
  if(l->resume_tier==4){r=saved_BRow[l->resume_slot].row;steps=saved_BRow[l->resume_slot].steps;goto resumed_heap;}
@@ -372,8 +372,8 @@ static int brow_service_wait(Lane*l){
    Arena out={base,base,base+poolbytes,0,0};u64 need=bbytes(r->pivot);
    for(u32 i=0;i<r->used;i++)if(r->nodes[i].pos!=UINT32_MAX)need+=bbytes(r->nodes[i].c);
    if(need<=poolbytes){
-    for(u32 i=0;i<r->used;i++)if(r->nodes[i].pos!=UINT32_MAX)r->nodes[i].c=bcopy(&out,r->nodes[i].c);
-    r->pivot=bcopy(&out,r->pivot);
+    for(u32 i=0;i<r->used;i++)if(r->nodes[i].pos!=UINT32_MAX)r->nodes[i].c=bcoef_copy(&out,r->nodes[i].c);
+    r->pivot=bcoef_copy(&out,r->pivot);
     /* Byte-count preflight guarantees these copies cannot allocate-fail. */
     if(out.error)return -GN_CORRUPT;
     r->pool[0]=out;r->pool[1]=(Arena){begin,begin,begin+poolbytes,0,0};r->pool_active=0;r->temp=(Arena){base+poolbytes,base+poolbytes,base+bytes,0,0};

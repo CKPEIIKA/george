@@ -4,8 +4,10 @@ The exact reducer uses binary GCD for magnitudes fitting in 64 bits and
 conservative Lehmer batching for larger magnitudes. This implementation is shared
 by native C and WebAssembly builds.
 
-Lehmer batching uses the leading two 32-bit limbs to propose a small integer
-matrix. The matrix has determinant ±1, so applying it preserves the GCD.
+Lehmer batching normalizes the larger operand's leading window to 62 significant
+bits, taking bits from up to three 32-bit limbs. Both operands use the same bit
+shift. This preserves estimator precision when the highest limb is partly filled.
+The window proposes a small integer matrix with determinant ±1, so applying it preserves the GCD.
 The implementation evaluates its action at full precision and accepts it only
 when both new magnitudes are nonnegative and strictly smaller than the previous
 maximum. Otherwise it takes one ordinary Euclidean remainder step. Matrix
@@ -31,6 +33,10 @@ Addition and multiplication write directly into their final immutable coefficien
 allocation. Multiplication initializes a scalar column then accumulates subsequent
 columns, avoiding a full zero-fill and a second limb-array copy.
 
+Normalized long division reads each immutable operand's limb array directly.
+Native builds use the POSIX host's libc memory routines. Freestanding WebAssembly
+builds retain their internal memory functions.
+
 ## Rational rewrite factors
 
 The arbitrary-precision rational reducer divides the pivot by the reducer's
@@ -49,6 +55,10 @@ operations and matrix application; `FOMKYR_LIMB_BASELINE`,
 `FOMKYR_MATRIX_BASELINE` and `FOMKYR_EXACTDIV_BASELINE` select individual previous
 paths. `FOMKYR_VALIDATE_EXACTDIV` additionally checks nontrivial exact quotients
 by multiplication. These switches preserve polynomial and checkpoint formats.
+
+`FOMKYR_LEHMER_WINDOW_BASELINE` retains the preceding fixed two-limb estimate.
+`FOMKYR_BYTE_MEMORY_BASELINE` retains the freestanding memory loops in native
+builds for comparisons.
 
 `FOMKYR_EXACTDIV_ALLOC_SMALL` and `FOMKYR_RATIONAL_TAIL_RATIO_BASELINE`
 retain the preceding allocation and rational

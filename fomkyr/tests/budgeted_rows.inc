@@ -86,3 +86,62 @@ API int test_inplace_normal_form(u32 radix){
  REQUIRE(S.bump==bump&&GN_LOAD(&S.reserve_lock)==1&&!l->reserve_slot);
  coop_release_lane(l);coop_collect_lane(l);return 0;
 }
+/* Two retained rows share a fixed budget. Return the large row's unused tail
+ * and grow the parked row from it, without allocating or replaying either row. */
+API int test_trimmed_row_loan(u32 radix){
+ memset(&S,0,sizeof(S));memset(&C,0,sizeof(C));S.budget=62u<<20;S.bump=60u<<20;S.workers=S.lane_slots=2;
+ S.radix_enabled=radix;S.reserve_growth=1;S.reserve_pool_limit=2;
+ S.reserve_base=16u<<20;S.reserve_bytes=12u<<20;S.reserve_extra_count=1;S.reserve_extra_base[0]=32u<<20;S.reserve_extra_bytes[0]=2u<<20;
+ GN_STORE(&S.reserve_lock,1);GN_STORE(&S.reserve_extra_lock[0],1);
+ Lane*a=&S.lanes[0],*b=&S.lanes[1];a->reserve_owned=b->reserve_owned=1;a->reserve_slot=1;b->reserve_slot=2;a->resume_slot=0;b->resume_slot=1;
+ a->slice_enabled=b->slice_enabled=1;a->reductions=7;b->reductions=11;
+ Arena source={4u<<20,4u<<20,8u<<20,0,0};u32 limbs[4096]={0};limbs[4095]=1;Coef big=makec(&source,limbs,4096,1);REQUIRE(!source.error);
+ Arena aa={16u<<20,16u<<20,28u<<20,0,0},bb={32u<<20,32u<<20,34u<<20,0,0};BRow ra,rb;
+ REQUIRE(!brow_layout(&ra,a,&aa,131072,128,4)&&!brow_layout(&rb,b,&bb,16384,16384,4));
+ memset(ra.heads,0,128*8);memset(rb.heads,0,16384*8);
+ for(u32 i=0;i<16;i++)REQUIRE(!brow_add(&ra,(Word){i+10001,0},(BCoef){big,csmall(7)}));
+ u32 top=bheap_top(&ra);bheap_remove(&ra,top);ra.normal[ra.normal_n++]=top;ra.pivot=ra.nodes[0].c;ra.pending_kind=2;ra.pending_rule=7;ra.pending_tail=19;
+ for(u32 i=0;i<16384;i++)REQUIRE(!brow_add(&rb,(Word){i+1,0},(BCoef){2,2}));
+ REQUIRE(brow_add(&rb,(Word){16385,0},(BCoef){2,2})==HEAP_MISS&&b->memory_detail==2);
+ rb.pending_kind=2;rb.pending_rule=9;rb.pending_tail=23;saved_BRow[0]=(BRowResume){ra,29};saved_BRow[1]=(BRowResume){rb,31};
+ a->resume_tier=b->resume_tier=4;b->memory_wait=ROW_WAIT_GROW;b->memory_need=4u<<20;
+ REQUIRE(brow_service_wait(b)==0&&b->memory_wait&&S.bump==(60u<<20));
+ C.assigned[0]=1;C.assigned[1]=2;S.batch_n=2;
+ REQUIRE(!coop_service_memory()&&!b->memory_wait&&S.bump==(60u<<20));
+ BRow*x=&saved_BRow[0].row,*y=&saved_BRow[1].row;
+ REQUIRE(x->workspace_bytes<(12u<<20)&&S.reserve_bytes==x->workspace_bytes);
+ REQUIRE(x->reserved==128&&x->capacity==128&&a->row_relayouts==1&&y->reserved==32768&&y->capacity==16384);
+ REQUIRE(S.reserve_extra_base[0]>=S.reserve_base+S.reserve_bytes&&S.reserve_extra_base[0]+S.reserve_extra_bytes[0]<=(28u<<20));
+ REQUIRE(x->pending_tail==19&&y->pending_tail==23&&saved_BRow[0].steps==29&&saved_BRow[1].steps==31&&a->reductions==7&&b->reductions==11);
+ /* Poison all returned bytes: no coefficient, pivot or queue may refer there. */
+ for(u32 i=0;i<S.spare_count;i++)memset(PTR(u8,S.spare_base[i]),0xcc,(size_t)S.spare_bytes[i]);
+ REQUIRE(x->normal[0]==top&&x->normal_n==1&&magcmp(x->pivot.n,big)==0&&x->pivot.d==csmall(7));
+ for(u32 i=0;i<x->used;i++)REQUIRE(magcmp(x->nodes[i].c.n,big)==0&&x->nodes[i].c.d==csmall(7));
+ REQUIRE(!brow_collect(x)&&!brow_add(y,(Word){16385,0},(BCoef){2,2})&&y->capacity==32768);
+ coop_release_lane(a);coop_release_lane(b);REQUIRE(!reserve_pool_busy());return 0;
+}
+/* Finish an actual exact NF after shrinking its reserve and poisoning the
+ * released suffix. A fraction with a large numerator must survive relocation. */
+API int test_trimmed_normal_form(u32 radix){
+ REQUIRE(!gn_init(16,3,1,96u<<20,32u<<20,8,0,0));
+ REQUIRE(!gn_tune(0,12,16)&&!gn_radix_queue(radix)&&!gn_rational_rewrites(0));
+ S.completed=2;REQUIRE(!gn_input_begin(3,301)&&!gn_input_term(4095,0,7));
+ for(u32 i=1;i<=300;i++)REQUIRE(!gn_input_term(i,0,2));REQUIRE(!gn_input_end());
+ Lane*l=&S.lanes[0];l->a[0]=(Arena){48u<<20,48u<<20,56u<<20,0,0};l->a[1]=(Arena){46u<<20,46u<<20,(46u<<20)+20480,0,0};
+ Arena source={88u<<20,88u<<20,92u<<20,0,0};u32 limbs[4]={0,0,0,1};Coef big=makec(&source,limbs,4,1);
+ Poly original={alloc_a(&l->a[0],2*sizeof(Term)),2,3,0};PTR(Term,original.off)[0]=(Term){{4095,0},big};PTR(Term,original.off)[1]=(Term){{350,0},csmall(19)};
+ S.reserve_base=60u<<20;S.reserve_bytes=12u<<20;S.bump=92u<<20;S.reserve_growth=1;S.reserve_pool_limit=1;GN_STORE(&S.reserve_lock,1);l->slice_enabled=1;l->slice_end=1e30;
+ REQUIRE(big_rational_nf(l,original,0,1)==GN_ROW_WAIT&&l->reductions==1);GN_STORE(&S.reserve_lock,0);REQUIRE(brow_service_wait(l)==1&&l->reserve_slot==1);
+ u32 tail=saved_BRow[l->resume_slot].row.pending_tail;u64 steps=saved_BRow[l->resume_slot].steps,bump=S.bump;
+ REQUIRE(brow_trim_workspace(l,4u<<20)==1&&S.reserve_bytes<(8u<<20)&&S.bump==bump);
+ REQUIRE(saved_BRow[l->resume_slot].row.pending_tail==tail&&saved_BRow[l->resume_slot].steps==steps&&l->reductions==1);
+ for(u32 i=0;i<S.spare_count;i++)memset(PTR(u8,S.spare_base[i]),0xcc,(size_t)S.spare_bytes[i]);
+ int rc=big_rational_nf(l,original,0,1);
+ for(u32 retries=0;rc==GN_ROW_WAIT&&retries<4;retries++){
+  REQUIRE(l->reductions==1&&brow_service_wait(l)==1);rc=big_rational_nf(l,original,0,1);
+ }
+ REQUIRE(rc==0&&l->reductions==1&&l->result.n==301);
+ REQUIRE(pw(l->result,0).lo==350&&pc(l->result,0)==csmall(133));
+ Coef twice=mulc(&source,big,4);for(u32 i=1;i<=300;i++)REQUIRE(pw(l->result,i).lo==301-i&&csign(pc(l->result,i))==-1&&magcmp(pc(l->result,i),twice)==0);
+ REQUIRE(S.bump==bump&&!reserve_pool_busy());coop_release_lane(l);coop_collect_lane(l);return 0;
+}

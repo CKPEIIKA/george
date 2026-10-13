@@ -36,13 +36,12 @@ static u64 brow_first_root(BRow*r){
  }
  return first;
 }
-static int brow_inplace_layout(BRow*r,Lane*l){
+static int brow_inplace_layout_to(BRow*r,Lane*l,u32 cap,u64 workspace_bytes){
  /* Packed words need no separately owned word buffers in operation scratch. */
- if(r->degree>31)return 0;
+ if(r->degree>31||cap<r->capacity||cap<r->used||workspace_bytes>r->workspace_bytes)return 0;
  u64 base=(u64)(uintptr_t)r->nodes-(u64)(uintptr_t)PTR(u8,0),live=brow_live_bytes(r);
- l->memory_live_bytes=live;u32 cap=brow_target_capacity(r,l);
- if(l->memory_detail==2&&cap<=r->capacity)return 0;
- Arena arena={base,base,base+r->workspace_bytes,0,0};BRow next;
+ l->memory_live_bytes=live;
+ Arena arena={base,base,base+workspace_bytes,0,0};BRow next;
  if(brow_layout(&next,l,&arena,cap,r->capacity,r->degree))return 0;
  if(next.pool[0].end-next.pool[0].base<live+brow_pool_room(r,live)||
     next.temp.end-next.temp.base<brow_operation_room(r,l))return 0;
@@ -69,14 +68,41 @@ static int brow_inplace_layout(BRow*r,Lane*l){
  if(previousbytes)memcpy(PTR(u8,previous),r->radix.previous,(size_t)previousbytes);
  /* Byte-count/disjointness preflight makes the following phase non-failing.
   * Do not interrupt halfway through publishing a new arena description. */
- for(u32 i=0;i<r->used;i++)if(r->nodes[i].pos!=UINT32_MAX)r->nodes[i].c=bcopy(&next.pool[0],r->nodes[i].c);
- BCoef pivot=bcopy(&next.pool[0],r->pivot);if(next.pool[0].error)return -GN_CORRUPT;
+ for(u32 i=0;i<r->used;i++)if(r->nodes[i].pos!=UINT32_MAX)r->nodes[i].c=bcoef_copy(&next.pool[0],r->nodes[i].c);
+ BCoef pivot=bcoef_copy(&next.pool[0],r->pivot);if(next.pool[0].error)return -GN_CORRUPT;
  memcpy(next.heap,PTR(u8,heap),(size_t)heapbytes);memcpy(next.normal,PTR(u8,normal),(size_t)normalbytes);
  if(previousbytes)memcpy(next.radix.previous,PTR(u8,previous),(size_t)previousbytes);
  r->heads=next.heads;r->heap=next.heap;r->normal=next.normal;r->reserved=cap;
  if(r->radix_enabled){r->radix.next=r->heap;r->radix.previous=next.radix.previous;}
- r->pool[0]=next.pool[0];r->pool[1]=next.pool[1];r->pool_active=0;r->temp=next.temp;r->pivot=pivot;
+ r->pool[0]=next.pool[0];r->pool[1]=next.pool[1];r->pool_active=0;r->temp=next.temp;r->pivot=pivot;r->workspace_bytes=workspace_bytes;
  memset(r->heads,0,(size_t)r->capacity*8);
  for(u32 i=0;i<r->used;i++)if(r->nodes[i].pos!=UINT32_MAX){u32 h=rrow_hash(r->nodes[i].w,r->mask);r->nodes[i].next=r->heads[h];r->heads[h]=i+1;}
+ return 1;
+}
+static int brow_inplace_layout(BRow*r,Lane*l){
+ u32 cap=brow_target_capacity(r,l);if(l->memory_detail==2&&cap<=r->capacity)return 0;
+ return brow_inplace_layout_to(r,l,cap,r->workspace_bytes);
+}
+/* A large live lease can contain structural reserve and dead coefficient space
+ * that another parked row needs. Repack its exact state before returning the
+ * unused suffix; the allocator never exposes any still-referenced byte. */
+static int brow_trim_workspace(Lane*l,u64 wanted){
+ if(GN_LOAD(&S.batch_running)||l->resume_tier!=4||l->memory_wait||!l->reserve_slot||
+    l->coefficient_extra_slot||l->coefficient_extra_base)return 0;
+ BRow*r=&saved_BRow[l->resume_slot].row;r->lane=l;
+ u64 base=reserve_lease_base(l),oldbytes=reserve_lease_bytes(l);
+ if(r->nodes!=PTR(BNode,base)||r->workspace_bytes!=oldbytes||r->degree>31)return 0;
+ u64 structure=(u64)r->capacity*(sizeof(BNode)+16+(r->radix_enabled?4:0));
+ if(oldbytes<=structure||oldbytes-structure<wanted)return 0;
+ u64 live=brow_live_bytes(r),pool=live+brow_pool_room(r,live),temporary=brow_operation_room(r,l);
+ /* Leave half a live pool's worth of extra coefficient room after packing. */
+ u64 bytes=MAX(UINT64_C(1048576),structure+MAX(pool*4+64,temporary*8+64));
+ bytes=(bytes+65535)&~UINT64_C(65535);
+ if(bytes>=oldbytes||oldbytes-bytes<wanted)return 0;
+ int rc=brow_inplace_layout_to(r,l,r->capacity,bytes);if(rc<=0)return rc;
+ reserve_slot_set(l->reserve_slot,base,bytes);
+ if(l->reserve_retry)l->a[l->active^1]=(Arena){base,base,base+bytes,0,0};
+ workspace_return(base+bytes,oldbytes-bytes);
+ l->row_growths++;l->row_relayouts++;brow_report(r);publish_lane(l,(u64)r->heap_n+r->normal_n,1);
  return 1;
 }

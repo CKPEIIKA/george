@@ -39,7 +39,7 @@ API int test_big_row_growth(u32 large){
  Arena coeff={3u<<20,3u<<20,(3u<<20)+65536,0,0};
  Coef big=mulc(&coeff,csmall(SMALL_MAX),csmall(SMALL_MAX));REQUIRE(big&1);
  for(u32 i=0;i<128;i++){reset_a(&r.temp);REQUIRE(brow_add(&r,(Word){i+1024,0},(BCoef){big,2})==0);}
- r.pivot=bcopy(&r.pool[0],(BCoef){big,2});r.pending_kind=2;r.pending_rule=7;r.pending_tail=19;
+ r.pivot=bcoef_copy(&r.pool[0],(BCoef){big,2});r.pending_kind=2;r.pending_rule=7;r.pending_tail=19;
  root=bheap_top(&r);bheap_remove(&r,root);r.normal[r.normal_n++]=root;
  S.reserve_base=8u<<20;S.reserve_bytes=1u<<20;S.reserve_growth=1;l->slice_enabled=1;GN_STORE(&S.reserve_lock,1);
  REQUIRE(brow_add(&r,(Word){129,0},(BCoef){big,2})==HEAP_MISS);

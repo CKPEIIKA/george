@@ -170,9 +170,15 @@ void gn_bind(void *base){native_base=(u8*)base;}
 #define PTR(t,o) ((t*)(uintptr_t)(o))
 extern unsigned char __heap_base;
 #endif
+#if !defined(__wasm__) && !defined(FOMKYR_BYTE_MEMORY_BASELINE)
+/* The POSIX host already links libc. Use its tuned memory routines rather than
+ * replacing them process-wide with the freestanding byte-loop fallback. */
+#include <string.h>
+#else
 void *memcpy(void *dst,const void *src,size_t n){u8*d=dst;const u8*s=src;for(size_t i=0;i<n;i++)d[i]=s[i];return dst;}
 void *memset(void *dst,int c,size_t n){u8*d=dst;for(size_t i=0;i<n;i++)d[i]=(u8)c;return dst;}
 void *memmove(void *dst,const void *src,size_t n){u8*d=dst;const u8*s=src;if(d<s){for(size_t i=0;i<n;i++)d[i]=s[i];}else{while(n){--n;d[n]=s[n];}}return dst;}
+#endif
 static void publish_lane(Lane*l,u64 terms,u32 force){
  if(!S.telemetry_enabled)return;
  u32 lane=(u32)(l-S.lanes);LiveLane*v=&S.live[lane];

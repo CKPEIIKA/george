@@ -24,6 +24,13 @@ replacement size. Refusing another lease at the initial large-reserve size does
 not prevent admitting a smaller lease that fits. Both admission and layout
 changes occur with all workers joined and remain within the memory budget.
 
+If a row still waits for space, the coordinator can repack a different retained
+large lease around its current table and live coefficient roots. It leaves
+coefficient and arithmetic headroom, then returns the unused suffix to the shared
+arena allocator. The waiting row can borrow that range in the same joined wave.
+The repacked row keeps its pivot, queue order and unfinished tail cursor. This
+reuses budgeted storage; it does not promise an immediate decrease in process RSS.
+
 For coefficient pressure, the coordinator can copy the live coefficient roots
 into an overflow arena and combine the original coefficient pools. The node
 table and pending rewrite remain in place. This avoids allocating a second large
@@ -107,6 +114,8 @@ coefficient growth, subsequent table expansion, smaller-lease admission, budget
 refusal, and exact cursor/queue preservation under binary and radix queues,
 natively and in all Wasm variants. It also completes a suspended normal form
 with large exact coefficients and checks every resulting term.
+The lease-sharing checks also overwrite returned storage and complete an exact
+normal form after shrinking and subsequently regrowing its table.
 
 Durable frontiers still save pending pair descriptors. In-memory row retention
 does not extend across a process restart. Accepted rules and completed-pair
