@@ -779,6 +779,9 @@ API int gn_batch_mode(u32 enabled){S.batch_enabled=!!enabled;return gn_workers(S
 API int gn_init(u32 generators,u32 degree,u32 workers,u64 budget,u64 scratch_pool,u32 hash_bits,u32 modulus,u32 spill){
  if(!generators||generators>16||degree>GN_INDEX_MAX||budget>GN_HARD_BYTES||scratch_pool>budget||scratch_pool<1024*1024||hash_bits<8||hash_bits>26||modulus==1||modulus>2147483647u)return GN_INPUT;
  if(modulus){for(u32 d=2;(u64)d*d<=modulus;d++)if(modulus%d==0)return GN_INPUT;}
+ /* A fresh allocator cannot accept a lease from the preceding calculation.
+  * This matters when a Wasm instance is reused, or another checkpoint is tried. */
+ coop_coordinator.io_extra_base=coop_coordinator.io_extra_bytes=0;
  gn_lb_release();memset(&P,0,sizeof(P));memset(&T,0,sizeof(T));memset(&S,0,sizeof(S));S.abi=GN_ABI;S.generators=generators;S.target=degree?degree:GN_INDEX_MAX;S.pruning=1;S.heap_enabled=1;S.rational_enabled=1;S.rational_rewrites=1;S.big_rational_enabled=1;S.growing_rational=1;S.reserve_growth=1;S.radix_enabled=1;S.radix_cache_enabled=1;S.matcher_enabled=1;S.chain_enabled=1;S.telemetry_enabled=1;S.eager_pruning=1;S.quadratic_rewrite=1;S.cost_scheduling=1;S.matcher_limit=MIN(budget/16,UINT64_C(67108864));S.cache_percent=12;S.heap_threshold=16;S.budget=budget;S.modulus=modulus;S.spill=!!spill;S.base=gn_heap_base();S.bump=S.base;S.stack_base=alloc_p((u64)GN_MAX_WORKERS*STACK_BYTES);if(!S.stack_base)return S.error;
  S.scratch_base=alloc_p(scratch_pool);if(!S.scratch_base)return S.error;S.scratch_size=scratch_pool;int rc=gn_workers(workers);if(rc)return rc;
  S.hash_mask=((u32)1<<hash_bits)-1;u64 hb=((u64)S.hash_mask+1)*4;S.lm_heads=alloc_p(hb);S.prefix_heads=alloc_p(hb);if(S.error)return S.error;memset(PTR(u8,S.lm_heads),0,(size_t)hb);memset(PTR(u8,S.prefix_heads),0,(size_t)hb);

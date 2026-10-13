@@ -39,5 +39,11 @@ API int test_rule_io_growth(void){
  memset(PTR(u8,base),0xa5,(size_t)reuse);
  Poly g=load_rule(1,l);REQUIRE(!l->error&&g.n==n&&pw(g,0).lo==0xfffff&&pc(g,n-1)==csmall(-2));
  REQUIRE(validate_record(g.origin,(u32)bytes)==0&&S.bump<=S.budget);
+ /* Fresh jobs in the same instance must not return the old coordinator's
+  * lease into the new allocator, where that address may already be occupied. */
+ REQUIRE(coop_coordinator.io_extra_base);
+ REQUIRE(gn_init(16,6,4,256u<<20,64u<<20,8,0,1)==0);
+ REQUIRE(gn_batch_mode(1)==0&&gn_cooperative(10000,4)==0);
+ REQUIRE(!S.spare_count&&!coop_coordinator.io_extra_base);
  return 0;
 }
