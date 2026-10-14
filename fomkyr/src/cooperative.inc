@@ -23,6 +23,7 @@ typedef struct {
  u32 commit_task,commit_snapshot;u64 commit_yields,commit_resumes;
  u32 commit_ready,commit_error;u64 prepared_slices;
  GN_ATOMIC(u64) fair_helper_turns;u64 resource_growths;
+ u64 pressure_replays;
  u64 trim_retry_epoch[GN_MAX_WORKERS];
 } Cooperative;
 static Cooperative C;
@@ -30,6 +31,7 @@ static Cooperative C;
  * This is internal state; durable frontiers still store ordinary descriptors. */
 #define COOP_OUTPUT_WAIT UINT32_C(0xfffffffe)
 #define COOP_HELPER_DEFERRED UINT32_C(0xfffffffd)
+#define COOP_MEMORY_DEFERRED UINT32_C(0xfffffffc)
 API int gn_radix_cache(u32 enabled){if(enabled>1||S.current||S.input_expected)return GN_INPUT;S.radix_cache_enabled=enabled;return 0;}
 API int gn_cooperative(u32 quantum_ms,u32 lookahead){
  if(quantum_ms>10000||lookahead<1||lookahead>BATCH_MAX||S.current||S.input_expected||S.nrules||GN_LOAD(&S.batch_running))return GN_STATE;
@@ -117,6 +119,9 @@ static int coop_before(u32 a,u32 b){
 }
 static void coop_order(void){
  S.batch_work_n=0;
+ /* A task displaced at a true memory deadlock waits for the retained reserve
+  * owners to finish. Replaying it on every wave would recreate the deadlock. */
+ if(!reserve_pool_busy())for(u32 i=0;i<S.batch_n;i++)if(S.tasks[i].rc==COOP_MEMORY_DEFERRED)S.tasks[i].rc=GN_STATE;
  for(u32 i=0;i<S.batch_n;i++)if(S.tasks[i].rc==GN_STATE||S.tasks[i].rc==GN_DEFERRED||S.tasks[i].rc==COOP_HELPER_DEFERRED)S.batch_order[S.batch_work_n++]=i;
  C.sector_order=!!(C.policy&2)&&S.fg_sector_ready&&S.fgate.degree==S.current&&
   !S.certifying&&S.fgate.status>=FKG_ACTIVE&&S.fgate.status<=FKG_READY;
@@ -132,7 +137,11 @@ static void coop_order(void){
  /* Short rows already finish within a wave. Component closure ordering targets
   * substantial input records; ordinary rows retain the established cost order. */
  if(C.sector_order&&!C.fair_order){u64 largest=0;for(u32 j=0;j<S.batch_work_n;j++)largest=MAX(largest,C.work_cost[S.batch_order[j]]);if(largest<65536)C.sector_order=0;}
- C.finisher_order=P.mode==4&&P.gate_ready&&P.gate_target<360&&S.fg_sector_ready&&(C.policy&2);
+ /* When every primary row is memory-parked, sector preference must not
+  * withhold the remaining cheap helper work. */
+ u32 primary_available=0;
+ for(u32 lane=0;lane<S.workers;lane++)if(!C.assigned[lane]||!S.lanes[lane].memory_wait)primary_available=1;
+ C.finisher_order=primary_available&&P.mode==4&&P.gate_ready&&P.gate_target<360&&S.fg_sector_ready&&(C.policy&2);
  memset(C.finisher_tag,0,sizeof(C.finisher_tag));
  if(C.finisher_order){
   u32 active=0,ordinary_active=0,ordinary_ready=0;
@@ -182,6 +191,7 @@ static void coop_order(void){
 /* Service retained rows only with every worker joined. A status decision at
  * the end of a wave must offer newly parked rows their free/resizable leases
  * before declaring that no work can progress. Exact cursors remain unchanged. */
+static void coop_memory_admission(void);
 static int coop_service_memory(void){
  reserve_pool_admit();
  /* Serve the commit lane first. Growing one row cannot reset another lane. */
@@ -195,6 +205,7 @@ static int coop_service_memory(void){
   Lane*l=&S.lanes[i];
   coop_collect_lane(l);coop_collect_lane(&coop_helpers[i]);
   if(!C.assigned[i]&&l->output_extra_base){workspace_return(l->output_extra_base,l->output_extra_bytes);l->a[l->output_extra_index]=l->output_saved;l->output_extra_base=l->output_extra_bytes=0;}
+  coop_memory_admission();
   C.resource_growths+=coop_grow_output(l);int grown=l->memory_wait==ROW_WAIT_BATCH?0:brow_service_wait(l);if(grown<0)return grown;C.resource_growths+=grown;
   C.resource_growths+=coop_grow_output(&coop_helpers[i]);
   for(u32 j=0;j<2;j++){
@@ -211,7 +222,7 @@ static int coop_service_memory(void){
   Lane*l=j?&coop_helpers[i]:&S.lanes[i];if(l->memory_wait&&l->memory_need)wanted=MIN(wanted,l->memory_need);
  }
  if(wanted!=UINT64_MAX){
-  int trimmed=0;
+  int trimmed=reserve_reclaim_idle()!=0;
   for(u32 i=0;i<S.workers&&!trimmed;i++){
    if(C.epochs<C.trim_retry_epoch[i])continue;
    int rc=brow_trim_workspace(&S.lanes[i],wanted);if(rc<0)return rc;trimmed=rc;
@@ -230,6 +241,20 @@ static int coop_service_memory(void){
  }
  return 0;
 }
+/* Admission is recomputed at a joined barrier from the leases actually held.
+ * Keep one largest-row growth allowance before starting another reserve user.
+ * Existing rows, the private commit lane and bounded helpers keep running.
+ * This is a resource policy only: no pair or coefficient is discarded. */
+static void coop_memory_admission(void){
+ u64 free=S.budget>S.bump?S.budget-S.bump:0,largest=0;u32 owners=0;
+ for(u32 i=0;i<S.spare_count;i++)free+=S.spare_bytes[i];
+ for(u32 slot=1;slot<=1+S.reserve_extra_count;slot++){
+  u64 bytes=reserve_slot_bytes(slot);
+  if(GN_LOAD(reserve_slot_lock(slot))){owners++;largest=MAX(largest,bytes);}
+  else free+=bytes;
+ }
+ S.reserve_admission_closed=owners&&free<MAX(largest,S.budget/8);
+}
 API int gn_coop_fill(u32 limit){
  if(!S.coop_ms||!S.batch_enabled||!S.current||GN_LOAD(&S.batch_running)||!limit||limit>BATCH_MAX)return -GN_STATE;
  if(cancelled())return -GN_CANCELLED;
@@ -241,6 +266,7 @@ API int gn_coop_fill(u32 limit){
  }
  int tc=tail_cache_prepare();if(tc)return -tc;
  int memory_rc=coop_service_memory();if(memory_rc)return memory_rc;
+ coop_memory_admission();
  /* An existing persisted legacy prefix may have first/committed offsets. This
   * reader starts with an uncommitted compact descriptor array after restore. */
  if(S.batch_committed)return -GN_STATE;
@@ -377,7 +403,7 @@ API int gn_coop_commit(void){
   if(C.commit_task&&C.commit_task!=i+1)continue;
   u32 st=S.tasks[i].rc;
   if(st==UINT32_MAX)continue;
-  if(st==GN_STATE||st==GN_YIELD||st==GN_ROW_WAIT||st==GN_DEFERRED||st==COOP_OUTPUT_WAIT||st==COOP_HELPER_DEFERRED){keep[i]=1;blocked=1;continue;}
+  if(st==GN_STATE||st==GN_YIELD||st==GN_ROW_WAIT||st==GN_DEFERRED||st==COOP_OUTPUT_WAIT||st==COOP_HELPER_DEFERRED||st==COOP_MEMORY_DEFERRED){keep[i]=1;blocked=1;continue;}
   if(st){rc=(int)st;break;}
   Lane*l=&S.lanes[0];l->error=0;l->slice_enabled=1;l->slice_end=slice_end;l->allow_repack=1;
   u64 before=l->reductions;u32 rules_before=S.nrules;
@@ -437,6 +463,28 @@ API int gn_coop_retry(u32 workers){
  C.replays+=S.batch_n;gn_coop_discard();int rc=layout_workers(workers,1);if(rc)return rc;
  S.memory_retries++;S.memory_replayed_pairs+=S.batch_n;coop_order();return 0;
 }
+/* Last-resort reduction of simultaneous retained memory, after reclamation and
+ * useful helper work are exhausted. Sacrifice only the least-worked pending
+ * worker row; preserve every accepted rule and all other exact cursors. Its
+ * descriptor remains durable and cannot restart until the survivors finish.
+ * Never discard the final retained row merely to repeat an impossible request. */
+static int coop_pressure_replay(void){
+ u32 victim=UINT32_MAX,owners=0;u64 least=UINT64_MAX;
+ if(C.commit_task&&coop_coordinator.reserve_slot)owners++;
+ for(u32 i=0;i<S.workers;i++){
+  Lane*l=&S.lanes[i];
+  if(!C.assigned[i]||!l->reserve_slot)continue;owners++;
+  if(!l->memory_wait||l->resume_tier!=4||S.tasks[C.assigned[i]-1].bytes)continue;
+  u64 work=saved_BRow[l->resume_slot].steps;
+  if(work<least){least=work;victim=i;}
+ }
+ if(owners<2||victim==UINT32_MAX)return 0;
+ Lane*l=&S.lanes[victim];u32 index=C.assigned[victim]-1;
+ coop_release_lane(l);coop_collect_lane(l);GN_STORE(&C.assigned[victim],0);
+ S.tasks[index].rc=COOP_MEMORY_DEFERRED;S.tasks[index].output=0;S.tasks[index].bytes=0;
+ C.pressure_replays++;C.replays++;S.memory_retries++;S.memory_replayed_pairs++;
+ reserve_reclaim_idle();return 1;
+}
 API int gn_coop_resource_status(void){
  if(GN_LOAD(&S.batch_running))return GN_STATE;
  int memory_rc=coop_service_memory();if(memory_rc)return -memory_rc;
@@ -447,9 +495,15 @@ API int gn_coop_resource_status(void){
   if((C.assigned[lane]&&!S.lanes[lane].memory_wait)||(C.helper_assigned[lane]&&!coop_helpers[lane].memory_wait))usable=1;
  }
  if(!waiting)return 0;
+ /* Match the real dispatch list, including sector-finisher admission. A held
+  * descriptor must not falsely keep an all-parked computation alive. */
+ coop_order();
  for(u32 i=0;i<S.batch_n;i++){
   BatchTask*t=&S.tasks[i];
   if(!t->rc&&(!t->bytes||!C.commit_task||!coop_coordinator.memory_wait))return 0;
+ }
+ for(u32 j=0;j<S.batch_work_n;j++){
+  u32 i=S.batch_order[j];BatchTask*t=&S.tasks[i];
   if(t->rc==GN_STATE||t->rc==GN_DEFERRED||t->rc==COOP_HELPER_DEFERRED){
    if(idle)usable=1;
    /* A helper's existence does not make every pending descriptor executable.
@@ -461,6 +515,7 @@ API int gn_coop_resource_status(void){
  }
  if(usable)return 0;
  if((C.policy&1)&&C.helpers_enabled&&S.helper_base&&!S.iter_done&&C.window<C.max_window){C.force_expand=1;return 0;}
+ if(S.auto_memory&&coop_pressure_replay())return 0;
  return GN_ROW_WAIT;
 }
 API u64 gn_coop_stat(u32 key){
@@ -474,6 +529,9 @@ API u64 gn_coop_stat(u32 key){
  case 25:return S.helper_bytes;case 26:return C.helpers_enabled;case 27:return C.family_diversity;case 28:return C.family_swaps;
  case 29:return GN_LOAD(&C.fair_helper_turns);case 30:return C.resource_growths;
  case 31:{u64 n=!!coop_coordinator.memory_wait;for(u32 i=0;i<S.workers;i++)n+=!!S.lanes[i].memory_wait+!!coop_helpers[i].memory_wait;return n;}
+ case 32:return S.reserve_admission_closed;
+ case 33:return C.pressure_replays;
+ case 34:{u64 n=0;for(u32 i=0;i<S.batch_n;i++)n+=S.tasks[i].rc==COOP_MEMORY_DEFERRED;return n;}
  default:break;}
  if(key>=100&&key<100+GN_MAX_WORKERS)return C.slice_us[key-100];
  if(key>=200&&key<200+GN_MAX_WORKERS)return C.max_slice_us[key-200];

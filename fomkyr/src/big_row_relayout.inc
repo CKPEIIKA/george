@@ -47,11 +47,15 @@ static int brow_inplace_layout_to(BRow*r,Lane*l,u32 cap,u64 workspace_bytes){
  if(brow_layout(&next,l,&arena,cap,r->capacity,r->degree))return 0;
  if(next.pool[0].end-next.pool[0].base<live+brow_pool_room(r,live)||
     next.temp.end-next.temp.base<brow_operation_room(r,l))return 0;
- u64 heapbytes=(u64)(r->radix_enabled?r->used:r->heap_n)*4;
- u64 normalbytes=(u64)r->normal_n*4,previousbytes=r->radix_enabled?(u64)r->used*4:0;
+ /* A coefficient-only relayout often leaves every queue at its old address.
+  * Those arrays need no copy, especially after an overflow pool has replaced
+  * the old operation arena by a very small scratch buffer. */
+ u64 heapbytes=next.heap==r->heap?0:(u64)(r->radix_enabled?r->used:r->heap_n)*4;
+ u64 normalbytes=next.normal==r->normal?0:(u64)r->normal_n*4;
+ u64 previousbytes=r->radix_enabled&&next.radix.previous!=r->radix.previous?(u64)r->used*4:0;
  u64 scratchbytes=heapbytes+normalbytes+previousbytes;
- if(scratchbytes>r->temp.end-r->temp.base||next.pool[0].base>r->temp.base||
-    next.pool[0].base+live>r->temp.base)return 0;
+ if(scratchbytes&&(scratchbytes>r->temp.end-r->temp.base||next.pool[0].base>r->temp.base||
+    next.pool[0].base+live>r->temp.base))return 0;
  /* Coefficient copies must finish below every source root. If necessary,
   * move roots to the existing higher semispace first. No third copy is needed. */
  if(next.pool[0].base+live>brow_first_root(r)){
@@ -93,9 +97,10 @@ static int brow_inplace_layout(BRow*r,Lane*l){
 static int brow_extend_workspace(BRow*r,Lane*l){
  if(GN_LOAD(&S.batch_running)||!l->reserve_slot||r->degree>31)return 0;
  u64 base=reserve_lease_base(l),oldbytes=reserve_lease_bytes(l),bytes=l->memory_need;
- if(r->nodes!=PTR(BNode,base)||r->workspace_bytes!=oldbytes||bytes<=oldbytes)return 0;
+ if(r->nodes!=PTR(BNode,base)||r->workspace_bytes!=oldbytes)return 0;
+ bytes=MAX(bytes,oldbytes);
  u32 cap=brow_target_capacity(r,l);if(cap<r->capacity||cap<r->used)return 0;
- if(!workspace_extend(base,oldbytes,&bytes))return 0;
+ if(bytes>oldbytes&&!workspace_extend(base,oldbytes,&bytes))return 0;
  Arena arena={base,base,base+bytes,0,0};BRow next;
  u64 live=brow_live_bytes(r),heapbytes=(u64)(r->radix_enabled?r->used:r->heap_n)*4;
  u64 normalbytes=(u64)r->normal_n*4,previousbytes=r->radix_enabled?(u64)r->used*4:0;
@@ -104,11 +109,21 @@ static int brow_extend_workspace(BRow*r,Lane*l){
     next.temp.end-next.temp.base<brow_operation_room(r,l)){
   workspace_return(base+oldbytes,bytes-oldbytes);return 0;
  }
- u64 stagebytes=MAX(UINT64_C(65536),A8(heapbytes)+A8(normalbytes)+A8(previousbytes)+live),stage=workspace_take(&stagebytes);
+ u64 stagebytes=MAX(UINT64_C(65536),A8(heapbytes)+A8(normalbytes)+A8(previousbytes)+live);
+ /* Staging dies before the next wave. An idle private commit lease can lend
+  * scratch at this barrier, while its lock still excludes all row owners. */
+ u32 stage_slot=0;u64 stage=workspace_take(&stagebytes);
+ if(!stage){
+  for(u32 slot=1;slot<=COMMIT_RESERVE_SLOT;slot++){
+   if(slot!=COMMIT_RESERVE_SLOT&&slot>1+S.reserve_extra_count)continue;
+   if(slot==l->reserve_slot||slot==l->coefficient_extra_slot||reserve_slot_bytes(slot)<stagebytes)continue;
+   if(GN_TRY_LOCK(reserve_slot_lock(slot))){stage_slot=slot;stage=reserve_slot_base(slot);break;}
+  }
+ }
  if(!stage){workspace_return(base+oldbytes,bytes-oldbytes);return 0;}
  Arena scratch={stage,stage,stage+stagebytes,0,0};
  u64 heap=alloc_a(&scratch,heapbytes),normal=alloc_a(&scratch,normalbytes),previous=alloc_a(&scratch,previousbytes);
- if(scratch.error||live>scratch.end-scratch.pos){workspace_return(stage,stagebytes);workspace_return(base+oldbytes,bytes-oldbytes);return 0;}
+ if(scratch.error||live>scratch.end-scratch.pos){if(stage_slot)GN_UNLOCK(reserve_slot_lock(stage_slot));else workspace_return(stage,stagebytes);workspace_return(base+oldbytes,bytes-oldbytes);return 0;}
  brow_pressure(r);
  memcpy(PTR(u8,heap),r->heap,(size_t)heapbytes);memcpy(PTR(u8,normal),r->normal,(size_t)normalbytes);
  if(previousbytes)memcpy(PTR(u8,previous),r->radix.previous,(size_t)previousbytes);
@@ -126,7 +141,7 @@ static int brow_extend_workspace(BRow*r,Lane*l){
  for(u32 i=0;i<r->used;i++)if(r->nodes[i].pos!=UINT32_MAX){u32 h=rrow_hash(r->nodes[i].w,r->mask);r->nodes[i].next=r->heads[h];r->heads[h]=i+1;}
  reserve_slot_set(l->reserve_slot,base,bytes);
  if(l->reserve_retry)l->a[l->active^1]=(Arena){base,base,base+bytes,0,0};
- workspace_return(stage,stagebytes);return 1;
+ if(stage_slot)GN_UNLOCK(reserve_slot_lock(stage_slot));else workspace_return(stage,stagebytes);return 1;
 }
 /* A large live lease can contain structural reserve and dead coefficient space
  * that another parked row needs. Repack its exact state before returning the

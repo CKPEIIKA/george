@@ -98,6 +98,7 @@ typedef struct {
   u64 commit_reserve_base,commit_reserve_bytes;GN_ATOMIC(u32) commit_reserve_lock;u32 commit_reserve_configured;
   u64 spare_base[2*GN_RESERVE_SLOTS],spare_bytes[2*GN_RESERVE_SLOTS];u32 spare_count;
   u32 reserve_extra_count,reserve_pool_limit,reserve_pool_denied;GN_ATOMIC(u32) reserve_pool_requested;
+  u32 reserve_admission_closed;
   u64 reserve_pool_admissions,reserve_pool_declines;
   GN_ATOMIC(u32) batch_next,batch_running;
   u32 auto_memory,lane_slots,batch_first,batch_committed,batch_work_n;u64 memory_retries,memory_replayed_pairs;

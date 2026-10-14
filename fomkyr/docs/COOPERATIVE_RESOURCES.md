@@ -155,3 +155,33 @@ check both bump allocations and returned byte ranges.
 
 The legacy barrier scheduler retains its separate batch-retry policy. These
 retained-row and fair-helper rules apply to cooperative execution.
+
+## Memory admission and recovery
+
+At each joined barrier, ordinary reserve admission keeps free space comparable
+with the largest retained lease (at least one eighth of the budget). Existing
+rows can continue to grow; the commit lane and bounded helpers remain eligible.
+Admission reopens when leases are released, including across degree boundaries.
+The worker count is a thread limit; it does not require equally many large rows.
+
+A coefficient relayout leaves unchanged queue arrays in place. If queue staging
+is necessary, it can temporarily borrow an unlocked worker or commit lease at the
+barrier. A successful relayout releases that scratch before any reader starts.
+This also works when the destination is the existing arena rather than a larger
+allocation. Unused extra leases return to the shared allocator and their slot
+identities can be reused.
+
+If all executable work is blocked after reclamation and helper-window expansion,
+automatic memory management can requeue the least-worked parked worker row. It
+releases that row's memory while preserving the exact cursors of the other rows.
+Its original pair descriptor remains in the durable pending frontier. It cannot
+restart until the retained reserve owners finish, avoiding a repeated eviction
+and restart loop. This fallback requires at least two reserve-owning rows and
+never discards the final retained row merely to repeat its failed allocation.
+The replay loses that one row's unfinished arithmetic; accepted rules and completed
+pair identities are preserved. A real one-row limit remains `ROW_WORKSPACE_LIMIT`.
+
+Resource status uses the same eligible descriptor list as dispatch. Sector
+preferences yield when every primary is memory-parked so bounded helpers can
+try remaining ordinary work. Native telemetry reports `largeRowAdmissionPaused`,
+`pressureReplayedRows`, and `pressureDeferredRows` for these decisions.

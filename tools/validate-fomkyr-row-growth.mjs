@@ -20,6 +20,17 @@ code=x.test_shared_cache();assert not code,code
 rows.append(dict(property='explicit-shared-cache',code=code))
 code=x.test_parked_helper_admission();assert not code,code
 rows.append(dict(property='parked-helper-admission',code=code))
+code=x.test_memory_admission();assert not code,code
+rows.append(dict(property='memory-admission',code=code))
+for n in [0,1]:
+ code=x.test_same_arena_table_growth(n);assert not code,(n,code)
+ rows.append(dict(property='same-arena-table-growth',mode=n,code=code))
+for n in [0,1]:
+ code=x.test_pressure_replay(n);assert not code,(n,code)
+ rows.append(dict(property='pressure-replay',mode=n,code=code))
+for n in [0,1,2,3]:
+ code=x.test_emergency_row_staging(n);assert not code,(n,code)
+ rows.append(dict(property='emergency-row-staging',mode=n,code=code))
 for n in [0,1,2,3]:
  code=x.test_adjacent_row_growth(n);assert not code,(n,code)
  rows.append(dict(property='adjacent-row-growth',mode=n,code=code))
@@ -65,6 +76,10 @@ async function properties(url,bits,shared){
  const e=(await WebAssembly.instantiate(module,{env:{memory},host:{ensure:end=>Number(end)<=memory.buffer.byteLength?1:0,read:()=>0,write:()=>0,clock:()=>performance.now()}})).exports;
  const tests=[];let cacheCode=e.test_shared_cache();if(cacheCode)throw Error('Shared cache property failure '+cacheCode);tests.push({property:'explicit-shared-cache',code:cacheCode});
  const admission=e.test_parked_helper_admission();if(admission)throw Error('Parked helper admission failure '+admission);tests.push({property:'parked-helper-admission',code:admission});
+ const memoryAdmission=e.test_memory_admission();if(memoryAdmission)throw Error('Memory admission failure '+memoryAdmission);tests.push({property:'memory-admission',code:memoryAdmission});
+ for(const mode of [0,1]){const code=e.test_same_arena_table_growth(mode);if(code)throw Error('Same arena table growth failure '+code+', mode '+mode);tests.push({property:'same-arena-table-growth',mode,code});}
+ for(const mode of [0,1]){const code=e.test_pressure_replay(mode);if(code)throw Error('Pressure replay failure '+code+', mode '+mode);tests.push({property:'pressure-replay',mode,code});}
+ for(const mode of [0,1,2,3]){const code=e.test_emergency_row_staging(mode);if(code)throw Error('Emergency staging failure '+code+', mode '+mode);tests.push({property:'emergency-row-staging',mode,code});}
  for(const mode of [0,1,2,3]){const code=e.test_adjacent_row_growth(mode);if(code)throw Error('Adjacent growth failure '+code+', mode '+mode);tests.push({property:'adjacent-row-growth',mode,code});}
  for(const mode of [0,1,2,3]){const t=performance.now(),code=e.test_big_row_growth(mode);if(code)throw Error(`Property failure at C line ${code}, mode ${mode}`);tests.push({large:!!(mode&1),queue:mode&2?'radix':'binary',code,seconds:(performance.now()-t)/1000});}
  for(const mode of [0,1]){const code=e.test_deep_rows(mode);if(code)throw Error(`Deep-row property failure at C line ${code}, mode ${mode}`);tests.push({property:'deep-rows',queue:mode?'radix':'binary',code});}

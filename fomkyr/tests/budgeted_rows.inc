@@ -200,3 +200,109 @@ API int test_trimmed_normal_form(u32 radix){
  Coef twice=mulc(&source,big,4);for(u32 i=1;i<=300;i++)REQUIRE(pw(l->result,i).lo==301-i&&csign(pc(l->result,i))==-1&&magcmp(pc(l->result,i),twice)==0);
  REQUIRE(S.bump==bump&&!reserve_pool_busy());coop_release_lane(l);coop_collect_lane(l);return 0;
 }
+/* Overflow arithmetic scratch can be tiny while the owning arena has ample
+ * room. Repack with an idle commit lease, retaining exact queues and cursor. */
+API int test_emergency_row_staging(u32 mode){
+ memset(&S,0,sizeof(S));memset(&C,0,sizeof(C));
+ S.budget=64u<<20;S.bump=S.budget-65536;S.workers=S.lane_slots=1;
+ S.radix_enabled=mode&1;S.reserve_growth=1;S.reserve_pool_limit=1;
+ S.reserve_base=16u<<20;S.reserve_bytes=2u<<20;GN_STORE(&S.reserve_lock,1);
+ S.commit_reserve_base=48u<<20;S.commit_reserve_bytes=1u<<20;
+ Lane*l=&S.lanes[0];l->reserve_slot=1;l->reserve_owned=1;l->slice_enabled=1;l->resume_slot=0;l->reductions=11;
+ Arena arena={16u<<20,16u<<20,18u<<20,0,0},source={4u<<20,4u<<20,5u<<20,0,0};BRow r;
+ u32 reserved=(mode&2)?1024:16384;
+ REQUIRE(!brow_layout(&r,l,&arena,reserved,1024,4));memset(r.heads,0,1024*8);
+ u32 limbs[4]={71,13,29,1};Coef big=makec(&source,limbs,4,1);REQUIRE(!source.error);
+ for(u32 i=0;i<1024;i++){reset_a(&r.temp);REQUIRE(!brow_add(&r,(Word){2*i+2,0},(BCoef){big,csmall(7)}));}
+ u32 top=bheap_top(&r);bheap_remove(&r,top);r.normal[r.normal_n++]=top;
+ r.pivot=r.nodes[0].c;r.pending_kind=2;r.pending_rule=7;r.pending_tail=91;r.pivot_scaled=1;
+ r.temp=(Arena){60u<<20,60u<<20,(60u<<20)+64,0,0};
+ saved_BRow[0]=(BRowResume){r,123};l->resume_tier=4;l->memory_wait=ROW_WAIT_GROW;l->memory_detail=1;l->memory_need=2u<<20;
+ if(!(mode&2)){
+  GN_STORE(&S.commit_reserve_lock,1);
+  REQUIRE(!brow_service_wait(l)&&l->memory_wait&&saved_BRow[0].row.pending_tail==91);
+  REQUIRE(l->memory_need<=S.reserve_bytes);GN_STORE(&S.commit_reserve_lock,0);
+ }
+ REQUIRE(brow_service_wait(l)==1&&!l->memory_wait&&!GN_LOAD(&S.commit_reserve_lock));
+ BRow*x=&saved_BRow[0].row;REQUIRE(x->nodes==r.nodes&&x->capacity==1024&&x->reserved==1024);
+ REQUIRE(x->pending_tail==91&&x->pending_rule==7&&x->pivot_scaled==1&&saved_BRow[0].steps==123&&l->reductions==11);
+ REQUIRE(x->normal_n==1&&x->normal[0]==top&&x->heap_n==1023&&S.bump==S.budget-65536);
+ memset(PTR(u8,S.commit_reserve_base),0xcc,(size_t)S.commit_reserve_bytes);
+ REQUIRE(magcmp(x->pivot.n,big)==0&&x->pivot.d==csmall(7));
+ for(u32 i=0;i<x->used;i++)REQUIRE(x->nodes[i].w.lo==2*i+2&&magcmp(x->nodes[i].c.n,big)==0&&x->nodes[i].c.d==csmall(7));
+ REQUIRE(!brow_collect(x));u64 previous=2048;
+ while(x->heap_n){u32 id=bheap_top(x);REQUIRE(x->nodes[id-1].w.lo<previous);previous=x->nodes[id-1].w.lo;bheap_remove(x,id);brow_remove(x,id);}
+ REQUIRE(previous==2);coop_release_lane(l);coop_collect_lane(l);return 0;
+}
+API int test_memory_admission(void){
+ memset(&S,0,sizeof(S));memset(&C,0,sizeof(C));S.budget=64u<<20;S.bump=60u<<20;S.workers=S.lane_slots=2;
+ S.reserve_base=16u<<20;S.reserve_bytes=16u<<20;S.reserve_initial_bytes=S.reserve_bytes;S.reserve_pool_limit=3;
+ S.reserve_extra_count=1;S.reserve_extra_base[0]=32u<<20;S.reserve_extra_bytes[0]=4u<<20;
+ GN_STORE(&S.reserve_lock,1);coop_memory_admission();REQUIRE(S.reserve_admission_closed);
+ Lane*l=&S.lanes[1];REQUIRE(!reserve_acquire(l)&&!reserve_acquire_sized(l,1u<<20)&&!l->reserve_slot);
+ /* Commit ownership remains independent of ordinary admission. */
+ S.commit_reserve_base=48u<<20;S.commit_reserve_bytes=1u<<20;l->is_commit=1;
+ REQUIRE(reserve_acquire(l)&&l->reserve_slot==COMMIT_RESERVE_SLOT);reserve_release(l);l->is_commit=0;
+ REQUIRE(reserve_reclaim_idle()==1&&!S.reserve_extra_bytes[0]&&S.spare_count==1);
+ u64 bytes=4u<<20,base=workspace_take(&bytes);REQUIRE(base==(32u<<20));workspace_return(base,bytes);
+ /* Release of the last large row opens admission, including in a new degree. */
+ GN_STORE(&S.reserve_lock,0);S.current=18;coop_memory_admission();REQUIRE(!S.reserve_admission_closed&&reserve_acquire(l));
+ reserve_release(l);GN_STORE(&S.reserve_lock,1);S.reserve_admission_closed=0;
+ REQUIRE(reserve_acquire_sized(l,2u<<20)&&l->reserve_slot==2&&S.reserve_extra_count==1&&S.reserve_extra_bytes[0]==(2u<<20));
+ reserve_release(l);return 0;
+}
+/* Last-resort serialization preserves the expensive survivor and every pending
+ * descriptor. The displaced row is withheld until reserve owners finish. */
+API int test_pressure_replay(u32 radix){
+ REQUIRE(!gn_init(2,4,2,128u<<20,32u<<20,8,0,0));
+ REQUIRE(!gn_batch_mode(1)&&!gn_cooperative(1,2));
+ memset(&C,0,sizeof(C));S.reserve_growth=0;S.auto_memory=1;S.iter_done=1;
+ S.reserve_base=64u<<20;S.reserve_bytes=4u<<20;
+ S.reserve_extra_count=1;S.reserve_extra_base[0]=68u<<20;S.reserve_extra_bytes[0]=4u<<20;
+ S.reserve_pool_limit=2;S.radix_enabled=radix;S.current=3;S.completed=2;
+ GN_STORE(&S.reserve_lock,1);GN_STORE(&S.reserve_extra_lock[0],1);
+ S.batch_n=2;S.degree_scheduled=2;S.degree_committed=0;
+ for(u32 i=0;i<2;i++){
+  Lane*l=&S.lanes[i];l->resume_slot=i;l->resume_tier=4;l->reserve_slot=i+1;l->reserve_owned=1;l->memory_wait=ROW_WAIT_GROW;
+  l->memory_need=16u<<20;C.assigned[i]=i+1;
+  Arena arena={S.reserve_base+i*(4u<<20),S.reserve_base+i*(4u<<20),S.reserve_base+(i+1)*(4u<<20),0,0};
+  BRow r;REQUIRE(!brow_layout(&r,l,&arena,1024,1024,3));memset(r.heads,0,1024*8);
+  REQUIRE(!brow_add(&r,(Word){17+i,0},(BCoef){csmall(3+i),csmall(7)}));
+  r.pivot=r.nodes[0].c;r.pending_kind=2;r.pending_tail=91+i;
+  saved_BRow[i]=(BRowResume){r,i?10:1000};S.tasks[i]=(BatchTask){1,1,1,1,GN_ROW_WAIT,0,0};
+ }
+ BRowResume survivor=saved_BRow[0];
+ REQUIRE(gn_coop_resource_status()==0&&C.pressure_replays==1&&C.replays==1);
+ REQUIRE(C.assigned[0]==1&&!C.assigned[1]&&S.tasks[1].rc==COOP_MEMORY_DEFERRED);
+ for(u32 i=0;i<sizeof(survivor);i++)REQUIRE(((u8*)&survivor)[i]==((u8*)&saved_BRow[0])[i]);
+ REQUIRE(S.reserve_lock==1&&!S.reserve_extra_lock[0]);
+ REQUIRE(S.degree_scheduled==2&&!S.degree_committed&&!S.nrules&&gn_frontier_pending()==2);
+ REQUIRE(!gn_coop_commit()&&S.batch_n==2&&S.tasks[1].rc==COOP_MEMORY_DEFERRED);
+ coop_order();REQUIRE(!S.batch_work_n&&S.tasks[1].rc==COOP_MEMORY_DEFERRED);
+ REQUIRE(gn_coop_resource_status()==GN_ROW_WAIT&&C.pressure_replays==1); /* final row is retained */
+ coop_release_lane(&S.lanes[0]);GN_STORE(&C.assigned[0],0);S.tasks[0].rc=0;
+ REQUIRE(!gn_coop_commit()&&S.batch_n==1&&S.degree_committed==1&&S.tasks[0].rc==COOP_MEMORY_DEFERRED);
+ coop_order();REQUIRE(S.batch_work_n==1&&S.tasks[0].rc==GN_STATE&&S.tasks[0].snapshot==1);
+ return 0;
+}
+/* A full node table can double inside the same arena, but the old coefficient
+ * semispaces overlap the expanded arrays. This mirrors the blocked large rows. */
+API int test_same_arena_table_growth(u32 radix){
+ memset(&S,0,sizeof(S));memset(&C,0,sizeof(C));S.budget=64u<<20;S.bump=S.budget-65536;S.workers=S.lane_slots=1;
+ S.radix_enabled=radix;S.reserve_growth=1;S.reserve_base=16u<<20;S.reserve_bytes=5u<<20;S.reserve_pool_limit=1;GN_STORE(&S.reserve_lock,1);
+ S.commit_reserve_base=48u<<20;S.commit_reserve_bytes=1u<<20;
+ Lane*l=&S.lanes[0];l->reserve_slot=1;l->reserve_owned=1;l->slice_enabled=1;
+ Arena arena={16u<<20,16u<<20,21u<<20,0,0},source={4u<<20,4u<<20,5u<<20,0,0};BRow r;
+ REQUIRE(!brow_layout(&r,l,&arena,32768,32768,5));memset(r.heads,0,32768*8);
+ u32 limbs[4]={17,29,41,1};Coef big=makec(&source,limbs,4,1);
+ for(u32 i=0;i<32768;i++){reset_a(&r.temp);REQUIRE(!brow_add(&r,(Word){2*i+2,0},(BCoef){i%64?2:big,2}));}
+ REQUIRE(brow_add(&r,(Word){1,0},(BCoef){2,2})==HEAP_MISS&&l->memory_detail==2);
+ r.pending_kind=2;r.pending_rule=7;r.pending_tail=91;saved_BRow[0]=(BRowResume){r,123};l->resume_tier=4;l->memory_wait=ROW_WAIT_GROW;l->memory_need=10u<<20;
+ REQUIRE(brow_service_wait(l)==1&&!l->memory_wait&&l->row_relayouts==1&&S.reserve_bytes==(5u<<20));
+ BRow*x=&saved_BRow[0].row;REQUIRE(x->nodes==r.nodes&&x->reserved==65536&&x->capacity==32768&&x->pending_tail==91&&saved_BRow[0].steps==123);
+ memset(PTR(u8,S.commit_reserve_base),0xcc,(size_t)S.commit_reserve_bytes);
+ for(u32 i=0;i<x->used;i++)REQUIRE(x->nodes[i].w.lo==2*i+2&&(i%64?x->nodes[i].c.n==2:magcmp(x->nodes[i].c.n,big)==0));
+ REQUIRE(!brow_add(x,(Word){1,0},(BCoef){big,csmall(7)})&&x->capacity==65536);
+ REQUIRE(!brow_collect(x)&&S.bump==S.budget-65536&&!S.commit_reserve_lock);
+ coop_release_lane(l);coop_collect_lane(l);return 0;
+}
