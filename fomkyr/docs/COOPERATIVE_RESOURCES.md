@@ -122,6 +122,9 @@ the additional workspace plus temporary storage for initialized queue indices
 and live coefficients, rather than two complete node tables. Allocation refusal
 leaves its original lease and exact cursor intact. The row-growth checks cover
 both queues, refused staging allocations and poisoning of returned staging memory.
+Only table-capacity pressure requests doubled node capacity. Coefficient and
+arithmetic-scratch pressure reuse the current capacity, avoiding unnecessary
+multi-gigabyte node arrays.
 
 Memory-parked rows do not consume the scheduler's active sector-finisher slots.
 A pending task counts as runnable helper work only when a free helper can read

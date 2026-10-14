@@ -9,8 +9,10 @@ static u64 brow_live_bytes(BRow*r){
  return bytes;
 }
 static u32 brow_target_capacity(BRow*r,Lane*l){
- (void)l;u32 max=S.big_row_max_terms?S.big_row_max_terms:(1u<<30);
- u32 cap=r->capacity<max?r->capacity*2:r->capacity;
+ u32 max=S.big_row_max_terms?S.big_row_max_terms:(1u<<30);
+ /* Coefficient or arithmetic pressure does not need a second node table's
+  * worth of structural capacity. Only a genuinely full table doubles. */
+ u32 cap=l->memory_detail==2&&r->capacity<max?r->capacity*2:r->capacity;
  return MIN(max,MAX(cap,1024u));
 }
 static u64 brow_pool_room(BRow*r,u64 live){

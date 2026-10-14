@@ -35,6 +35,9 @@ API int test_adjacent_row_growth(u32 mode){
  REQUIRE(x->nodes[bheap_top(x)-1].w.lo==32766);
  reset_a(&x->temp);REQUIRE(!brow_add(x,(Word){1,0},(BCoef){big,csmall(13)})&&x->capacity==32768);
  REQUIRE(!brow_collect(x)&&magcmp(x->pivot.n,big)==0);
+ l->memory_detail=1;REQUIRE(brow_target_capacity(x,l)==32768);
+ l->memory_detail=3;REQUIRE(brow_target_capacity(x,l)==32768);
+ l->memory_detail=2;REQUIRE(brow_target_capacity(x,l)==65536);
  coop_release_lane(l);coop_collect_lane(l);REQUIRE(!reserve_pool_busy());return 0;
 }
 API int test_parked_helper_admission(void){
