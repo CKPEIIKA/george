@@ -147,5 +147,11 @@ Durable frontiers still save pending pair descriptors. In-memory row retention
 does not extend across a process restart. Accepted rules and completed-pair
 identities remain durable.
 
+Pair-plan storage and reusable workspace leases maintain eight-byte alignment.
+An odd number of plan entries must include allocation padding: arbitrary-precision
+coefficient handles use their bottom three bits as tags. The large-record tests
+combine an odd-sized plan with buffer growth and non-inline coefficients, and
+check both bump allocations and returned byte ranges.
+
 The legacy barrier scheduler retains its separate batch-retry policy. These
 retained-row and fair-helper rules apply to cooperative execution.

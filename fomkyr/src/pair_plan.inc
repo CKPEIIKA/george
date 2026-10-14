@@ -43,7 +43,9 @@ static int plan_build(u32 mode,u64 anchor_seen,const BatchTask*anchors,u32 ancho
  }
  if(P.excluded_bytes&&(P.excluded_bytes!=(total+7)/8||anchor_n||anchor_seen!=P.excluded_count))return -GN_CORRUPT;
  if(anchor_seen>total||anchor_n>anchor_seen)return -GN_CORRUPT;
- u64 count=total-anchor_seen+anchor_n,bytes=count*sizeof(PlanPair);
+ /* Coefficients tag the bottom three address bits. An odd count of 20-byte
+  * plan entries must not misalign every subsequent record/arena allocation. */
+ u64 count=total-anchor_seen+anchor_n,bytes=A8(count*sizeof(PlanPair));
  if(total>UINT32_MAX||count>UINT32_MAX||bytes>P.budget||P.excluded_bytes>P.budget-bytes){P.declines++;return 0;}
  if(count>P.capacity){
   if(bytes>P.budget-P.allocated||bytes>S.budget-S.bump||!gn_host_ensure(S.bump+bytes)){P.declines++;return 0;}

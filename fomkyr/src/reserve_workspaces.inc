@@ -47,6 +47,10 @@ static void reserve_release(Lane*l){
 }
 static void workspace_return(u64 base,u64 bytes){
  if(!base||!bytes)return;
+ /* Free byte ranges may come from non-coefficient metadata. Keep every lease
+  * compatible with the three-bit coefficient tag, including reused ranges. */
+ u64 aligned=A8(base),padding=aligned-base;if(aligned<base||padding>=bytes)return;
+ base=aligned;bytes=(bytes-padding)&~UINT64_C(7);if(!bytes)return;
  S.reserve_pool_denied=0;
  /* Coalesce neighbors; every returned range has a single owner. */
  for(u32 i=0;i<S.spare_count;){
@@ -66,9 +70,9 @@ static u64 workspace_take(u64*bytes){
   S.spare_base[best]=S.spare_base[S.spare_count];S.spare_bytes[best]=S.spare_bytes[S.spare_count];
   workspace_return(base+need,have-need);*bytes=need;return base;
  }
- u64 headroom=MAX(UINT64_C(1048576),S.budget/128);
- if(S.bump>S.budget||headroom>S.budget-S.bump||need>S.budget-S.bump-headroom||!gn_host_ensure(S.bump+need))return 0;
- u64 base=S.bump;S.bump+=need;S.allocated_peak=MAX(S.allocated_peak,S.bump);*bytes=need;return base;
+ u64 headroom=MAX(UINT64_C(1048576),S.budget/128),base=A8(S.bump);
+ if(base<S.bump||base>S.budget||headroom>S.budget-base||need>S.budget-base-headroom||!gn_host_ensure(base+need))return 0;
+ S.bump=base+need;S.allocated_peak=MAX(S.allocated_peak,S.bump);*bytes=need;return base;
 }
 /* Claim only an arena's missing suffix, with all workers joined. A large row
  * must not require two complete arenas when its neighbor is already free.

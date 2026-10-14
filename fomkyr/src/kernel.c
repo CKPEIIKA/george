@@ -215,7 +215,7 @@ static u32 cancelled(void){
 }
 static u64 alloc_a(Arena*a,u64 bytes){bytes=A8(bytes);if(a->error)return 0;if(bytes>a->end-a->pos){a->error=GN_SCRATCH;return 0;}u64 p=a->pos;a->pos+=bytes;if(a->pos-a->base>a->peak)a->peak=a->pos-a->base;return p;}
 static void reset_a(Arena*a){a->pos=a->base;a->error=0;}
-static u64 alloc_p(u64 bytes){bytes=A8(bytes);if(S.error||S.bump>S.budget||bytes>S.budget-S.bump){S.error=GN_MEMORY;return 0;}u64 p=S.bump;if(!gn_host_ensure(p+bytes)){S.error=GN_MEMORY;return 0;}S.bump+=bytes;S.allocated_peak=MAX(S.allocated_peak,S.bump);return p;}
+static u64 alloc_p(u64 bytes){bytes=A8(bytes);u64 p=A8(S.bump);if(S.error||p<S.bump||p>S.budget||bytes>S.budget-p){S.error=GN_MEMORY;return 0;}if(!gn_host_ensure(p+bytes)){S.error=GN_MEMORY;return 0;}S.bump=p+bytes;S.allocated_peak=MAX(S.allocated_peak,S.bump);return p;}
 /* <=31 letters: original two-register nibble path. Longer words: bounded
  * byte strings in the same arenas, addressed by offsets (also on memory64).
  * Slices are borrowed; every polynomial/record boundary makes an owned copy. */
