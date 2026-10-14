@@ -360,6 +360,13 @@ static int brow_service_wait(Lane*l){
   l->memory_minimum_bytes=brow_required_workspace(r,l);l->memory_need=l->memory_minimum_bytes;
   publish_lane(l,(u64)r->heap_n+r->normal_n,1);
  }
+ int extended=brow_extend_workspace(r,l);
+ if(extended<0)return extended;
+ if(extended){
+  if(l->coefficient_extra_slot){GN_UNLOCK(reserve_slot_lock(l->coefficient_extra_slot));l->coefficient_extra_slot=0;}
+  if(l->coefficient_extra_base){workspace_return(l->coefficient_extra_base,l->coefficient_extra_bytes);l->coefficient_extra_base=l->coefficient_extra_bytes=0;l->coefficient_extra_retired=0;}
+  l->memory_wait=0;l->memory_need=0;l->memory_detail=0;l->row_growths++;l->row_relayouts++;brow_report(r);publish_lane(l,(u64)r->heap_n+r->normal_n,1);return 1;
+ }
  /* Expand coefficient semispaces while retaining the node table. Move roots to one new pool, then combine the two adjacent old pools
   * into the other. This can borrow an idle worker lease within the same budget. */
  if(l->memory_detail==1&&!l->coefficient_extra_base&&!l->coefficient_extra_slot&&

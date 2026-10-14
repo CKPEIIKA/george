@@ -70,6 +70,21 @@ static u64 workspace_take(u64*bytes){
  if(S.bump>S.budget||headroom>S.budget-S.bump||need>S.budget-S.bump-headroom||!gn_host_ensure(S.bump+need))return 0;
  u64 base=S.bump;S.bump+=need;S.allocated_peak=MAX(S.allocated_peak,S.bump);*bytes=need;return base;
 }
+/* Claim only an arena's missing suffix, with all workers joined. A large row
+ * must not require two complete arenas when its neighbor is already free.
+ * The caller returns this suffix if its relocation preflight cannot proceed. */
+static int workspace_extend(u64 base,u64 oldbytes,u64*bytes){
+ if(GN_LOAD(&S.batch_running)||*bytes<=oldbytes||*bytes>UINT64_MAX-65535)return 0;
+ u64 need=(*bytes+65535)&~UINT64_C(65535),end=base+oldbytes,extra=need-oldbytes;
+ for(u32 i=0;i<S.spare_count;i++)if(S.spare_base[i]==end&&S.spare_bytes[i]>=extra){
+  S.spare_base[i]+=extra;S.spare_bytes[i]-=extra;
+  if(!S.spare_bytes[i]){S.spare_count--;S.spare_base[i]=S.spare_base[S.spare_count];S.spare_bytes[i]=S.spare_bytes[S.spare_count];}
+  *bytes=need;return 1;
+ }
+ u64 headroom=MAX(UINT64_C(1048576),S.budget/128);
+ if(end!=S.bump||S.bump>S.budget||headroom>S.budget-S.bump||extra>S.budget-S.bump-headroom||!gn_host_ensure(S.bump+extra))return 0;
+ S.bump+=extra;S.allocated_peak=MAX(S.allocated_peak,S.bump);*bytes=need;return 1;
+}
 /* Joined-wave admission uses this row's requirement. Failure to admit the
  * initial large reserve does not forbid a smaller, budgeted worker lease. */
 static int reserve_acquire_sized(Lane*l,u64 bytes){

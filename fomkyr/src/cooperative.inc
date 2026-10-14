@@ -138,9 +138,9 @@ static void coop_order(void){
   u32 active=0,ordinary_active=0,ordinary_ready=0;
   for(u32 lane=0;lane<S.workers;lane++){
    u32 ids[2]={GN_LOAD(&C.assigned[lane]),GN_LOAD(&C.helper_assigned[lane])};
-   for(u32 j=0;j<2;j++)if(ids[j]){BatchTask*t=&S.tasks[ids[j]-1];if(fg_pair_group(t->f,t->g,t->k)==P.gate_target)active++;else ordinary_active++;}
+   for(u32 j=0;j<2;j++)if(ids[j]){Lane*l=j?&coop_helpers[lane]:&S.lanes[lane];if(l->memory_wait)continue;BatchTask*t=&S.tasks[ids[j]-1];if(fg_pair_group(t->f,t->g,t->k)==P.gate_target)active++;else ordinary_active++;}
   }
-  if(C.commit_task){BatchTask*t=&S.tasks[C.commit_task-1];if(fg_pair_group(t->f,t->g,t->k)==P.gate_target)active++;}
+  if(C.commit_task&&!coop_coordinator.memory_wait){BatchTask*t=&S.tasks[C.commit_task-1];if(fg_pair_group(t->f,t->g,t->k)==P.gate_target)active++;}
   for(u32 j=0;j<S.batch_work_n;j++){u32 i=S.batch_order[j];BatchTask*t=&S.tasks[i];if(fg_pair_group(t->f,t->g,t->k)==P.gate_target)C.finisher_tag[i]=1;else ordinary_ready++;}
   u32 cap=MIN(2u,S.workers);
   if(!ordinary_ready&&!ordinary_active&&P.cursor==P.count)cap=S.workers;
@@ -450,7 +450,14 @@ API int gn_coop_resource_status(void){
  for(u32 i=0;i<S.batch_n;i++){
   BatchTask*t=&S.tasks[i];
   if(!t->rc&&(!t->bytes||!C.commit_task||!coop_coordinator.memory_wait))return 0;
-  if((t->rc==GN_STATE||t->rc==GN_DEFERRED)&&(idle||(C.helpers_enabled&&S.helper_base)))usable=1;
+  if(t->rc==GN_STATE||t->rc==GN_DEFERRED||t->rc==COOP_HELPER_DEFERRED){
+   if(idle)usable=1;
+   /* A helper's existence does not make every pending descriptor executable.
+    * Match coop_execute's actual admission checks; otherwise all parked rows
+    * can spin forever while oversized/deferred helper tasks never run. */
+   if(t->rc!=COOP_HELPER_DEFERRED&&C.helpers_enabled&&S.helper_base)for(u32 lane=0;lane<S.workers;lane++)
+    if(!C.helper_assigned[lane]&&!coop_helpers[lane].memory_wait&&batch_weight(i)<=coop_helpers[lane].io_size)usable=1;
+  }
  }
  if(usable)return 0;
  if((C.policy&1)&&C.helpers_enabled&&S.helper_base&&!S.iter_done&&C.window<C.max_window){C.force_expand=1;return 0;}

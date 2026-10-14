@@ -1,5 +1,57 @@
 /* Joined-wave row growth must reuse structural slack and admit small leases
  * when a second initial-sized reserve would exceed the engine budget. */
+API int test_adjacent_row_growth(u32 mode){
+ memset(&S,0,sizeof(S));memset(&C,0,sizeof(C));S.budget=32u<<20;S.bump=30u<<20;S.workers=S.lane_slots=1;
+ S.radix_enabled=mode&1;S.reserve_base=16u<<20;S.reserve_bytes=1u<<20;S.reserve_growth=1;S.reserve_pool_limit=1;
+ GN_STORE(&S.reserve_lock,1);Lane*l=&S.lanes[0];l->resume_slot=0;l->reserve_owned=1;l->reserve_slot=1;l->slice_enabled=1;l->reductions=17;
+ Arena arena={16u<<20,16u<<20,17u<<20,0,0},input={4u<<20,4u<<20,5u<<20,0,0};BRow r;
+ REQUIRE(!brow_layout(&r,l,&arena,16384,16384,4));memset(r.heads,0,16384*8);
+ u32 limbs[4]={123,456,789,1};Coef big=makec(&input,limbs,4,1);REQUIRE(!input.error);
+ for(u32 i=0;i<16384;i++){reset_a(&r.temp);REQUIRE(!brow_add(&r,(Word){i*2+2,0},(BCoef){i%64?2:big,i%64?2:csmall(7)}));}
+ u32 root=bheap_top(&r);bheap_remove(&r,root);r.normal[r.normal_n++]=root;
+ r.pivot=bcoef_copy(&r.pool[0],(BCoef){big,csmall(11)});r.pending_kind=2;r.pending_rule=7;r.pending_tail=91;r.pivot_scaled=1;
+ saved_BRow[0]=(BRowResume){r,123};l->resume_tier=4;l->memory_wait=ROW_WAIT_GROW;l->memory_detail=2;
+ l->row_layout_attempted=1;l->memory_need=brow_required_workspace(&r,l);
+ u64 need=l->memory_need,oldbytes=S.reserve_bytes,bump=S.bump;BNode*nodes=r.nodes;
+ REQUIRE(need>oldbytes&&need<(3u<<20));
+ workspace_return(S.reserve_base+oldbytes,need-oldbytes);
+ /* The old arena cannot stage its own initialized indices. Growing only the
+  * adjacent suffix succeeds where a second complete arena cannot fit. */
+ if(mode&2){
+  S.bump=S.budget-65536;BRow before=saved_BRow[0].row;
+  REQUIRE(!brow_service_wait(l)&&l->memory_wait&&S.reserve_bytes==oldbytes);
+  for(u32 j=0;j<sizeof(before);j++)REQUIRE(((u8*)&before)[j]==((u8*)&saved_BRow[0].row)[j]);
+  REQUIRE(l->reductions==17&&saved_BRow[0].steps==123);
+  REQUIRE(S.spare_count==1&&S.spare_base[0]==S.reserve_base+oldbytes&&S.spare_bytes[0]==need-oldbytes);
+  S.bump=bump;
+ }
+ REQUIRE(brow_service_wait(l)==1&&!l->memory_wait&&S.bump>bump&&S.bump<=S.budget);
+ BRow*x=&saved_BRow[0].row;REQUIRE(x->nodes==nodes&&S.reserve_bytes==need&&x->workspace_bytes==need&&x->reserved==32768);
+ REQUIRE(x->capacity==16384&&x->normal_n==1&&x->normal[0]==root&&x->heap_n==16383);
+ REQUIRE(x->pending_kind==2&&x->pending_rule==7&&x->pending_tail==91&&x->pivot_scaled==1&&saved_BRow[0].steps==123&&l->reductions==17);
+ REQUIRE(magcmp(x->pivot.n,big)==0&&x->pivot.d==csmall(11));
+ for(u32 i=0;i<S.spare_count;i++)memset(PTR(u8,S.spare_base[i]),0xcc,(size_t)S.spare_bytes[i]);
+ for(u32 i=0;i<x->used;i++){REQUIRE(x->nodes[i].w.lo==i*2+2);REQUIRE(i%64?x->nodes[i].c.n==2:magcmp(x->nodes[i].c.n,big)==0);REQUIRE(x->nodes[i].c.d==(i%64?2:csmall(7)));}
+ REQUIRE(x->nodes[bheap_top(x)-1].w.lo==32766);
+ reset_a(&x->temp);REQUIRE(!brow_add(x,(Word){1,0},(BCoef){big,csmall(13)})&&x->capacity==32768);
+ REQUIRE(!brow_collect(x)&&magcmp(x->pivot.n,big)==0);
+ coop_release_lane(l);coop_collect_lane(l);REQUIRE(!reserve_pool_busy());return 0;
+}
+API int test_parked_helper_admission(void){
+ REQUIRE(!gn_init(2,4,1,64u<<20,16u<<20,8,0,0));S.completed=1;
+ REQUIRE(!gn_input_begin(2,1)&&!gn_input_term(0,0,1)&&!gn_input_end()&&S.nrules==1);
+ memset(&C,0,sizeof(C));memset(coop_helpers,0,sizeof(coop_helpers));memset(&coop_coordinator,0,sizeof(coop_coordinator));
+ S.budget=16u<<20;S.bump=S.budget-65536;S.workers=S.lane_slots=1;S.helper_base=8u<<20;S.helper_bytes=1u<<20;
+ S.batch_n=2;S.iter_done=1;C.helpers_enabled=1;C.assigned[0]=1;
+ S.lanes[0].memory_wait=ROW_WAIT_OUTPUT;S.lanes[0].memory_need=1u<<20;
+ S.tasks[0]=(BatchTask){1,1,1,1,GN_ROW_WAIT,0,0};S.tasks[1]=(BatchTask){1,1,1,1,GN_STATE,0,0};
+ REQUIRE(gn_coop_resource_status()==GN_ROW_WAIT);
+ coop_helpers[0].io_size=UINT64_MAX;REQUIRE(gn_coop_resource_status()==0);
+ S.tasks[1].rc=COOP_HELPER_DEFERRED;REQUIRE(gn_coop_resource_status()==GN_ROW_WAIT);
+ C.helper_assigned[0]=2;coop_helpers[0].memory_wait=ROW_WAIT_OUTPUT;coop_helpers[0].memory_need=1u<<20;
+ S.tasks[1].rc=GN_STATE;REQUIRE(gn_coop_resource_status()==GN_ROW_WAIT);
+ return 0;
+}
 API int test_budgeted_row_layout(u32 radix){
  memset(&S,0,sizeof(S));S.budget=64u<<20;S.bump=60u<<20;S.workers=S.lane_slots=1;
  S.radix_enabled=radix;S.reserve_base=16u<<20;S.reserve_bytes=12u<<20;S.reserve_growth=1;S.reserve_pool_limit=1;

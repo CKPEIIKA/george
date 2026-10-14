@@ -117,6 +117,17 @@ with large exact coefficients and checks every resulting term.
 The lease-sharing checks also overwrite returned storage and complete an exact
 normal form after shrinking and subsequently regrowing its table.
 
+A retained reserve row can grow into a free adjacent suffix. This needs only
+the additional workspace plus temporary storage for initialized queue indices
+and live coefficients, rather than two complete node tables. Allocation refusal
+leaves its original lease and exact cursor intact. The row-growth checks cover
+both queues, refused staging allocations and poisoning of returned staging memory.
+
+Memory-parked rows do not consume the scheduler's active sector-finisher slots.
+A pending task counts as runnable helper work only when a free helper can read
+its reducer records. Pending oversized or previously deferred tasks cannot mask
+an all-parked workspace limit by keeping the coordinator in a busy loop.
+
 ## Large reducer records
 
 The rule-read buffer grows independently of row arithmetic scratch. Before each
