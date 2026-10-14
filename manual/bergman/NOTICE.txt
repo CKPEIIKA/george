@@ -1,0 +1,10 @@
+Mathematical Computations Using Bergman
+Jorgen Backelin, Svetlana Cojocaru, Victor Ufnarovski
+ISBN 91-631-7203-8
+Copyright 1999, 2000, 2002, 2004, 2005 by the authors.
+
+The HTML manual and its four screenshots are preserved without changes.
+Source: http://www.math.md/bergman/manual.html
+Distribution information: http://www.math.md/bergman/downloads.html
+Bergman distribution terms: ../../licenses/BGPL.txt
+The original author and converter notices remain in manual.html.
