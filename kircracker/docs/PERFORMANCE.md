@@ -1,5 +1,10 @@
 # Performance and storage design
 
+The updated pairing engine, journal format, degree-24 arithmetic bounds and
+separate audit processes are described in [ENGINE_23_24.md](ENGINE_23_24.md).
+The implementation history below describes the preceding degree-22 engine;
+its former limits and checkpoint granularity are superseded where specified.
+
 ## Implemented changes relative to the degree-18 research scripts
 
 1. Generalized degree selection through the verifier's proved limit 22. Paths,
@@ -73,6 +78,56 @@ Limits that can still block progress:
 
 No guarantee of “overnight” completion follows from the degree18 timings. The new
 frontier may need more computation or a new structural/certificate idea.
+
+## Reusing independent verification
+
+Long pairing continuations can set `KIR_VERIFY_ENTRY_CACHE=1`. A successful
+independent integer audit then saves a hash-bound, exact modular LU minor. When
+the next candidate contains those row and column words, verification computes
+the added blocks and their Schur complement. Word permutations and determinant
+signs are accounted for explicitly. Missing, incompatible or damaged caches
+cause a full replay. Discovery checkpoints never supply verification entries.
+
+The first audit must build the cache. `KIR_VERIFY_CACHE_BYTES` defaults to 3 GiB
+per block; a larger minor retains a nonsingular pivot prefix that fits. One
+current matrix generation is retained, together with small provenance receipts.
+The scheduler budgets both current and replacement cache generations alongside
+discovery journals. Accepted minor files contain the original words and exact
+modular determinant, so `KIR_VERIFY_ENTRY_CACHE=0` permits full independent replay
+without the cache.
+
+Admission reserves the dense matrix plus 1.5 GiB for workspaces, increasing the
+reservation from observed process high-water memory. The process hard limit
+retains more headroom. When available host memory falls below half the slack
+left outside the worker budget (between 256 MiB and 2 GiB), and more than one
+worker is active, the newest discovery worker yields to its journal. It is
+resumed with backoff once memory allows, and at most three times per block;
+admission also waits for real free memory. `KIR_VERIFY_WORKSPACE_BYTES`
+can increase the admission allowance for unusually large derivative supports.
+
+Cached LU uses exact integer arithmetic modulo the selected prime. Its `auto`
+mode observes fill during elimination and switches from sparse updates to
+blocked updates. `KIR_VERIFY_LU_MODE=sparse` or `blocked` allows a controlled
+comparison. The dashboard distinguishes entry replay from factorization.
+
+Enable the cache in the controller's environment before launching workers.
+The scheduler also sets the worker flag explicitly when a task receives a
+cache allocation. Already-running audits keep their original verification path;
+their first successor audit builds the cache before later extensions can reuse it.
+
+The dashboard places audited Hilbert and Nichols gaps above the worker table.
+It records bound changes and minute samples in `audited-gap-history.jsonl` in
+the selected run directory. The display includes gap reductions over ten minutes
+and one hour, total reduction from the first saved observation, and provisional
+rank gains awaiting audit. Missing historical samples are shown explicitly.
+Gap reduction percentages describe the bound interval; they do not measure the
+fraction of computation completed or supply an ETA.
+
+An optional [relation pilot](RELATION_PILOT.md) eliminates defining-relation
+consequences contained in a saved word chart before further pairing work.
+It records replayable modular relation minors and counts omitted contexts.
+Its verified result supplies an upper bound within the retained spanning-chart
+certificate chain; it does not assert a complete basis or exact dimension.
 
 ## Primary algorithm and platform references
 

@@ -66,24 +66,18 @@ def bytes_arg(s):
  if v<256*1024**2:raise argparse.ArgumentTypeError('budget must be at least 256 MiB')
  return v
 
-def hardware():
- import math
- cpus=sorted(os.sched_getaffinity(0)) if hasattr(os,'sched_getaffinity') else list(range(os.cpu_count() or 1));physical=set()
- for c in cpus:
-  p=Path(f'/sys/devices/system/cpu/cpu{c}/topology')
-  try:physical.add(((p/'physical_package_id').read_text().strip(),(p/'core_id').read_text().strip()))
-  except OSError:pass
- cpu_quota=len(cpus);cgroup=Path('/sys/fs/cgroup')
+def cgroup_dir()->Path:
+ cgroup=Path('/sys/fs/cgroup')
  try:
   membership=next(l.split(':',2)[2] for l in Path('/proc/self/cgroup').read_text().splitlines() if l.startswith('0::'))
   candidate=cgroup/membership.lstrip('/')
   if (candidate/'cpu.max').exists() or (candidate/'memory.max').exists():cgroup=candidate
  except (OSError,StopIteration):pass
- try:
-  q,period=(cgroup/'cpu.max').read_text().split()
-  if q!='max':cpu_quota=min(cpu_quota,max(1,math.ceil(int(q)/int(period))))
- except (OSError,ValueError):pass
- memory={}
+ return cgroup
+
+def memory_state(cgroup=None):
+ """(total, available) bytes for this process, honouring a cgroup memory.max."""
+ cgroup=cgroup or cgroup_dir();memory={}
  try:
   for l in Path('/proc/meminfo').read_text().splitlines():
    key,value=l.split(':',1);memory[key]=int(value.split()[0])*1024
@@ -94,8 +88,25 @@ def hardware():
   if lim!='max':
    lim=int(lim);used=int((cgroup/'memory.current').read_text());total=min(total,lim);available=min(available,max(0,lim-used))
  except (OSError,ValueError):pass
+ return total,available
+
+def hardware():
+ import math
+ cpus=sorted(os.sched_getaffinity(0)) if hasattr(os,'sched_getaffinity') else list(range(os.cpu_count() or 1));physical=set()
+ for c in cpus:
+  p=Path(f'/sys/devices/system/cpu/cpu{c}/topology')
+  try:physical.add(((p/'physical_package_id').read_text().strip(),(p/'core_id').read_text().strip()))
+  except OSError:pass
+ cpu_quota=len(cpus);cgroup=cgroup_dir()
+ try:
+  q,period=(cgroup/'cpu.max').read_text().split()
+  if q!='max':cpu_quota=min(cpu_quota,max(1,math.ceil(int(q)/int(period))))
+ except (OSError,ValueError):pass
+ total,available=memory_state(cgroup)
  # Shared hosts/containers: respect their available memory and CPU ceilings.
- auto_mem=int(min(total*.75,available*.85));auto_jobs=cpu_quota if cpu_quota<len(cpus) else max(1,len(cpus)-1)
+ # Keep a fixed reserve on large hosts, but never less than 75% of what is free,
+ # so a small host or cgroup still gets a usable automatic budget.
+ auto_mem=int(min(total*.88,max(available*.75,available-max(1024**3,total*.05))));auto_jobs=min(cpu_quota,max(1,(len(physical)or len(cpus))-1))
  model='unknown'
  try:
   model=next(l.split(':',1)[1].strip() for l in Path('/proc/cpuinfo').read_text().splitlines() if l.startswith('model name'))

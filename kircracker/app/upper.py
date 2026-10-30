@@ -37,7 +37,7 @@ def run_upper(runner,D,namespace,seconds=0):
  def update(v):
   if v.get('type')=='degree':runner.event('upper_degree',namespace=namespace,degree=v['degree'],dimension=v['relativeUpperDimension'],seconds=v['seconds'],rssMiB=round(v['peakRSSBytes']/1048576,1))
  last,secs=runner.run(cmd,out/f'run-to-{D:02d}.log',seconds=seconds+15 if seconds else 0,parser=update)
- if not last or not last.get('complete') or last['completedThrough']!=D:raise Incomplete('upper calculation incomplete')
+ if not last or not last.get('complete') or last.get('completeAllSectorScope')is False or last['completedThrough']!=D:raise Incomplete('upper calculation incomplete')
  counts=[];hashes={}
  for d,p in enumerate(levels):
   info=state_info(p,binding)

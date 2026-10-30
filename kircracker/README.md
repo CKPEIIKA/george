@@ -8,11 +8,11 @@ KIRCRACKER(1)                 Kircracker 0.3.0                 KIRCRACKER(1)
 
 ## BUILD
 
-Build requirements: a C++17 compiler, Make, Python 3, Boost headers and GMP
+Build requirements: a C++20 compiler, Make, Python 3 and GMP
 development headers and libraries. On Debian or Ubuntu:
 
 ```sh
-sudo apt-get install build-essential python3 libboost-dev libgmp-dev
+sudo apt-get install build-essential python3 libgmp-dev libzstd-dev pkg-config
 cd kircracker
 make check
 make native
@@ -45,16 +45,18 @@ standard error; `--json-events` selects newline-delimited JSON progress.
 
 Kircracker computes original-FK and Nichols upper bounds, checks exact derivative
 minors independently, and assembles permutation-graded dimension bounds. It
-supports research calculations through degree 22. Degrees 21–22 use an exact
-signed 128-bit verifier; the derivative-entry bound is \(22!<2^{71}\).
-Degrees through 20 retain the signed 64-bit path. Higher degrees are refused.
+supports research calculations through degree 24. Degrees 21–24 use an exact
+signed 128-bit verifier; the derivative-entry bound is \(24!<2^{80}\).
+Degrees through 20 retain the signed 64-bit path. Higher degrees are refused. Degree support does not imply exact closure.
 
-Version 0.3.0 streams candidate rows to disk, retains selected minor indices
-instead of a dense discovery matrix, and allows up to 50,000 rows per block
-subject to memory admission. `--dual-mode auto` tries prepend extensions first,
-then both-sided candidates if a verified gap remains. See
+The native engine streams candidate rows to disk, retains selected minor indices
+instead of a dense discovery matrix, and allows up to 250,000 rows per block
+subject to memory admission. Through degree 22, `--dual-mode auto` tries prepend
+extensions, then both-sided candidates if a verified gap remains. Above degree 22
+it records the missing [residual certificate inputs](docs/RESIDUAL_CERTIFICATES.md)
+instead of expanding another sample family. See
 [PERFORMANCE.md](docs/PERFORMANCE.md) for storage, scheduling and remaining limits.
-Support through degree 22 does not guarantee exact closure: unresolved intervals
+Support through degree 24 does not guarantee exact closure: unresolved intervals
 remain `BOUNDS_ONLY`.
 
 Independent low-degree Nichols oracles, sector stabilizer projectors and an
@@ -103,10 +105,24 @@ whether their underlying matrices are retained and independently replayable.
 
 Ctrl-C or TERM preserves committed work. Rerun the same operation with the same
 `-C` directory. Completed upper degrees and verified lower blocks are retained;
-an interrupted active degree or block restarts. Keep the complete workspace.
+an interrupted upper degree restarts. Pairing discovery resumes its last published
+pivot journal (journals are bound to the pairing library, so after a rebuild
+migrate them with `tools/import_pair_state.py`); pending candidates retain their separate audit stage. Keep the
+complete workspace, including journal chunks. See [native engine details](docs/ENGINE_23_24.md).
 
 Only one writer may own a workspace. `status` can read it concurrently.
 Inputs, fields and checkpoint chains are validated on resume.
+
+## DASHBOARD
+
+```sh
+python3 tools/dashboard.py --run /path/to/pairing-run
+```
+
+The colored terminal view refreshes every second and shows recent rank gains,
+scanning, independent audits, CPU, memory and bounds. Use `--pipeline` for a
+continuation pipeline, `--once` for a snapshot, or `--color never` for plain text.
+Ctrl-C closes the dashboard; the calculation continues.
 
 ## COMMANDS
 
@@ -119,7 +135,9 @@ Inputs, fields and checkpoint chains are validated on resume.
 ```
 
 `--upper-seconds` and `--block-seconds` limit individual stages; zero imposes no
-stage timeout. For an overall limit use the POSIX `timeout` utility.
+stage timeout. A discovery block that reaches its limit keeps its verified minor
+and journal but is reported incomplete; rerun to resume it. For an overall limit
+use the POSIX `timeout` utility.
 
 Exit codes: 0 operation completed; 2 unresolved bounds; 3 incomplete or resource
 limited; 4 invalid input, evidence or operational error; 130 interrupted.
@@ -133,6 +151,8 @@ make install PREFIX="$HOME/.local"
 
 The installer creates a versioned directory and launcher, and refuses to
 overwrite an existing installation. It does not change shell startup files.
+
+Optional queue deployment: [HyperQueue workflow adapter](docs/HYPERQUEUE.md).
 
 ## LICENSE
 

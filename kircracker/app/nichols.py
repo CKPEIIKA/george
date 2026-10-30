@@ -53,6 +53,9 @@ def assemble_B6(runner,D,lower,upper):
 
 
 def run_B6(runner,D,action='run',dual_mode='auto',upper_seconds=0,block_seconds=0,force=False,grade=None):
+    if D>=23 and action in ('run','search') and dual_mode=='auto':
+        from .residual import require_component_solver
+        require_component_solver(runner,D)
     up=run_upper(runner,D,'NICHOLS-only',upper_seconds)
     if action=='upper': return {'status':'UPPER_ONLY','algebra':'B6','degree':D,'upper':up}
     low=_lower_to(runner,D,action,dual_mode,block_seconds,force,grade)

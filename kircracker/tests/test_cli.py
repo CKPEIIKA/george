@@ -13,7 +13,7 @@ class Basics(unittest.TestCase):
    with self.assertRaises(Exception):bytes_arg(bad)
   h=hardware();self.assertGreater(h['effectiveMemoryBytes'],0);self.assertGreaterEqual(h['recommendedJobs'],1)
  def test_word_boundaries(self):
-  for d in [0,1,15,16,17,18,19,20,21,22]:
+  for d in [0,1,15,16,17,18,19,20,21,22,23,24]:
    w=bytes(1+(i%15) for i in range(d));self.assertEqual(unpacked(packed([w]),d),[w])
   with self.assertRaises(Invalid):unpacked(b'\0'*15,3)
   with self.assertRaises(Invalid):edgeword(0,22)
@@ -114,7 +114,7 @@ class Interface(unittest.TestCase):
  def test_help_version_plan(self):
   for args in [['--help'],['--version'],['plan','22','-m','512MiB','-j','2']]:
    p=subprocess.run([ROOT/'kircracker',*args],capture_output=True,text=True,timeout=20);self.assertEqual(p.returncode,0,p.stderr)
-  p=subprocess.run([ROOT/'kircracker','run','23','-m','512MiB'],capture_output=True,text=True);self.assertNotEqual(p.returncode,0)
+  p=subprocess.run([ROOT/'kircracker','run','25','-m','512MiB'],capture_output=True,text=True);self.assertNotEqual(p.returncode,0)
  def test_incomplete_is_machine_readable(self):
   with tempfile.TemporaryDirectory() as t:
    p=subprocess.run([str(ROOT/'kircracker'),'upper','10','--namespace','NICHOLS-only','--upper-seconds','1e-9','-C',t,'-m','512MiB','-j','1','--quiet'],capture_output=True,text=True,timeout=40)

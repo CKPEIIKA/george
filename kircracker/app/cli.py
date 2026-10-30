@@ -4,26 +4,28 @@ from __future__ import annotations
 import argparse,contextlib,json,math,os,platform,shutil,signal,subprocess,sys,time
 from pathlib import Path
 from . import __version__
+from .limits import EXACT_DEGREE
 from .util import ROOT,Runner,Invalid,Incomplete,Stopped,load,sha,json_hash,atomic_json,bytes_arg,hardware,resolve_resources,workspace_lock,data_path,proof_archive
 
 def common(p):
  p.add_argument('-C','--workdir',type=Path,default=Path('kircracker-work'),help='persistent calculation directory (default: ./kircracker-work)')
  p.add_argument('-j','--jobs',default='auto',help='maximum CPU workers; auto respects affinity/cgroup limits')
  p.add_argument('-m','--memory',type=bytes_arg,default=0,metavar='24GiB',help='total stage memory budget; auto leaves OS headroom')
+ p.add_argument('--scratch',type=bytes_arg,default=48*1024**3,help='discovery checkpoint disk budget (default: 48GiB, excluding retained inputs)')
  p.add_argument('--quiet',action='store_true');p.add_argument('--json-events',action='store_true',help='NDJSON progress to stderr; final JSON remains stdout')
 
 def parser():
- p=argparse.ArgumentParser(prog='kircracker',description='Native FK6/B6 certificate and structural research CLI through degree 22; support-resolved homology/Anick tools included. This does not construct the original-order Groebner basis.')
+ p=argparse.ArgumentParser(prog='kircracker',description='Native FK6/B6 certificate and structural research CLI through degree 24; support-resolved homology/Anick tools included. This does not construct the original-order Groebner basis.')
  p.add_argument('--version',action='version',version=f'kircracker-cli {__version__}')
  s=p.add_subparsers(dest='command',required=True)
  d=s.add_parser('doctor',help='detect CPU/RAM limits, toolchain and package capabilities');common(d)
  b=s.add_parser('build',help='build C++ kernels locally; --native optimizes for this CPU');b.add_argument('--native',action='store_true');b.add_argument('-j','--jobs',type=int,default=2)
- d=s.add_parser('plan',help='show stages, resource budgets and what can be resumed');common(d);d.add_argument('degree',type=int,choices=range(1,23),metavar='DEGREE')
+ d=s.add_parser('plan',help='show stages, resource budgets and what can be resumed');common(d);d.add_argument('degree',type=int,choices=range(1,EXACT_DEGREE+1),metavar='DEGREE')
  for cmd in ['run','upper','search','verify']:
   d=s.add_parser(cmd,help={'run':'run/restart the entire bound-and-proof pipeline','upper':'only original/Nichols upper calculations; no exact-dimension claim','search':'discover and independently verify new lower minors','verify':'replay witnesses and inherited Q proof; reassemble without searching'}[cmd]);common(d);d.add_argument('degree',type=int,metavar='DEGREE')
   d.add_argument('--upper-seconds',type=float,default=0,help='time limit per native upper process; 0 is unlimited')
   d.add_argument('--block-seconds',type=float,default=0,help='discovery limit per minor block; 0 is unlimited')
-  d.add_argument('--dual-mode',choices=['auto','prepend','both'],default='auto',help='candidate family; auto tries prepend then broadens only if needed')
+  d.add_argument('--dual-mode',choices=['auto','prepend','both'],default='auto',help='candidate family; auto broadens through degree 22, then requires residual component coordinates; explicit modes run sampling experiments')
   d.add_argument('--skip-base-replay',action='store_true',help='diagnostic only: no Q correction or exact FK gate export above degree 13')
   d.add_argument('--force-replay',action='store_true',help='recheck numerical witnesses and Q base instead of reusing local audits')
   if cmd=='search':d.add_argument('--grade',help='one representative grade, e.g. 123465; commits only that verified block')
@@ -76,6 +78,9 @@ def bind_workspace(work):
  atomic_json(path,{'format':'kircracker-workspace-v1','binding':token,'version':__version__,'createdOrOpenedUTC':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime())})
 
 def run_degree(runner,a,D):
+ if D>=23 and a.command in ('run','search') and a.dual_mode=='auto':
+  from .residual import require_component_solver
+  require_component_solver(runner,D)
  from .upper import run_upper
  from .lower import lower_prefix,discover,discover_auto,replay_catalog,seed_catalog
  from .assembly import proof_base,assemble
@@ -111,7 +116,7 @@ def exported(runner,a):
  from .lower import lower_prefix
  from .assembly import proof_base,assemble
  D=a.degree
- if not 1<=D<=22:raise Invalid('export degree must be 1..22')
+ if not 1<=D<=EXACT_DEGREE:raise Invalid(f'export degree must be 1..{EXACT_DEGREE}')
  # Rebind source files and accepted audits; do not copy a caller-edited number.
  n=run_upper(runner,D,'NICHOLS-only');e=run_upper(runner,D,'FK-original');l=lower_prefix(runner,D)
  if D>=14:proof_base(runner)
@@ -161,10 +166,10 @@ def main(argv=None):
    time.sleep(2)
  m,j,h=resolve_resources(a.memory,a.jobs)
  if a.command=='doctor':
-  v={**h,'selectedMemoryBytes':m,'selectedJobs':j,'python':platform.python_version(),'system':platform.platform(),'nativeBinaries':{x:(ROOT/'bin'/x).exists() for x in ['kir-relative','libverify.so','libtriepair.so','exact-quotient-audit']},'compiler':shutil.which('g++') or shutil.which('clang++'),'buildForThisCPU':'make native','memoryNote':'OS address-space guard per worker, memory-weighted admission; not a whole-OS RSS guarantee.','noTimeEstimate':'Degree 19-22 may yield unresolved bounds; runtime is not extrapolated.'};print(json.dumps(v,indent=2));return 0
+  v={**h,'selectedMemoryBytes':m,'selectedJobs':j,'python':platform.python_version(),'system':platform.platform(),'nativeBinaries':{x:(ROOT/'bin'/x).exists() for x in ['kir-relative','libverify.so','libtriepair.so','exact-quotient-audit']},'compiler':shutil.which('g++') or shutil.which('clang++'),'buildForThisCPU':'make native','memoryNote':'OS address-space guard per worker, memory-weighted admission; not a whole-OS RSS guarantee.','noTimeEstimate':'Degree 19-24 may yield unresolved bounds; runtime is not extrapolated.'};print(json.dumps(v,indent=2));return 0
  if a.command=='nichols':
-  if not 1<=a.degree<=22:raise Invalid('B6 exact verifier currently supports degrees 1..22')
-  ready();work=a.workdir.resolve();runner=Runner(work,m,j,a.quiet,a.json_events)
+  if not 1<=a.degree<=EXACT_DEGREE:raise Invalid(f'B6 exact verifier currently supports degrees 1..{EXACT_DEGREE}')
+  ready();work=a.workdir.resolve();runner=Runner(work,m,j,a.quiet,a.json_events);runner.scratch=a.scratch
   from .nichols import run_B6,export_B6
   with workspace_lock(work):
    bind_workspace(work)
@@ -179,10 +184,10 @@ def main(argv=None):
     print(json.dumps(result,indent=2));return 0 if result.get('status') not in ['BOUNDS_ONLY'] else 2
    finally:
     for sig,v in oldhandlers.items():signal.signal(sig,v)
- if not 1<=a.degree<=22:raise Invalid('this exact prefix verifier supports degrees 1..22; degrees above 22 require new arithmetic bounds')
+ if not 1<=a.degree<=EXACT_DEGREE:raise Invalid(f'this exact prefix verifier supports degrees 1..{EXACT_DEGREE}; degrees above {EXACT_DEGREE} require new arithmetic bounds')
  if a.command=='plan':
-  v={'degree':a.degree,'jobs':j,'memoryBytes':m,'workdir':str(a.workdir.resolve()),'stages':['verify relation library','original and Nichols upper models','replay seed minors through degree18','discover/replay new blocks','replay inherited Q base','assemble intervals or exact profile'],'resumeGranularity':{'upper':'last completed degree; active degree restarts','minors':'last independently verified block; interrupted blocks restart'},'candidates':'source-derived; no supplied h19-h22','outputs':'machine-readable intervals; exact profile only on verified closure','safeToInterrupt':'SIGINT/SIGTERM retain committed work. SIGKILL cannot save an in-flight step.'};print(json.dumps(v,indent=2));return 0
- ready();work=a.workdir.resolve();runner=Runner(work,m,j,a.quiet,a.json_events)
+  v={'degree':a.degree,'jobs':j,'memoryBytes':m,'scratchBytes':a.scratch,'workdir':str(a.workdir.resolve()),'stages':['verify relation library','original and Nichols upper models','replay seed minors through degree18','discover/replay new blocks','replay inherited Q base','assemble intervals or exact profile'],'resumeGranularity':{'upper':'last completed degree; active degree restarts','discovery':'last published pivot journal; unfinished column retries','verification':'last independently verified block; pending candidate retained for fresh replay'},'candidates':'source-derived; no supplied higher-degree Hilbert targets','outputs':'machine-readable intervals; exact profile only on verified closure','safeToInterrupt':'SIGINT/SIGTERM retain committed work. SIGKILL cannot save an in-flight step.'};print(json.dumps(v,indent=2));return 0
+ ready();work=a.workdir.resolve();runner=Runner(work,m,j,a.quiet,a.json_events);runner.scratch=a.scratch
  with workspace_lock(work):
   bind_workspace(work);oldhandlers={s:signal.getsignal(s) for s in [signal.SIGINT,signal.SIGTERM]}
   for s in oldhandlers:signal.signal(s,runner.stop)

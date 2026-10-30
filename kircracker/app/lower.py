@@ -6,6 +6,7 @@ from pathlib import Path
 from .util import ROOT,load,sha,json_hash,atomic_json,Incomplete,Invalid
 from .records import PERMS,INDEX,EDGES,EDGE,MASK,grade,inverse,conjugate,orbit,code,packed,unpacked,read_minor,state_words,state_info,check_minor
 from .scheduler import run_tasks,verifier_fingerprint
+from .limits import EXACT_DEGREE
 MiB=1024**2
 
 def seed_catalog(work,d):
@@ -49,19 +50,19 @@ def replay_catalog(runner,path,force=False):
  return result
 
 def lower_prefix(runner,D,force=False):
- results=[]
+ results=[];finger=verifier_fingerprint()
  for d in range(D+1):
   p=seed_catalog(runner.work,d);out=runner.work/'verified'/f'd{d:02d}'/'complete.json'
   if not force and out.exists():
    x=load(out)
-   if x.get('passed') and x.get('catalogSHA256')==sha(p) and x.get('fingerprint')==verifier_fingerprint():
+   if x.get('passed') and x.get('catalogSHA256')==sha(p) and x.get('fingerprint')==finger:
     results.append(x);continue
   runner.event('lower_replay',degree=d)
   results.append(replay_catalog(runner,p,force=force))
  return results
 
 def prepare_candidates(runner,D,mode='prepend'):
- if D<1 or D>22:raise Invalid('candidate degree must be 1..22')
+ if D<1 or D>EXACT_DEGREE:raise Invalid(f'candidate degree must be 1..{EXACT_DEGREE}')
  upper=runner.work/'upper/NICHOLS-only';state=upper/f'level-{D:03d}.krm';binding=load(upper/'binding.json')['binding'];info=state_info(state,binding)
  seed=seed_catalog(runner.work,D-1);catalog=validate_catalog(seed);out=runner.work/'candidates'/f'd{D:02d}';out.mkdir(parents=True,exist_ok=True)
  token=json_hash({'upperSHA256':sha(state),'seedSHA256':sha(seed),'degree':D,'dualMode':mode,'method':'one-generator-complementary-extension-v2-streamed'})
@@ -121,35 +122,39 @@ def prepare_candidates(runner,D,mode='prepend'):
 def discover(runner,D,mode='prepend',seconds=0,only=None):
  c=prepare_candidates(runner,D,mode);candidate=runner.work/'candidates'/f'd{D:02d}';out=runner.work/'lower'/f'd{D:02d}';out.mkdir(parents=True,exist_ok=True);tasks=[]
  for t0 in c['tasks']:
-  t=dict(t0);key=''.join(map(str,t['grade']));t.update({'left':str(candidate/t['left']),'right':str(candidate/t['right']),'minor':str(out/(key+'.kcb')),'output':str(out/(key+'.audit.json')),'seconds':seconds,'wallSeconds':(seconds+60) if seconds else 0})
+  t=dict(t0);key=''.join(map(str,t['grade']));t.update({'left':str(candidate/t['left']),'right':str(candidate/t['right']),'minor':str(out/(key+'.kcb')),'output':str(out/(key+'.audit.json')),'seconds':seconds,'wallSeconds':0})
   # Conservative admission estimate, and a genuine OS per-process address-space
   # ceiling. A larger actual requirement is reported as incomplete, never zero.
-  t['memoryBytes']=max(384*MiB,8*t['rows']**2+128*t['duals']+320*MiB)
+  t['memoryBytes']=max(512*MiB,2*t['rows']**2+48*t['duals']+768*MiB)
   t['binding']=json_hash({**t0,'candidateBinding':c['binding']})
+  t['checkpointBytes']=getattr(runner,'scratch',48*1024**3)//max(1,len(c['tasks']))
   if not t['duals']:runner.event('no_dual_candidates',degree=D,grade=key);continue
   tasks.append(t)
  selected=tasks if only is None else [t for t in tasks if ''.join(map(str,t['grade']))==only]
  if only and not selected:raise Invalid('grade is not a nonempty representative at this degree')
- answers,errors=run_tasks(runner,selected,'discover');blocks=[];grades={}
+ answers,errors=run_tasks(runner,selected,'discover');blocks=[];grades={};finger=verifier_fingerprint()
  for t in tasks:
   p=Path(t['minor']);a=Path(t['output'])
   if not p.exists() or not a.exists():continue
   audit=load(a)
-  if not audit.get('passed') or audit.get('verifierFingerprint')!=verifier_fingerprint() or sha(p)!=audit.get('minorSHA256'):continue
+  if not audit.get('passed') or audit.get('verifierFingerprint')!=finger or sha(p)!=audit.get('minorSHA256'):continue
   m,us,vs=read_minor(p);part=check_minor(m,us,vs)
   if set(grades)&set(part):raise Invalid('discovery orbit overlap')
   grades.update(part);blocks.append({'file':p.name,'sha256':sha(p),'rank':m['rank'],'grade':m['grade'],'coveredGrades':len(part),'contribution':sum(part.values())})
- catalog={'degree':D,'prime':1000003,'blocks':blocks,'rankLowerBound':sum(grades.values()),'candidateUpper':c['upperRelativeDimension'],'errors':errors,'candidateBinding':c['binding'],'storedMatrices':False,'exactDimensionClaim':False,'completeCandidateCoverage':len(blocks)==len(tasks)}
+ catalog={'degree':D,'prime':1000003,'blocks':blocks,'rankLowerBound':sum(grades.values()),'candidateUpper':c['upperRelativeDimension'],'errors':errors,'candidateBinding':c['binding'],'storedMatrices':False,'exactDimensionClaim':False,'completeCandidateCoverage':len(blocks)==len(tasks)and not errors}
  atomic_json(out/'catalog.json',catalog)
  if errors:raise Incomplete(f'degree-{D} discovery left {len(errors)} unfinished blocks; verified blocks retained')
  # The discovery process has already used the independent verifier; bind these
  # audits into the same aggregate format consumed by the assembly.
- aggregate={'passed':True,'degree':D,'rankLowerBound':sum(grades.values()),'candidateUpper':c['upperRelativeDimension'],'grades':{str(g):n for g,n in grades.items()},'checkedBlocks':len(blocks),'requiredBlocks':len(tasks),'catalog':str(out/'catalog.json'),'catalogSHA256':sha(out/'catalog.json'),'fingerprint':verifier_fingerprint(),'entriesReplayed':sum(x.get('entriesReplayed',0) for x in answers),'errors':[]}
+ aggregate={'passed':True,'degree':D,'rankLowerBound':sum(grades.values()),'candidateUpper':c['upperRelativeDimension'],'grades':{str(g):n for g,n in grades.items()},'checkedBlocks':len(blocks),'requiredBlocks':len(tasks),'catalog':str(out/'catalog.json'),'catalogSHA256':sha(out/'catalog.json'),'fingerprint':finger,'entriesReplayed':sum(x.get('entriesReplayed',0) for x in answers),'errors':[]}
  atomic_json(runner.work/'verified'/f'd{D:02d}'/'complete.json',aggregate);return aggregate
 
 
 def discover_auto(runner,D,seconds=0,only=None):
- """Cheap family first; broaden only if the verified total still misses the upper model."""
+ """Finite low-degree discovery; require residual coordinates above degree 22."""
+ if D>=23:
+  from .residual import require_component_solver
+  require_component_solver(runner,D)
  first=discover(runner,D,'prepend',seconds,only=only)
  if only is not None or first.get('rankLowerBound',0)>=first.get('candidateUpper',1):return first
  runner.event('candidate_escalation',degree=D,lower=first['rankLowerBound'],upper=first['candidateUpper'],message='Prepend family left a gap; retrying with both-sided extensions')
