@@ -23,7 +23,7 @@
 #include <math.h>
 #include <time.h>
 #ifndef VERSION
-#define VERSION "0.7.6"
+#define VERSION "0.7.7"
 #endif
 static u32 plan_order=0,plan_min=12;static u64 plan_bytes=UINT64_C(67108864);
 static u32 quantum_ms=250,lookahead=128,coop_flags=3,coop_max_window=512,cache_maxima=1,big_row_max_terms=0,cache_percent=12;
@@ -235,7 +235,7 @@ static int configure(Fixture*f,u32 target,u32 workers,u64 budget,u64 scratch,u64
  if(quantum_ms&&!gn_coop_stat(0)&&!quiet)fprintf(stderr,"Cooperative scheduler disabled: workspace cannot fit a separate commit arena; using the legacy exact scheduler.\n");
  return 0;}
 static void help(void){puts(
-"fomkyr 0.7.6 - exact homogeneous noncommutative Groebner bases\n"
+"fomkyr 0.7.7 - exact homogeneous noncommutative Groebner bases\n"
 "Usage: fomkyr -i input.bg -d 14 -j 8 --workdir fk14 [options]\n"
 "  -i, --input FILE           JSON fixture or expanded George vars/polynomial form\n"
 "  -d, --degree N             Inclusive degree bound; 0 means no user bound\n"

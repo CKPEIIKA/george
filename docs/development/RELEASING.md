@@ -6,6 +6,9 @@ Finish source, version, defaults and interface changes before starting release
 checks. Regenerate `web/engine/fomkyr/build.json` with
 `node tools/fomkyr-manifest.mjs` when its recorded assets change.
 
+The standalone Kircracker investigation is excluded from George release checks
+and source archives. Validate it separately when changing that tool.
+
 ```sh
 npm run release:check
 ```

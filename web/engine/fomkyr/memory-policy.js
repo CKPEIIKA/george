@@ -3,6 +3,10 @@
 // Pure planner: no allocation, device fingerprinting, or degree-dependent knobs.
 const MiB=1048576,PAGE=65536;
 const align=n=>Math.floor(n/PAGE)*PAGE;
+export function defaultHashBits(budget) {
+  // The two hash-head arrays together use at most 1/16 of a small budget.
+  return Math.max(8,Math.min(18,Math.floor(Math.log2(budget/128))));
+}
 export function sharedCacheAllowance(requested,plan) {
   const value=requested??Math.floor(plan.budgetBytes/16);
   if(!Number.isSafeInteger(value)||value<0)throw new Error('sharedReducerCacheBytes must be a nonnegative integer');

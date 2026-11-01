@@ -70,9 +70,9 @@ for(const bits of [32,64])for(const shared of [false,true]){
  const file=path.join(out,`growth-${bits}-${shared?'shared':'single'}.wasm`);
  run(process.env.CLANG??'clang',[`--target=wasm${bits}`,'-std=c11','-O2','-ffreestanding','-fno-builtin','-fvisibility=hidden','-mbulk-memory',...(shared?['-matomics']:['-DGN_SINGLE']),'-nostdlib',c,'-o',file,'-Wl,--no-entry,--import-memory,--export-dynamic,--initial-memory=2097152,--max-memory=1073741824,-z,stack-size=131072',...(shared?['-Wl,--shared-memory']:[])]);
 }
-async function properties(url,bits,shared){
+async function properties(url,bits,shared,bytes){
  const memory=new WebAssembly.Memory({address:bits===64?'i64':'i32',initial:bits===64?9600n:9600,maximum:bits===64?16384n:16384,shared});
- const module=await WebAssembly.compile(await(await fetch(url)).arrayBuffer());
+ const module=await WebAssembly.compile(bytes??await(await fetch(url)).arrayBuffer());
  const e=(await WebAssembly.instantiate(module,{env:{memory},host:{ensure:end=>Number(end)<=memory.buffer.byteLength?1:0,read:()=>0,write:()=>0,clock:()=>performance.now()}})).exports;
  const tests=[];let cacheCode=e.test_shared_cache();if(cacheCode)throw Error('Shared cache property failure '+cacheCode);tests.push({property:'explicit-shared-cache',code:cacheCode});
  const admission=e.test_parked_helper_admission();if(admission)throw Error('Parked helper admission failure '+admission);tests.push({property:'parked-helper-admission',code:admission});
@@ -106,7 +106,8 @@ const base=`http://127.0.0.1:${server.address().port}`;
 try{
  for(const bits of [32,64])for(const shared of [false,true]){
   const file=path.relative('.',path.join(out,`growth-${bits}-${shared?'shared':'single'}.wasm`)).split(path.sep).join('/');
-  rows.push({runtime:'node-wasm',bits,shared,tests:await properties(base+'/'+file,bits,shared)});
+  rows.push({runtime:'node-wasm',bits,shared,tests:await properties(base+'/'+file,bits,shared,fs.readFileSync(file))});
+  console.log(`node-wasm ${bits}-${shared?'shared':'single'} passed`);
  }
  for(const browser of browsers){
   const profile=path.join(out,`${browser}-profile`);fs.mkdirSync(profile,{recursive:true});

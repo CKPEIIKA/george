@@ -61,6 +61,11 @@ export function stageBoundedReserveTests(stage) {
   // Degree 16 still exercises overflow rescue in every variant; its exact
   // independent completion fits the oracle deadline on the validation host.
   source=source.replaceAll('q3,18','q3,16');
+  // With reserve growth disabled, this bounded case now fits the ordinary
+  // reducer. Keep its exact-output and disabled-mode checks; forcing a reserve
+  // use here would reject a successful calculation. The four memory variants
+  // and the queue-policy controls above still require actual overflow rescue.
+  source=source.replace('reserveInPlace:false,mustRescue:true','reserveInPlace:false');
   source=certificateHelpers()+"import {createHash} from 'node:crypto';\n"+source;
   source=source.replace('reports.push({test:key',"console.log('RESERVE_JOB_PASS',key);reports.push({test:key");
   const start=source.indexOf(" const manifest=path.join(root,'manifest.json');");

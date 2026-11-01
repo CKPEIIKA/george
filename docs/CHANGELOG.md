@@ -1,5 +1,18 @@
 # Release history
 
+## 0.7.7
+
+- Updated Fomkyr with retained-row growth, aligned reusable buffers and
+  memory-aware recovery of parked reductions.
+- Rebuilt the four browser engine variants from the current kernel.
+- Kept the investigative Kircracker tool outside the George release checks
+  and downloadable source archive.
+- Browser controls and defaults remain unchanged.
+- Fit default hash tables into small memory allowances; preserve explicit and
+  restored table settings.
+- Skip legacy check reports without compatible protocol metadata when looking
+  for reusable release evidence.
+
 ## 0.7.6
 
 - Updated Fomkyr exact integer arithmetic and shared rational rewrite factors.

@@ -1,5 +1,5 @@
 import test from 'node:test';
-import {planMemory} from '../web/engine/fomkyr/memory-policy.js';
+import {planMemory,defaultHashBits} from '../web/engine/fomkyr/memory-policy.js';
 import {VERSION} from '../web/engine/fomkyr/storage.js';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -214,4 +214,12 @@ test('FK6 profile retains wide decimal counters and reports degree-17 coverage',
   counts[0]=(1n<<100n)+123n;counts[1]=(1n<<99n)+7n;counts[2]=counts[0]-counts[1];
   const wide=gate.snapshot();
   for(const [name,index] of [['upper',0],['lower',1],['deficit',2]])assert.equal(wide[name],counts[index].toString());
+});
+
+test('tiny Fomkyr budgets leave room for metadata without changing normal hash sizing', () => {
+  for(const mib of [16,32,64,128,512,3584]) {
+    const budget=mib*1048576,bits=defaultHashBits(budget);
+    assert.ok(2*4*2**bits<=budget/16);
+    assert.equal(bits,mib===16?17:18);
+  }
 });

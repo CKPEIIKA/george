@@ -1,3 +1,11 @@
+# 0.7.7
+
+- Recover parked rows with memory-aware cooperative admission.
+- Correct retained-row growth, tagged-coefficient buffer alignment and fixed
+  node capacity across arithmetic workspace growth.
+- Grow reducer reads within the memory budget and reset fresh-run I/O leases.
+- Rebuild all four browser variants; preserve controls and checkpoint formats.
+
 # 0.7.6
 
 - Service retained row memory at a joined barrier before reporting terminal

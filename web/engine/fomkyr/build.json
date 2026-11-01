@@ -2,8 +2,8 @@
   "backend": "fomkyr",
   "name": "fomkyr",
   "upstreamName": "fomkyr",
-  "version": "0.7.6",
-  "appVersion": "0.7.6",
+  "version": "0.7.7",
+  "appVersion": "0.7.7",
   "license": "MIT",
   "compiler": {
     "language": "C",
@@ -11,10 +11,8 @@
     "linkOptimization": "O3",
     "optimization": "O3",
     "lto": true,
-    "pgo": true,
-    "compilerVersion": "23.1.1",
-    "profileKind": "frontend",
-    "profileSha256": "0ce797e7019589c4ad8e5a64ff3ed7bae30bd38e94b3989c1f1f7e2e8daeeeef"
+    "pgo": false,
+    "compilerVersion": "23.1.3"
   },
   "variants": [
     "wasm32-shared",
@@ -75,8 +73,8 @@
       "sha256": "a2b5b4518f3ff684e2e7a6837e60f654a8d0f94dbe08cfbd72344acebf859214"
     },
     "build-info.js": {
-      "bytes": 605,
-      "sha256": "710d868fdee5f7dcd3a4fe9282316ad90f84178ef18a58cdda4dd36b4ed52a58"
+      "bytes": 494,
+      "sha256": "b280b50ba0273a31bbc2c9f3a51d36d18a82ae9e59fe469bc739025359849b1c"
     },
     "candidate-verifier.js": {
       "bytes": 3942,
@@ -99,8 +97,8 @@
       "sha256": "4805cdd611774acdff74583661be3723774eaeca60b926bccdbfcb8c012ba3aa"
     },
     "engine.js": {
-      "bytes": 58394,
-      "sha256": "2da31a853a576b02856a1e922b6d25982ea2c1321d393d0ef47b106cfbd3d0cf"
+      "bytes": 58436,
+      "sha256": "9919414e6295cd588539101a392586de0fe1f7256b6ca297970d6fbf40919b8d"
     },
     "fk-gate.js": {
       "bytes": 6400,
@@ -111,20 +109,20 @@
       "sha256": "41bf71ff70c5e98858ace8dc2a9168911bf38f591307e2254f7314eb30ac49dc"
     },
     "fomkyr32-single.wasm": {
-      "bytes": 341165,
-      "sha256": "2dfea437086718b44cc224964d04375a335d510c170ee9c6296072bf0ae6a9e3"
+      "bytes": 242031,
+      "sha256": "08a1deb5901deae48b3d4cf1185dde82ad4ca1f1f365a06040f220dba491e6fc"
     },
     "fomkyr32.wasm": {
-      "bytes": 341171,
-      "sha256": "eda8e7300485229c57c3df1599bd6b26f7bc9c86168f72f362e6a7ae92eac4f1"
+      "bytes": 242232,
+      "sha256": "5de009a858ccad52f046a9058a9a1780ffb2a5427201f7f51ea4f2db1be442b6"
     },
     "fomkyr64-single.wasm": {
-      "bytes": 350686,
-      "sha256": "ed24ce92b225ff18e28b56d061f2f4fe2d0c23bf9b5dcefcff3859a3b2914de3"
+      "bytes": 243521,
+      "sha256": "235bf42e4b1919c5324b451d7af3b33be8ab97d4bca8ee8a40a7b7cbf1af6123"
     },
     "fomkyr64.wasm": {
-      "bytes": 348794,
-      "sha256": "f164826c2d5b12b0cd63cc50cc031eeb98f1d710837c5e59cb42ba43d0bb07dd"
+      "bytes": 242504,
+      "sha256": "78821ff1620921e1467bf3bd6800ada2a1773611b5c127daf397dc429a5b03fb"
     },
     "form-options.js": {
       "bytes": 1409,
@@ -171,8 +169,8 @@
       "sha256": "d8d29bab348276e74743a541085a366f7bb2e3b6f60eb2c98d211cf67deafd1e"
     },
     "memory-policy.js": {
-      "bytes": 2428,
-      "sha256": "e0055e04223ccc7c64a208c3fd14ffeb817d6f9b15556a6faa1061e46e980542"
+      "bytes": 2616,
+      "sha256": "fc1a6da1722bc02c8ed40a9365142de1751614c6116a34dab24737b3576536dc"
     },
     "modular-engine.js": {
       "bytes": 13549,
@@ -208,7 +206,7 @@
     },
     "storage.js": {
       "bytes": 6565,
-      "sha256": "db1cf2f868e73fd11c2e1357c10388cedc20475eefd0965b193601d9e1e2affa"
+      "sha256": "c203d19a2ed6c100913f5b619547d2bad1db863ce1b46e7d9ebe8c29312152d8"
     },
     "verification-bundle.js": {
       "bytes": 5492,

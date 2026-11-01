@@ -14,6 +14,12 @@ export function stableJSON(value) {
 }
 export const digest = value => crypto.createHash('sha256').update(value).digest('hex');
 export const fileHash = file => digest(fs.readFileSync(file));
+export function phaseProtocol(value, name) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  if (name === 'upgrade') return value;
+  const {previousEngine, ...remaining} = value;
+  return remaining;
+}
 export function inventory(inputs, include = () => true) {
   const files = new Set();
   const visit = (file, ancestors = new Set()) => {
@@ -38,7 +44,7 @@ export function writeJSON(file, value) {
 }
 export function validationSnapshot() {
   return inventory(['package.json', 'package-lock.json', 'README.md', 'LICENSE.md', '.gitignore', 'web', 'test', 'tools',
-    'fomkyr', ...(fs.existsSync('kircracker') ? ['kircracker'] : []), '.github/workflows/pages.yml'], file =>
+    'fomkyr', '.github/workflows/pages.yml'], file =>
     !file.startsWith('web/sources/') && (!file.startsWith('fomkyr/') || fomkyrSourceInput(file.slice('fomkyr/'.length)))
     && !/^kircracker\/(?:bin|evidence|results-local|kircracker-work|\.cache)(?:\/|$)/.test(file)
     && !file.endsWith('.so') && !file.includes('/__pycache__') && !file.endsWith('.pyc'));

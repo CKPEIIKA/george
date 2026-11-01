@@ -1,6 +1,6 @@
 import {FkGate} from './fk-gate.js';
 import {prepareHilbertClosure,replayHilbertCertificate,hilbertMetadata,beginHilbertClosure,tryHilbertClosure,hilbertGap,closureBatchLimit} from './hilbert-closure.js';
-import {planMemory,chooseMemoryPolicy,sharedCacheAllowance} from './memory-policy.js';
+import {planMemory,chooseMemoryPolicy,sharedCacheAllowance,defaultHashBits} from './memory-policy.js';
 // SPDX-License-Identifier: MIT
 import {ProgressTracker,readProgressCounters} from './progress.js';
 import {HARD_BYTES,createMemory,hostFor,stats,checked,wordCode,recordTerms} from './runtime.js';
@@ -162,7 +162,7 @@ export class FomkyrEngine {
   requestCheckpoint(){this.checkpointRequested=true;}
   cancel(){this.cancelRequested=true;if(this.cancelView&&this.shared)Atomics.store(this.cancelView,0,1);else this.e?.gn_cancel(1);}
   async resetKernel(fixture,target,modulus){
-    checked(this.e.gn_init(fixture.variables.length,target??0,this.workers,BigInt(this.budget),BigInt(this.scratch),(this.restoreHashBits??this.options.hashBits??18),modulus,this.spill?1:0));
+    checked(this.e.gn_init(fixture.variables.length,target??0,this.workers,BigInt(this.budget),BigInt(this.scratch),(this.restoreHashBits??this.options.hashBits??defaultHashBits(this.budget)),modulus,this.spill?1:0));
     checked(this.e.gn_memory_policy(this.autoMemory?1:0));
     const pairMode={legacy:0,overlap:1,sparse:2,word:3,gateword:4}[this.options.pairOrder??'legacy'];
     const pairMin=this.options.planMinDegree??12,pairBytes=this.options.pairPlanBytes??Math.min(64*MiB,this.budget/8);

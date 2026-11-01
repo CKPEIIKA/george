@@ -8,9 +8,9 @@ FOMKYR(1)                     Fomkyr Manual                     FOMKYR(1)
 
 ## VERSION
 
-[0.7.6 release notes](docs/RELEASE_076.md) · [Arithmetic details](docs/INTEGER_ARITHMETIC.md)
+[0.7.7 release notes](docs/RELEASE_077.md) · [Arithmetic details](docs/INTEGER_ARITHMETIC.md)
 
-**0.7.6**, [MIT license](LICENSE). Fomkyr is a standalone C engine and a
+**0.7.7**, [MIT license](LICENSE). Fomkyr is a standalone C engine and a
 subproject of [George](../README.md). George also runs this kernel through
 WebAssembly; its engine chooser marks that integration experimental.
 
