@@ -68,9 +68,25 @@ Explicitly discard the matching algebra's existing cache. Not a corruption-repai
 .B \-\-hilbert
 Export completed-degree Hilbert coefficients.
 .TP
+.B \-\-poincare
+Export bigraded Poincare-Betti coefficients of the associated leading-word
+monomial algebra through the completed degree. Implies --hilbert. These are
+upper bounds for the original algebra's Betti numbers, not a minimal resolution.
+Writes poincare.json, poincare.csv and result.pb, including homological degrees
+zero and one. Counting uses the same exact C kernel in native and Wasm modes.
+.TP
 .B \-\-export
 Stream monic, tail-reduced result.gb after completion. Normalization uses the
 exact C reducer and available workers, without modifying checkpoint records.
+.TP
+.B \-\-anick
+Construct the homogeneous right Anick resolution through the requested internal
+degree. Export full differentials in resolution.jsonl, actual graded Betti
+numbers in betti.json and betti.csv, and a result.anick display table.
+Uses the graded augmentation, checks full d squared equals zero, and computes
+augmentation ranks exactly over Q or the selected prime field. Implies --hilbert.
+Resolution construction is serial and byte-budgeted. The saved Groebner basis
+is retained if the resolution exceeds its resources.
 .TP
 .B \-\-raw-export
 With \-\-export, retain primitive integer rows and their original tails.

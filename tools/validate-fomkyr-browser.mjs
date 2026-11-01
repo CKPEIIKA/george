@@ -132,7 +132,7 @@ try {
           await page.locator('#engineSettings').evaluate(node=>node.open=true);
           assert.equal(await page.locator('#engineSettings #fomkyr-hilbert').count(),0);
           assert.equal(await page.locator('#fomkyrMathOptions #fomkyr-hilbert').count(),1);
-          assert.equal(await page.locator('input[name="task"][value="anick"]').isDisabled(),true);
+          assert.equal(await page.locator('input[name="task"][value="anick"]').isDisabled(),false);
           assert.equal(await page.locator('#weights').isDisabled(),false);
           assert.equal(await page.locator('#monomialPruning').isDisabled(),false);
           await page.locator('#timeoutMinutes').fill('2');

@@ -1,5 +1,15 @@
 # 0.7.7
 
+- Add actual homogeneous right Anick differentials and graded Betti numbers
+  with exact Q/prime-field augmentation ranks, full d² checks and byte budgets.
+- Enable George's existing Anick task and native `--anick`; export structural
+  differentials, chain counts, ranks and actual Betti tables.
+- Add exact associated-monomial Poincaré–Betti series through an internal-degree
+  bound, using a minimal-obstruction tail graph and arbitrary-precision counts.
+- Share the C counter between native `--poincare` and all four Wasm variants.
+- Enable George's Hilbert/Poincaré task with JSON, CSV and series exports;
+  distinguish monomial Betti numbers from the original algebra's minimal ones.
+
 - Recover parked rows with memory-aware cooperative admission.
 - Correct retained-row growth, tagged-coefficient buffer alignment and fixed
   node capacity across arithmetic workspace growth.

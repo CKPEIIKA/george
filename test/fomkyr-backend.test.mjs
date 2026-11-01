@@ -111,7 +111,7 @@ test('large-coefficient optimizers default on and round-trip explicit ablations'
   }
 });
 test('unsupported fomkyr jobs and invalid runtime options are rejected before execution', () => {
-  for (const change of [{task:'anick'}, {ring:'comm',order:'deglex'}, {order:'lex'}, {legacy:true},
+  for (const change of [{task:'rmodule'}, {ring:'comm',order:'deglex'}, {order:'lex'}, {legacy:true},
     {weights:'1 2'}, {weights:'1'}, {rels:['a^2-a']}, {rels:['1']}, {nativeWorkers:33},
     {rels:['4611686018427387904*a']}, {maxdeg:'4294967295'}, {fomkyrOptions:{bits:64}},
     {fomkyrOptions:{batchPairs:513}}, {fomkyrOptions:{memoryPolicy:'manual',scratchMiB:512},memoryMiB:128},

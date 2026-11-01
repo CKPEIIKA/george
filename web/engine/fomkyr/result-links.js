@@ -1,3 +1,4 @@
+import {renderMonomialPoincare as renderPoincare} from './poincare-view.js';
 // SPDX-License-Identifier: MIT
 // Download complete OPFS files without materializing the full basis in JS.
 export function attachFomkyrResultLinks(container, result, t) {
@@ -14,6 +15,8 @@ export function attachFomkyrResultLinks(container, result, t) {
     const names = ['result.gb', 'basis.gnb', 'fomkyr-result.json'];
     if (result.hilbert) names.push('hilbert.json');
     if (result.hilbert?.coefficients) names.push('hilbert.csv');
+    if (result.poincare?.available) names.push('poincare.json','poincare.csv','result.pb');
+    if (result.anick?.available) names.push('resolution.jsonl','betti.json','betti.csv','result.anick');
     if (result.completedThroughDegree > 0) names.push(`checkpoint-${result.completedThroughDegree % 2}.json`);
     for (const name of names) {
       const button = document.createElement('button'); button.type = 'button'; button.className = 'quiet small';
@@ -35,11 +38,11 @@ export function attachFomkyrResultLinks(container, result, t) {
   }
   container.prepend(box);
 }
-export function renderFomkyrSeries(container, hilbert, t) {
+export function renderFomkyrSeries(container, hilbert, t, poincare = null) {
   container.replaceChildren();
   const summary = document.createElement('p');
   if (!hilbert?.coefficients) {
-    summary.textContent = t('fomkyr.hilbertUnavailable', {msg: hilbert?.error || 'disabled'}); container.append(summary); return;
+    summary.textContent = t('fomkyr.hilbertUnavailable', {msg: hilbert?.error || 'disabled'}); container.append(summary); if(poincare)renderPoincare(container,poincare,t); return;
   }
   summary.textContent = t('fomkyr.hilbertSummary', {field: hilbert.field, degree: hilbert.certifiedThroughDegree}) + ' ' +
     t(hilbert.basisCompletionProved ? 'fomkyr.completeBasis' : 'fomkyr.truncatedHilbert'); container.append(summary);
@@ -48,4 +51,5 @@ export function renderFomkyrSeries(container, hilbert, t) {
   if (hilbert.coefficients.length > 512) {
     const note = document.createElement('p'); note.textContent = t('fomkyr.hilbertPreview'); container.append(note);
   }
+  if(poincare)renderPoincare(container,poincare,t);
 }

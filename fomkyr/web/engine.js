@@ -7,6 +7,8 @@ import {HARD_BYTES,createMemory,hostFor,stats,checked,wordCode,recordTerms} from
 import {STORE,VERSION,identityOf,acquireRunLock,checkpointCandidates,writeJSON} from './storage.js';
 import {loadKernel} from './module-cache.js';
 import {computeHilbert,hilbertCSV} from './hilbert.js';
+import {computePoincare,poincareCSV,poincareText} from './poincare.js';
+import {computeAnick,anickCSV} from './anick.js';
 import {beginReference,referenceSnapshot} from './hilbert-reference.js';
 import {browserCapabilities,sharedMemoryAvailable,probeUnsafeAccess} from './capabilities.js';
 import {BrokerHandle,makeMailbox,IO_CHUNK,IO_HEADER} from './io-broker.js';
@@ -526,7 +528,7 @@ export class FomkyrEngine {
       const certified=target??Number(this.e.gn_stat(2));
       const hilbertDegree=this.options.hilbertDegree??certified;
       let hilbert=null;
-      if(this.options.hilbert!==false){
+      if(this.options.hilbert!==false||this.options.poincare||this.options.anick){
         this.setPhase('hilbert');try{
         if(!Number.isInteger(hilbertDegree)||hilbertDegree<0||hilbertDegree>0xfffffffe||hilbertDegree>Number(this.e.gn_stat(2))&&!globallyComplete())throw new Error('Hilbert degree must be completed by the GB calculation, unless a finite complete GB has been proved');
 
@@ -543,13 +545,34 @@ export class FomkyrEngine {
       }
       if(hilbert&&this.fkGate?.enabled){Object.assign(hilbert,this.fkGate.metadata());hilbert.validity='Conditional on the explicitly imported FK Gate dimension profile; proof bundle not replayed here.';}
       if(hilbert&&this.hilbertClosure){Object.assign(hilbert,hilbertMetadata(this.hilbertClosure));if(this.hilbertClosure.assumed)hilbert.validity='Conditional on explicitly assumed external dimensions. No independent replay proof of those dimensions is claimed.';}
-      const result={...stats(this.e),...hilbertMetadata(this.hilbertClosure),...this.fkGate?.metadata(),engine:'fomkyr',version:VERSION,memoryPlan:this.memoryPlan,storage:this.spill?'opfs':'memory',complete:true,unrestrictedBasisComplete:globallyComplete(),reduced:false,target,modulus,order:'degleftlex',runKey:this.runKey,identity,bits:this.bits,shared:this.shared,ioMode:this.ioMode,executionMode:`wasm${this.bits}-${this.shared?'shared':'single'}`,fallbacks:this.fallbacks??[],requestedBudgetBytes:this.requestedBudget,hostMailboxBytes:this.brokerClients.length*(IO_HEADER+IO_CHUNK),linearMemoryBytes:this.memory.buffer.byteLength,resumedFromDegree:restored,cacheHit:target!==null&&restored>=target,hilbert:hilbert?{...hilbert,...hilbertMetadata(this.hilbertClosure),...this.fkGate?.metadata()}:hilbert,scheduler:{...this.scheduler},cooperative:this.cooperativeStats(),gm:this.gmStats(),reducerTailCache:this.tailCacheStats(),lanePairs:Array.from({length:this.workers},(_,i)=>Number(this.e.gn_lane_stat(i,6))),elapsedMs:performance.now()-start};
+      let poincare=null;
+      if(this.options.poincare){
+        this.setPhase('poincare');try{
+          const d=this.options.poincareDegree??hilbertDegree;
+          if(!Number.isInteger(d)||d<0||d>0xfffffffe||d>Number(this.e.gn_stat(2))&&!globallyComplete())throw new Error('Poincare degree exceeds the certified GB range');
+          poincare=computePoincare(this.e,d,Math.min(Math.max(0,this.budget-Number(this.e.gn_stat(4))),this.options.poincareBudgetBytes??256*MiB),hilbert,this.options.poincareOutputBudgetBytes);
+          Object.assign(poincare,hilbertMetadata(this.hilbertClosure),this.fkGate?.metadata());poincare.basisCompletionProved=globallyComplete();
+        }catch(error){if(error.code==='CANCELLED'||this.options.poincareRequired)throw error;poincare={available:false,error:error.message,certifiedThroughDegree:null};this.emit('warning',{message:`GB completed; Poincare calculation unavailable: ${error.message}`});}
+      }
+      let anick=null,anickFiles=null;
+      if(this.options.anick){
+        this.setPhase('anick');
+        const d=this.options.anickDegree??certified;
+        if(d>Number(this.e.gn_stat(2))&&!globallyComplete())throw new Error('Anick degree exceeds the certified GB range');
+        const counted=computeAnick(this.e,fixture.variables,d,Math.min(Math.max(0,this.budget-Number(this.e.gn_stat(4))),this.options.anickBudgetBytes??256*MiB),hilbert,this.options.anickOutputBudgetBytes);
+        anick=counted.result;anickFiles=counted.files;Object.assign(anick,hilbertMetadata(this.hilbertClosure),this.fkGate?.metadata());anick.basisCompletionProved=globallyComplete();
+        anickFiles['betti.json']=JSON.stringify(anick,null,2);anickFiles['betti.csv']=anickCSV(anick);
+      }
+      const result={...stats(this.e),...hilbertMetadata(this.hilbertClosure),...this.fkGate?.metadata(),engine:'fomkyr',version:VERSION,memoryPlan:this.memoryPlan,storage:this.spill?'opfs':'memory',complete:true,unrestrictedBasisComplete:globallyComplete(),reduced:false,target,modulus,order:'degleftlex',runKey:this.runKey,identity,bits:this.bits,shared:this.shared,ioMode:this.ioMode,executionMode:`wasm${this.bits}-${this.shared?'shared':'single'}`,fallbacks:this.fallbacks??[],requestedBudgetBytes:this.requestedBudget,hostMailboxBytes:this.brokerClients.length*(IO_HEADER+IO_CHUNK),linearMemoryBytes:this.memory.buffer.byteLength,resumedFromDegree:restored,cacheHit:target!==null&&restored>=target,anick,anickFiles,poincare,hilbert:hilbert?{...hilbert,...hilbertMetadata(this.hilbertClosure),...this.fkGate?.metadata()}:hilbert,scheduler:{...this.scheduler},cooperative:this.cooperativeStats(),gm:this.gmStats(),reducerTailCache:this.tailCacheStats(),lanePairs:Array.from({length:this.workers},(_,i)=>Number(this.e.gn_lane_stat(i,6))),elapsedMs:performance.now()-start};
       if(this.options.exportText!==false){this.setPhase('export');Object.assign(result,await this.exportText(fixture.variables));}
       result.elapsedMs=performance.now()-start;result.degreeTimings=[...this.tracker.history];result.progressError=this.progressError??null;
       if(this.directory){
         if(hilbert)await writeJSON(this.directory,'hilbert.json',{...hilbert,...hilbertMetadata(this.hilbertClosure),...this.fkGate?.metadata()});
         if(hilbert?.coefficients)await this.writeSmallText('hilbert.csv',hilbertCSV(hilbert));
-        const {preview,...metadata}=result;await writeJSON(this.directory,'fomkyr-result.json',metadata);
+        if(anickFiles)for(const [name,text] of Object.entries(anickFiles))await this.writeSmallText(name,text);
+        if(poincare)await writeJSON(this.directory,'poincare.json',poincare);
+        if(poincare?.coefficients){await this.writeSmallText('poincare.csv',poincareCSV(poincare));await this.writeSmallText('result.pb',poincareText(poincare));}
+        const {preview,anickFiles:exportedResolution,...metadata}=result;await writeJSON(this.directory,'fomkyr-result.json',metadata);
       }
       this.setPhase('done');result.progress=this.lastProgress??null;result.elapsedMs=performance.now()-start;result.degreeTimings=[...this.tracker.history];result.progressError=this.progressError??null;return result;
     }catch(error){

@@ -5,12 +5,15 @@ export function optionsFromGeorgeForm(form){
   if(form.nativeWorkers!==undefined)o.workers=Number(form.nativeWorkers);
   if(form.monomialPruning!==undefined)o.monomialPruning=!!form.monomialPruning;
   if(form.maxserdeg!==undefined&&String(form.maxserdeg).trim()!=='')o.hilbertDegree=Number(form.maxserdeg);
-  return {...o,...form.fomkyrOptions};
+  const result={...o,...form.fomkyrOptions};
+  if(form.task==='anick')Object.assign(result,{anick:true,hilbert:true,hilbertRequired:true});
+  if(form.task==='ncpbh')Object.assign(result,{hilbert:true,hilbertRequired:true,poincare:true,poincareRequired:true,...(o.hilbertDegree!==undefined?{poincareDegree:o.hilbertDegree}:{})});
+  return result;
 }
 export function validateFomkyrForm(form){
   if(form.backend!=='fomkyr')return [];
   const errors=[];
-  if(form.ring!=='noncomm'||form.order!=='degleftlex'||form.task!=='gb')errors.push('fomkyr requires the noncommutative degleftlex Gröbner-basis task. Hilbert coefficients are an optional output of that task.');
+  if(form.ring!=='noncomm'||form.order!=='degleftlex'||!['gb','ncpbh','anick'].includes(form.task))errors.push('fomkyr requires the noncommutative degleftlex Gröbner, series or graded algebra Anick task.');
   if(form.legacy||form.strategy==='rabbit'||form.nonhomog==='itemwise')errors.push('fomkyr does not implement legacy, rabbit or inhomogeneous/itemwise computations.');
   if(form.outmode&&form.outmode!=='ALG')errors.push('fomkyr currently exports ALG text, binary records and JSON, not LISP/MACAULAY output.');
   const weights=String(form.weights||'').trim().split(/[\s,]+/).filter(Boolean);

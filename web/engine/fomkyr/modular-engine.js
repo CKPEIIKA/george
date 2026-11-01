@@ -8,6 +8,8 @@ import {checkCandidate} from './candidate-verifier.js';
 import {identityOf,sha256,VERSION,writeJSON,deleteCachedRun} from './storage.js';
 import {stats,checked} from './runtime.js';
 import {computeHilbert,hilbertCSV} from './hilbert.js';
+import {computePoincare,poincareCSV,poincareText} from './poincare.js';
+import {computeAnick} from './anick.js';
 const MiB=1048576;
 export const DEFAULT_PRIMES=[1000000007,1000000009,998244353,1004535809,469762049,985661441,943718401,935329793];
 const yieldTurn=()=>new Promise(r=>setTimeout(r,0));
@@ -51,20 +53,29 @@ export class ModularEngine{
   // exact leading-word equality gives all degree-wise Hilbert equalities.
   if(!sameLeaders(rows,witness))throw Object.assign(new Error('Modular leading-ideal witness mismatch'),{code:'CANDIDATE_REJECTED'});
   const proof={method:'homogeneous-rank-sandwich',deterministic:true,throughDegree:target,field:'Q',witnessPrime:this.currentWitnessPrime,leadingWordsSha256:await sha256(JSON.stringify(rows.map(r=>r.lm))),...verification};
+  // All algebra proof checks have passed. Keep the certified basis even if
+  // optional series counting or export exhausts its workspace afterwards.
+  await engine.checkpoint(identity);this.quarantineKey=null;
+  if(engine.directory)await writeJSON(engine.directory,'certification.json',proof);
   const lastInputDegree=fixture.relations.reduce((n,r)=>Math.max(n,r.degree),0),globallyComplete=target>=lastInputDegree&&BigInt(target)>=engine.e.gn_completion_bound();
   let hilbert=null;
-  if(this.options.hilbert!==false){
+  if(this.options.hilbert!==false||this.options.poincare||this.options.anick){
    try{const d=this.options.hilbertDegree??target;if(d>target&&!globallyComplete)throw new Error('Hilbert degree exceeds the certified bound');hilbert=computeHilbert(engine.e,d,Math.min(engine.budget-Number(engine.e.gn_stat(4)),this.options.hilbertBudgetBytes??256*MiB),this.options.hilbertOutputBudgetBytes);hilbert.basisCompletionProved=globallyComplete;hilbert.certification=globallyComplete?'complete-basis':'degree-truncated-basis';}
    catch(error){if(error.code==='CANCELLED'||this.options.hilbertRequired)throw error;hilbert={available:false,error:error.message,certifiedThroughDegree:null};}
   }
+  let poincare=null;
+  if(this.options.poincare){
+   try{const d=this.options.poincareDegree??this.options.hilbertDegree??target;if(d>target&&!globallyComplete)throw new Error('Poincare degree exceeds the certified bound');poincare=computePoincare(engine.e,d,Math.min(Math.max(0,engine.budget-Number(engine.e.gn_stat(4))),this.options.poincareBudgetBytes??256*MiB),hilbert,this.options.poincareOutputBudgetBytes);poincare.basisCompletionProved=globallyComplete;}
+   catch(error){if(error.code==='CANCELLED'||this.options.poincareRequired)throw error;poincare={available:false,error:error.message,certifiedThroughDegree:null};}
+  }
+  let anick=null,anickFiles=null;
+  if(this.options.anick){const d=this.options.anickDegree??target;if(d>target&&!globallyComplete)throw new Error('Anick degree exceeds the certified GB range');const counted=computeAnick(engine.e,fixture.variables,d,Math.min(Math.max(0,engine.budget-Number(engine.e.gn_stat(4))),this.options.anickBudgetBytes??256*MiB),hilbert,this.options.anickOutputBudgetBytes);anick=counted.result;anickFiles=counted.files;anick.basisCompletionProved=globallyComplete;anickFiles['betti.json']=JSON.stringify(anick,null,2);}
   const result={...stats(engine.e),engine:'fomkyr',version:VERSION,arithmeticMode:'modular-verified',modulus:0,order:'degleftlex',target,identity,complete:true,reduced:false,tailReduced:true,normalization:'primitive-integer; divide each row by its leading coefficient for monic reduced Q form',unrestrictedBasisComplete:globallyComplete,certification:proof,
-   runKey:engine.runKey,storage:engine.spill?'opfs':'memory',shared:engine.shared,bits:engine.bits,ioMode:engine.ioMode,executionMode:`wasm${engine.bits}-${engine.shared?'shared':'single'}`,fallbacks:engine.fallbacks??[],requestedBudgetBytes:engine.requestedBudget,linearMemoryBytes:engine.memory.buffer.byteLength,hilbert,
+   runKey:engine.runKey,storage:engine.spill?'opfs':'memory',shared:engine.shared,bits:engine.bits,ioMode:engine.ioMode,executionMode:`wasm${engine.bits}-${engine.shared?'shared':'single'}`,fallbacks:engine.fallbacks??[],requestedBudgetBytes:engine.requestedBudget,linearMemoryBytes:engine.memory.buffer.byteLength,anick,anickFiles,hilbert,poincare,
    modular:{attempts:this.attempts,primesUsed:this.acceptedPrimes,verificationCount:this.verificationCount,logicalWorkspaceBudgetBytes:this.workspace,totalAlgorithmMs:performance.now()-started,signaturesImplemented:false},elapsedMs:performance.now()-started,scheduler:engine.scheduler};
   if(this.options.exportText!==false)Object.assign(result,await engine.exportText(fixture.variables,{tailReduced:true}));
   result.elapsedMs=performance.now()-started;
-  // The first rational checkpoint is published ONLY AFTER every proof check.
-  await engine.checkpoint(identity);this.quarantineKey=null;
-  if(engine.directory){await writeJSON(engine.directory,'certification.json',proof);if(hilbert)await writeJSON(engine.directory,'hilbert.json',hilbert);if(hilbert?.coefficients)await engine.writeSmallText('hilbert.csv',hilbertCSV(hilbert));const {preview,...metadata}=result;await writeJSON(engine.directory,'fomkyr-result.json',metadata);}
+  if(engine.directory){if(anickFiles)for(const [name,text] of Object.entries(anickFiles))await engine.writeSmallText(name,text);await writeJSON(engine.directory,'certification.json',proof);if(hilbert)await writeJSON(engine.directory,'hilbert.json',hilbert);if(hilbert?.coefficients)await engine.writeSmallText('hilbert.csv',hilbertCSV(hilbert));if(poincare)await writeJSON(engine.directory,'poincare.json',poincare);if(poincare?.coefficients){await engine.writeSmallText('poincare.csv',poincareCSV(poincare));await engine.writeSmallText('result.pb',poincareText(poincare));}const {preview,anickFiles:exportedResolution,...metadata}=result;await writeJSON(engine.directory,'fomkyr-result.json',metadata);}
   this.emit({type:'degree',...stats(engine.e),certification:proof});
   this.emit({type:'stdout',text:`fomkyr modular lift certified exactly over Q through degree ${target}; ${this.acceptedPrimes.length} prime(s), ${this.verificationCount} verification attempt(s).\n`});return result;
  }
@@ -88,7 +99,7 @@ export class ModularEngine{
    for(const prime of primes.slice(0,maxPrimes)){
     this.remaining();this.currentPrime=prime;this.stage='modular-prime';
     this.emit({type:'stdout',text:`fomkyr modular stage: F_${prime}, target degree ${target}; not yet certified over Q.\n`});
-    const begin=performance.now(),engine=await this.childFor({runKey:`mp-${id.slice(0,40)}-${prime}`,resume:this.options.resume,hilbert:false,exportText:false});
+    const begin=performance.now(),engine=await this.childFor({runKey:`mp-${id.slice(0,40)}-${prime}`,resume:this.options.resume,hilbert:false,poincare:false,anick:false,exportText:false});
     const modularResult=await engine.compute(fixture,target,prime);
     if(modularResult.modulus!==prime||modularResult.identity!==await identityOf(fixture,prime)||modularResult.completedThroughDegree<target)throw new Error('Invalid modular witness provenance');
     const canonicalStart=performance.now(),image=await this.canonical(engine,target,this.workspace/3),canonicalMs=performance.now()-canonicalStart;

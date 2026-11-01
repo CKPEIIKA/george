@@ -379,7 +379,7 @@ function refresh() {
   const task = TASK_BY_ID.get(f.task);
   els.matrixField.hidden = f.order !== 'matrix';
   els.rabbitField.hidden = f.strategy !== 'rabbit';
-  const seriesEnabled = f.backend === 'fomkyr' ? f.fomkyrOptions.hilbert : f.task === 'hilbert';
+  const seriesEnabled = f.backend === 'fomkyr' ? ['ncpbh','anick'].includes(f.task) || f.fomkyrOptions.hilbert : f.task === 'hilbert';
   els.maxserdegField.hidden = !seriesEnabled;
   els.maxserdeg.disabled ||= !seriesEnabled;
   // These Bergman modes do not alter Fomkyr's homogeneous reduction algorithm.
@@ -474,7 +474,7 @@ function updateElapsedTime() {
 function updateDegreeUsage() {
   const degree = runDegree?.degree ?? '—';
   const limit = runDegreeBound ? t('monitor.degreeLimit', { bound: runDegreeBound }) : '';
-  const phaseKey = {input:'monitor.phaseInput',indexing:'monitor.phaseIndexing',committing:'monitor.phaseCommitting',checkpoint:'monitor.phaseCheckpoint',hilbert:'monitor.phaseHilbert',export:'monitor.phaseExport',done:'monitor.phaseDone'}[runDegree?.phase];
+  const phaseKey = {input:'monitor.phaseInput',indexing:'monitor.phaseIndexing',committing:'monitor.phaseCommitting',checkpoint:'monitor.phaseCheckpoint',hilbert:'monitor.phaseHilbert',poincare:'monitor.phasePoincare',export:'monitor.phaseExport',done:'monitor.phaseDone'}[runDegree?.phase];
   let progress = t(phaseKey ?? (runDegree ? (runDegree.completed ? 'monitor.degreeCompleted' : 'monitor.degreeCurrent')
     : (lastJob?.backend === 'fomkyr' ? 'monitor.degreeWaiting' : 'monitor.degreeUnavailable')), { degree, limit, through:runDegree?.completedThroughDegree ?? 0 });
   if (runDegree?.phase === 'anick') progress = t('monitor.degreeAnick', { progress });
@@ -698,7 +698,7 @@ function renderResults(job, res, facts = lastRendered?.job === job ? lastRendere
     };
   }
 
-  if (res.fomkyr?.hilbert) renderFomkyrSeries($('seriesOut'), res.fomkyr.hilbert, t);
+  if (res.fomkyr?.hilbert) renderFomkyrSeries($('seriesOut'), res.fomkyr.hilbert, t, res.fomkyr.poincare);
   else if (job.outputs.hs || job.outputs.pb) $('seriesOut').innerHTML = renderSeries(files[job.outputs.hs], files[job.outputs.pb], res, job, facts);
   else $('seriesOut').innerHTML = notComputed(t('tab.series'));
   if (job.outputs.anick) {

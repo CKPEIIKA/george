@@ -2,12 +2,17 @@
 
 ## 0.7.7
 
+- Enable Fomkyr’s Hilbert/Poincaré series and algebra Anick tasks in the existing
+  Compute dropdown, with exact C counters, full differentials and actual graded
+  Betti tables. Native CLI supports `--poincare` and `--anick`.
+- Keep monomial Betti bounds distinct from actual original-algebra Betti numbers.
 - Updated Fomkyr with retained-row growth, aligned reusable buffers and
   memory-aware recovery of parked reductions.
 - Rebuilt the four browser engine variants from the current kernel.
 - Kept the investigative Kircracker tool outside the George release checks
   and downloadable source archive.
-- Browser controls and defaults remain unchanged.
+- Reduction defaults remain unchanged; the existing series and algebra Anick
+  task choices are enabled for Fomkyr.
 - Fit default hash tables into small memory allowances; preserve explicit and
   restored table settings.
 - Skip legacy check reports without compatible protocol metadata when looking

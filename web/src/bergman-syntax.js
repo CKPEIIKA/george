@@ -528,7 +528,7 @@ export const TASKS = [
   { id: 'hilbert', group: 'Bases and series', label: 'Gröbner basis and Hilbert series', button: 'Compute basis and series',
     desc: 'Hilbert series of the quotient, as a rational function and as a power series.', proc: 'HILBERT', out: ['gb', 'hs'], ring: 'comm' },
   { id: 'ncpbh', group: 'Bases and series', label: 'Hilbert and Poincaré–Betti series', button: 'Compute basis and series',
-    desc: 'Gröbner basis, Hilbert series and the double Poincaré–Betti series.', proc: 'NCPBHGROEBNER', out: ['gb', 'pb', 'hs'] },
+    desc: 'Gröbner basis and Hilbert series, plus the double Poincaré–Betti series of the associated monomial algebra.', proc: 'NCPBHGROEBNER', out: ['gb', 'pb', 'hs'] },
   { id: 'anick', group: 'Resolutions', label: 'Anick resolution', button: 'Compute Anick resolution',
     desc: 'Chains, differentials and Betti numbers of the trivial module.', proc: 'ANICK', out: ['gb', 'anick'], ring: 'noncomm' },
   { id: 'rmodule', group: 'Resolutions', label: 'Right module Betti numbers', button: 'Compute Betti numbers',

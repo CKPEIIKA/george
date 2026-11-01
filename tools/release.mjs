@@ -275,6 +275,16 @@ if(preparation){
         evidence:path.join(native,'report.json'),timeoutSeconds:1800,
         validate:r=>{assert.ok(r.tests.every(test=>test.passed));assert.ok(NATIVE_REGRESSION_CHECKS.every(name=>r.tests.some(test=>test.name===name&&test.passed)));if(full)assert.ok(r.tests.length>=30);}});
     }
+    for(const [name,count] of [['poincare',29],['anick',37]]){
+      const directory=path.join(out,name);
+      await phase(name,process.execPath,[`tools/validate-fomkyr-${name}.mjs`,directory],{
+        evidence:path.join(directory,'report.json'),timeoutSeconds:180,
+        validate:r=>{assert.equal(r.passed,true);assert.equal(r.checks.length,count);}});
+      const browserDirectory=path.join(out,name+'-browser');
+      await phase(name+'-browser',process.execPath,[`tools/validate-fomkyr-${name}-browser.mjs`,browserDirectory],{
+        evidence:path.join(browserDirectory,'report.json'),timeoutSeconds:300,
+        validate:r=>{assert.equal(r.passed,true);assert.equal(r.checks.length,4);}});
+    }
     const browser=path.join(out,'browser');
     await phase('browser',process.execPath,['tools/validate-correction-release.mjs',browser,'--defaults-case','--coefficient-case'],{
       evidence:path.join(browser,'report.json'),timeoutSeconds:600,validate:r=>{assert.equal(r.checks.length,2);assert.ok(r.checks.every(c=>c.independentVerifications===2&&c.engineSubmenus));}});

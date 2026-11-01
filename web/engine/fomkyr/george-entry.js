@@ -2,6 +2,7 @@
 import {FomkyrEngine} from './engine.js';
 import {parseNativeJob} from './job-adapter.js';
 import {hilbertCSV} from './hilbert.js';
+import {poincareCSV,poincareText} from './poincare.js';
 import {VERSION,identityOf} from './storage.js';
 import {hilbertClosureOption} from '../../src/dimension-evidence.js';
 let enabled=false,engine=null;
@@ -15,12 +16,12 @@ export async function dispatchFomkyr(message,send=postMessage){
   if(engine){send({id,error:'fomkyr is busy',code:'BUSY'});return true;}
   engine={cancel(){}};let stdout='',owned=null;
   try{
-    if(!job)throw new Error('fomkyr does not evaluate Lisp. Use a homogeneous presentation and the Gröbner basis task.');
+    if(!job)throw new Error('fomkyr does not evaluate Lisp. Use a homogeneous presentation and a Gröbner basis or monomial-series task.');
     const {fixture,target,modulus}=parseNativeJob(job);
     const {hilbertDimensions,...options}=job.fomkyrOptions??job.nativeOptions??{};
     // George's dimension evidence: plain dimensions are bound to this presentation.
     if(hilbertDimensions)options.hilbertClosure=hilbertClosureOption(hilbertDimensions,await identityOf(fixture,modulus),modulus);
-    engine=new FomkyrEngine({budgetBytes:Number(job.memoryMiB??3584)*1048576,timeoutMs:job.timeoutMs??0,...options,onEvent:event=>{
+    engine=new FomkyrEngine({budgetBytes:Number(job.memoryMiB??3584)*1048576,timeoutMs:job.timeoutMs??0,...options,...(job.task==='anick'?{anick:true,hilbert:true,hilbertRequired:true}:{}),...(job.task==='ncpbh'?{hilbert:true,hilbertRequired:true,poincare:true,poincareRequired:true}:{}),onEvent:event=>{
       if(['degree-start','degree','progress','phase','capabilities'].includes(event.type)&&engine?.memory)send({id,event:{type:'memory',bytes:engine.memory.buffer.byteLength}});
       if(event.type==='degree')send({id,event});
       if(event.type==='cache'&&event.resumedFromDegree>0)send({id,event:{type:'degree',completedThroughDegree:event.resumedFromDegree,source:'checkpoint'}});
@@ -34,8 +35,9 @@ export async function dispatchFomkyr(message,send=postMessage){
         send({id,event});
       }
     }});owned=engine;
-    const result=await engine.compute(fixture,target,modulus),preview=result.preview??'';delete result.preview;
+    const result=await engine.compute(fixture,target,modulus),preview=result.preview??'',anickFiles=result.anickFiles;delete result.preview;delete result.anickFiles;
     const files={'result.gb':preview,'fomkyr-result.json':JSON.stringify({...result,elapsedSeconds:result.elapsedMs/1000,elapsedMs:undefined},null,2)};
+    if(anickFiles)Object.assign(files,anickFiles);
     if(result.hilbert){
       files['hilbert.json']=JSON.stringify(result.hilbert,null,2);
       if(result.hilbert.coefficients){
@@ -43,6 +45,7 @@ export async function dispatchFomkyr(message,send=postMessage){
         files['result.hs']=(result.hilbert.conditionalOnImportedFkDimensions?'% CONDITIONAL ON IMPORTED FK6 DIMENSIONS; profile '+result.hilbert.fkGateProfileId+'; external proof not replayed here\n':'')+(result.hilbert.conditionalOnExternalDimensions?'% CONDITIONAL ON EXPLICITLY ASSUMED EXTERNAL DIMENSIONS; evidence '+result.hilbert.hilbertEvidenceId+'\n':'')+'% Exact coefficients through degree '+result.hilbert.certifiedThroughDegree+'; no rational extrapolation\n'+result.hilbert.coefficients.map((c,d)=>`${c}*t^${d}`).join(' + ')+` + O(t^${result.hilbert.certifiedThroughDegree+1})\n`;
       }
     }
+    if(result.poincare){files['poincare.json']=JSON.stringify(result.poincare,null,2);if(result.poincare.coefficients){files['poincare.csv']=poincareCSV(result.poincare);files['result.pb']=poincareText(result.poincare);}}
     send({id,result:{files,fomkyr:result,stdout,connected:true,elapsedMs:result.elapsedMs,memoryBytes:engine.memory.buffer.byteLength}});
   }catch(error){
     const result=error.native??null;

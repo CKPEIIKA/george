@@ -133,7 +133,7 @@ export function fomkyrControlAvailability(form) {
     resume: o.spill, ioMode: o.spill && o.execution !== 'single' && Number(form.nativeWorkers) !== 1,
     sharedCacheMiB: o.spill, progressIntervalSeconds: o.progress,
     autoWorkerMiB: o.execution !== 'single' && !Number(form.nativeWorkers) && o.memoryPolicy === 'auto',
-    hilbertMiB: o.hilbert, heapThreshold: heap, radixHeap: heap,
+    hilbertMiB: o.hilbert || ['ncpbh','anick'].includes(form.task), heapThreshold: heap, radixHeap: heap,
     rationalHeap: rational && heap, bigRationalHeap: rational && heap,
     bigRowMaxTerms: rational && heap && o.bigRationalHeap,
     fastBigDivision: rational, growingRationalHeap: rational && heap && o.rationalHeap,
@@ -249,6 +249,8 @@ export function fomkyrEngineOptions(form) {
   engine.workers = Number(form.nativeWorkers) || undefined;
   engine.monomialPruning = form.monomialPruning ?? true;
   if (String(form.maxserdeg ?? '').trim() !== '') engine.hilbertDegree = Number(form.maxserdeg);
+  if(form.task==='anick')Object.assign(engine,{anick:true,hilbert:true,hilbertRequired:true});
+  if(form.task==='ncpbh'){engine.hilbert=true;engine.hilbertRequired=true;engine.poincare=true;engine.poincareRequired=true;engine.poincareBudgetBytes=engine.hilbertBudgetBytes;if(engine.hilbertDegree!==undefined)engine.poincareDegree=engine.hilbertDegree;}
   return engine;
 }
 export function readFomkyrOptions(root = document) {

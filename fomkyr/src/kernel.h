@@ -158,6 +158,28 @@ API int gn_batch_reduce(u32 lane);
 API u32 gn_batch_status(u32 task);
 API int gn_batch_commit(u32 task);
 API int gn_batch_fallback(void);
+/* Associated-monomial-algebra Poincare-Betti coefficients c[p,d].
+ * Exact only through the completed GB prefix (or a globally complete basis).
+ * Does not compute differentials or original-algebra minimal Betti numbers. */
+API int gn_poincare(u32 degree,u64 extra_budget);
+API u32 gn_poincare_limbs(void);
+API u32 gn_poincare_limb(u32 homological,u32 internal,u32 limb);
+/* 0 tail states, 1 edges, 2 minimal obstructions, 3 active letters, 4 bytes. */
+API u64 gn_poincare_stat(u32 key);
+API void gn_poincare_release(void);
+/* Homogeneous, graded-augmentation right Anick resolution through internal D.
+ * Exact full differentials, d^2 check and augmentation ranks in the input field.
+ * Stored outputs are immutable until release or reinitialization. */
+API int gn_anick(u32 degree,u64 extra_budget);
+API void gn_anick_release(void);
+API u64 gn_anick_stat(u32 key); /* 0 chains incl unit, 1 differential terms, 2 rewrites/lifts, 3 persistent bytes, 4 D */
+API u32 gn_anick_count(u32 p,u32 d);
+API u32 gn_anick_rank(u32 p,u32 d);
+API u32 gn_anick_chain_stat(u32 id,u32 key); /* 0 p, 1 internal, 2 terms, 3 parent */
+API u32 gn_anick_chain_letter(u32 id,u32 pos);
+API u32 gn_anick_term_stat(u32 id,u32 term,u32 key); /* 0 target, 1 word degree, 2 num limbs, 3 den limbs, 4 sign */
+API u32 gn_anick_term_letter(u32 id,u32 term,u32 pos);
+API u32 gn_anick_term_limb(u32 id,u32 term,u32 denominator,u32 limb);
 API int gn_hilbert(u32 degree,u64 extra_budget);
 /* Partial-leading-ideal UPPER BOUND only; never certifies a degree. */
 API int gn_hilbert_upper(u32 degree,u64 extra_budget);

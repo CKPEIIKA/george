@@ -14,7 +14,8 @@ The guide is organized by implementation:
   purpose of Legacy mode.
 - **Fomkyr** (`#guide-fomkyr`): supported presentations, completed-degree
   progress, memory and worker settings, checkpoints and exact Hilbert
-  coefficients.
+  coefficients, associated-monomial Poincaré–Betti series, and actual graded
+  algebra Anick differentials and Betti numbers.
 - **Shared examples** (`#guide-examples`): the common presentation format,
   with engine compatibility explained before the example buttons.
 
@@ -91,6 +92,18 @@ short-link service. Larger presentations produce longer links. Times are
 displayed in seconds; Russian uses a decimal comma.
 
 ## Computation engines
+
+Fomkyr also supports **Compute → Anick resolution** for homogeneous algebra
+presentations with graded augmentation. It constructs the actual differentials
+and computes graded Betti numbers through the internal-degree bound. Results
+use the existing Betti and Resolution tabs; see [the Fomkyr reference](../fomkyr/docs/ANICK.md).
+
+With Fomkyr selected, **Compute → Hilbert and Poincaré–Betti series** exports
+both series through the requested internal degree. The Betti table belongs to
+the associated leading-word monomial algebra: its entries bound the original
+algebra's Betti numbers, rather than computing its minimal resolution. JSON,
+CSV and series text are available under Files. See the
+[Fomkyr series reference](../fomkyr/docs/POINCARE.md).
 
 **Engine → Computation engine** offers **Lisp / ECL O2**, **Lisp / ECL
 O3 + LTO**, **C / ECL O3 + LTO**, its **memory64** variant, and **Fomkyr**.

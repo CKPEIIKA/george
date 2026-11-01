@@ -8,7 +8,7 @@ export function degreeProgress(event, previous = null) {
     const current = Number(event.currentDegree);
     if (current > through) degree = current;
     else {degree = through; completed = true;}
-  } else if (event.type === 'phase' && ['checkpoint','hilbert','export'].includes(event.phase)) {
+  } else if (event.type === 'phase' && ['checkpoint','hilbert','poincare','anick','export'].includes(event.phase)) {
     degree = through; completed = true;
   } else return null;
   if (!Number.isSafeInteger(degree) || degree < 1) return null;

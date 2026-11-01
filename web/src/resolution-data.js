@@ -21,6 +21,7 @@ export function readResolution(source, vars, modulus = null) {
         throw new Error('Invalid generator index in the resolution.');
       return indices.map(i => names[i - 1]);
     };
+    if (!records.length && header.emptyResolution === true) return { diffs, top: 0 };
     for (const record of records) {
       const n = record.degree;
       if (!Number.isSafeInteger(n) || n < 0 || !Array.isArray(record.terms))

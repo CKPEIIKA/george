@@ -6,6 +6,15 @@ FOMKYR(1)                     Fomkyr Manual                     FOMKYR(1)
 
 **fomkyr** — fast pure C engine for exact Gröbner bases of homogeneous associative algebras.
 
+The same kernel also computes Hilbert coefficients and the bigraded
+Poincaré–Betti series of the associated leading-word monomial algebra. This
+series gives upper bounds for the original algebra's Betti numbers; it does not
+compute its minimal resolution. See [series computation](docs/POINCARE.md).
+
+The separate **Anick resolution** task constructs full differentials and computes
+the original algebra's actual graded Betti numbers after augmentation. Native
+usage is `--anick`; see [Anick computation](docs/ANICK.md) for scope and output.
+
 ## VERSION
 
 [0.7.7 release notes](docs/RELEASE_077.md) · [Arithmetic details](docs/INTEGER_ARITHMETIC.md)
@@ -40,6 +49,17 @@ continue the saved calculation or inspect its checkpoint:
 ./dist/fomkyr --resume fk6-job -d 11 -j 4 --memory 4G --export --human
 ./dist/fomkyr --resume fk6-job --status --human
 ```
+
+Use `--poincare` to export both series through the completed degree:
+
+```sh
+./dist/fomkyr -i fixtures/user-form.bg -d 8 -j 4 --memory 1G \
+  --workdir fk6-series --poincare --human
+```
+
+Outputs include `hilbert.json`, `poincare.json`, `poincare.csv` and `result.pb`.
+In George, select **Hilbert and Poincaré–Betti series** under **Compute** with
+Fomkyr selected. This uses Fomkyr's C counter without Kircracker or Python.
 
 A C11 compiler, make and POSIX threads are sufficient for native execution.
 Node.js and Python are used by optional Wasm tools and test utilities.

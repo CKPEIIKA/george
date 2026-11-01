@@ -1,16 +1,19 @@
 // SPDX-License-Identifier: MIT
 // Deliberately accepts only George's generated homogeneous GB job, never Lisp.
 export function parseNativeJob(job) {
-  if(job?.task!=='gb'||job.resolution||job.legacy)throw new Error('fomkyr supports only homogeneous two-sided GB jobs; no legacy mode, modules, resolutions, or console Lisp.');
+  if(!['gb','ncpbh','anick'].includes(job?.task)||job.resolution||job.legacy)throw new Error('fomkyr supports homogeneous GB, series and graded algebra Anick jobs; no legacy mode, modules or console Lisp.');
   const lines=String(job.script??'').split('\n').map(s=>s.trim()).filter(s=>s&&!s.startsWith('%'));
-  const allowed=[/^\(SETLEGACYMODE NIL\)$/,/^\(NONCOMMIFY\)$/,/^\(DEGLEFTLEXIFY\)$/,/^\(SETMODULUS \d+\)$/,/^\(SETMAXDEG (?:\d+|NIL)\)$/,/^\(SETSAFELOWTERMSHANDLING\)$/,/^\(SETDEGREEWISE\)$/,/^\(SETWEIGHTS(?: 1)+\)$/,/^\(STABILISE\)$/,/^\(SIMPLE "input\.bg" "result\.gb"\)$/,/^\(CLEARRING\)$/];
+  const allowed=[/^\(SETLEGACYMODE NIL\)$/,/^\(NONCOMMIFY\)$/,/^\(DEGLEFTLEXIFY\)$/,/^\(SETMODULUS \d+\)$/,/^\(SETMAXDEG (?:\d+|NIL)\)$/,/^\(SETSAFELOWTERMSHANDLING\)$/,/^\(SETDEGREEWISE\)$/,/^\(SETWEIGHTS(?: 1)+\)$/,/^\(STABILISE\)$/,/^\(SIMPLE "input\.bg" "result\.gb"\)$/,/^\(NCPBHGROEBNER "input\.bg" "result\.gb" "result\.pb" "result\.hs"\)$/,/^\(SETQ ANICKRESOLUTIONOUTPUTFILE "result\.anick"\)$/,/^\(ANICK "input\.bg" "result\.gb"\)$/,/^\(CALCULATEANICKRESOLUTIONTOLIMIT \(GETMAXDEG\)\)$/,/^\(ANICKDISPLAY\)$/,/^\(GEORGEWRITERESOLUTION "resolution\.jsonl"\)$/,/^\(CLEARRING\)$/];
   for(const line of lines)if(!allowed.some(re=>re.test(line)))throw new Error(`Unsupported fomkyr setting: ${line}`);
-  for(const required of ['(NONCOMMIFY)','(DEGLEFTLEXIFY)','(SIMPLE "input.bg" "result.gb")'])if(!lines.includes(required))throw new Error('Missing fomkyr job setting: '+required);
+  const procedure=job.task==='anick'?'(ANICK "input.bg" "result.gb")':job.task==='ncpbh'?'(NCPBHGROEBNER "input.bg" "result.gb" "result.pb" "result.hs")':'(SIMPLE "input.bg" "result.gb")';
+  if(lines.filter(line=>/^\((SIMPLE|NCPBHGROEBNER|ANICK) /.test(line)).length!==1)throw new Error('Expected exactly one matching Fomkyr task procedure');
+  for(const required of ['(NONCOMMIFY)','(DEGLEFTLEXIFY)',procedure])if(!lines.includes(required))throw new Error('Missing fomkyr job setting: '+required);
   const one=(pattern,label)=>{const ms=lines.map(x=>pattern.exec(x)).filter(Boolean);if(ms.length!==1)throw new Error('Expected exactly one '+label);return Number(ms[0][1]);};
   const degrees=lines.map(x=>/^\(SETMAXDEG (\d+|NIL)\)$/.exec(x)).filter(Boolean);
   if(degrees.length!==1)throw new Error('Expected exactly one degree bound');
   const target=degrees[0][1]==='NIL'?null:Number(degrees[0][1]);const modulus=one(/^\(SETMODULUS (\d+)\)$/,'coefficient characteristic');
   if(target!==null&&(!Number.isInteger(target)||target<1||target>0xfffffffe))throw new Error('Use a positive 32-bit degree index, or leave the degree blank for completion.');
+  if(job.task==='anick')for(const line of ['(SETQ ANICKRESOLUTIONOUTPUTFILE "result.anick")','(CALCULATEANICKRESOLUTIONTOLIMIT (GETMAXDEG))','(ANICKDISPLAY)','(GEORGEWRITERESOLUTION "resolution.jsonl")'])if(!lines.includes(line))throw new Error('Missing Anick job setting: '+line);
   const src=String(job.files?.['input.bg']??'');
   // These are byte/workspace guards, not a fixed degree bound. JavaScript
   // input/identity objects are outside the kernel allocator.

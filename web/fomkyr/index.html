@@ -14,6 +14,8 @@ p{margin:12px 0}code{font:14px/1.6 ui-monospace,monospace;overflow-wrap:anywhere
 <pre><code>FOMKYR(1)                     Fomkyr Manual                     FOMKYR(1)</code></pre>
 <h2 id="name">NAME</h2>
 <p><strong>fomkyr</strong> — fast pure C engine for exact Gröbner bases of homogeneous associative algebras.</p>
+<p>The same kernel also computes Hilbert coefficients and the bigraded Poincaré–Betti series of the associated leading-word monomial algebra. This series gives upper bounds for the original algebra&#39;s Betti numbers; it does not compute its minimal resolution. See <a href="https://github.com/CKPEIIKA/george/blob/main/fomkyr/docs/POINCARE.md">series computation</a>.</p>
+<p>The separate <strong>Anick resolution</strong> task constructs full differentials and computes the original algebra&#39;s actual graded Betti numbers after augmentation. Native usage is <code>--anick</code>; see <a href="https://github.com/CKPEIIKA/george/blob/main/fomkyr/docs/ANICK.md">Anick computation</a> for scope and output.</p>
 <h2 id="version">VERSION</h2>
 <p><a href="https://github.com/CKPEIIKA/george/blob/main/fomkyr/docs/RELEASE_077.md">0.7.7 release notes</a> · <a href="https://github.com/CKPEIIKA/george/blob/main/fomkyr/docs/INTEGER_ARITHMETIC.md">Arithmetic details</a></p>
 <p><strong>0.7.7</strong>, <a href="https://github.com/CKPEIIKA/george/blob/main/fomkyr/LICENSE">MIT license</a>. Fomkyr is a standalone C engine and a subproject of <a href="https://github.com/CKPEIIKA/george/blob/main/README.md">George</a>. George also runs this kernel through WebAssembly; its engine chooser marks that integration experimental.</p>
@@ -27,6 +29,10 @@ make
 <p>The included input is the 15-generator, 100-relation FK6 presentation. To continue the saved calculation or inspect its checkpoint:</p>
 <pre><code>./dist/fomkyr --resume fk6-job -d 11 -j 4 --memory 4G --export --human
 ./dist/fomkyr --resume fk6-job --status --human</code></pre>
+<p>Use <code>--poincare</code> to export both series through the completed degree:</p>
+<pre><code>./dist/fomkyr -i fixtures/user-form.bg -d 8 -j 4 --memory 1G \
+  --workdir fk6-series --poincare --human</code></pre>
+<p>Outputs include <code>hilbert.json</code>, <code>poincare.json</code>, <code>poincare.csv</code> and <code>result.pb</code>. In George, select <strong>Hilbert and Poincaré–Betti series</strong> under <strong>Compute</strong> with Fomkyr selected. This uses Fomkyr&#39;s C counter without Kircracker or Python.</p>
 <p>A C11 compiler, make and POSIX threads are sufficient for native execution. Node.js and Python are used by optional Wasm tools and test utilities. <code>make install PREFIX=/desired/prefix</code> installs the executable and manual page. See <a href="https://github.com/CKPEIIKA/george/blob/main/fomkyr/docs/INTEGER_ARITHMETIC.md">exact integer arithmetic</a> for the GCD algorithms and their independent validation.</p>
 <p>The optional multiply, leading-word and backward Gröbner criteria are available through <code>--gm</code>. See <a href="https://github.com/CKPEIIKA/george/blob/main/fomkyr/docs/NC_GM.md">exact filtering and checkpoint compatibility</a>.</p>
 <h2 id="whole-degree-pair-planning">WHOLE-DEGREE PAIR PLANNING</h2>

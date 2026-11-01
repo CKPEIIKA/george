@@ -105,6 +105,10 @@ typedef struct {
   u32 batch_n,batch_enabled,hilbert_degree,hilbert_nodes;
   u64 batch_epochs,batch_spills,hilbert_bytes;
   u64 hilbert_offset,hilbert_end,hilbert_base;
+  u64 pb_offset,pb_end,pb_base,pb_bytes,pb_edges;
+  u64 an_base,an_end,an_chains,an_counts,an_ranks,an_terms,an_steps;
+  u32 an_n,an_degree;
+  u32 pb_degree,pb_limbs,pb_states,pb_obstructions,pb_generators;
   u32 hilbert_limbs,pruning,heap_enabled,cache_percent,heap_threshold,rational_enabled,rational_rewrites;
   u32 legacy_big_division,big_rational_enabled,growing_rational,big_row_max_terms;
   u32 delta_commit;
@@ -1102,6 +1106,8 @@ API u64 gn_monic_coefficient(u32 lane,u32 index){
  l->error=a->error;return a->error?0:off;
 }
 #include "hilbert.inc"
+#include "poincare.inc"
+#include "anick.inc"
 #include "hilbert_gate.inc"
 #include "fk_gate.inc"
 #include "lower_bound.inc"

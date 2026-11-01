@@ -1,5 +1,11 @@
 # Structural Anick resolution export
 
+Fomkyr's homogeneous algebra Anick task also writes this format. It computes
+full right-module differentials and exact augmentation ranks in its C kernel.
+`betti.json` and `betti.csv` give the actual graded Betti numbers separately from
+the chain counts. A Fomkyr header records its internal-degree bound; an explicitly
+marked `emptyResolution:true` header alone denotes the trivial resolution of k.
+
 Default algebra Anick form jobs include `resolution.jsonl`. Legacy sessions
 retain their original output. `result.anick` remains the original Bergman
 text in both modes; its compact chain names can be ambiguous.

@@ -12,7 +12,9 @@ No installation. Computations run locally in your browser; algebra input stays o
   resolutions and homological computations over ℚ and prime fields. George uses
   Bergman 1.001 with documented fixes; Legacy mode preserves original behavior.
 - **Fomkyr:** a fast, independent C engine for homogeneous noncommutative Gröbner
-  bases and Hilbert coefficients. The same exact kernel runs natively and through
+  bases, Hilbert coefficients and associated-monomial Poincaré–Betti series.
+  Its Anick task constructs differentials and actual graded Betti numbers.
+  The same exact kernel runs natively and through
   WebAssembly, with multicore execution and resumable checkpoints.
 
 George and the bundled Fomkyr release are **0.7.7**.
