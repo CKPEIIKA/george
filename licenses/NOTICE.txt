@@ -1,0 +1,13 @@
+George: Copyright 2026 the George contributors. BGPL or GPL-2.0-or-later.
+bergman-1.001-fix: patched Bergman 1.001; original behavior via legacy mode.
+Bergman 1.001: Copyright 1992-2006 Joergen Backelin and others. BGPL.
+ECL 26.5.5 and its bundled GMP 4.2.1: LGPL-2.1-or-later.
+Boehm-Demers-Weiser GC: permissive; see GC-NOTICE.txt for copyright holders.
+Emscripten runtime: MIT or University of Illinois/NCSA.
+MathJax 4.1.3 and New Computer Modern SVG data: Apache-2.0; see ../vendor/mathjax/NOTICE.txt and LICENSE.
+fomkyr: MIT; see ../engine/fomkyr/LICENSE.txt; version recorded in ../engine/fomkyr/build.json.
+
+Full notices and license texts accompany this file.
+Corresponding sources: ../sources/george-source.tar.gz and ecl-source.tar.gz.
+Build/relink instructions: ports/ecl/build.sh and tools/build-backends.sh in George source.
+No OCaml or Singular implementation is included in the browser engine.
